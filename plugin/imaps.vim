@@ -7,6 +7,8 @@
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
 "
+"     $Header$
+"
 " Documentation: {{{
 "
 " Motivation:
