@@ -79,6 +79,7 @@ if !exists('s:doneMappings')
 	call IMAP (g:Tex_Leader.'-', '\bigcap', "tex")
 	call IMAP (g:Tex_Leader.'+', '\bigcup', "tex")
 	call IMAP (g:Tex_Leader.'M', '\sum_{<++>}^{<++>}<++>', 'tex')
+	call IMAP (g:Tex_Leader.'S', '\sum_{<++>}^{<++>}<++>', 'tex')
 	call IMAP (g:Tex_Leader.'(', '\subset', "tex")
 	call IMAP (g:Tex_Leader.')', '\supset', "tex")
 	call IMAP (g:Tex_Leader.'<', '\le', "tex")
@@ -139,17 +140,19 @@ if !exists('s:doneMappings')
 	" This function sets up fake maps of the following forms:
 	" 	``[aA]  -> ``[aA]    (for writing in quotations)
 	" 	\`[aA]  -> \`[aA]    (for writing diacritics)
-	function! s:ProtectLetters()
-		let i = char2nr('a')
-		while i <= char2nr('z')
-			call IMAP('``'.nr2char(i), '``'.nr2char(i), 'tex')
-			call IMAP('\`'.nr2char(i), '\`'.nr2char(i), 'tex')
-			call IMAP('``'.nr2char(i-32), '``'.nr2char(i-32), 'tex')
-			call IMAP('\`'.nr2char(i-32), '\`'.nr2char(i-32), 'tex')
+	" It does this for all printable lower ascii characters just to make sure
+	" we dont let anything slip by.
+	function! s:ProtectLetters(first, last)
+		let i = a:first
+		while i <= a:last
+			if nr2char(i) =~ '[[:print:]]'
+				call IMAP('``'.nr2char(i), '``'.nr2char(i), 'tex')
+				call IMAP('\`'.nr2char(i), '\`'.nr2char(i), 'tex')
+			endif
 			let i = i + 1
 		endwhile
 	endfunction 
-	call s:ProtectLetters()
+	call s:ProtectLetters(32, 127)
 	" }}}
 	" vmaps: enclose selected region in brackets, environments {{{ 
 	" The action changes depending on whether the selection is character-wise
