@@ -3,7 +3,7 @@
 "      Author: Mikolaj Machowski
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Thu Dec 26 05:00 PM 2002 PST
+" Last Change: Sun Dec 29 04:00 PM 2002 PST
 " 
 "  Description: functions for processing custom macros in the
 "               latex-suite/macros directory
@@ -38,7 +38,7 @@ endif
 
 " }}}
 " NewMacro: opens new file in macros directory {{{
-function! NewMacro()
+function! <SID>NewMacro()
 	exe "cd ".s:path."/macros"
 	new
 	set filetype=tex
@@ -129,7 +129,7 @@ endfunction
 
 " }}}
 " commands for macros {{{
-com! -nargs=? TMacro          :call <SID>ReadMacro(<f-args>)
+com! -nargs=? TMacro          :let s:retVal = <SID>ReadMacro(<f-args>) <bar> normal! i<C-r>=s:retVal<CR>
 com! -nargs=0 TMacroNew       :call <SID>NewMacro()
 com! -nargs=? TMacroEdit      :call <SID>EditMacro(<f-args>)
 com! -nargs=? TMacroDelete    :call <SID>DeleteMacro(<f-args>)
