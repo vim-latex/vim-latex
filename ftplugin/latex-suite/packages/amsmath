@@ -89,7 +89,7 @@ let g:TeX_package_amsmath =
 \.'noo:displaybreak,'
 \.'noo:allowdisplaybreaks,'
 \.'nor:nobreakdash,'
-\.'brs:numberwithin,'
+\.'brs:numberwithin{<+env+>}{<+parent+>},'
 \.'bra:leftroot,'
 \.'bra:uproot,'
 \.'bra:boxed,'
