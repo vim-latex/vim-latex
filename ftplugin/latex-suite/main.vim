@@ -469,6 +469,26 @@ endfunction
 function! Tex_ResetIncrementNumber(val)
 	let s:incnum = a:val
 endfunction " }}}
+" Tex_EscapeForGrep: escapes \ and " the correct number of times {{{
+" Description: This command escapes the backslash and double quotes in a
+" 	search pattern the correct number of times so it can be used in the :grep
+" 	command. This command is meant to be used as:
+" 	exec "silent! grep '".Tex_EscapeForGrep(pattern)."' file"
+" 	NOTE: The pattern in the grep command should _always_ be enclosed in
+" 	      single quotes (not double quotes) for robust performance.
+function! Tex_EscapeForGrep(string)
+	" This first escaping is so that grep gets a string like '\\bibitem' when
+	" we want to search for a string like '\bibitem'.
+	let retVal = escape(a:string, "\\")
+	" The next escape is because when the shellxquote is ", then the grep
+	" commad is usually called as bash -c "grep pattern filename" which means
+	" that we need to escape backslashes (because they get halved) and also
+	" double quotes.
+	if &shellxquote == '"'
+		let retVal = escape(retVal, "\"\\")
+	endif
+	return retVal
+endfunction " }}}
 " Functions for debugging {{{
 " Tex_Debug: appends the argument into s:debugString {{{
 " Description: 

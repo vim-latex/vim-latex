@@ -94,8 +94,8 @@ function! Tex_completion(what, where)
 		endif
 
 		if exists("s:type") && s:type =~ 'ref'
-			call Tex_Debug("silent! grep! '\\label{".s:prefix."' ".s:search_directory.'*.tex', 'view')
-			exe "silent! grep! '\\label{".s:prefix."' ".s:search_directory.'*.tex'
+			call Tex_Debug("silent! grep! '".Tex_EscapeForGrep('\label{'.s:prefix)."' ".s:search_directory.'*.tex', 'view')
+			exec "silent! grep! '".Tex_EscapeForGrep('\label{'.s:prefix)."' ".s:search_directory.'*.tex'
 			redraw!
 			call <SID>Tex_c_window_setup()
 
@@ -144,7 +144,7 @@ function! Tex_completion(what, where)
 			exe 'silent! Sexplore '.s:search_directory
 			call <SID>Tex_explore_window("input")
 
-		elseif exists("g:Tex_completion_".s:type)
+		elseif exists('s:type') && exists("g:Tex_completion_".s:type)
 			call <SID>CompleteName('plugin_'.s:type)
 
 		elseif exists("s:type") && g:Tex_completion_explorer =~ ','.s:type
@@ -510,7 +510,7 @@ function! Tex_ScanFileForCite(prefix)
 				call Tex_Debug('finding .bib file ['.bufname('%').']', 'bib')
 				lcd %:p:h
 				" use the appropriate syntax for the .bib file.
-				exec 'silent! grepadd @.*{'.a:prefix.' %'
+				exec "silent! grepadd '".Tex_EscapeForGrep('@.*{'.a:prefix)."' %"
 			else
 				let thisbufnum = bufnr('%')
 				exec 'silent! find '.Tex_Strntok(bibnames, ',', i).'.bbl'
@@ -518,7 +518,7 @@ function! Tex_ScanFileForCite(prefix)
 				if bufnr('%') != thisbufnum
 					call Tex_Debug('finding .bbl file ['.bufname('.').']', 'bib')
 					lcd %:p:h
-					exec 'silent! grepadd \bibitem{'.a:prefix.' %'
+					exec "silent! grepadd '".Tex_EscapeForGrep('\bibitem{'.a:prefix)."' %"
 				endif
 			endif
 			" close the newly opened window
@@ -542,7 +542,7 @@ function! Tex_ScanFileForCite(prefix)
 
 		split
 		lcd %:p:h
-		exec 'silent! grepadd \bibitem{'.a:prefix.' %'
+		exec "silent! grepadd ".Tex_EscapeForGrep('\bibitem{'.a:prefix)."' %")
 		q
 		
 		return 1
