@@ -283,4 +283,11 @@ com! -nargs=? TCLevel :call <SID>SetTexCompilerLevel(<f-args>)
 
 call s:SetLatexEfm()
 
+if !exists('*Tex_Debug')
+	function! Tex_Debug(...)
+	endfunction
+endif
+
+call Tex_Debug("compiler/tex.vim: sourcing this file", "comp")
+
 " vim: fdm=marker:commentstring=\ \"\ %s
