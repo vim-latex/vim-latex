@@ -293,10 +293,15 @@ if g:Tex_SmartKeyBS
 	
 endif " }}}
 " SmartDots: inserts \cdots instead of ... in math mode otherwise \ldots {{{
+" if amsmath package is detected then just use \dots and let amsmath take care
+" of it.
 if g:Tex_SmartKeyDot
 
 	function! <SID>SmartDots()
-		if synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^texMath'
+		if strpart(getline('.'), col('.')-3, 2) == '..' && 
+			\ g:Tex_package_detected =~ '\<amsmath\>'
+			return "\<bs>\<bs>\\dots"
+		elseif synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^texMath'
 			\&& strpart(getline('.'), col('.')-3, 2) == '..' 
 			return "\<bs>\<bs>\\cdots"
 		elseif strpart(getline('.'), col('.')-3, 2) == '..' 
