@@ -2,7 +2,7 @@
 " 	     File: compiler.vim
 "      Author: Srinath Avadhanula
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Thu Nov 21 12:00 AM 2002 PST
+" Last Change: Tue Nov 26 10:00 PM 2002 PST
 " 
 "  Description: functions for compiling/viewing/searching latex documents
 "=============================================================================
@@ -126,7 +126,9 @@ function! RunLaTeX()
 		exe 'nnoremap <buffer> <silent> k k:call UpdatePreviewWindow("'.mainfname.'")<CR>'
 		exe 'nnoremap <buffer> <silent> <up> <up>:call UpdatePreviewWindow("'.mainfname.'")<CR>'
 		exe 'nnoremap <buffer> <silent> <down> <down>:call UpdatePreviewWindow("'.mainfname.'")<CR>'
-		exe 'nnoremap <buffer> <silent> <enter> <enter>:wincmd w<cr>:call GotoErrorLocation("'.mainfname.'", '.winnum.')<CR>'
+		exe 'nnoremap <buffer> <silent> <enter> <enter>:call GotoErrorLocation("'.mainfname.'", '.winnum.')<CR>'
+
+		setlocal nowrap
 
 		" resize the window to just fit in with the number of lines.
 		exec ( line('$') < 4 ? line('$') : 4 ).' wincmd _'
@@ -236,6 +238,11 @@ endfunction
 " }}}
 " PositionPreviewWindow: positions the preview window correctly. {{{
 " Description: 
+" 	The purpose of this function is to count the number of times an error
+" 	occurs on the same line. or in other words, if the current line is
+" 	something like |10 error|, then we want to count the number of
+" 	lines in the quickfix window before this line which also contain lines
+" 	like |10 error|. 
 function! PositionPreviewWindow(filename)
 
 	if getline('.') !~ '|\d\+ \(error\|warning\)|'
@@ -245,24 +252,40 @@ function! PositionPreviewWindow(filename)
 		endif
 	endif
 
+	" extract the error pattern (something like '|10 error|') on the current
+	" line.
 	let errpat = matchstr(getline('.'), '\zs|\d\+ \(error\|warning\)|\ze')
+	" extract the line number from the error pattern.
 	let linenum = matchstr(getline('.'), '|\zs\d\+\ze \(error\|warning\)|')
 
-	let errline = line('.')
-	0
-	let numrep = 0
-	while 1
-		if getline('.') =~ errpat
-			let numrep = numrep + 1
-			normal! 0
-			call search('|\d\+ \(warning\|error\)|')
-		endif
-		if line('.') == errline
-			break
-		else
-			call search(errpat, 'W')
-		endif
-	endwhile
+	" if we are on an error, then count the number of lines before this in the
+	" quickfix window with an error on the same line.
+	if errpat =~ 'error'
+		" our location in the quick fix window.
+		let errline = line('.')
+
+		" goto the beginning of the quickfix window and begin counting the lines
+		" which show an error on the same line.
+		0
+		let numrep = 0
+		while 1
+			" if we are on the same kind of error line, then means we have another
+			" line containing the same error pattern.
+			if getline('.') =~ errpat
+				let numrep = numrep + 1
+				normal! 0
+			endif
+			" if we have reached the original location in the quick fix window,
+			" then break.
+			if line('.') == errline
+				break
+			else
+				" otherwise, search for the next line which contains the same
+				" error pattern again.
+				call search(errpat, 'W')
+			endif
+		endwhile
+	endif
 
 	if getline('.') =~ '|\d\+ warning|'
 		let searchpat = escape(matchstr(getline('.'), '|\d\+ warning|\s*\zs.*'), '\ ')
@@ -317,12 +340,23 @@ function! GotoErrorLocation(filename, winnum)
 	if getline('.') =~ 'l.\d\+'
 
 		let brokenline = matchstr(getline('.'), 'l.'.linenum.' \zs.*\ze')
-		let column = strlen(brokenline)
-		let normcmd = column.'|'
+		" If the line is of the form
+		" 	l.10 ...and then there was some error
+		" it means (most probably) that only part of the erroneous line is
+		" shown. In this case, finding the length of the broken line is not
+		" correct.  Instead goto the beginning of the line and search forward
+		" for the part which is displayed and then go to its end.
+		if brokenline =~ '^\M...'
+			let partline = matchstr(brokenline, '^\M...\m\zs.*')
+			let normcmd = "0/\\V".escape(partline, "\\")."/e+1\<CR>"
+		else
+			let column = strlen(brokenline)
+			let normcmd = column.'|'
+		endif
 
-	elseif getline('.') =~ 'LaTeX Warning: Citation `.*'
+	elseif getline('.') =~ 'LaTeX Warning: \(Citation\|Reference\) `.*'
 
-		let ref = matchstr(getline('.'), "LaTeX Warning: Citation `\\zs[^']\\+\\ze'")
+		let ref = matchstr(getline('.'), "LaTeX Warning: \\(Citation\\|Reference\\) `\\zs[^']\\+\\ze'")
 		let normcmd = '0/'.ref."\<CR>"
 
 	else
