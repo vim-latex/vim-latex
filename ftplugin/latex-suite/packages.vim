@@ -82,7 +82,7 @@ function! Tex_pack_updateall(force)
 
 	" Find out which file we need to scan.
 	if Tex_GetMainFileName() != ''
-		let fname = Tex_GetMainFileName(':p')
+		let fname = Tex_GetMainFileName(':p:r')
 	else
 		let fname = expand('%:p')
 	endif
@@ -146,22 +146,24 @@ function! Tex_pack_updateall(force)
 			continue
 		endif 
 
-		let v:errmsg = ''
-		" write down the name of this package in the fake buffer.
-		call Tex_Debug('silent! find '.packname.'.sty', 'pack')
 		split
+
+		call Tex_Debug('silent! find '.packname.'.sty', 'pack')
+		let thisbufnum = bufnr('%')
 		exec 'silent! find '.packname.'.sty'
 		call Tex_Debug('present file = '.bufname('%'), 'pack')
 
 		" If this file was not found, assume that it means its not a
 		" custom package and mark it "scanned".
-		if v:errmsg =~ '^E345'
+		" A package is not found if we stay in the same buffer as before and
+		" its not the one where we want to go.
+		if bufnr('%') == thisbufnum && bufnr('%') != bufnr(packname.'.sty')
 			let scannedPackages = scannedPackages.','.packname
 			q
 
 			call Tex_Debug(packname.' not found anywhere', 'pack')
 			let i = i + 1
-			let packname = Tex_Strntok(g:Tex_package_detected)
+			let packname = Tex_Strntok(g:Tex_package_detected, ',', i)
 			continue
 		endif
 
@@ -296,7 +298,9 @@ function! Tex_ScanForPackages(fname, ...)
 	" Scan the file. First open up all the folds, because the command
 	" /somepattern
 	" issued in a closed fold _always_ goes to the first match.
-	normal! ggVGzO
+	let erm = v:errmsg
+	silent! normal! ggVGzO
+	let v:errmsg = erm
 
 	" The wrap trick enables us to match \usepackage on the first line as
 	" well.
@@ -364,7 +368,9 @@ function! Tex_ScanForPackages(fname, ...)
 	" TODO: This needs to be changed. In the future, we might have
 	" functionality to remember the fold-state before opening up all the folds
 	" and then re-creating them. Use mkview.vim.
-	normal! ggVGzC
+	let erm = v:errmsg
+	silent! normal! ggVGzC
+	let v:errmsg = erm
 
 	" Because creating list of detected packages gives string
 	" ',pack1,pack2,pack3' remove leading ,
