@@ -178,6 +178,39 @@ set iskeyword+=:
     again for typing in the caption. This saves on a lot of key presses.
    </para>
   </note>
+  <note id="overriding-macros">
+   <title>Over-riding &ls; Macros</title>
+   <para>
+    If you wish to change these macros from their default values, for
+    example, if you wish to change <literal>`w</literal> to expand to
+    <literal>\omega</literal> instead of its default expansion to
+    <literal>\wedge</literal>, you should use the <literal>IMAP</literal>
+    function as described in the <link linkend="ls-new-macros">Using 
+     IMAP()</link> section.
+   </para>
+   <para>
+    An important thing to note is that if you wish to over-ride macros
+    created by &ls; rather than merely create new macros, you should place
+    the <literal>IMAP()</literal> calls in a script which gets sourced
+    after the files in &ls;. A good place typically is as a file-type
+    plugin file in the
+    <literal>~/.vim/after/ftplugin/</literal> directory. (Use
+    <literal>~/vimfiles</literal> if you are using
+    <literal>WINDOWS</literal>). For example to over-ride
+    <literal>`w</literal> to <literal>\omega</literal> instead of
+    <literal>\wedge</literal>, place the following line in (say)
+    <literal>~/.vim/after/ftplugin/tex_macros.vim</literal>:
+    <programlisting>call IMAP('`w', '\omega', 'tex')</programlisting>
+   </para>
+   <note>
+    <para>
+     It is important to use a file-name which will get sourced on a
+     <literal>FileType</literal> event. Therefore you must use a file-name
+     which conforms to the standards as described in
+     <literal>|ftplugin-name|</literal>.
+    </para>
+   </note>
+  </note>
   <para>
    The following sections describe the various editing macros provided
    by &ls;.
@@ -1715,9 +1748,9 @@ nmap \pdf :call Tex_CompileToPDF()&lt;CR&gt;</programlisting>
     &ls; will compile <literal>main.tex</literal> instead. The
     <literal>.latexmain</literal> file can also be present in a directory
     directly above the directory containing the present file. &ls; will
-    scan upwards from the directory containing the present file and stop
-    when it finds a <literal>.latexmain</literal> file, which points to the
-    master file for the present file.
+    scan upwards recursively from the directory containing the present file
+    and stop when it finds a <literal>.latexmain</literal> file, which
+    points to the master file for the present file.
    </para>
    <note>
     <para>
