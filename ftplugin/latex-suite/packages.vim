@@ -17,8 +17,8 @@ let s:path = expand("<sfile>:p:h")
 let s:menu_div = 20
 
 com! -nargs=* TPackage let s:retVal = Tex_pack_one(<f-args>) <bar> normal! i<C-r>=s:retVal<CR>
-com! -nargs=0 TPackageUpdate :silent! call Tex_pack_updateall()
-com! -nargs=0 TPackageUpdateAll :silent! call Tex_pack_updateall()
+com! -nargs=0 TPackageUpdate :silent! call Tex_pack_updateall(1)
+com! -nargs=0 TPackageUpdateAll :silent! call Tex_pack_updateall(1)
 
 imap <silent> <plug> <Nop>
 nmap <silent> <plug> i
@@ -46,11 +46,14 @@ function! Tex_pack_check(package)
 	endif
 	if filereadable(s:path.'/dictionaries/'.a:package)
 		exe 'setlocal dict+='.s:path.'/dictionaries/'.a:package
-		if !has("gui_running") && filereadable(s:path.'/dictionaries/'.a:package)
-				\ && g:Tex_package_supported !~ a:package
+		if filereadable(s:path.'/dictionaries/'.a:package) && g:Tex_package_supported !~ a:package
 			let g:Tex_package_supported = g:Tex_package_supported.','.a:package
 		endif
 	endif
+	if g:Tex_package_detected !~ '\<'.a:package.'\>'
+		let g:Tex_package_detected = g:Tex_package_detected.','.a:package
+	endif
+	let g:Tex_package_detected = substitute(g:Tex_package_detected, '^,', '', '')
 	let g:Tex_package_supported = substitute(g:Tex_package_supported, '^,', '', '')
 endfunction
 
@@ -73,7 +76,7 @@ endfunction
 " 	This function first calls Tex_pack_all to scan for \usepackage's etc if
 " 	necessary. After that, it 'supports' and 'unsupports' packages as needed
 " 	in such a way as to not repeat work.
-function! Tex_pack_updateall()
+function! Tex_pack_updateall(force)
 	call Tex_Debug('+Tex_pack_updateall')
 
 	" Find out which file we need to scan.
@@ -83,7 +86,7 @@ function! Tex_pack_updateall()
 		let fname = expand('%:p')
 	endif
 	" If this is the same as last time, don't repeat.
-	if exists('s:lastScannedFile') &&
+	if !a:force && exists('s:lastScannedFile') &&
 				\ s:lastScannedFile == fname
 		return
 	endif
@@ -502,7 +505,7 @@ endfunction " }}}
 
 if g:Tex_Menus
 	exe 'amenu '.g:Tex_PackagesMenuLocation.'&UpdatePackage :call Tex_pack(expand("<cword>"))<cr>'
-	exe 'amenu '.g:Tex_PackagesMenuLocation.'&UpdateAll :call Tex_pack_updateall()<cr>'
+	exe 'amenu '.g:Tex_PackagesMenuLocation.'&UpdateAll :call Tex_pack_updateall(1)<cr>'
 
  	call Tex_pack_supp_menu()
 endif
@@ -510,7 +513,7 @@ endif
 augroup LatexSuite
 	au LatexSuite User LatexSuiteFileType 
 		\ call Tex_Debug('packages.vim: Catching LatexSuiteFileType event') | 
-		\ call Tex_pack_updateall()
+		\ call Tex_pack_updateall(0)
 augroup END
 
 " vim:fdm=marker:ts=4:sw=4:noet:ff=unix
