@@ -1,6 +1,5 @@
-ifndef CVSUSER
-	CVSUSER := srinathava
-endif
+CVSUSER = srinathava
+SSHCMD = plink
 DIR1 = $(PWD)
 
 # The main target. This creates a latex suite archive (zip and tar.gz
@@ -70,7 +69,10 @@ ltt:
 #   from my computer to sf.net. The rest is done locally on the sf.net
 #   server.
 release:
-	plink srinathava@vim-latex.sf.net /home/users/s/sr/srinathava/bin/upload
+	$(SSHCMD) $(CVSUSER)@vim-latex.sf.net /home/groups/v/vi/vim-latex/bin/upload
+
+updoc:
+	$(SSHCMD) $(CVSUSER)@vim-latex.sf.net /home/groups/v/vi/vim-latex/bin/updoc
 
 # This is another target akin to the release: target. This target updates
 # the htdocs directory of the latex-suite project to the latest CVS
@@ -84,7 +86,7 @@ release:
 # # update the packages directory
 # cd /home/groups/v/vi/vim-latex/htdocs/packages; cvs -q update
 uphtdocs:
-	plink srinathava@vim-latex.sf.net /home/users/s/sr/srinathava/bin/uphtdocs
+	$(SSHCMD) $(CVSUSER)@vim-latex.sf.net /home/groups/v/vi/vim-latex/bin/uphtdocs
 	
 
 # rsync is like cp (copy) on steroids.  Here are some useful options:
