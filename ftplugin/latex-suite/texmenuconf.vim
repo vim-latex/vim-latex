@@ -4,7 +4,7 @@
 " Description: 
 " 
 " Installation:
-"  Last Change: sob maj 04 10:00  2002 U
+"  Last Change: ¶ro maj 08 12:00  2002 U
 "         TODO:
 "=============================================================================
 
@@ -61,8 +61,9 @@ if has('gui_running') && g:Tex_Menus
 	if filereadable(s:up_path.'tex/texrc')
 		function! Tex_texrc()
 			exec 'split '.s:up_path.'tex/texrc'
+			lcd
 		endfunction
-		com! -nargs=0 TexTexrc :call Tex_texrc()
+		com! -nargs=0 TTexrc :call Tex_texrc()
 		exec 'anoremenu 80.120 '.s:mainmenuname.'Edit\ &texrc<tab>:TexTexrc'.
 			\' :TexTexrc<CR>'
 	endif
