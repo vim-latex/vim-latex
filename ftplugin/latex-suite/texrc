@@ -75,27 +75,23 @@ endif
 
 " ------------------------------------------------------------------------------
 " Compiler rules {{{
-" This section specifies the rules for compiling tex into other formats.
-" They have been set by defaults to use the most common programs.
-"
 " This is the first thing you should customize. It is set up for most common
 " values, but if use some other compiler, then you will want to change this.
-if has('win32')
-	let s:CompileFlags = '--src-specials'
-	TexLet g:Tex_EscapeChars = ''
-else
-	let s:CompileFlags = ''
-	TexLet g:Tex_EscapeChars = '{}\'
-endif
+" As CompileFlags value you'd perhaps like to use, e.g., '-src-specials',
+" but it is known that it can sometimes give different results in the output,
+" so use it with care.
+let s:CompileFlags = ''
+TexLet g:Tex_EscapeChars = '{}\'
 TexLet g:Tex_CompileRule_dvi = 'latex ' . s:CompileFlags .
-			\ ' \nonstopmode \input{$*}'
+                        \ ' -interaction=nonstopmode $*'
 
 TexLet g:Tex_CompileRule_ps = 'dvips -Ppdf -o $*.ps $*.dvi'
 
 " ways to generate pdf files. there are soo many...
 " NOTE: pdflatex generates the same output as latex. therefore quickfix is
 "       possible.
-TexLet g:Tex_CompileRule_pdf = 'pdflatex \nonstopmode \input {$*.tex}'
+TexLet g:Tex_CompileRule_pdf = 'pdflatex -interaction=nonstopmode $*.tex'
+
 " TexLet g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'
 " TexLet g:Tex_CompileRule_pdf = 'dvipdfm $*.dvi'
 " TexLet g:Tex_CompileRule_pdf = 'dvipdf $*.dvi'
@@ -109,10 +105,14 @@ TexLet g:Tex_CompileRule_html = 'latex2html $*.tex'
 " NOTE: latex-suite will automatically append file.<format> to these functions
 "       when calling them. The viewer therefore cannot accept arguments after
 "       the filename.
+"       Important for Windows users:
+"       you should adapt the absolute path for gsview32 and AcroRd32 calls;
+"       below you can find some standard locations of those programs.
+"       Tex_ViewRule_dvi value can be set to 'yap -1' or 'windvi'.
 if has('win32')
-	TexLet g:Tex_ViewRule_ps = 'gsview32'
-	TexLet g:Tex_ViewRule_pdf = 'AcroRd32'
-	TexLet g:Tex_ViewRule_dvi = 'yap -1'
+        TexLet g:Tex_ViewRule_ps = 'C:\Ghostgum\gsview\gsview32'
+        TexLet g:Tex_ViewRule_pdf = 'C:\Progra~1\Adobe\Acroba~1.0\Reader\AcroRd32'
+        TexLet g:Tex_ViewRule_dvi = 'yap -1'
 elseif has('macunix')
 	" Let the system pick.  If you want, you can override the choice here.
 	TexLet g:Tex_ViewRule_ps = ''
@@ -411,15 +411,20 @@ TexLet g:Tex_SmartKeySpace = 0
 TexLet g:Tex_SmartKeyDot = 1
 
 " }}}
-" TeX Viewer: {{{
+" TeX Completion: {{{
+"
 " Options for preview window for ref/cite completion.
-
 " Height of cwindow
 TexLet g:Tex_ViewerCwindowHeight = 5 
-
 " Height of preview window
 TexLet g:Tex_ViewerPreviewHeight = 10 
 
+" Options for explorer completion.
+" Height of explorer window
+TexLet g:Tex_ExplorerHeight = 10
+
+" Directory for images. Read |latex-completion-explorer| before changing
+TexLet g:Tex_ImageDir = ''
 " }}}
 
 " }}}
