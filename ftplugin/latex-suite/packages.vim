@@ -40,7 +40,9 @@ function! Tex_pack_check(package)
 		if has("gui_running")
 			call Tex_pack(a:package)
 		endif
-		let g:Tex_package_supported = g:Tex_package_supported.','.a:package
+		if g:Tex_package_supported !~ a:package
+			let g:Tex_package_supported = g:Tex_package_supported.','.a:package
+		endif
 	endif
 	if filereadable(s:path.'/dictionaries/'.a:package)
 		exe 'setlocal dict+='.s:path.'/dictionaries/'.a:package
@@ -67,23 +69,66 @@ endfunction
 
 " }}}
 " Tex_pack_updateall: updates the TeX-Packages menu {{{
+" Description:
+" 	This function first calls Tex_pack_all to scan for \usepackage's etc if
+" 	necessary. After that, it 'supports' and 'unsupports' packages as needed
+" 	in such a way as to not repeat work.
 function! Tex_pack_updateall()
-	if exists('g:Tex_package_supported')
-		let i = 1
-		while 1
-			let old_pack_name = Tex_Strntok(g:Tex_package_supported, ',', i)
-			if old_pack_name == ''
-				break
-			endif
-			call Tex_pack_uncheck(old_pack_name)
-			let i = i + 1
-		endwhile
-		let g:Tex_package_supported = ''
-		let g:Tex_package_detected = ''
-		call Tex_pack_all()
+	call Tex_Debug('+Tex_pack_updateall')
+
+	" Find out which file we need to scan.
+	if Tex_GetMainFileName() != ''
+		let fname = Tex_GetMainFileName(':p:r')
 	else
-		call Tex_pack_all()
+		let fname = expand('%:p')
 	endif
+	" If this is the same as last time, don't repeat.
+	if exists('s:lastScannedFile') &&
+				\ s:lastScannedFile == fname
+		return
+	endif
+	" Remember which file we scanned for next time.
+	let s:lastScannedFile = fname
+
+	" Remember which packages we detected last time.
+	if exists('g:Tex_package_detected')
+		let oldpackages = g:Tex_package_detected
+	else
+		let oldpackages = ''
+	endif
+
+	" This sets up a global variable of all detected packages.
+	let g:Tex_package_detected = ''
+	call Tex_pack_all(fname)
+	call Tex_Debug('updateall: detected = '.g:Tex_package_detected)
+
+	" Now only support packages we didn't last time.
+	" First remove packages which were used last time but are no longer used.
+	let i = 1
+	let oldPackName = Tex_Strntok(oldpackages, ',', i)
+	while oldPackName != ''
+		if g:Tex_package_detected !~ oldPackName
+			call Tex_pack_uncheck(oldPackName)
+		endif
+		let i = i + 1
+		let oldPackName = Tex_Strntok(oldpackages, ',', i)
+	endwhile
+
+	" Then support packages which are used this time but weren't used last
+	" time.
+	let i = 1
+	let newPackName = Tex_Strntok(g:Tex_package_detected, ',', i)
+	while newPackName != ''
+		if oldpackages !~ newPackName
+			call Tex_pack_one(newPackName)
+		endif
+		let i = i + 1
+		let newPackName = Tex_Strntok(g:Tex_package_detected, ',', i)
+	endwhile
+
+	" Throw an event that we are done scanning packages. Some packages might
+	" use this to change behavior based on which options have been used etc.
+	silent! do LatexSuite User LatexSuiteScannedPackages
 endfunction
 
 " }}}
@@ -135,20 +180,14 @@ endfunction
 "   corresponding package file. Also scans for \newenvironment and
 "   \newcommand lines and adds names to g:Tex_Prompted variables, they can be
 "   easy available through <F5> and <F7> shortcuts 
-function! Tex_pack_all()
+function! Tex_pack_all(fname)
 
 	let pos = line('.').' | normal! '.virtcol('.').'|'
 	let currfile = expand('%:p')
 
-	if Tex_GetMainFileName() != ''
-		let fname = Tex_GetMainFileName(':p:r')
-	else
-		let fname = currfile
-	endif
-
 	let toquit = 0
-	if fname != currfile
-		exe 'split '.fname
+	if a:fname != currfile
+		exe 'split '.a:fname
 		let toquit = 1
 	endif
 
@@ -210,13 +249,6 @@ function! Tex_pack_all()
 		" Finally convert @a into something like '"pack1","pack2"'
 		let @a = substitute(@a, '^\|$', '"', 'g')
 		let @a = substitute(@a, ',', '","', 'g')
-
-		" ... so it can be used using one exec statement. Take care not to
-		" call things with an empty argument otherwise, we will get a prompt
-		" from the Tex_pack_one function.
-		if @a != ''
-			exec 'call Tex_pack_one('.@a.')'
-		endif
 
 		" restore @a
 		let @a = saveA
@@ -473,7 +505,7 @@ if g:Tex_Menus
 	exe 'amenu '.g:Tex_PackagesMenuLocation.'&UpdateAll :call Tex_pack_updateall()<cr>'
 
  	call Tex_pack_supp_menu()
- 	call Tex_pack_all()
+ 	call Tex_pack_updateall()
 
 endif
 
