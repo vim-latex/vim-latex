@@ -62,7 +62,7 @@ function! Tex_Complete(what, where)
 		" \psfig[option=value]{figure=}
 		" Thus
 		" 	s:curline = '\psfig[option=value]{figure='
-		" (with possibly some junk before \includegraphics)
+		" (with possibly some junk before \psfig)
 		" from which we need to extract
 		" 	s:type = 'psfig'
 		" 	s:typeoption = '[option=value]'
@@ -75,7 +75,8 @@ function! Tex_Complete(what, where)
 
 		if exists("s:type") && s:type =~ 'ref'
 			call Tex_Debug("silent! grep! ".Tex_EscapeForGrep('\\label{'.s:prefix)." *.tex", 'view')
-			exec "silent! grep! ".Tex_EscapeForGrep('\\label{'.s:prefix)." *.tex"
+			silent! grep! ____HIGHLY_IMPROBABLE___ %
+			call Tex_GrepHelper(s:prefix, 'label')
 			redraw!
 			call <SID>Tex_SetupCWindow()
 
@@ -90,8 +91,8 @@ function! Tex_Complete(what, where)
 			if g:Tex_RememberCiteSearch && exists('s:citeSearchHistory')
 				call <SID>Tex_SetupCWindow(s:citeSearchHistory)
 			else
-				call Tex_Debug('calling Tex_GrepForBibItems', 'view')
-				call Tex_GrepForBibItems(s:prefix)
+				call Tex_Debug('calling Tex_GrepHelper', 'view')
+				call Tex_GrepHelper(s:prefix, 'bib')
 				redraw!
 				call <SID>Tex_SetupCWindow()
 			endif
@@ -257,7 +258,7 @@ function! Tex_RelPath(explfilename,texfilename)
 endfunction " }}}
 
 " ==============================================================================
-" Ref/Cite completion helper functions
+" Helper functions for dealing with the 'quickfix' and 'preview' windows.
 " ==============================================================================
 " Tex_SetupCWindow: set maps and local settings for cwindow {{{
 " Description: Set local maps jkJKq<cr> for cwindow. Also size and basic
@@ -426,7 +427,6 @@ function! Tex_CloseSmallWindows()
 	cclose
 	exe s:pos
 endfunction " }}}
-
 " Tex_GoToLocation: Go to chosen location {{{
 " Description: Get number of current line and go to this number
 "
@@ -445,38 +445,39 @@ function! s:Tex_GoToLocation()
 endfunction " }}}
 
 " ==============================================================================
-" Bibliography specific functions
+" Functions for finding \\label's or \\bibitem's in the main file.
 " ============================================================================== 
-" Tex_GrepForBibItems: grep main filename for bib items {{{
+" Tex_GrepHelper: grep main filename for \\bibitem's or \\label's {{{
 " Description: 
-function! Tex_GrepForBibItems(prefix)
-	let mainfname = Tex_GetMainFileName(':p')
-
-	let toquit = 0
-	if bufnr('%') != bufnr(mainfname)
-		exec 'split '.mainfname
-		let toquit = 1
-	endif
-
+function! Tex_GrepHelper(prefix, what)
 	let _path = &path
 	let _suffixesadd = &suffixesadd
+	let _hidden = &hidden
 
-	let &path = '.,'.g:Tex_BIBINPUTS
-	let &suffixesadd = '.tex'
+	let mainfname = Tex_GetMainFileName(':p')
+	" If we are already editing the file, then use :split without any
+	" arguments so it works even if the file is modified.
+	" FIXME: If mainfname is being presently edited in another window and
+	"        is 'modified', then the second split statement will not work.
+	"        We will need to travel to that window and back.
+	if mainfname == expand('%:p')
+		split
+	else
+		exec 'split '.mainfname
+	endif
 
 	let pos = line('.').'| normal! '.virtcol('.').'|'
-	let foundCiteFile = Tex_ScanFileForCite(a:prefix)
+	if a:what =~ 'bib'
+		call Tex_ScanFileForCite(a:prefix)
+	else
+		call Tex_ScanFileForLabels(a:prefix)
+	endif
 	exec pos
 
+	q
 	let &path = _path
 	let &suffixesadd = _suffixesadd
 
-	if foundCiteFile
-		if toquit
-			q
-		endif
-		return
-	endif
 endfunction " }}}
 " Tex_ScanFileForCite: search for \bibitem's in .bib or .bbl or tex files {{{
 " Description: 
@@ -496,7 +497,7 @@ endfunction " }}}
 " steps 1 and 2 for every file \input'ed into this file. Abort any searching
 " as soon as the first \bibliography or \begin{thebibliography} is found.
 function! Tex_ScanFileForCite(prefix)
-	call Tex_Debug('searching for bibkeys in '.bufname('%').' (buffer #'.bufnr('%').')', 'view')
+	call Tex_Debug('+Tex_ScanFileForCite: searching for bibkeys in '.bufname('%').' (buffer #'.bufnr('%').')', 'view')
 	let presBufNum = bufnr('%')
 
 	let foundCiteFile = 0
@@ -504,7 +505,7 @@ function! Tex_ScanFileForCite(prefix)
 	" assume that this is the only file in the project which defines a
 	" bibliography.
 	if search('\\bibliography{', 'w')
-		call Tex_Debug('found bibliography command in '.bufname('%'), 'view')
+		call Tex_Debug('Tex_ScanFileForCite: found bibliography command in '.bufname('%'), 'view')
 		" convey that we have found a bibliography command. we do not need to
 		" proceed any further.
 		let foundCiteFile = 1
@@ -515,6 +516,8 @@ function! Tex_ScanFileForCite(prefix)
 
 		call Tex_Debug('trying to search through ['.bibnames.']', 'view')
 		
+		let &path = '.,'.g:Tex_BIBINPUTS
+
 		let i = 1
 		while Tex_Strntok(bibnames, ',', i) != ''
 			" first try to find if a .bib file exists. If so do not search in
@@ -532,7 +535,7 @@ function! Tex_ScanFileForCite(prefix)
 				call Tex_Debug('using pattern '.Tex_EscapeForGrep('@.*{'.a:prefix), 'view')
 				lcd %:p:h
 				" use the appropriate syntax for the .bib file.
-				exec "silent! grepadd ".Tex_EscapeForGrep('@.*{'.a:prefix)." %"
+				exec "silent! grepadd! ".Tex_EscapeForGrep('@.*{'.a:prefix)." %"
 			else
 				let thisbufnum = bufnr('%')
 				exec 'silent! find '.Tex_Strntok(bibnames, ',', i).'.bbl'
@@ -540,7 +543,7 @@ function! Tex_ScanFileForCite(prefix)
 				if bufnr('%') != thisbufnum
 					call Tex_Debug('finding .bbl file ['.bufname('.').']', 'view')
 					lcd %:p:h
-					exec "silent! grepadd ".Tex_EscapeForGrep('\\bibitem{'.a:prefix)." %"
+					exec "silent! grepadd! ".Tex_EscapeForGrep('\\bibitem{'.a:prefix)." %"
 				endif
 			endif
 			" close the newly opened window
@@ -548,6 +551,8 @@ function! Tex_ScanFileForCite(prefix)
 
 			let i = i + 1
 		endwhile
+
+		let &path = _path
 
 		if foundCiteFile
 			return 1
@@ -564,8 +569,8 @@ function! Tex_ScanFileForCite(prefix)
 
 		split
 		lcd %:p:h
-		call Tex_Debug("silent! grepadd ".Tex_EscapeForGrep('\\bibitem{'.a:prefix)." %", 'view')
-		exec "silent! grepadd ".Tex_EscapeForGrep('\\bibitem{'.a:prefix)." %"
+		call Tex_Debug("silent! grepadd! ".Tex_EscapeForGrep('\\bibitem{'.a:prefix)." %", 'view')
+		exec "silent! grepadd! ".Tex_EscapeForGrep('\\bibitem{'.a:prefix)." %"
 		q
 		
 		return 1
@@ -574,6 +579,9 @@ function! Tex_ScanFileForCite(prefix)
 	" If we have not found any \bibliography or \thebibliography environment
 	" in this file, search for these environments in all the files which this
 	" file includes.
+	let &path = '.,'.g:Tex_TEXINPUTS
+	let &suffixesadd = '.tex'
+
 	exec 0
 	let wrap = 'w'
 	while search('^\s*\\\(input\|include\)', wrap)
@@ -597,11 +605,50 @@ function! Tex_ScanFileForCite(prefix)
 		endif
 	endwhile
 
+
 	return 0
+endfunction " }}}
+" Tex_ScanFileForLabels: greps present file and included files for \\label's {{{
+" Description: 
+" Grep the presently edited file for \\label's. If the present file \include's
+" or \input's other files, then recursively scan those as well, i.e we support
+" arbitrary levels of \input'ed-ness.
+function! Tex_ScanFileForLabels(prefix)
+	call Tex_Debug("+Tex_ScanFileForLabels: grepping in file [".bufname('%')."]", "view")
+
+	lcd %:p:h
+	exec "silent! grepadd! ".Tex_EscapeForGrep('\\label{'.a:prefix)." %"
+
+	" Then recursively grep for all \include'd or \input'ed files.
+	let &suffixesadd = '.tex'
+	let &path = '.,'.g:Tex_TEXINPUTS
+	exec 0
+	let wrap = 'w'
+	while search('^\s*\\\(input\|include\)', wrap)
+		let wrap = 'W'
+
+		let filename = matchstr(getline('.'), '\\\(input\|include\){\zs.\{-}\ze}')
+
+		let thisbufnum = bufnr('%')
+
+		split
+		exec 'silent! find '.filename
+
+		if bufnr('%') != thisbufnum
+			call Tex_Debug('Tex_ScanFileForLabels: scanning recursively in ['.bufname('%').']', 'view')
+			let foundCiteFile = Tex_ScanFileForLabels(a:prefix)
+		endif
+
+		q
+
+		if foundCiteFile
+			return 1
+		endif
+	endwhile
 endfunction " }}}
 
 " ==============================================================================
-" Custom Completion help functions/settings
+" Functions for custom command completion
 " ==============================================================================
 " Tex_completion_{var}: similar variables can be set in package files {{{
 let g:Tex_completion_bibliographystyle = 'abbr,alpha,plain,unsrt'
