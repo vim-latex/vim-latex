@@ -258,7 +258,7 @@ call s:Tex_SectionMacros('SSP', 'subparagraph')
 " }}}
 " Miscellaneous {{{
 call s:Tex_SpecialMacros('', '', '-sepenv1-', ' :', 0)
-call s:Tex_SpecialMacros('EFI', '', 'figure', s:figure)
+call s:Tex_SpecialMacros('EFI', '', 'figure', "\<C-r>=Tex_figure('figure')\<CR>")
 call s:Tex_EnvMacros('', '', 'figure*')
 call s:Tex_EnvMacros('ELR', '', 'lrbox')
 call s:Tex_SpecialMacros('EMP', '', 'minipage', s:minipage)
