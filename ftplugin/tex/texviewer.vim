@@ -5,6 +5,7 @@
 " Description: make a viewer for various purposes: \cite{, \ref{
 "     License: Vim Charityware License
 "              Part of vim-latexSuite: http://vim-latex.sourceforge.net
+"         CVS: $Id$
 " ============================================================================
 
 if exists("g:Tex_Completion")
@@ -71,14 +72,14 @@ function! Tex_completion(what, where)
 		let s:curline = strpart(getline('.'), col('.') - 40, 40)
 		let s:prefix = matchstr(s:curline, '.*{\zs.\{-}$')
 		" a command is of the type
-		" \includegraphics[0.8\columnwidth]{}
+		" \psfig[option=value]{figure=}
 		" Thus
-		" 	s:curline = '\includegraphics[0.8\columnwidth]{'
+		" 	s:curline = '\psfig[option=value]{figure='
 		" (with possibly some junk before \includegraphics)
 		" from which we need to extract
-		" 	s:type = 'includegraphics'
-		" 	s:typeoption = '[0.8\columnwidth]'
-		let pattern = '.*\\\(\w\{-}\)\(\[.\{-}\]\)\?{$'
+		" 	s:type = 'psfig'
+		" 	s:typeoption = '[option=value]'
+		let pattern = '.*\\\(\w\{-}\)\(\[.\{-}\]\)\?{\(\a\+=\)\?$'
 		let s:type = substitute(s:curline, pattern, '\1', 'e')
 		let s:typeoption = substitute(s:curline, pattern, '\2', 'e')
 		call Tex_Debug('s:type = '.s:type.', typeoption = '.s:typeoption, 'view')
@@ -86,7 +87,7 @@ function! Tex_completion(what, where)
 		if exists("s:type") && s:type =~ 'ref'
 			call Tex_Debug("silent! grep! '\\label{".s:prefix."' ".s:search_directory.'*.tex', 'view')
 			exe "silent! grep! '\\label{".s:prefix."' ".s:search_directory.'*.tex'
-
+			call <SID>Tex_c_window_setup()
 
 		elseif exists("s:type") && s:type =~ 'cite'
 			" grep! nothing % 
@@ -109,7 +110,7 @@ function! Tex_completion(what, where)
 				let @a = _a
 			endif
 
-		elseif exists("s:type") && s:type =~ 'includegraphics'
+		elseif exists("s:type") && (s:type =~ 'includegraphics' || s:type == 'psfig') 
 			let s:storehidefiles = g:explHideFiles
 			let g:explHideFiles = '^\.,\.tex$,\.bib$,\.bbl$,\.zip$,\.gz$'
 			exe 'silent! Sexplore '.s:search_directory.g:Tex_ImageDir
@@ -178,7 +179,7 @@ endfunction " }}}
 " settings
 "
 function! s:Tex_c_window_setup(...)
-
+	call Tex_Debug('+Tex_c_window_setup', 'view')
 	cclose
 	exe 'copen '. g:Tex_ViewerCwindowHeight
 	" If called with an argument, it means we want to re-use some search
@@ -258,6 +259,7 @@ endfunction " }}}
 " but we discard it for better control of events.
 "
 function! s:UpdateViewerWindow()
+	 call Tex_Debug('+UpdateViewerWindow', 'view')
 
 	let viewfile = matchstr(getline('.'), '^\f*\ze|\d')
 	let viewline = matchstr(getline('.'), '|\zs\d\+\ze|')
