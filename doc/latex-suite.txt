@@ -190,7 +190,7 @@ NOTE: These mappings are are not standard mappings in the sense that only the
       
       
                                                         *place-holder* *ls_a_dp*
-                                                       *place-holders* *ls_a_dS*
+                                                       *place-holders* *ls_a_dT*
 NOTE: Place Holders
       -------------
       Almost all macros provided in Latex-Suite implement Stephen Riem's
@@ -374,7 +374,7 @@ Latex-Suite encloses the visually selected portion in the chosen command.
 Font Mappings                                     *ls_3_3* *ls_a_bo* *font-maps*
 
 These mappings insert font descriptions such as: \textsf{<++>}<++> with the
-cursor left in place of the first placeholder [|ls_a_dS|] (the <++> characters).
+cursor left in place of the first placeholder [|ls_a_dT|] (the <++> characters).
 
 Mnemonic:
 1. first letter is always F (F for font)
@@ -709,7 +709,7 @@ inserting customized macros into the current file via the menu.
 When latex-suite starts up, it scans the $VIM/ftplugin/latex-suite/macros/
 directory and creates a menu from the files found there. Each file is considered
 as a single macro. You can place your own macros in this directory, using
-placeholders [|ls_a_dS|] if wanted.
+placeholders [|ls_a_dT|] if wanted.
 
 When you choose a macro from the menu, the corresponding file is read into the
 current buffer after the current cursor position. In non-gui mode, you can use
@@ -861,7 +861,7 @@ phs, phe    If you prefer to write the rhs with characters other than <+ and +> 
             will be displayed for the placeholders when the mapping is actually
             triggered. What characters are used to display place-holders when you
             trigger an IMAP are controlled by the Imap_PlaceHolderStart
-            [|ls_a_cB|] and Imap_PlaceHolderEnd [|ls_a_dG|] settings.
+            [|ls_a_cB|] and Imap_PlaceHolderEnd [|ls_a_dH|] settings.
             
             
 
@@ -1102,7 +1102,7 @@ try to list the \label's in the present directory. Pressing it when you are in a
 which need a file name argument and will put up an explorer window for you to
 choose a filename.
 
-                                                      *ls-set-grepprg* *ls_a_dT*
+                                                      *ls-set-grepprg* *ls_a_dU*
 NOTE: Before you start with Latex-Suite's completion function...
       ----------------------------------------------------------
       All of Latex-Suite's completion capabilities depend on a external program
@@ -1403,7 +1403,10 @@ In other words, even when you are editing chapter1.tex, you want to compile
 main.tex. In this situation, create a file called main.tex.latexmain in the
 directory containing chapter1.tex (and main.tex). After doing this, when you
 press \ll while editing chapter1.tex, then Latex-Suite will compile main.tex
-instead.
+instead. The .latexmain file can also be present in a directory directly above
+the directory containing the present file. Latex-Suite will scan upwards from
+the directory containing the present file and stop when it finds a .latexmain
+file, which points to the master file for the present file.
 
 NOTE: Here main.tex.latexmain is (obviously) a different file from main.tex
       itself. main.tex need not be renamed. The contents of main.tex.latexmain
@@ -1411,6 +1414,22 @@ NOTE: Here main.tex.latexmain is (obviously) a different file from main.tex
       master file.
       
       
+                                              *Tex_MainFileExpression* *ls_a_dx*
+If you wish to use some different logic to specify the main file name, you can
+specify a custom expression via the Tex_MainFileExpression variable. This is a
+string containing a valid vim expression. In addition, you can use a variable
+modifier which is in the format used for |filename-modifiers|, for example,
+':p:h'. You should utilize this variable to modify the filename of the main
+file. >
+    let g:Tex_MainFileExpression = 'MainFile(modifier)'
+    function! MainFile(fmod)
+        if glob('*.latexmain') != ''
+            return fnamemodify(glob('*.latexmain'), a:fmod)
+        else
+            return ''
+        endif
+    endif
+
 
 --------------------------------------------------------------------------------
 Customizing the compiler output                               *ls_6_3* *ls_a_bV*
@@ -1508,7 +1527,7 @@ YAP on windows and xdvi on *nix machines. Pressing \ls from within Vim should
 make the DVI viewer display the portion of the document where your cursor is
 placed.
 
-                                                  *enabling-searching* *ls_a_dx*
+                                                  *enabling-searching* *ls_a_dy*
 NOTE: Enabling Forward and Inverse Searching
       --------------------------------------
       Most DVI viewers need "source-special" information in order to do forward
@@ -1526,7 +1545,7 @@ Inverse Searching                                             *ls_7_2* *ls_a_bZ*
 Inverse searching refers to the DVI viewer telling Vim to display the LaTeX
 source file at a given location when you double-click in the DVI viewer window.
 
-You will need to enable searching [|ls_a_dx|] in order to use this
+You will need to enable searching [|ls_a_dy|] in order to use this
 functionality.
 
 You will also need to specify certain settings to the DVI viewer conveying the
@@ -1709,7 +1728,7 @@ describes a way to change the map sequences according to your preference.
 Latex-Suite Maps                                              *ls_9_1* *ls_a_ce*
                                                               *latex-suite-maps*
 
-                                          *remapping-latex-suite-keys* *ls_a_dy*
+                                          *remapping-latex-suite-keys* *ls_a_dz*
 Most of the mappings used in Latex-Suite can be mapped to a different key
 combination to suit your particular needs. An example best explains the
 procedure for doing this. Suppose you want to remap the <C-j> key which
@@ -1736,13 +1755,13 @@ IMAP mappings                                               *ls_9_1_1* *ls_a_cf*
                                                            *customize-imap-maps*
 
 These mappings are utlilized for jumping between placeholders as described here
-[|ls_a_dS|]. See the parent section [|ls_a_ce|] to find out how to use this
+[|ls_a_dT|]. See the parent section [|ls_a_ce|] to find out how to use this
 information to change the default maps.
 
-                                               *Plug_IMAP_JumpForward* *ls_a_dz*
-                                                  *Plug_IMAP_JumpBack* *ls_a_dA*
-                                      *Plug_IMAP_DeleteAndJumpForward* *ls_a_dB*
-                                          *Plug_IMAP_DeleteAndJumBack* *ls_a_dC*
+                                               *Plug_IMAP_JumpForward* *ls_a_dA*
+                                                  *Plug_IMAP_JumpBack* *ls_a_dB*
+                                      *Plug_IMAP_DeleteAndJumpForward* *ls_a_dC*
+                                          *Plug_IMAP_DeleteAndJumBack* *ls_a_dD*
 Plug map                           Default Key~
 <Plug>IMAP_JumpForward             <C-j>
 <Plug>IMAP_JumpBack                (none)
@@ -1750,9 +1769,9 @@ Plug map                           Default Key~
 <Plug>IMAP_DeleteAndJumpBack       (none)
 
 <Plug>IMAP_JumpForward takes you to the location of the next place-holder
-[|ls_a_dS|].
+[|ls_a_dT|].
 
-<Plug>IMAP_JumpBack takes you to the previous place-holder [|ls_a_dS|].
+<Plug>IMAP_JumpBack takes you to the previous place-holder [|ls_a_dT|].
 
 <Plug>IMAP_DeleteAndJumpForward deletes the presently selected place-holder and
 jumps to the next place-holder irrespective of whether the present placeholder
@@ -1771,12 +1790,12 @@ Alt-Key mappings                                            *ls_9_1_2* *ls_a_cg*
                                                         *customize-alt-key-maps*
 
 These mappings are are described in the section Alt key macros [|ls_a_bw|]. See
-the parent section [|ls_a_dy|] to see how to use the following information to
+the parent section [|ls_a_dz|] to see how to use the following information to
 remap keys.
 
-                                                     *Plug_Tex_MathBF* *ls_a_dD*
-                                                    *Plug_Tex_MathCal* *ls_a_dE*
-                                                  *Plug_Tex_LeftRight* *ls_a_dF*
+                                                     *Plug_Tex_MathBF* *ls_a_dE*
+                                                    *Plug_Tex_MathCal* *ls_a_dF*
+                                                  *Plug_Tex_LeftRight* *ls_a_dG*
 Plug Mapping           Default Key~
 <Plug>Tex_MathBF       <Alt-B>
 <Plug>Tex_MathCal      <Alt-C>
@@ -2002,7 +2021,7 @@ behavior which they influence.
 Place-Holder Customization                                   *ls_10_1* *ls_a_cz*
                                                      *customizing-place-holders*
 
-Latex-Suite uses place-holders [|ls_a_dS|] to minimize using the movement keys
+Latex-Suite uses place-holders [|ls_a_dT|] to minimize using the movement keys
 while typing. The following settings affect how place-holders are used.
 
 NOTE: These setting need to be set in your ~/.vimrc, not $VIM/ftplugin/tex.vim
@@ -2025,7 +2044,7 @@ Setting this to zero completeley disables using place-holders.
 g:Imap_PlaceHolderStart & g:Imap_PlaceHolderEnd            *ls_10_1_2* *ls_a_cB*
                                                          *Imap_PlaceHolderStart*
 
-                                                 *Imap_PlaceHolderEnd* *ls_a_dG*
+                                                 *Imap_PlaceHolderEnd* *ls_a_dH*
 Setting                  Type      Value~
 Imap_PlaceHolderStart    String    '<+'
 Imap_PlaceHolderEnd      String    '+>'
@@ -2072,12 +2091,12 @@ The following variables disable various parts of the macro functionality of
 Latex-Suite. See the links to the relevant sections to see what functionality
 setting each of the variables to zero will take away.
 
-                                                 *Tex_EnvironmentMaps* *ls_a_dH*
-                                                *Tex_EnvironmentMenus* *ls_a_dI*
-                                                        *Tex_FontMaps* *ls_a_dJ*
-                                                       *Tex_FontMenus* *ls_a_dK*
-                                                     *Tex_SectionMaps* *ls_a_dL*
-                                                    *Tex_SectionMenus* *ls_a_dM*
+                                                 *Tex_EnvironmentMaps* *ls_a_dI*
+                                                *Tex_EnvironmentMenus* *ls_a_dJ*
+                                                        *Tex_FontMaps* *ls_a_dK*
+                                                       *Tex_FontMenus* *ls_a_dL*
+                                                     *Tex_SectionMaps* *ls_a_dM*
+                                                    *Tex_SectionMenus* *ls_a_dN*
 Setting                   Link to relevant section            Default Value~
 g:Tex_EnvironmentMaps     Environment Mappings [|ls_a_bg|]    1
 g:Tex_EnvironmentMenus                                        1
@@ -2098,7 +2117,7 @@ Default Value    0
 If this variable is set to 1, then when an enviroment is chosen from the menu
 then for selected environments, latex-suite asks a series of questions on the
 command line and inserts a template with the corresponding fields already filled
-in. Setting this to zero will insert a template with place-holders [|ls_a_dS|]
+in. Setting this to zero will insert a template with place-holders [|ls_a_dT|]
 marking off the places where fields need to be filled.
 
 
@@ -2250,10 +2269,10 @@ Window size settings                                       *ls_10_4_1* *ls_a_cR*
 
 These three settings affect the aesthetics of the completion functionality.
 
-                                             *Tex_ViewerCwindowHeight* *ls_a_dN*
-                                             *Tex_ViewerPreviewHeight* *ls_a_dO*
-                                                  *Tex_ExplorerHeight* *ls_a_dP*
-                                                        *Tex_ImageDir* *ls_a_dQ*
+                                             *Tex_ViewerCwindowHeight* *ls_a_dO*
+                                             *Tex_ViewerPreviewHeight* *ls_a_dP*
+                                                  *Tex_ExplorerHeight* *ls_a_dQ*
+                                                        *Tex_ImageDir* *ls_a_dR*
 Setting                      Explanation                         Default Value~
 g:Tex_ViewerCwindowHeight    The height of the cwindow which     5
                              displays the list of \labels        
@@ -2622,7 +2641,7 @@ of those people might have been missed here. Each function should however have
 the author's name/e-mail above it. Thats the more authoritative place to check
 out who has done what.
 
-                                              *latex-suite-maintainer* *ls_a_dR*
+                                              *latex-suite-maintainer* *ls_a_dS*
 The current maintainer(s) of latex-suite is(are)
 
 

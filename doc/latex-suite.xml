@@ -1712,7 +1712,12 @@ nmap \pdf :call Tex_CompileToPDF()&lt;CR&gt;</programlisting>
     containing <literal>chapter1.tex</literal> (and
     <literal>main.tex</literal>). After doing this, when you press
     <literal>\ll</literal> while editing <literal>chapter1.tex</literal>, then
-    &ls; will compile <literal>main.tex</literal> instead.
+    &ls; will compile <literal>main.tex</literal> instead. The
+    <literal>.latexmain</literal> file can also be present in a directory
+    directly above the directory containing the present file. &ls; will
+    scan upwards from the directory containing the present file and stop
+    when it finds a <literal>.latexmain</literal> file, which points to the
+    master file for the present file.
    </para>
    <note>
     <para>
@@ -1723,6 +1728,25 @@ nmap \pdf :call Tex_CompileToPDF()&lt;CR&gt;</programlisting>
      restricts each directory to have a single master file.
     </para>
    </note>
+   <anchor id="Tex_MainFileExpression" />
+   <para>
+    If you wish to use some different logic to specify the main file name,
+    you can specify a custom expression via the
+    <literal>Tex_MainFileExpression</literal> variable. This is a string
+    containing a valid vim expression. In addition, you can use a variable
+    <literal>modifier</literal> which is in the format used for
+    <literal>|filename-modifiers|</literal>, for example,
+    <literal>':p:h'</literal>. You should utilize this variable to modify
+    the filename of the main file.
+    <programlisting>let g:Tex_MainFileExpression = 'MainFile(modifier)'
+function! MainFile(fmod)
+    if glob('*.latexmain') != ''
+        return fnamemodify(glob('*.latexmain'), a:fmod)
+    else
+        return ''
+    endif
+endif</programlisting>
+   </para>
   </section>
   <section id="compiler-output-customization">
    <title>Customizing the compiler output</title>
