@@ -44,7 +44,7 @@ let g:TeX_package_polski =
 \'nor:ctg,'.
 \'nor:ctgh,'.
 \'nor:tg,'.
-\'nor:tgh,'
+\'nor:tgh,'.
 \'nor:nwd'
 
 " To wymaga calego pakietu vim-latexSuite - zakomentuj lub wytnij je¶li nie
