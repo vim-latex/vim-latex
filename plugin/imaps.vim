@@ -7,7 +7,7 @@
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
 "
-" Last Change: Tue Dec 24 04:00 AM 2002 PST
+" Last Change: Mon Dec 30 02:00 AM 2002 PST
 " 
 " Documentation: {{{
 "
@@ -268,7 +268,7 @@ function! IMAP_PutTextWithMovement(str, ...)
 
 	" A very rare string: Do not use any special characters here. This is used
 	" for moving to the beginning of the inserted text.
-	let marker = '<!--- @#% Start Here @#% ----!>'
+	let marker = '<!---@#%_Start_Here_@#%----!>'
 	let markerLength = strlen(marker)
 
 	" Problem:  depending on the setting of the 'encoding' option, a character
