@@ -317,6 +317,47 @@ fun! Tex_Strntok(s, tok, n)
 endfun
 
 " }}}
+" Tex_CreatePrompt: creates a prompt string {{{
+" Description: 
+" Arguments:
+"     promptList: This is a string of the form:
+"         'item1,item2,item3,item4'
+"     cols: the number of columns in the resultant prompt
+"     sep: the list seperator token
+"
+" Example:
+" Tex_CreatePrompt('item1,item2,item3,item4', 2, ',')
+" returns
+" "(1) item1\t(2)item2\n(3)item3\t(4)item4"
+"
+" This string can be used in the input() function.
+function! Tex_CreatePrompt(promptList, cols, sep)
+
+	let g:listSep = a:sep
+	let num_common = GetListCount(a:promptList)
+
+	let i = 1
+	let promptStr = ""
+
+	while i <= num_common
+
+		let j = 0
+		while j < a:cols && i + j <= num_common
+			let com = Tex_Strntok(a:promptList, ',', i+j)
+			let promptStr = promptStr.'('.(i+j).') '. 
+						\ com."\t".( strlen(com) < 4 ? "\t" : '' )
+
+			let j = j + 1
+		endwhile
+
+		let promptStr = promptStr."\n"
+
+		let i = i + a:cols
+	endwhile
+	return promptStr
+endfunction 
+
+" }}}
 " Tex_CleanSearchHistory: removes last search item from search history {{{
 " Description: This function needs to be globally visible because its
 "              called from outside the script during expansion.
