@@ -1640,6 +1640,31 @@ newfile.tex [Preview]                                         11,3           21%
     </tgroup>
    </informaltable>
   </section>
+  <section id="ls-completion-custom">
+   <title>Custom command completion</title>
+   <para>
+    &ls; also recognizes certain commonly used &latex; commands for the
+    <literal>&lt;F9&gt;</literal> key. At the moment, the
+    <literal>\bibliographystyle</literal>, <literal>\addtocontents</literal>
+    and the <literal>\addcontentsline</literal> commands are recognized,
+    although morre will be added in the future. When you press the
+    <literal>&lt;F9&gt;</literal> after such a command, &ls; will prompt
+    you with a list of arguments which make sense for the command.
+   </para>
+   <para>
+    This functionality is available for commands for which a global
+    variable of the form
+    <literal>g:Tex_completion_{&lt;command&gt;}</literal> is defined where
+    <literal>&lt;command&gt;</literal> is the command name. This variable
+    is a comma seperated list of values which this command takes. For
+    example, the argument to the <literal>\bibliographystyle</literal>
+    command is commonly one of <literal>abbr,alpha,plain,unsrt</literal>.
+    Therefore, &ls; defines
+    <programlisting>let g:Tex_completion_bibliographystyle = 'abbr,alpha,plain,unsrt'</programlisting>
+    You can define your own completion variables in a similar manner for
+    commands which you might use.
+   </para>
+  </section>
  </section>
  <section id="latex-compiling">
   <title>Compiling &latex; files via &ls;</title>
@@ -1741,8 +1766,7 @@ let g:Tex_FormatDependency_pdf = 'dvi,ps,pdf'
     <programlisting>
 let g:Tex_CompileRule_dvi = 'latex --interaction=nonstopmode $*'
 let g:Tex_CompileRule_ps = 'dvips -Ppdf -o $*.ps $*.dvi'
-let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'
-    </programlisting>
+let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'</programlisting>
    </para>
    <note>
     <para>
