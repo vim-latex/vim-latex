@@ -1542,20 +1542,20 @@ newfile.tex [Preview]                                         11,3           21%
    <para>
     To complete a <literal>|\ref|</literal> command, position yourself
     between the curly braces of a <literal>\ref</literal> command and press
-    <literal>&lt;F9&gt;</literal>. For example, you can press
-    <literal>&lt;F9&gt;</literal> just after <literal>\ref{</literal> or
-    after <literal>\ref{eqn:</literal>. &ls; will search for
-    <literal>\label</literal>'s in the main file corresponding to the file
-    being presently edited and display the results in two windows as
-    desribed in section <link
+    <literal>&lt;F9&gt;</literal>. &ls; will present you with a list of
+    <literal>\label</literal>'s as described <link
      linkend="ls-completion-usage"
-     endterm="ls-completion-usage.title"></link>.
-    See <link linkend="latex-master-file">latex-master-file</link> for a
-    description of how &ls; finds out which file is the master file
-    corresponding to the current file. &ls; will also search recursively
-    for <literal>\label</literal>'s in all files
-    <literal>\include</literal>'d or <literal>\input</literal>'ed in the
-    master file.
+     endterm="ls-completion-usage.title">here</link>. You can also press
+    <literal>&lt;F9&gt;</literal> after typing a part of the label, for
+    example, a common prefix which a group of <literal>\label</literal>'s
+    might share. In this case, &ls; will list only those
+    <literal>\label</literal>'s which start with that prefix.
+   </para>
+   <para>
+    See <link
+     linkend="Tex_UseSimpleLabelSearch">Tex_UseSimpleLabelSearch</link> for
+    a description of the algorithm used by &ls; to search for
+    <literal>\label</literal>'s and how to change it.
    </para>
    <para>
     Any command which contains the pattern <literal>ref</literal> in it is
@@ -1563,15 +1563,6 @@ newfile.tex [Preview]                                         11,3           21%
     Thus pressing <literal>&lt;F9&gt;</literal> after something like
     <literal>\pref{</literal> will also search for
     <literal>\label</literal>'s.
-   </para>
-   <para>
-    When you press <literal>&lt;F9&gt;</literal> after typing
-    <literal>\ref{eqn:</literal> then &ls; will only list
-    <literal>\label</literal>'s which begin with <literal>eqn:</literal>
-    If you press <literal>&lt;F9&gt;</literal> after a simple
-    <literal>\ref{</literal>, then &ls; will list all
-    <literal>\label</literal>'s in all the tex files in the present
-    directory.
    </para>
    <note>
     <title>HINT</title>
@@ -3633,6 +3624,36 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
      <literal>bibliography</literal> files, the present directory will be
      prepended to this variable.
     </para>
+   </section>
+   <section id="Tex_UseSimpleLabelSearch">
+    <title>Tex_UseSimpleLabelSearch</title>
+    <para>
+     This variable controls whether &ls; uses a simple algorithm to search
+     for possible completions of a <literal>\label</literal> command. When
+     set to 1, &ls; will search simply for <literal>\label</literal>'s in
+     all the <literal>.tex</literal> files found in the present directory,
+     ignoring whether they are part of a latex project or not.
+    </para>
+    <para>
+     When set to 0, then &ls; will use the following algorithm to determine
+     the list of possible completions:
+    </para>
+    <orderedlist>
+     <listitem>First &ls; will determine if it can find a master-file
+      specification.</listitem>
+     <listitem>If it can, then &ls; will search for
+      <literal>\label</literal>'s in that file first.</listitem>
+     <listitem>If the master file <literal>\include</literal>'s or
+      <literal>\input</literal>'s any other files, then &ls; will search
+      for <literal>\label</literal>'s in those files.  The search for
+      <literal>\include</literal>'d and <literal>\input</literal>'ed files
+      is recursive, i.e, if an <literal>\include</literal>'d file
+      <literal>\include</literal>'s another file, then that will be
+      searched as well and so on.</listitem>
+     <listitem>If &ls; cannot find a master file specified for this file,
+      then it will simply search for <literal>\labels</literal> in the
+      present file.</listitem>
+    </orderedlist>
    </section>
    <section id="Tex_RememberCiteSearch">
     <title>g:Tex_RememberCiteSearch</title>

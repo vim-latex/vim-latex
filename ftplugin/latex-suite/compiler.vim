@@ -9,6 +9,8 @@
 
 " Tex_SetTeXCompilerTarget: sets the 'target' for the next call to Tex_RunLaTeX() {{{
 function! Tex_SetTeXCompilerTarget(type, target)
+	call Tex_Debug("+Tex_SetTeXCompilerTarget: setting target to [".a:target."] for ".a:type."r", "comp")
+
 	if a:target == ''
 		let target = Tex_GetVarValue('Tex_DefaultTargetFormat')
 		let target = input('Enter the target format for '.a:type.'r: ', target)
@@ -109,6 +111,7 @@ function! Tex_CompileLatex()
 	" main file which will be compiled.
 	if Tex_GetVarValue('Tex_UseMakefile') && (glob('makefile') != '' || glob('Makefile') != '')
 		let _makeprg = &l:makeprg
+		call Tex_Debug("Tex_CompileLatex: using the makefile in the current directory", "comp")
 		let &l:makeprg = 'make $*'
 		if exists('s:target')
 			call Tex_Debug('Tex_CompileLatex: execing [make! '.s:target.']', 'comp')

@@ -74,7 +74,7 @@ function! Tex_Complete(what, where)
 		endif
 
 		if exists("s:type") && s:type =~ 'ref'
-			if Tex_GetVarValue('Tex_UseSimpleLabelSearch', 0) == 1
+			if Tex_GetVarValue('Tex_UseSimpleLabelSearch') == 1
 				call Tex_Debug("Tex_Complete: searching for \\labels in all .tex files in the present directory", "view")
 				call Tex_Debug("Tex_Complete: silent! grep! ".Tex_EscapeForGrep('\\label{'.s:prefix)." *.tex", 'view')
 				exec "silent! grep! ".Tex_EscapeForGrep('\\label{'.s:prefix)." *.tex"

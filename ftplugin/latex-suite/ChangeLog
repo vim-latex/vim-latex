@@ -1,3 +1,78 @@
+2004-05-21 18:25  srinathava
+
+	* ftplugin/latex-suite/texrc:
+
+	New: Factory defaults for a few more variables which were introduced
+	     recently.
+
+2004-05-21 18:24  srinathava
+
+	* ftplugin/latex-suite/main.vim:
+
+	New: Tex_GetVarValue now doesn't accept a second argument as the default
+	     but just returns '' if no variable with the name exists. This means
+	     that factory defaults for all variables _have_ to be provided in texrc
+	     henceforth.
+
+2004-05-21 18:21  srinathava
+
+	* ftplugin/latex-suite/texproject.vim:
+
+	Bug: The .latexmain file is only sourced on the first file which is opened.
+	Why: We did not catch the LatexSuiteFileType event
+	Fix: Catch the LatexSuiteFileType event and source the master file for
+	     every file opened. Basically, the .latexmain file acts like a
+	     project specific ftplugin file.
+
+	New: Removed a lot of code from old which seems to be no longer used.
+	     Unless we actually change things around to once again use g:projFiles
+	     etc, it looks like this is just not doing anything.
+
+2004-05-21 17:26  srinathava
+
+	* ftplugin/latex-suite/compiler.vim:
+
+	New: A refactoring of code to use Tex_GetVarValue instead of using g:Tex_*
+	     variables. Basically, this makes it possible for the user to more
+	     finely tune the behavior of latex-suite on a per-project basis.
+	     As of now, most settings of latex-suite are handled by setting
+	     global variables like g:Tex_UseMakeFile. In the future, we should set
+	     "factory defaults" in texrc by setting g:Tex_* variables. After that,
+	     we should always use Tex_GetVarValue to query the value of the
+	     variable. This allows the user to over-ride the factory default at a
+	     variety of levels, for example:
+	     1. If the user defines g:Tex_* in ~/.vim/ftplugin/tex.vim, then he
+	        will over-ride the setting for all files.
+	     2. If he defines b:Tex_* in a project master file, for instance, if he
+	        sets
+	            let b:Tex_UseMakeFile = 0
+	        in one .latexmain file, then only .tex files which source that
+	        .latexmain file will not use the makefile. Other files will
+	        continue to use the makefile.
+
+2004-05-19 18:09  srinathava
+
+	* ftplugin/latex-suite/texviewer.vim:
+
+	New: Instead of always using the complex logic of searching for \\label's
+	     in the main file and all \input'ed file, provide a setting which
+	     enables the user to simply search all the .tex files in the current
+	     directory as before.
+
+2004-05-18 15:23  srinathava
+
+	* ftplugin/latex-suite/compiler.vim:
+
+	Bug: When the format dependency chain is interrupted in the middle, then
+	     the default target format is changed the next time we compile, i.e, if
+	        g:Tex_DefaultTargetFormat = 'ps'
+	        g:Tex_FormatDependency_ps = 'dvi,ps'
+	     and there is an error in the ->dvi step, then the next time, if the
+	     error is removed, Tex_RunLaTeX stops after the ->dvi step.
+	Why: s:target is changed when Tex_RunLaTeX interrupts the build process.
+	Fix: When there are errors and the build process needs to be interrupted,
+	     then reset the default target format.
+
 2004-05-16 11:42  srinathava
 
 	* doc/latex-suite.xml:
