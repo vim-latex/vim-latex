@@ -1,3 +1,8 @@
+if exists("SIunits_package_file")
+	finish
+endif
+let SIunits_package_file = 1
+
 let g:TeX_package_SIunits = 
 \'nor:addprefix,'.
 \'nor:addunit,'.

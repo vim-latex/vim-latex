@@ -19,6 +19,11 @@
 " cut off marked part. Rest of the file can be copied as separate file under
 " condition of leaving this notice and information about copyrights unchanged.
 
+if exists("acromake_package_file")
+	finish
+endif
+let acromake_package_file = 1
+
 " --------8<-------------
 " Czesc odpowiedzialna za menu
 let g:TeX_package_option_polski =

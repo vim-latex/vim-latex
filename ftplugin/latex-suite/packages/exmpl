@@ -1,3 +1,8 @@
+if exists("exmpl_package_file")
+	finish
+endif
+let exmpl_package_file = 1
+
 " Author: Mikolaj Machowski
 " Date: 10.04.2002
 " Example plugin for packages in latexSuite

@@ -1,3 +1,8 @@
+if exists("german_package_file")
+	finish
+endif
+let german_package_file = 1
+
 " For now just define the smart quotes.
 let b:Tex_SmartQuoteOpen = '"`'
 let b:Tex_SmartQuoteClose = "\"'"

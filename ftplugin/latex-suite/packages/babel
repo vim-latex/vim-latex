@@ -1,3 +1,8 @@
+if exists("babel_package_file")
+	finish
+endif
+let babel_package_file = 1
+
 " This package sets some language specific options.
 " Since it needs to find out which options the user used with the babel
 " package, it needs to wait till latex-suite is done scanning packages. It

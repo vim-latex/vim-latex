@@ -1,3 +1,8 @@
+if exists("dropping_package_file")
+	finish
+endif
+let dropping_package_file = 1
+
 let g:TeX_package_option_dropping = ''
 
 let g:TeX_package_dropping = 

@@ -1,3 +1,8 @@
+if exists("verbatim_package_file")
+	finish
+endif
+let verbatim_package_file = 1
+
 let g:TeX_package_option_verbatim = ''
 
 let g:TeX_package_verbatim = 

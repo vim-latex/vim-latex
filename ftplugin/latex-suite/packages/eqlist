@@ -1,3 +1,8 @@
+if exists("eqlist_package_file")
+	finish
+endif
+let eqlist_package_file = 1
+
 let g:TeX_package_option_eqlist = '' 
 
 let g:TeX_package_eqlist = 

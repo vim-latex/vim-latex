@@ -1,3 +1,8 @@
+if exists("hyperref_package_file")
+	finish
+endif
+let hyperref_package_file = 1
+
 let g:TeX_package_option_hyperref =
 \ '4=,'
 \.'a4paper,'

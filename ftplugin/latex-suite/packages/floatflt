@@ -1,3 +1,8 @@
+if exists("floatflt_package_file")
+	finish
+endif
+let floatflt_package_file = 1
+
 let g:TeX_package_option_floatflt = 'rflt,lflt,vflt'
 
 let g:TeX_package_floatflt =

@@ -1,3 +1,8 @@
+if exists("inputenc_package_file")
+	finish
+endif
+let inputenc_package_file = 1
+
 let g:TeX_package_option_inputenc =
 \ 'ascii,'
 \.'latin1,'

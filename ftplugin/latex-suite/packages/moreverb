@@ -1,3 +1,8 @@
+if exists("moreverb_package_file")
+	finish
+endif
+let moreverb_package_file = 1
+
 let g:TeX_package_option_moreverb = ''
 
 let g:TeX_package_moreverb = 

@@ -1,3 +1,8 @@
+if exists("psgo_package_file")
+	finish
+endif
+let psgo_package_file = 1
+
 let g:TeX_package_option_psgo = ''
 
 let g:TeX_package_psgo = 

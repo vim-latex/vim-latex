@@ -1,3 +1,8 @@
+if exists("flafter_package_file")
+	finish
+endif
+let flafter_package_file = 1
+
 let g:TeX_package_option_flafter = ''
 
 let g:TeX_package_flafter = 'noo:suppressfloats,noo:suppress'

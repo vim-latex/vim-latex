@@ -1,3 +1,8 @@
+if exists("multicol_package_file")
+	finish
+endif
+let multicol_package_file = 1
+
 let g:TeX_package_option_multicol = ''
 
 let g:TeX_package_multicol =
