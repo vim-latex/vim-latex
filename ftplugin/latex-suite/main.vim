@@ -519,18 +519,30 @@ function! Tex_ClearDebug(...)
 endfunction " }}}
 " }}}
 
+" source texproject.vim before other files
+exe 'source '.s:path.'/texproject.vim'
+
 " source all the relevant files.
 exe 'source '.s:path.'/texmenuconf.vim'
 exe 'source '.s:path.'/envmacros.vim'
 exe 'source '.s:path.'/elementmacros.vim'
-exe 'source '.s:path.'/mathmacros.vim'
+
+" source utf-8 or plain math menus
+if exists("g:Tex_UseUtfMenus") && g:Tex_UseUtfMenus != 0 && has("gui_running")
+	exe 'source '.s:path.'/mathmacros-utf.vim'
+else
+	exe 'source '.s:path.'/mathmacros.vim'
+endif
+
 exe 'source '.s:path.'/compiler.vim'
 exe 'source '.s:path.'/folding.vim'
 exe 'source '.s:path.'/templates.vim'
 exe 'source '.s:path.'/custommacros.vim'
 exe 'source '.s:path.'/bibtex.vim'
-exe 'source '.s:path.'/diacritics.vim'
-exe 'source '.s:path.'/texproject.vim'
+
+if g:Tex_Diacritics != 0
+	exe 'source '.s:path.'/diacritics.vim'
+endif
 
 " ==============================================================================
 " Finally set up the folding, options, mappings and quit.
