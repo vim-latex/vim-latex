@@ -128,6 +128,7 @@ function! RunLaTeX()
 		exe 'lcd '.curdir
 		redraw!
     else 
+        let mainfname = Tex_GetMainFileName()
         " if a makefile and no *.latexmain exists, just use the make utility
         " this also sets mainfname for the rest of the function
         if (glob('makefile') != '' || glob('Makefile') != '')
@@ -144,8 +145,7 @@ function! RunLaTeX()
             " otherwise, if a *.latexmain file is found, then use that file to
             " construct a main file.
             if mainfname == ''
-                let mainfname = expand("%:t:r")
-            endif
+				let mainfname = expand("%:t")
             exec 'make '.mainfname
         endif
 		redraw!
@@ -158,20 +158,22 @@ function! RunLaTeX()
 	" command is not fixed.
 	cclose
 	cwindow
+	" remove extension from mainfname
+	let mfnlog = fnamemodify(mainfname, ":r") 
 	" if we moved to a different window, then it means we had some errors.
-	if winnum != winnr() && glob(mainfname.'.log') != ''
-		call UpdatePreviewWindow(mainfname)
-		exe 'nnoremap <buffer> <silent> j j:call UpdatePreviewWindow("'.mainfname.'")<CR>'
-		exe 'nnoremap <buffer> <silent> k k:call UpdatePreviewWindow("'.mainfname.'")<CR>'
-		exe 'nnoremap <buffer> <silent> <up> <up>:call UpdatePreviewWindow("'.mainfname.'")<CR>'
-		exe 'nnoremap <buffer> <silent> <down> <down>:call UpdatePreviewWindow("'.mainfname.'")<CR>'
-		exe 'nnoremap <buffer> <silent> <enter> :call GotoErrorLocation("'.mainfname.'")<CR>'
+	if winnum != winnr() && glob(mfnlog.'.log') != ''
+		call UpdatePreviewWindow(mfnlog)
+		exe 'nnoremap <buffer> <silent> j j:call UpdatePreviewWindow("'.mfnlog.'")<CR>'
+		exe 'nnoremap <buffer> <silent> k k:call UpdatePreviewWindow("'.mfnlog.'")<CR>'
+		exe 'nnoremap <buffer> <silent> <up> <up>:call UpdatePreviewWindow("'.mfnlog.'")<CR>'
+		exe 'nnoremap <buffer> <silent> <down> <down>:call UpdatePreviewWindow("'.mfnlog.'")<CR>'
+		exe 'nnoremap <buffer> <silent> <enter> :call GotoErrorLocation("'.mfnlog.'")<CR>'
 
 		setlocal nowrap
 
 		" resize the window to just fit in with the number of lines.
 		exec ( line('$') < 4 ? line('$') : 4 ).' wincmd _'
-		call GotoErrorLocation(mainfname)
+		call GotoErrorLocation(mfnlog)
 	endif
 
 	exec 'cd '.curd
