@@ -1,21 +1,21 @@
 let g:TeX_package_option_cite = 
-\ "verbose,"
-\."nospace,"
-\."space,"
-\."breakcites,"
-\."manualsort,"
-\."tt,"
-\."shownumbers,"
-\."nocitecount"
+\ 'verbose,'
+\.'nospace,'
+\.'space,'
+\.'breakcites,'
+\.'manualsort,'
+\.'tt,'
+\.'shownumbers,'
+\.'nocitecount'
 
 let g:TeX_package_cite = 
-\ "bra:cite,"
-\."bra:citen,"
-\."sep:redefine,"
-\."bra:citeform,"
-\."bra:citepunct,"
-\."bra:citeleft,"
-\."bra:citeright,"
-\."bra:citemid,"
-\."bra:citedash"
+\ 'bra:cite,'
+\.'bra:citen,'
+\.'sep:redefine,'
+\.'bra:citeform,'
+\.'bra:citepunct,'
+\.'bra:citeleft,'
+\.'bra:citeright,'
+\.'bra:citemid,'
+\.'bra:citedash'
 

@@ -1,18 +1,18 @@
 let g:TeX_package_option_chapterbib = 
-\ "sectionbib,"
-\."rootbib,"
-\."gather,"
-\."duplicate"
+\ 'sectionbib,'
+\.'rootbib,'
+\.'gather,'
+\.'duplicate'
 
 let g:TeX_package_chapterbib = 
-\ "env:cbunit,"
-\."brd:sectionbib,"
-\."bra:cbinput,"
-\."sep:redefine,"
-\."bra:citeform,"
-\."bra:citepunct,"
-\."bra:citeleft,"
-\."bra:citeright,"
-\."bra:citemid,"
-\."bra:citedash"
+\ 'env:cbunit,'
+\.'brd:sectionbib,'
+\.'bra:cbinput,'
+\.'sep:redefine,'
+\.'bra:citeform,'
+\.'bra:citepunct,'
+\.'bra:citeleft,'
+\.'bra:citeright,'
+\.'bra:citemid,'
+\.'bra:citedash'
 
