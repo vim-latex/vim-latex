@@ -853,21 +853,11 @@ endif
 "              SetTeXOptions() function in main.vim
 function! Tex_SetFastEnvironmentMaps()
 	if g:Tex_PromptedEnvironments != ''
-		if !hasmapto('<Plug>Tex_FastEnvironmentInsert', 'i')
-			imap <silent> <buffer> <F5> <Plug>Tex_FastEnvironmentInsert
-		endif
-		if !hasmapto('<Plug>Tex_FastEnvironmentInsert', 'n')
-			nmap <silent> <buffer> <F5> <Plug>Tex_FastEnvironmentInsert
-		endif
-		if !hasmapto('<Plug>Tex_FastEnvironmentChange', 'i')
-			imap <silent> <buffer> <S-F5> <Plug>Tex_FastEnvironmentChange
-		endif
-		if !hasmapto('<Plug>Tex_FastEnvironmentChange', 'n')
-			nmap <silent> <buffer> <S-F5> <Plug>Tex_FastEnvironmentChange
-		endif
-		if !hasmapto('<Plug>Tex_FastEnvironmentInsert', 'v')
-			vmap <silent> <buffer> <F5> <Plug>Tex_FastEnvironmentInsert
-		endif
+		call Tex_MakeMap("<F5>", "<Plug>Tex_FastEnvironmentInsert", 'i', '<silent> <buffer>')
+		call Tex_MakeMap("<F5>", "<Plug>Tex_FastEnvironmentInsert", 'n', '<silent> <buffer>')
+		call Tex_MakeMap("<F5>", "<Plug>Tex_FastEnvironmentInsert", 'v', '<silent> <buffer>')
+		call Tex_MakeMap("<S-F5>", "<Plug>Tex_FastEnvironmentChange", 'i', '<silent> <buffer>')
+		call Tex_MakeMap("<S-F5>", "<Plug>Tex_FastEnvironmentChange", 'n', '<silent> <buffer>')
 	endif
 	if g:Tex_HotKeyMappings != ''
 		call s:SetUpHotKeys()
@@ -910,11 +900,10 @@ inoremap <script> <silent> <Plug>Tex_InsertItemOnThisLine <Esc>a<C-r>=Tex_Insert
 inoremap <script> <silent> <Plug>Tex_InsertItemOnNextLine <ESC>o<C-R>=Tex_InsertItem()<CR>
 
 function! Tex_SetItemMaps()
-	if !hasmapto("\<Plug>Tex_InsertItem")
-		imap <buffer> <Leader>it <Plug>Tex_InsertItemOnThisLine
+	if !hasmapto("<Plug>Tex_InsertItem")
 		imap <buffer> <M-i> <Plug>Tex_InsertItemOnThisLine
 	endif
-	if !hasmapto("\<Plug>Tex_InsertItemOnNextLine")
+	if !hasmapto("<Plug>Tex_InsertItemOnNextLine")
 		imap <buffer> <C-CR> <Plug>Tex_InsertItemOnNextLine
 	endif
 endfunction " }}}
