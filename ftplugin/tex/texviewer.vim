@@ -503,16 +503,20 @@ function! Tex_ScanFileForCite(prefix)
 			" split a new window so we do not screw with the current buffer.
 			split
 			let thisbufnum = bufnr('%')
+			call Tex_Debug('silent! find '.Tex_Strntok(bibnames, ',', i).'.bib', 'bib')
 			exec 'silent! find '.Tex_Strntok(bibnames, ',', i).'.bib'
 			if bufnr('%') != thisbufnum
+				call Tex_Debug('finding .bib file ['.bufname('%').']', 'bib')
+				lcd %:p:h
 				" use the appropriate syntax for the .bib file.
 				exec 'silent! grepadd @.*{'.a:prefix.' %'
 			else
 				let thisbufnum = bufnr('%')
-				call Tex_Debug('silent! find '.Tex_Strntok(bibnames, ',', i).'.bbl from '.thisbufnum, 'bib')
 				exec 'silent! find '.Tex_Strntok(bibnames, ',', i).'.bbl'
 				call Tex_Debug('now in bufnum#'.bufnr('%'), 'bib')
 				if bufnr('%') != thisbufnum
+					call Tex_Debug('finding .bbl file ['.bufname('.').']', 'bib')
+					lcd %:p:h
 					exec 'silent! grepadd \\bibitem{'.a:prefix.' %'
 				endif
 			endif
@@ -534,7 +538,11 @@ function! Tex_ScanFileForCite(prefix)
 		call Tex_Debug('got a thebibliography environment in '.bufname('%'), 'bib')
 		
 		let foundCiteFile = 1
+
+		split
+		lcd %:p:h
 		exec 'silent! grepadd \\bibitem{'.a:prefix.' %'
+		q
 		
 		return 1
 	endif
@@ -548,13 +556,17 @@ function! Tex_ScanFileForCite(prefix)
 		let wrap = 'W'
 
 		let filename = matchstr(getline('.'), '\\\(input\|include\){\zs.\{-}\ze}')
-		let v:errmsg = ''
+
+		split
+		let thisbufnum = bufnr('%')
+
 		exec 'silent! find '.filename
-		if v:errmsg == ''
+		if bufnr('%') != thisbufnum
 			" DANGER! recursive call.
+			call Tex_Debug('scanning recursively in ['.bufname('%').']', 'bib')
 			let foundCiteFile = Tex_ScanFileForCite(a:prefix)
-			exec 'e #'.presBufNum
 		endif
+		q
 
 		if foundCiteFile
 			return 1
