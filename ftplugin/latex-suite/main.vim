@@ -3,7 +3,7 @@
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
 "		   URL: 
-"  Last Change: Sun Dec 22 09:00 AM 2002 EST
+"  Last Change: Sun Dec 22 05:00 PM 2002 PST
 "
 " Help: 
 " Changes: {{{
@@ -432,6 +432,33 @@ endfunction
 function! Tex_ResetIncrementNumber(val)
 	let s:incnum = a:val
 endfunction " }}}
+" Functions for debugging {{{
+" Tex_Debug: appends the argument into s:debugString {{{
+" Description: 
+" 
+function! Tex_Debug(str)
+	if !exists('s:debugString')
+		let s:debugString = ''
+	endif
+	let s:debugString = s:debugString.a:str."\n"
+endfunction " }}}
+" Tex_PrintDebug: prings s:debugString {{{
+" Description: 
+" 
+function! Tex_PrintDebug()
+	if exists('s:debugString')
+		echo s:debugString
+	endif
+endfunction " }}}
+" Tex_ClearDebug: clears the s:debugString string {{{
+" Description: 
+" 
+function! Tex_ClearDebug()
+	if exists('s:debugString')
+		let s:debugString = ''
+	endif
+endfunction " }}}
+" }}}
 
 " source all the relevant files.
 exe 'source '.s:path.'/texmenuconf.vim'
