@@ -4,7 +4,7 @@
 "         WWW: http://robotics.eecs.berkeley.edu/~srinath/vim/.vim/imaps.vim
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
-" Last Change: Wed May 01 07:00 PM 2002 PDT
+" Last Change: Sun Oct 27 01:00 AM 2002 PST
 " 
 " Documentation: {{{
 "
@@ -333,14 +333,21 @@ endfunction
 function! IMAP_Jumpfunc()
 	let phs = '«'
 	let phe = '»'
+
 	if exists('b:Imap_PlaceHolderStart')
 		let phs = b:Imap_PlaceHolderStart
+	elseif exists('g:Imap_PlaceHolderStart')
+		let phs = g:Imap_PlaceHolderStart
 	endif
+
 	if exists('b:Imap_PlaceHolderEnd')
 		let phe = b:Imap_PlaceHolderEnd
+	elseif exists('g:Imap_PlaceHolderEnd')
+		let phe = g:Imap_PlaceHolderEnd
 	endif
 
 	if !search(phs.'.\{-}'.phe,'W') "no more marks
+		echomsg "no marks found\n"
 		return "\<CR>"
 	else
 		if getline('.')[col('.')] == phe
