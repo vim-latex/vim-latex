@@ -16,7 +16,8 @@ function! Tex_MathMenuRemove()
 	exe 'silent! aunmenu '.s:MathMenuName
 endfunction
 
-let s:pA = 'amenu <silent> 85 '.s:MathMenuName
+let s:pA = 'amenu <silent> '.g:Tex_NextMenuLocation.' '.s:MathMenuName
+let g:Tex_NextMenuLocation = g:Tex_NextMenuLocation + 1
 
 " brackets and dollars {{{
 exe s:pA.'\\&[\ \\]                 <plug><C-r>=IMAP_PutTextWithMovement("\\[<++>\\]<++>")<cr>'
