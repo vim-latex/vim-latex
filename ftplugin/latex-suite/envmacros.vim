@@ -2,7 +2,7 @@
 " 	     File: envmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
-" Last Change: pi± lis 15 11:00  2002 C
+" Last Change: Sat Nov 16 04:00 PM 2002 PST
 " 
 "  Description: mappings/menus for environments. 
 "=============================================================================
@@ -105,7 +105,7 @@ function! <SID>Tex_SpecialMacros(lhs, submenu, name, irhs, ...)
 
 	if g:Tex_Menus && g:Tex_EnvironmentMenus
 		if wiz
-			exe 'amenu '.location.' <plug><C-r>=Tex_MenuWizard("'.a:submenu.'", "'.a:name.'")<CR>'
+			exe 'amenu '.location.' <plug><C-r>=Tex_DoEnvironment("'.a:name.'")<CR>'
 		else
 			exe 'amenu '.location." <plug><C-r>=IMAP_PutTextWithMovement('".a:irhs."')<CR>"
 		endif
@@ -260,23 +260,30 @@ endif
 
 " ==============================================================================
 " Specialized functions for various environments
+"
+" All these functions are to be used as:
+"
+"   inoremap <lhs> <C-r>=Tex_itemize('enumerate')<CR>
+"   nnoremap <lhs> i<C-r>=Tex_itemize('enumerate')<CR>
+"
+" and so on...
 " ============================================================================== 
 " Tex_itemize: {{{
-function! Tex_itemize(indent, env)
-	exe 'normal i'.a:indent.'\begin{'.a:env."}\<cr>\\item \<cr>\\end{".a:env."}«»\<Up>"
+function! Tex_itemize(env)
+	return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr>\\item «»\<cr>\\end{".a:env."}«»")
 endfunction
 " }}} 
 " Tex_description: {{{
-function! Tex_description(indent, env)
+function! Tex_description(env)
 	let itlabel = input('(Optional) Item label? ')
 	if itlabel != ''
 		let itlabel = '['.itlabel.']'
 	endif
-	exe 'normal i'.a:indent."\\begin{description}\<cr>\\item".itlabel." \<cr>\\end{description}«»\<Up>"
+	return IMAP_PutTextWithMovement("\\begin{description}\<cr>\\item".itlabel." «»\<cr>\\end{description}«»")
 endfunction
 " }}} 
 " Tex_figure: {{{
-function! Tex_figure(indent, env)
+function! Tex_figure(env)
     let flto    = input('Float to (htbp)? ')
     let caption = input('Caption? ')
     let center  = input('Center ([y]/n)? ')
@@ -313,11 +320,11 @@ function! Tex_figure(indent, env)
     let figure = '\begin{'.a:env.'}'.flto
     let figure = figure . centr
     let figure = figure . '\end{'.a:env.'}'
-	exe 'normal i'.a:indent.figure."\<Esc>$"
+	return IMAP_PutTextWithMovement(figure)
 endfunction
 " }}} 
 " Tex_table: {{{
-function! Tex_table(indent, env)
+function! Tex_table(env)
     let flto    = input('Float to (htbp)? ')
     let caption = input('Caption? ')
     let center  = input('Center (y/n)? ')
@@ -353,11 +360,11 @@ function! Tex_table(indent, env)
         let ret=ret.'\label{tab:'.label."}\<cr>"
     endif
     let ret=ret.'\end{table}«»'
-	exe 'normal i'.ret."\<Esc>?ä\<cr>:nohl\<cr>C"
+	return IMAP_PutTextWithMovement(ret)
 endfunction
 " }}} 
 " Tex_tabular: {{{
-function! Tex_tabular(indent, env)
+function! Tex_tabular(env)
     let pos    = input('(Optional) Position (t b)? ')
     let format = input("Format  ( l r c p{width} | @{text} )? ")
     if pos != ''
@@ -366,22 +373,22 @@ function! Tex_tabular(indent, env)
     if format != ''
       let format = '{'.format.'}'
     endif
-    exe 'normal i'.a:indent.'\begin{'.a:env.'}'.pos.format."\<cr> \<cr>\\end{".a:env."}«»\<Up>"
+    return IMAP_PutTextWithMovement('\begin{'.a:env.'}'.pos.format."\<cr> \<cr>\\end{".a:env."}«»")
 endfunction
 " }}} 
 " Tex_eqnarray: {{{
-function! Tex_eqnarray(indent, env)
+function! Tex_eqnarray(env)
     let label = input('Label?  ')
     if label != ''
         let arrlabel = '\label{'.label."}\<cr> "
       else
-        let arrlabel = ' '
+        let arrlabel = ''
     endif
-    exe 'normal i'.a:indent.'\begin{'.a:env."}\<cr>".arrlabel."\<cr>\\end{".a:env."}«»\<Up>"
+    return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr>".arrlabel."«»\<cr>\\end{".a:env."}«»")
 endfunction
 " }}} 
 " Tex_list: {{{
-function! Tex_list(indent, env)
+function! Tex_list(env)
 	let label = input('Label (for \item)? ')
 	if label != ''
 		let label = '{'.label.'}'
@@ -392,11 +399,11 @@ function! Tex_list(indent, env)
 	else
 		let label = ''
 	endif
-	exe 'normal i'.a:indent.'\begin{list}'.label."\<cr>\\item \<cr>\\end{list}«»\<Up>"
+	return IMAP_PutTextWithMovement('\begin{list}'.label."\<cr>\\item \<cr>\\end{list}«»")
 endfunction
 " }}} 
 " Tex_document: {{{
-function! Tex_document(indent, env)
+function! Tex_document(env)
     let dstyle = input('Document style? ')
     let opts = input('(Optional) Options? ')
     let foo = '\documentclass'
@@ -405,11 +412,11 @@ function! Tex_document(indent, env)
     else
         let foo = foo.'['.opts.']'.'{'.dstyle.'}'
     endif
-    exe 'normal i'.a:indent.foo."\<cr>\<cr>\\begin{document}\<cr>\<cr>\\end{document}\<Up>"
+    return IMAP_PutTextWithMovement(foo."\<cr>\<cr>\\begin{document}\<cr>«»\<cr>\\end{document}")
 endfunction
 " }}} 
 " Tex_minipage: {{{
-function! Tex_minipage(indent, env)
+function! Tex_minipage(env)
     let foo = '\begin{minipage}'
     let pos = input('(Optional) Position (t b)? ')
     let width = input('Width? ')
@@ -418,11 +425,11 @@ function! Tex_minipage(indent, env)
     else
         let  foo = foo.'['.pos.']{'.width.'}'
     endif
-    exe 'normal i'.a:indent.foo."\<cr> \<cr>\\end{minipage}«»\<Up>"
+    return IMAP_PutTextWithMovement(foo."\<cr>«»\<cr>\\end{minipage}«»")
 endfunction
 " }}} 
 " Tex_thebibliography: {{{
-function! Tex_thebibliography(indent, env)
+function! Tex_thebibliography(env)
     " AUC Tex: "Label for BibItem: 99"
     let indent = input('Indent for BibItem? ')
     let foo = '{'.indent.'}'
@@ -433,35 +440,123 @@ function! Tex_thebibliography(indent, env)
         let bar = bar.'['.biblabel.']'
     endif
     let bar = bar.'{'.key.'}'
-    exe 'normal i'.a:indent.'\begin{thebibliography}'.foo."\<cr>".bar." \<cr>\\end{thebibliography}«»\<Up>"
+    return IMAP_PutTextWithMovement('\begin{thebibliography}'.foo."\<cr>".bar." \<cr>\\end{thebibliography}«»\<Up>")
 endfunction
 " }}} 
 
-" Merged contributions from Carl Mueller
-" asdf is a fake argument to recognize if call is coming from keyboard or from
-" menu 
-inoremap <F5> <C-O>:call Tex_FFive_intelligent()<cr>
-noremap  <F5> :call Tex_FFive_intelligent()<cr>
-function! Tex_FFive_intelligent() " {{{
+" ==============================================================================
+" Contributions / suggestions from Carl Mueller (auctex.vim)
+" ============================================================================== 
+let s:common_environments = 'equation,equation*,eqnarray,eqnarray*,[,$$,align,align*'
+
+" SetUpEnvironmentsPrompt: sets up a prompt string using s:common_environments {{{
+" Description: 
+" 
+function! SetUpEnvironmentsPrompt()
+	let num_common = GetListCount(s:common_environments)
+
+	let i = 1
+	let s:common_env_prompt = "\n"
+
+	while i < num_common
+
+		let env1 = Tex_Strntok(s:common_environments, ',', i)
+		let env2 = Tex_Strntok(s:common_environments, ',', i + 1)
+
+		let s:common_env_prompt = s:common_env_prompt."(".i.") ".env1."\t".( strlen(env1) < 4 ? "\t" : "" )."(".(i+1).") ".env2."\n"
+
+		let i = i + 2
+	endwhile
+	let s:common_env_prompt = s:common_env_prompt."\n".'Enter number or name of environment :'
+endfunction " }}}
+" PromptForEnvironment: prompts for an environment {{{
+" Description: 
+function! PromptForEnvironment(ask)
+
+	if !exists('s:common_env_prompt')
+		call SetUpEnvironmentsPrompt()
+	endif
+
+	let inp = input(a:ask.s:common_env_prompt)
+	if inp =~ '^[0-9]$'
+		let env = Tex_Strntok(s:common_environments, ',', inp)
+	else
+		let env = inp
+	endif
+
+	return env
+endfunction " }}}
+" Tex_DoEnvironment: fast insertion of environments {{{
+" Description:
+"   The menus call this function with an argument (the name of the environment
+"   to insert). The maps call this without any arguments. In this case, it
+"   prompts for an environment to enter if the current line is empty. If
+"   called without arguments and there is a word on the current line, then use
+"   that as the name of a new environment.
+function! Tex_DoEnvironment(...)
+	let l = getline('.')
+	if a:0 < 1
+		let env = matchstr(l, '^\s*\zs.*')
+		if env == ''
+			let env = PromptForEnvironment('Choose which environment to insert :')
+			if env != ''
+				return Tex_PutEnvironment(env)
+			endif
+		else
+			let ind = matchstr(l, '^\s*\ze')
+			normal 0D
+			return Tex_PutEnvironment(ind, env)
+		endif
+	else
+		return Tex_PutEnvironment(a:1)
+	endif
+endfunction " }}}
+" Tex_PutEnvironment: calls various specialized functions {{{
+" Description: 
+"   Based on input argument, it calls various specialized functions.
+function! Tex_PutEnvironment(env)
+	if a:env =~ "theorem\\|lemma\\|equation\\|eqnarray\\|align\\|multline"
+		return Tex_eqnarray(a:env)
+	elseif a:env =~ "enumerate\\|itemize\\|theindex\\|trivlist"
+		return Tex_itemize(a:env)
+    elseif a:env =~ "table\\|table*"
+        return Tex_table(a:env)
+    elseif a:env =~ "tabular\\|tabular*\\|array\\|array*"
+        return Tex_tabular(a:env)
+	elseif exists('*Tex_'.a:env)
+		exe 'return Tex_'.a:env.'(a:env)'
+	else
+        return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr>«»\<cr>\\end{".a:env."}«»")
+	endif
+endfunction " }}}
+
+inoremap <F5> <C-r>=Tex_FastEnvironmentInsert()<cr>
+nnoremap  <F5> i<C-r>=Tex_FastEnvironmentInsert()<cr>
+
+function! Tex_FastEnvironmentInsert() " {{{
+
 	let start_line = line('.')
 	let pos = line('.').' | normal! '.virtcol('.').'|'
+
 	if search('\\documentclass', 'bW') && search('\\begin{document}')
 		let begin_line = search('\\begin{document}')
 		if start_line < begin_line
 			exe pos
-			call Tex_package_from_line()
+			return Tex_package_from_line()
 		else
 			exe pos
-			call Tex_DoEnvironment('asdf')
+			return Tex_DoEnvironment()
 		endif
 	elseif search('\\documentclass')
 		exe pos
-		call Tex_package_from_line()
+		return Tex_package_from_line()
 	else
 		exe pos
-		call Tex_DoEnvironment('asdf')
+		return Tex_DoEnvironment()
 	endif
-endfunction " }}}
+endfunction 
+
+" }}}
 function! Tex_package_from_line() " {{{
 	" Function Tex_PutPackage is defined in packages.vim
 	let l = getline(".")
@@ -469,48 +564,12 @@ function! Tex_package_from_line() " {{{
 	if pack == ''
 		let pack = input('Package? ')
 		if pack != ''
-			call Tex_PutPackage(pack)
+			return Tex_PutPackage(pack)
 		endif
 		return 0
 	else
 		normal 0D
-		call Tex_PutPackage(pack)
-	endif
-endfunction " }}}
-
-
-function! Tex_DoEnvironment(env) " {{{
-	let l = getline('.')
-	if a:env == 'asdf'
-		let env = matchstr(l, '^\s*\zs.*')
-		if env == ''
-			let env = input('Environment? ')
-			if env != ''
-				call Tex_PutEnvironment(l, env)
-			endif
-		else
-			let ind = matchstr(l, '^\s*\ze')
-			normal 0D
-			call Tex_PutEnvironment(ind, env)
-		endif
-	else
-		call Tex_PutEnvironment(l, a:env)
-	endif
-	startinsert
-endfunction " }}}
-function! Tex_PutEnvironment(indent, env) " {{{
-	if a:env =~ "theorem\\|lemma\\|equation\\|eqnarray\\|align\\|multline"
-		call Tex_eqnarray(a:indent, a:env)
-	elseif a:env =~ "enumerate\\|itemize\\|theindex\\|trivlist"
-		call Tex_itemize(a:indent, a:env)
-    elseif a:env =~ "table\\|table*"
-        call Tex_table(a:indent, a:env)
-    elseif a:env =~ "tabular\\|tabular*\\|array\\|array*"
-        call Tex_tabular(a:indent, a:env)
-	elseif exists('*Tex_'.a:env)
-		exe 'call Tex_'.a:env.'(a:indent, a:env)'
-	else
-        exe 'normal i'.a:indent.'\begin{'.a:env."}\<cr> \<cr>\\end{".a:env."}«»\<Up>"
+		return Tex_PutPackage(pack)
 	endif
 endfunction " }}}
 
@@ -529,7 +588,7 @@ endfunction " }}}
 "let b:searchmax = 100
 let s:math_environment = 'eqnarray,eqnarray*,align,align*,equation,equation*,[,$$'
 let s:item_environment = 'list,trivlist,enumerate,itemize,theindex'
-function Tex_change_environment() " {{{
+function! Tex_change_environment() " {{{
     let env_line = searchpair("\\[\\|begin{", '', "\\]\\|end{", "bn")
 	if env_line != 0
 		if getline(env_line) !~ 'begin{'
@@ -659,4 +718,3 @@ endfunction
 let s:doneOnce = 1
 
 " vim:fdm=marker:nowrap:noet
-
