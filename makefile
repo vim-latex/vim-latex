@@ -47,12 +47,39 @@ ltt:
 	cp -f latexSuite.zip /tmp/ltt/vimfiles/
 	cd /tmp/ltt/vimfiles; unzip latexSuite.zip
 
-# upload the archives to the web.
-upload:
-	pscp latexSuite.* $(CVSUSER)@vim-latex.sf.net:/home/groups/v/vi/vim-latex/htdocs/download/
+# This target is related to a script I have on my sf.net account. That
+# script looks like:
+#
+# #!/bin/bash                                                                     
+# cd ~/testing/vimfiles; \                                                        
+# cvs -q update; \                                                                
+# make clean; \                                                                   
+# make; \                                                                         
+# cp latexsuite.* ~/htdocs/download/ 
+#
+# Doing a release via sf.net has a couple of advantages:
+# - I do not have to bother with CRLF pain anymore because the copy on
+#   sf.net will always have unix style EOLs.
+# - The process is much faster because I only need to communicate a command
+#   from my computer to sf.net. The rest is done locally on the sf.net
+#   server.
+release:
+	plink srinathava@vim-latex.sf.net /home/users/s/sr/srinathava/bin/upload
 
-betaup:
-	pscp latexSuite.zip $(CVSUSER)@vim-latex.sf.net:/home/groups/v/vi/vim-latex/htdocs/download/latexSuite-beta.zip
+# This is another target akin to the release: target. This target updates
+# the htdocs directory of the latex-suite project to the latest CVS
+# version.
+# This is again related to the uphtdocs script on my sf.net account which
+# looks like:
+# #!/bin/sh                                                                       
+#                                                                                 
+# # update the htdocs directory                                                   
+# cd /home/groups/v/vi/vim-latex/htdocs; cvs -q update                            
+# # update the packages directory                                                 
+# cd /home/groups/v/vi/vim-latex/htdocs/packages; cvs -q update
+uphtdocs:
+	plink srinathava@vim-latex.sf.net /home/users/s/sr/srinathava/bin/uphtdocs
+	
 
 # rsync is like cp (copy) on steroids.  Here are some useful options:
 # -C	auto ignore like CVS
