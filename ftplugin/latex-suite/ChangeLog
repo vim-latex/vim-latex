@@ -1,3 +1,34 @@
+After 6 Jun 2003
+
+17 Jul 2003
+	Features
+	* packages.vim:
+		Add custom completion to TPackage command.
+		It works only for Vim 6.2 or later. (MM)
+
+	Changes
+	* main.vim:
+		make Tex_GetMainFile() recursively search upwards for a *.latexmain
+		file. (SA)
+	* texmenuconf.vim:
+		Peter Heslin (maintaining the cream port of latex-suite says that the
+		Windows menu from cream appears in the middle of the latex-suite
+		menus). A new variable g:Tex_MainMenuLocation is used to find the
+		location of the latex-suite menus. (SA)
+	* packages/polski:
+		Update to cover version 1.3 of package. (MM)
+
+	Bugfixes
+	* main.vim:
+		Bug: If g:Tex_SmartQuoteOpen/Close contain the '~' character (french quotes
+			 are "«~" and "~»", then we get an error in quotations (Mathieu
+			 CLABAUT).
+		Solution: escape ~ in the search() function (Mathieu CLABAUT).
+	* compiler.vim:
+		Bug: Sometimes moving up and down in the error list window causes a regexp
+			 error.
+		Solution: properly escape backslashes in the regexp. (SA)
+
 28 Jun 2003
 	Features
 	* latex-suite.txt:
@@ -23,8 +54,8 @@
 	* envmacros.vim:
 		changed ETR to insert a more complete template using Tex_SpecialMacros
 		(Mathieu CLABAUT)
-	
-	Bugfixes:
+
+	Bugfixes
 	* packages.vim:
 		Bug: When a \usepackage{} line is inside a fold, then we go into an
 			 infinite loop. (Lin-bo Zhang)
