@@ -395,7 +395,8 @@ function! PositionPreviewWindow(filename)
 	" searching forward from the beginning of the log file for l.9 will always
 	" land us on the error in a.tex.
 	if errfile != ''
-		exec 'bot pedit +/(\(\f\|\[\|\]\)*'.errfile.'/ '.a:filename.'.log'
+		"exec 'bot pedit +/(\(\f\|\[\|\]\)*'.errfile.'/ '.a:filename.'.log'
+		exec 'bot pedit +/(\\(\\f\\|\\[\\|\\]\\)\*'.errfile.'/ '.a:filename.'.log'
 	else
 		exec 'bot pedit +0 '.a:filename.'.log'
 	endif
