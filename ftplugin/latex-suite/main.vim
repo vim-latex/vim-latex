@@ -34,10 +34,6 @@ endif
 " set up global defaults.
 exe "so ".s:path.'/texrc'
 
-augroup LatexSuite User LatexSuiteInit
-	au!
-augroup END
-
 " }}}
 
 nmap <silent> <script> <plug> i
@@ -535,20 +531,15 @@ exe 'source '.s:path.'/diacritics.vim'
 " ============================================================================== 
 " SetTeXOptions: sets options/mappings for this file. {{{
 function! <SID>SetTeXOptions()
+	" Avoid reinclusion.
+	if exists('b:doneSetTeXOptions')
+		return
+	endif
+	let b:doneSetTeXOptions = 1
+
 	exe 'setlocal dict+='.s:path.'/dictionaries/dictionary'
-	setlocal foldtext=TexFoldTextFunction()
 
-	" fold up things. and mappings for refreshing folds.
-	if g:Tex_Folding && g:Tex_AutoFolding
-		call MakeTexFolds(0)
-	endif
-	if g:Tex_Folding
-		if mapcheck('<F6>') == ""
-			nnoremap <buffer> <F6> :call MakeTexFolds(1)<cr>
-		endif
-		nnoremap <buffer> <leader>rf :call MakeTexFolds(1)<cr>
-	endif
-
+	call Tex_Debug('SetTeXOptions: sourcing maps')
 	" smart functions
 	if g:Tex_SmartKeyQuote 
 		inoremap <buffer> <silent> " "<Left><C-R>=<SID>TexQuotes()<CR>
@@ -559,34 +550,17 @@ function! <SID>SetTeXOptions()
 	if g:Tex_SmartKeyDot
 		inoremap <buffer> <silent> . <C-R>=<SID>SmartDots()<CR>
 	endif
-	if g:Tex_PromptedEnvironments != '' || g:Tex_HotKeyMappings != ''
-		call Tex_SetFastEnvironmentMaps()
-	endif
-	if g:Tex_PromptedCommands != ''
-		call Tex_SetFastCommandMaps()
-	endif
 
-	" viewing/searching
-	if !hasmapto('RunLaTeX')
-		if has("gui")
-			nnoremap <buffer> <Leader>ll :silent! call RunLaTeX()<cr>
-			nnoremap <buffer> <Leader>lv :silent! call ViewLaTeX()<cr>
-			nnoremap <buffer> <Leader>ls :silent! call ForwardSearchLaTeX()<cr>
-		else
-			nnoremap <buffer> <Leader>ll :call RunLaTeX()<cr>
-			nnoremap <buffer> <Leader>lv :call ViewLaTeX()<cr>
-			nnoremap <buffer> <Leader>ls :call ForwardSearchLaTeX()<cr>
-		end
-	end
 	" This line seems to be necessary to source our compiler/tex.vim file.
 	" The docs are unclear why this needs to be done even though this file is
 	" the first compiler plugin in 'runtimepath'.
 	runtime compiler/tex.vim
 
-	silent! do LatexSuite User LatexSuiteInit
 endfunction
 
-call <SID>SetTeXOptions()
+augroup LatexSuite
+	au LatexSuite User LatexSuiteFileType call <SID>SetTeXOptions()
+augroup END
 
 " }}}
 
