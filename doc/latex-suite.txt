@@ -74,8 +74,10 @@ Editing
     |latex-smart-keys|
         Mappings of some common keys like <BS> to make editing faster.
 
-    |latex-viewer|
-        Fast access to list of labels and bibliography keys.
+    |latex-completion|
+        Fast access to important data. Most notable are bibliography keys and
+        labels, also fast inserting of file names in proper manner depending
+        on context. Everything with one key!
 
     |latex-bracketing-macros|
         A streamlined way of entering all the \left's and \right's while
@@ -97,11 +99,15 @@ Compiling/Viewing/Searching
         A customizable compiler which can be dynamically reconfigured to
         change what kinds of warnings/errors to ignore.
 
-    |latex-viewing|       
+    |latex-part-compiling|
+        Compile only chosen part of document. Fast way to check if chosen
+        fragment is well formed.
+
+    |latex-viewing|
         This is a set of functions which open up the compiled .dvi document
         using the specified DVI viewer.
 
-    |latex-searching|     
+    |latex-searching|
         Xdvi (for UNIX) and Yap (for Windows) both provide ways for "forward
         searching" LaTeX documents. This section describes how to use these
         features and how to set up your dvi viewer to best use this feature.
@@ -411,10 +417,12 @@ Smart Dots
 
 }}}
 ===========================================================================
-LATEX VIEWER                                *latex-viewer* {{{
+LATEX COMPLETION                            *latex-completion* {{{
 
-Latex suite provides easy way of looking through BibTeX keys and completing
-them.  The same for completion of \ref-like entries.
+After pressing "<magic_key>" (default <F9>) Latex-suite will try to complete
+argument of command (part between {}). Now available is support for \cite,
+\ref and their cousins. Also for \includegraphics and \bibliography
+(|latex-completion-explorer|). More to come.
 
 After you insert \cite{, you can press <F9> key (still in Insert mode). Two
 small windows will open.  Just below your main window will be list of
@@ -463,6 +471,27 @@ and |TLookAll|.
 
 Through g:Tex_ViewerCwindowHeight and g:Tex_ViewerPreviewHeight options in 
 texrc you can configure height of these windows.
+
+                                            *latex-completion-explorer*
+Latex-suite is distributed with slightly changed explorer.vim. This
+modification allows to perform custom operations in explorer buffer.
+
+After \includegraphics{<F9> Latex-suite will open explorer buffer with current
+directory or directory defined with g:Tex_ImageDir variable. When you choose
+graphic file with <cr> its name will be inserted into file as bib key or
+label. If g:Tex_ImageDir is set Latex-suite assume you also defined
+\graphicspath{} command and will insert just file name (without extension). If
+g:Tex_ImageDir is empty (default) it will put relative path to graphic file.
+
+After \bibliography{<F9> Latex-suite will open explorer buffer with current
+directory. After <cr> name of relative path to chosen file (without extension)
+will be inserted.
+
+In both cases explorer window will open with basic filter. You should not see
+uninteresting in current context files.
+
+You can regulate height of explorer window with g:Tex_ExplorerHeight variable
+(default 10).
 
 }}}
 ===========================================================================
@@ -686,6 +715,16 @@ Its default value is: >
 		\'specifier changed to¡'.
 		\'You have requested¡'.
 		\'Missing number, treated as zero.'
+<
+                                              *latex-part-compiling*
+You can compile only fragment of document. It can be useful to work on one
+sophisticated equation or one chapter.
+
+Mark fragment in Visual mode and press <F10> (or choose this option from
+TeX-Suite menu). This fragment will be saved to temporary file with preamble
+and compiled to current target. View new created document with \ls shortcut or
+TeX-Suite menu element. Two ":" commands are also available: very interesting
+|TPartComp| and |TPartView|.
 
 }}}
 ===========================================================================
@@ -1058,6 +1097,15 @@ taking care about Macros, Templates and Packages.
                 keys work as described in |latex-viewer|.
                 Note: TLookuses :grep command and is using 'grepprg'.  Its 
                 regular expressions can be different from those of Vim.
+
+:TPartComp                             *TPartComp*
+                No argument allowed but accepts range in all formats. Define
+                fragment of interest with :'a,'b, :/a/,/b/, :'<,'> or :20,30.
+                All other rules of compilation apply.
+
+:TPartView                             *TPartView*
+                Show last compiled fragment. All rules of viewing apply but
+                |latex-searching|.
 
 }}}
 ===========================================================================
