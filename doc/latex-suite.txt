@@ -1,6 +1,6 @@
 *latex-suite*   Tools for an enhanced LaTeX environment in Vim
                         For Vim version 6.0 and above.
-                  Last Change: Fri Dec 06 01:00 AM 2002 PST
+                  Last Change: Sat Dec 07 03:00 AM 2002 PST
 
                  By Srinath Avadhanula <srinath@fastmail.fm>,
                       Mikolaj Machowski <mikmach@wp.pl>,
@@ -58,50 +58,74 @@ file:  >
 
 The tools which are included in LaTeX suite can be grouped together into the
 following. Almost every feature described here can be customized to some
-degree. Please see the included file latex-suite/texrc file for the complete
-list of variables which can be customized.
+degree. Please see the included file ftplugin/latex-suite/|texrc| file for the
+complete list of variables which can be customized.
 
 }}}
 ===========================================================================
 TABLE OF CONTENTS                           *latex-suite-toc* {{{
                                                           
-|latex-macros|        Insert and visual mode mappings and menu items for
-                      commonly used LaTeX typesetting elements 
+Editing
+=======
+    |latex-macros|
+        Insert mode and visual mode mappings and menu items for commonly used
+        LaTeX typesetting elements         
 
-|latex-compiling|     This version of latex-suite ships with a version of the
-                      compiler specification which produces slightly less
-                      verbose output. It can also be dynamically re-configured
-                      to change the verbosity level.
+    |latex-smart-keys|
+        mappings of some common keys like <BS> to make editing faster
 
-|latex-viewing|       This is a set of functions which open up the compiled
-                      .dvi document using the specified DVI viewer.
+    |latex-bracketing-macros|
+        A streamlined way of entering all the \left's and \right's while
+        typing latex
 
-|latex-searching|     Xdvi (for UNIX) and Yap (for Windows) both provide ways
-                      for "forward searching" LaTeX documents. This section
-                      describes how to use these features and how to set up
-                      your dvi viewer to best use this feature.
+    |latex-templates|
+        Latex-suite ships with a select number of templates which you can use
+        when you start editing a tex file. Placing your own templates in the
+        ftplugin/latex-suite/templates directory causes them to be available
+        via the |TTemplate| command or the menu.
 
-|latex-folding|       manual folding based on LaTeX syntax elements. 
+    |latex-custom-macros|
+        By placing custom macros in the ftplugin/latex-suite/macros directory,
+        they are available readily via the |TMacro| command.
 
-|latex-packages|      This module provides a way to generate custom menus based
-                      on the packages used in the file being edited.
+Compiling/Viewing/Searching
+===========================
+    |latex-compiling|     
+        A customizable compiler which can be dynamically reconfigured to
+        change what kinds of warnings/errors to ignore.
 
-|latex-templates|     Custom templates
+    |latex-viewing|       
+        This is a set of functions which open up the compiled .dvi document
+        using the specified DVI viewer.
 
-|latex-custom-macros| Custom macros
+    |latex-searching|     
+        Xdvi (for UNIX) and Yap (for Windows) both provide ways for "forward
+        searching" LaTeX documents. This section describes how to use these
+        features and how to set up your dvi viewer to best use this feature.
 
-|latex-help|          LaTeX's tex-info file translated into a vim help file.
+Folding
+=======
+    |latex-folding|       
+        manual folding based on LaTeX syntax elements. 
 
-|latex-dictionary|    A dictionary of standard LaTeX terms.
+Pacakge Support
+===============
+    |latex-packages|
+        This module provides a way to generate custom menus based on the
+        packages used in the file being edited.
 
-|latex-tools|         This version of latex-suite also ships with 2 external
-                      tools:
-                      1. |vimlatex| an external utility which filters the output
-                         of the LaTeX compiler in order to ensure a more robust
-                         error-parsing.
-                      2. |ltags| A script to generate a tags file. It recognizes
-                         files being \input'ed into a main file.
-                         (ltags is written by Dimitri Antoniou)
+Miscelleneous Stuff
+===================
+    |latex-help|          
+        LaTeX's tex-info file translated into a vim help file.
+    
+    |latex-dictionary|   
+        A dictionary of standard LaTeX terms.
+    
+    |latex-tools|
+        This version of latex-suite also ships with an external tools:
+        2. |ltags| A script to generate a tags file. It recognizes files being
+           \input'ed into a main file.  (ltags is written by Dimitri Antoniou)
 }}}
 ===========================================================================
 LATEX MACROS                                   *latex-macros* {{{
@@ -167,30 +191,52 @@ These mappings insert LaTeX "environments" such as >
       \begin{center}
           «»
       \end{center}«»
-with the cursor left at the first |placeholder|.
-(The environment above is generated by typing ECE in insert mode)
+with the cursor left at the first |placeholder|. There are various ways of
+inserting environments into the source file. If the environment is a standard
+latex environment, then latex suite might also include common fields
+associated with it.
 
-Rule for remembering shortcuts:
--------------------------------
-1. All environment mappings begin with 'E'
+Method 1:
+    If you press <F5> in the insert mode while on an empty line, latex-suite
+    prompts you with a list of environments you might want to insert. You can
+    either choose one from the list or type in a new environment name. This
+    list can be customized. See the 'Macros' section of the |texrc| file for
+    details.
 
-2. If the environment can be broken up into 2 distinct words, such as
-   flushright (flush + right), then the next 2 letters are the first letters
-   of the 2 words.
-   Example: >
-        flushleft  (_f_lush + _l_eft)  ---> EFL
-        flushright (_f_lush + _r_ight) ---> EFR
-        eqnarray   (_e_qn + _a_rray)   ---> EEA
+Method 2:
+    If you press <F5> while on a line containing a single word, then
+    latex-suite creates a environment of that name.
 
-<  If on the other hand, the environment name cannot be broken up into 2
-   distinct words, then the next 2 letters are the first 2 letters of the name
-   of the environment.
-   Example: >
-        equation (_eq_uation)          ---> EEQ
+Method 3:
+    The shifted function keys, <S-F1> to <S-F4> can also be optionally mapped
+    to some common environments which you insert most often. The environments
+    mapped to each key can also be customized. See the |texrc| file for
+    details.
 
-Of course, not every last one of the environments can follow this rule because
-of ambiguities. In case of doubt, pull down the Tex-Environments menu. The
-menu item should give the hint for the map.
+Method 4:
+    Environments can also be inserted by pressing a 3 capital letter sequence
+    starting with an E. The following subsection describes this in detail. The
+    sequence of 3 letters generally tries to follow the following rules:
+    
+    1. All environment mappings begin with 'E'
+    
+    2. If the environment can be broken up into 2 distinct words, such as
+       flushright (flush + right), then the next 2 letters are the first
+       letters of the 2 words.
+       Example: >
+            flushleft  (_f_lush + _l_eft)  ---> EFL
+            flushright (_f_lush + _r_ight) ---> EFR
+            eqnarray   (_e_qn + _a_rray)   ---> EEA
+    
+<      If on the other hand, the environment name cannot be broken up into 2
+       distinct words, then the next 2 letters are the first 2 letters of the name
+       of the environment.
+       Example: >
+            equation (_eq_uation)          ---> EEQ
+    
+<      Of course, not every last one of the environments can follow this rule
+       because of ambiguities. In case of doubt, pull down the
+       Tex-Environments menu. The menu item should give the hint for the map.
 
 Along with the insert mode mappings, a set of visual mode mappings is
 provided which encloses the visually selected region in an environment.
@@ -360,6 +406,99 @@ style.
 
 }}}
 ===========================================================================
+LATEX SMART KEYS                           *latex-smart-keys* {{{
+
+Latex suite ships with the following smart keys:
+
+Smart Backspace
+    Pressing <BS> in insert mode checks to see whether we are just after
+    something like \'{a} and if so, deletes all of it. i.e, diacritics are
+    treated as single characters for backspacing.
+
+Smart Quotes
+    Pressing " (english double quote) will insert `` or '' by making an
+    intelligent guess about whether we intended to open or close a quote.
+
+Smart Space
+    Latex-suite maps the <space> key in such a way that $ characters are not
+    broken across lines. It does this by first setting tw=0 so that vim will
+    not automatically break lines and then maps the <space> key to insert
+    newlines keeping $$'s on the same line.
+
+Smart Dots
+    Pressing ... (3 dots) results in \ldots outside math mode and \cdots in
+    math mode.
+
+}}}
+===========================================================================
+CUSTOM TEMPLATES                            *latex-templates* {{{
+
+This functionality is available via the TeX-Suite.Templates menu.
+
+This module provides a way to insert custom templates at the beginning of the
+current file.
+
+When latex-suite first starts up, it scans the latex-suite/templates/ directory
+and creates menu items based on the files found there. When you select a
+template from this menu, the file will be read in above the first line of the
+current file. 
+
+A template file can use |placeholders| for easy cursor movement. In addition,
+you can use lines such as the following for inserting dates, names
+dynamically: >
+    %        File: ¡expand("%")¡
+
+This will create a line of the form: >
+    %       File: name.tex
+
+if the current file name is name.tex.
+
+NOTE: Templates are also accessible for non-gui users with the command
+|:TexTemplate|. The argument should be name of the corresponding template
+file.  If the command is called without arguments (preferred usage), then a
+list of avaiable templates is displayed and the user is asked to choose one of
+them.
+
+You can ofcourse place your own templates in this directory.
+
+}}}
+===========================================================================
+CUSTOM MACROS                           *latex-custom-macros* {{{
+
+This functionality is available via the TeX-Suite.Macros menu.
+
+This module provides a way of inserting customized macros into the current
+file.
+
+When latex-suite starts up, it scans the latex-suite/macros/ directory and
+creates a menu from the files found there. Each file is considered as a single
+macro. You can place your own macros in this directory, using |placeholders|
+if wanted.
+
+When you choose a macro from the menu, the corresponding file is read into the
+current buffer after the current cursor position. In non-gui mode, you can
+use the |TexMacro| command instead of choosing from the menu. This command
+takes the macro file name as an argument. When called without arguments
+(preferred usage), then a list of avaiable macro files is displayed and the
+user is prompted to choose one of them).
+
+There are some other tools provided in this menu, namely:
+
+{New}            Creates a new (unnamed) buffer in the latex-suite/macros/
+                 directory. 
+                 Use the command :TexMacroNew in non-gui mode.
+
+{Edit}           Opens up the corresponding macro file for editing.
+                 Use :TexMacroEdit in non-gui mode.
+
+{Delete}         Deletes the corresponding macro. 
+                 Use the prefixed numbers for fast navigation of menus.
+                 Use :TexMacroDelete in non-gui mode.
+
+{Redraw}         Rescans the macros/ directory and refreshes the macros list.
+
+}}}
+===========================================================================
 LATEX COMPILING                             *latex-compiling* {{{ 
 
 This functionality is available via the TeX-Suite menu.
@@ -372,9 +511,10 @@ as you download and install latex-suite.  In order to compile a LaTeX file,
 simply press \ll while editing the file.  This runs latex on the current file
 and displays the errors in a |quickfix-window|. You can then scroll through
 the errors and press <enter> to be taken to the location of the corresponding
-error. Along with the errors being listed in the quickfix window, the log file
-corresponding is also opened in |preview| mode. It is scrolled automatically
-to keep in sync with the error being viewed in the quickfix window.
+error. Along with the errors being listed in the quickfix window, the
+corresponding log file is also opened in |preview| mode. It is scrolled
+automatically to keep in sync with the error being viewed in the quickfix
+window.
 
 |latex-compiler-target|         : specifying a different target format for
                                   compilation.
@@ -711,85 +851,6 @@ Command can be also given without prefix:. The result is >
 
 }}}
 ===========================================================================
-CUSTOM TEMPLATES                            *latex-templates* {{{
-
-This functionality is available via the TeX-Suite.Templates menu.
-
-This module provides a way to insert custom templates at the beginning of the
-current file.
-
-When latex-suite first starts up, it scans the latex-suite/templates/ directory
-and creates menu items based on the files found there. When you select a
-template from this menu, the file will be read in above the first line of the
-current file. 
-
-A template file can use |placeholders| for easy cursor movement. In addition,
-you can use lines such as the following for inserting dates, names
-dynamically: >
-    %        File: ¡expand("%")¡
-
-This will create a line of the form: >
-    %       File: name.tex
-
-if the current file name is name.tex.
-
-NOTE: Templates are also accessible for non-gui users with the command
-|:TexTemplate|. The argument should be name of the corresponding template
-file.  If the command is called without arguments (preferred usage), then a
-list of avaiable templates is displayed and the user is asked to choose one of
-them.
-
-You can ofcourse place your own templates in this directory.
-
-}}}
-===========================================================================
-CUSTOM MACROS                           *latex-custom-macros* {{{
-
-This functionality is available via the TeX-Suite.Macros menu.
-
-This module provides a way of inserting customized macros into the current
-file.
-
-When latex-suite starts up, it scans the latex-suite/macros/ directory and
-creates a menu from the files found there. Each file is considered as a single
-macro. You can place your own macros in this directory, using |placeholders|
-if wanted.
-
-When you choose a macro from the menu, the corresponding file is read into the
-current buffer after the current cursor position. In non-gui mode, you can
-use the |TexMacro| command instead of choosing from the menu. This command
-takes the macro file name as an argument. When called without arguments
-(preferred usage), then a list of avaiable macro files is displayed and the
-user is prompted to choose one of them).
-
-There are some other tools provided in this menu, namely:
-
-{New}            Creates a new (unnamed) buffer in the latex-suite/macros/
-                 directory. 
-                 Use the command :TexMacroNew in non-gui mode.
-
-{Edit}           Opens up the corresponding macro file for editing.
-                 Use :TexMacroEdit in non-gui mode.
-
-{Delete}         Deletes the corresponding macro. 
-                 Use the prefixed numbers for fast navigation of menus.
-                 Use :TexMacroDelete in non-gui mode.
-
-{Redraw}         Rescans the macros/ directory and refreshes the macros list.
-
-}}}
-===========================================================================
-LATEX MENU CONFIGURATION           *latex-menu-configuration* {{{
-
-                                                    *latex-menu-configure*
-
-Generally latex-suite's menus should be configured by setting options in the
-|texrc| file. But if you feel the need to change after startup, then use the
-'TeX-Suite.Configure Menu' menu option to turn some of the menus off and on,
-control the nested-ness of some of the menus etc.
-
-}}}
-===========================================================================
 LATEX HELP                                       *latex-help*  {{{
 
 latexhelp.txt is a collection of latex.info files `translated' into vim help
@@ -820,6 +881,17 @@ has a corrresponding dictionary >
 
 }}}
 ===========================================================================
+LATEX MENU CONFIGURATION           *latex-menu-configuration* {{{
+
+                                                    *latex-menu-configure*
+
+Generally latex-suite's menus should be configured by setting options in the
+|texrc| file. But if you feel the need to change after startup, then use the
+'TeX-Suite.Configure Menu' menu option to turn some of the menus off and on,
+control the nested-ness of some of the menus etc.
+
+}}}
+===========================================================================
 LATEX SUITE COMMANDS                   *latex-suite-commands* {{{
 
 LatexSuite defines set of commands for non-GUI and power users. They are
@@ -827,7 +899,7 @@ taking care about Macros, Templates and Packages.
 
 :TMacro [{macro}]                      *TMacro*
                 When used without any arguments lists all available macros
-                defined in latex-suite/macros/ directory and prompt you to
+                defined in latex-suite/macros/ directory and prompts you to
                 choose one of them.
                 With one argument |:read| this macro under cursor position.
                 With more than one argument it will not work :)
