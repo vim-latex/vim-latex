@@ -3,7 +3,7 @@
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
 "		   URL: 
-"  Last Change: Thu Dec 19 03:00 AM 2002 PST
+"  Last Change: Sun Dec 22 08:00 AM 2002 EST
 "
 " Help: 
 " Changes: {{{
@@ -261,8 +261,11 @@ if g:Tex_SmartKeyQuote
 		" Now, test whether we actually found a _preceding_ quote; if so, is it
 		" and open quote?
 		if ( line(".") < l || line(".") == l && col(".") < c )
-			if strlen(getline("."))
-				if ( getline(".")[col(".")-1] == open[0] )
+			if strlen(getline(".")) && (getline(".")[col(".")-1] == open[0])
+				if line(".") == l && col(".") + strlen(open) == c
+					" Insert "<++>''<++>" instead of just "''".
+					let q = IMAP_PutTextWithMovement("<++>".close."<++>")
+				else
 					let q = close
 				endif
 			endif
