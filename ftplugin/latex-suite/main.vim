@@ -28,10 +28,7 @@ let s:doneFunctionDefinitions = 1
 " these lines need to be outside the function.
 let s:path = expand('<sfile>:p:h')
 " set up personal defaults.
-let s:up_path = expand('<sfile>:p:h:h')
-if filereadable(s:up_path.'/tex/texrc')
-	exe "so ".s:up_path.'/tex/texrc'
-endif
+runtime ftplugin/tex/texrc
 " set up global defaults.
 exe "so ".s:path.'/texrc'
 
