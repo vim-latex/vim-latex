@@ -4,8 +4,8 @@
 % NOTE: if you have filetype indentation turned on, then do not do
 %       formatting here. the indentation will follow automatically...
 \begin{mycomplicatedenvironment}
-\mycommand1{«»}
-\mycommand2{«hint2»}
-\mycommand3{«»}
-\mycommand4{«»}
-\end{mycomplicatedenvironment}«»
+\mycommand1{<++>}
+\mycommand2{<+hint2+>}
+\mycommand3{<++>}
+\mycommand4{<++>}
+\end{mycomplicatedenvironment}<++>

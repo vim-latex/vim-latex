@@ -1,6 +1,6 @@
 let g:TeX_package_option_multicol = ''
 let g:TeX_package_multicol =
-\ 'ens:multicols:{«cols»}[«text»][«sep»],'
+\ 'ens:multicols:{<+cols+>}[<+text+>][<+sep+>],'
 \.'columnbreak,'
 \.'premulticols,'
 \.'postmulticols,'

@@ -1,7 +1,7 @@
 " ==============================================================================
 " Author: Carl Mueller
 " 		  (incorporated into latex-suite by Srinath Avadhanula)
-" Last Change: Fri Dec 13 12:00 PM 2002 EST
+" Last Change: Thu Dec 19 03:00 AM 2002 PST
 " Description:
 " 	This ftplugin provides the following maps:
 " . <M-b> encloses the previous character in \mathbf{}
@@ -92,7 +92,7 @@ function! Tex_MathCal()
 	if char =~ '[a-zA-Z0-9]'
 		return "\<BS>".'\mathcal{'.toupper(char).'}'
 	else
-		return Tex_PutTextWithMovement('\cite{«»}«»')
+		return IMAP_PutTextWithMovement('\cite{<++>}<++>')
 	endif
 endfunction
 " }}}
@@ -102,12 +102,12 @@ endfunction
 " following way:
 " If the character before typing <M-l> is one of '([{|<q', then do the
 " following:
-" 	1. (<M-l>		\left(«»\right«»
+" 	1. (<M-l>		\left(<++>\right<++>
 " 	    	similarly for [, |
-" 	   {<M-l>		\left\{«»\right\}«»
-" 	2. <<M-l>		\langle«»\rangle«»
-" 	3. q<M-l>		\lefteqn{«»}«»
-" otherwise insert  \label{«»}«»
+" 	   {<M-l>		\left\{<++>\right\}<++>
+" 	2. <<M-l>		\langle<++>\rangle<++>
+" 	3. q<M-l>		\lefteqn{<++>}<++>
+" otherwise insert  \label{<++>}<++>
 function! Tex_LeftRight()
 	let line = getline(line("."))
 	let char = line[col(".")-2]
@@ -120,13 +120,13 @@ function! Tex_LeftRight()
 			let add = "\\"
 		endif
 		let rhs = matchstr(matchedbrackets, char.'\zs.\ze')
-		return "\<BS>".Tex_PutTextWithMovement('\left'.add.char.'«»\right'.add.rhs.'«»')
+		return "\<BS>".IMAP_PutTextWithMovement('\left'.add.char.'<++>\right'.add.rhs.'<++>')
 	elseif char == '<'
-		return "\<BS>".Tex_PutTextWithMovement('langle«»\rangle«»')
+		return "\<BS>".IMAP_PutTextWithMovement('langle<++>\rangle<++>')
 	elseif char == 'q'
-		return "\<BS>".Tex_PutTextWithMovement('\lefteqn{«»}«»')
+		return "\<BS>".IMAP_PutTextWithMovement('\lefteqn{<++>}<++>')
 	else
-		return '\label{«»}«»'
+		return '\label{<++>}<++>'
 	endif
 endfunction " }}}
 " Tex_PutLeftRight: maps <M-l> in normal mode {{{

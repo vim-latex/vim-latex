@@ -4,7 +4,7 @@
 "              (minor modifications by Srinath Avadhanula)
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: nie lis 10 05:00  2002 C
+" Last Change: Thu Dec 19 03:00 AM 2002 PST
 " 
 "  Description: functions for handling templates in latex-suite/templates
 "               directory.

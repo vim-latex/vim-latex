@@ -1,6 +1,6 @@
 *latex-suite*   Tools for an enhanced LaTeX environment in Vim
                         For Vim version 6.0 and above.
-                  Last Change: Sat Dec 07 03:00 AM 2002 PST
+                  Last Change: Sat Dec 14 02:00 AM 2002 PST
 
                  By Srinath Avadhanula <srinath@fastmail.fm>,
                       Mikolaj Machowski <mikmach@wp.pl>,
@@ -164,15 +164,15 @@ be done. As an example, when the user types in "EFI" in insert mode, she will
 get the following: >
 
     \begin{figure}[h]
-        \centerline{\psfig{figure=«eps file»}}
-        \caption{«caption text»}
-        \label{fig:«label»}
-    \end{figure}«»
+        \centerline{\psfig{figure=<+eps file+>}}
+        \caption{<+caption text+>}
+        \label{fig:<+label+>}
+    \end{figure}<++>
 <
-The text «eps file» will be selected and she will be left in |select-mode| so
+The text <+eps file+> will be selected and she will be left in |select-mode| so
 that she can continue typing straight away. After having typed in the file
 name, she can press Control-J (while still in insert-mode). This will take her
-directly to the next "place-holder". i.e, the «caption text» will be visually
+directly to the next "place-holder". i.e, the <+caption text+> will be visually
 selected with vim in select mode again for typing in the caption. This saves
 on a lot of key presses.
 
@@ -189,8 +189,8 @@ Environment Mappings {{{
 
 These mappings insert LaTeX "environments" such as >
       \begin{center}
-          «»
-      \end{center}«»
+          <++>
+      \end{center}<++>
 with the cursor left at the first |placeholder|. There are various ways of
 inserting environments into the source file. If the environment is a standard
 latex environment, then latex suite might also include common fields
@@ -257,7 +257,7 @@ selection, you get: >
 Font Mappings: {{{
 
 These mappings insert font descriptions such as: >
-      \textsf{«»}«»
+      \textsf{<++>}<++>
 again with the cursor at the first place-holder.
 
 Mnemonic:
@@ -297,7 +297,7 @@ Mnemonic: (make your own!) >
 
 Example:
     SSE in insert mode inserts >
-        \section{«»}«»
+        \section{<++>}<++>
 <   If you select a word or line and press `se, then you get >
         \section{section name}
 <   The menu item in Tex-Environments.Sections have a sub-menu called
@@ -313,12 +313,12 @@ AUC-TEX key bindings: {{{
 These are simple 2 key expansions for some very commonly used LaTeX elements.
    Examples: >
 
-	`^   expands to   \hat{«»}«»
-	`_   expands to   \bar{«»}«»
+	`^   expands to   \hat{<++>}<++>
+	`_   expands to   \bar{<++>}<++>
 	`6   expands to   \partial
 	`8   expands to   \infty
-	`/   expands to   \frac{«»}{«»}«»
-	`%   expands to   \frac{«»}{«»}«»
+	`/   expands to   \frac{<++>}{<++>}<++>
+	`%   expands to   \frac{<++>}{<++>}<++>
 	`@   expands to   \circ
 	`0   expands to   ^\circ
 	`=   expands to   \equiv
@@ -333,12 +333,12 @@ These are simple 2 key expansions for some very commonly used LaTeX elements.
 	`<   expands to   \le
 	`>   expands to   \ge
 	`,   expands to   \nonumber
-	`~   expands to   \tilde{«»}«»
-	`;   expands to   \dot{«»}«»
-	`:   expands to   \ddot{«»}«»
-	`2   expands to   \sqrt{«»}«»
+	`~   expands to   \tilde{<++>}<++>
+	`;   expands to   \dot{<++>}<++>
+	`:   expands to   \ddot{<++>}<++>
+	`2   expands to   \sqrt{<++>}<++>
 	`|   expands to   \Big|
-	`I   expands to   \int_{«»}^{«»}«»"
+	`I   expands to   \int_{<++>}^{<++>}<++>"
 <   
     (again, notice the convenient place-holders)
 
@@ -758,7 +758,7 @@ Example:
 From the packages menu, choose the >
     Tex-Packages.Supported.SIunits 
 option. This will insert a line of form: >
-    \usepackage[«»]«»{SIunits}«»
+    \usepackage[<++>]<++>{SIunits}<++>
 at the beginning of the file (with the cursor placed at the first
 |placeholder|. You will also notice that the packages menu now contains a
 sub-menu called SIunits, which contains the commands and options for the
@@ -788,7 +788,7 @@ You can perform the following actions via the packages menu:
                    the package will be created.
                    If options are detected, then the inserted line is of the
                    form:
-                        \usepackage[«»]{package_name}
+                        \usepackage[<++>]{package_name}
                    A |latex-package-dictionary| might also be created.
 
                                                *latex-package-file-writing*

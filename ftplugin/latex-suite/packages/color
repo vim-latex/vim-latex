@@ -22,16 +22,16 @@ let g:TeX_package_option_color =
 \.'usenames'
 
 let g:TeX_package_color = 
-\ 'brs:definecolor{«»}{«»}{«»},'
-\.'brs:DefineNamedColor{«»}{«»}{«»}{«»},'
+\ 'brs:definecolor{<++>}{<++>}{<++>},'
+\.'brs:DefineNamedColor{<++>}{<++>}{<++>}{<++>},'
 \.'bra:color,'
 \.'nob:color,'
 \.'brd:textcolor,'
-\.'brs:textcolor[«»]{«»}{«»},'
+\.'brs:textcolor[<++>]{<++>}{<++>},'
 \.'brd:colorbox,'
-\.'brs:colorbox[«»]{«»}{«»},'
-\.'brs:fcolorbox{«»}{«»}{«»},'
-\.'brs:fcolorbox[«»]{«»}{«»}{«»},'
+\.'brs:colorbox[<++>]{<++>}{<++>},'
+\.'brs:fcolorbox{<++>}{<++>}{<++>},'
+\.'brs:fcolorbox[<++>]{<++>}{<++>}{<++>},'
 \.'brd:pagecolor,'
 \.'nob:pagecolor'
 

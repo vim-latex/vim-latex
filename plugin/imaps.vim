@@ -1,10 +1,13 @@
 "        File: imaps.vim
-"      Author: Srinath Avadhanula
-"              ( srinath@fastmail.fm )
-"         WWW: http://robotics.eecs.berkeley.edu/~srinath/vim/.vim/imaps.vim
+"     Authors: Srinath Avadhanula <srinath AT fastmail.fm>
+"              Benji Fisher <benji AT member.AMS.org>
+"              
+"         WWW: http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/vim-latex/vimfiles/plugin/imaps.vim?only_with_tag=MAIN
+"
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
-" Last Change: Fri Dec 13 12:00 PM 2002 EST
+"
+" Last Change: Fri Dec 20 01:00 AM 2002 PST
 " 
 " Documentation: {{{
 "
@@ -45,28 +48,28 @@
 " The script already provides some default mappings. each "mapping" is of the
 " form:
 "
-" call Tex_IMAP (lhs, rhs, ft)
+" call IMAP (lhs, rhs, ft)
 " 
 " Some characters in the RHS have special meaning which help in cursor
 " placement.
 "
 " Example One:
 "
-" 	call Tex_IMAP ("bit`", "\\begin{itemize}\<cr>\\item «»\<cr>\\end{itemize}«»", "tex")
+" 	call IMAP ("bit`", "\\begin{itemize}\<cr>\\item <++>\<cr>\\end{itemize}<++>", "tex")
 " 
 " This effectively sets up the map for "bit`" whenever you edit a latex file.
 " When you type in this sequence of letters, the following text is inserted:
 " 
 " \begin{itemize}
 " \item *
-" \end{itemize}«»
+" \end{itemize}<++>
 "
 " where * shows the cursor position. The cursor position after inserting the
 " text is decided by the position of the first "place-holder". Place holders
 " are special characters which decide cursor placement and movement. In the
-" example above, the place holder characters are « and ». After you have typed
-" in the item, press <C-j> and you will be taken to the next set of «»'s.
-" Therefore by placing the «» characters appropriately, you can minimize the
+" example above, the place holder characters are <+ and +>. After you have typed
+" in the item, press <C-j> and you will be taken to the next set of <++>'s.
+" Therefore by placing the <++> characters appropriately, you can minimize the
 " use of movement keys.
 "
 " NOTE: Set g:Imap_UsePlaceHolders to 0 to disable placeholders altogether.
@@ -79,7 +82,7 @@
 " 
 " Example Two:
 " You can use the <C-r> command to insert dynamic elements such as dates.
-"	call Tex_IMAP ('date`', "\<c-r>=strftime('%b %d %Y')\<cr>", '')
+"	call IMAP ('date`', "\<c-r>=strftime('%b %d %Y')\<cr>", '')
 "
 " sets up the map for date` to insert the current date.
 "
@@ -87,21 +90,36 @@
 " Bonus: This script also provides a command Snip which puts tearoff strings,
 " '----%<----' above and below the visually selected range of lines. The
 " length of the string is chosen to be equal to the longest line in the range.
+" Recommended Usage:
+"   '<,'>Snip
 "--------------------------------------%<--------------------------------------
 " }}}
 
-" Prevent resourcing this file.
-if exists('s:doneImaps')
-	finish
+" ==============================================================================
+" Script Options / Variables
+" ============================================================================== 
+" Options {{{
+if !exists('g:Imap_StickyPlaceHolders')
+	let g:Imap_StickyPlaceHolders = 1
 endif
-let s:doneImaps = 1
+if !exists('g:Imap_DeleteEmptyPlaceHolders')
+	let g:Imap_DeleteEmptyPlaceHolders = 1
+endif
+" }}}
+" Variables {{{
+" s:LHS_{ft}_{char} will be generated automatically.  It will look like
+" s:LHS_tex_o = 'fo\|foo\|boo' and contain all mapped sequences ending in "o".
+" s:Map_{ft}_{lhs} will be generated automatically.  It will look like
+" s:Map_c_foo = 'for(<++>; <++>; <++>)', the mapping for "foo".
+"
+" }}}
 
 " ==============================================================================
 " functions for easy insert mode mappings.
 " ==============================================================================
 " IMAP: Adds a "fake" insert mode mapping. {{{
 "       For example, doing
-"           Tex_IMAP('abc', 'def' ft) 
+"           IMAP('abc', 'def' ft) 
 "       will mean that if the letters abc are pressed in insert mode, then
 "       they will be replaced by def. If ft != '', then the "mapping" will be
 "       specific to the files of type ft. 
@@ -121,308 +139,256 @@ let s:doneImaps = 1
 "       the previous characters consititute the left hand side of the mapping,
 "       the previously typed characters and erased and the right hand side is
 "       inserted
-function! Tex_IMAP(lhs, rhs, ft)
+
+" IMAP: set up a filetype specific mapping.
+" Description:
+"   "maps" the lhs to rhs in files of type 'ft'. If supplied with 2
+"   additional arguments, then those are assumed to be the placeholder
+"   characters in rhs. If unspecified, then the placeholder characters
+"   are assumed to be '<+' and '+>' These placeholder characters in
+"   a:rhs are replaced with the users setting of
+"   [bg]:Imap_PlaceHolderStart and [bg]:Imap_PlaceHolderEnd settings.
+"
+function! IMAP(lhs, rhs, ft, ...)
+
+	" Find the place holders to save for IMAP_PutTextWithMovement() .
+	if a:0 < 2
+		let phs = '<+'
+		let phe = '+>'
+	else
+		let phs = a:1
+		let phe = a:2
+	endif
+
+	let hash = s:Hash(a:lhs)
+	let s:Map_{a:ft}_{hash} = a:rhs
+	let s:phs_{a:ft}_{hash} = phs
+	let s:phe_{a:ft}_{hash} = phe
+
+	" Add a:lhs to the list of left-hand sides that end with lastLHSChar:
 	let lastLHSChar = a:lhs[strlen(a:lhs)-1]
-	" s:charLens_<ft>_<char> contains the lengths of the left hand sides of
-	" the various mappings for filetype <ft> which end in <char>. its a comma
-	" seperated list of numbers.
-	" for example if we want to create 2 mappings
-	"   ab  --> cd
-	"   lbb --> haha
-	" for tex type files, then the variable will be:
-	"   s:charLens_tex_b = '2,3,'
-	let charLenHash = 's:charLens_'.a:ft.'_'.char2nr(lastLHSChar)
-
-	" if this variable doesnt exist before, initialize...
-	if !exists(charLenHash)
-		exe 'let '.charLenHash.' = ""'
-	end
-	" get the value of the variable.
-	exe "let charLens = ".charLenHash
-	" check to see if this length is already there...
-	if matchstr(charLens, '\(^\|,\)'.strlen(a:lhs).',') == ''
-		" ... if not append.
-		" but carefully. sort the charLens array in decreasing order. this way
-		" the longest lhs is checked first. i.e if the user has 2 maps
-		" ab    --> rhs1
-		" csdfb --> rhs2
-		" i.e 2 mappings ending in b, then check to see if the longer mapping
-		" is satisfied first.
-		" TODO: possible bug. what if the user has a mapping with lhs more
-		" than 9 chars? (highly improbable).
-		" largest element which is just smaller than the present length
-		let idx = match(charLens, '[1-'.strlen(a:lhs).'],')
-		if idx == -1
-			let new = charLens.strlen(a:lhs).','
-		else
-			let left = strpart(charLens, 0, idx)
-			let right = strpart(charLens, idx, 1000)
-			let new = left.strlen(a:lhs).','.right
-		end
-
-		let charLens = new
-		exe "let ".charLenHash." = charLens"
-	end
-	
-	" create a variable corresponding to the lhs. convert all non-word
-	" characters into their ascii codes so that a vim variable with that name
-	" can be created.  this is a way to create hashes in vim.
-	let lhsHash = 's:Map_'.a:ft.'_'.substitute(a:lhs, '\(\W\)', '\="_".char2nr(submatch(1))."_"', 'g')
-	" store the value of the right-hand side of the mapping in this newly
-	" created variable.
-	exe "let ".lhsHash." = a:rhs"
-	
-	" store a token string of this length. this is helpful later for erasing
-	" the left-hand side before inserting the right-hand side.
-	let tokenLenHash = 's:LenStr_'.strlen(a:lhs)
-	exe "let ".tokenLenHash." = a:lhs"
+	let hash = s:Hash(lastLHSChar)
+	if !exists("s:LHS_" . a:ft . "_" . hash)
+		let s:LHS_{a:ft}_{hash} = escape(a:lhs, '\')
+	else
+		let s:LHS_{a:ft}_{hash} = escape(a:lhs, '\') .'\|'.  s:LHS_{a:ft}_{hash}
+	endif
 
 	" map only the last character of the left-hand side.
 	if lastLHSChar == ' '
 		let lastLHSChar = '<space>'
 	end
-	exe 'inoremap <silent> '.escape(lastLHSChar, '|').' <C-r>=<SID>LookupCharacter("'.escape(lastLHSChar, '\|').'")<CR>'
+	exe 'inoremap <silent>' (a:ft== '' ? '' : '<buffer>')
+				\ escape(lastLHSChar, '|')
+				\ '<C-r>=<SID>LookupCharacter("' .
+				\ escape(lastLHSChar, '\|') .
+				\ '")<CR>'
 endfunction
 
 " }}}
 " LookupCharacter: inserts mapping corresponding to this character {{{
 "
-" This function performs a reverse lookup when this character is typed in. It
-" loops over all the possible left-hand side variables ending in this
-" character and then if a possible match exists, erases the left-hand side
-" and inserts the right-hand side instead.
-function! <SID>LookupCharacter(char)
-	let charHash = char2nr(a:char)
+" This function extracts from s:LHS_{&ft}_{a:char} or s:LHS__{a:char}
+" the longest lhs matching the current text.  Then it replaces lhs with the
+" corresponding rhs saved in s:Map_{ft}_{lhs} .
+" The place-holder variables are passed to IMAP_PutTextWithMovement() .
+function! s:LookupCharacter(char)
+	let charHash = s:Hash(a:char)
 
-	if !exists('s:charLens_'.&ft.'_'.charHash)
-		\ && !exists('s:charLens__'.charHash)
+	if exists("s:LHS_" . &ft . "_" . charHash)
+		let ft = &ft
+	elseif exists("s:LHS__" . charHash)
+		let ft = ""
+	else
 		return a:char
-	end
-
-	let k = 1
-	while k <= 2
-		" first check the filetype specific mappings and then the general
-		" purpose mappings.
-		if k == 1
-			let ft = &ft
-		else
-			let ft = ''
-		end
-
-		" get the lengths of the left-hand side mappings which end in this
-		" character. if no mappings ended in this character, then continue... 
-		if !exists('s:charLens_'.ft.'_'.charHash)
-			let k = k + 1
-			continue
-		end
-
-		exe 'let lens = s:charLens_'.ft.'_'.charHash
-
-		let i = 1
-		while 1
-			" get the i^th length. 
-			let numchars = s:Strntok(lens, ',', i)
-			" if there are no more lengths, then skip to the next outer while
-			" loop.
-			if numchars == ''
-				break
-			end
-
-			if col('.') < numchars
-				let i = i + 1
-				continue
-			end
-			
-			" get the corresponding text from before the text. append the present
-			" char to complete the (possible) LHS
-			let text = strpart(getline('.'), col('.') - numchars, numchars - 1).a:char
-			let lhsHash = 's:Map_'.ft.'_'.substitute(text, '\(\W\)', '\="_".char2nr(submatch(1))."_"', 'g')
-
-			" if there is no mapping of this length which satisfies the previously
-			" typed in characters, then proceed to the next length group...
-			if !exists(lhsHash)
-				let i = i + 1
-				continue
-			end
-
-			"  ... otherwise insert the corresponding RHS
-			" first generate the required number of back-spaces to erase the
-			" previously typed in characters.
-			exe "let tokLHS = s:LenStr_".numchars
-			let bkspc = substitute(tokLHS, '.$', '', '')
-			let bkspc = substitute(bkspc, '.', "\<bs>", "g")
-
-			" get the corresponding RHS
-			exe "let ret = ".lhsHash
-			
-			return bkspc.Tex_PutTextWithMovement(ret)
-
-		endwhile
-
-		let k = k + 1
-	endwhile
-	
-	return a:char
+	endif
+	" Find the longest left-hand side that matches the line so far.
+	" Use '\V' (very no-magic) so that only '\' is special, and it was already
+	" escaped when building up s:LHS_{ft}_{charHash} .
+	let text = strpart(getline("."), 0, col(".")-1) . a:char
+	" matchstr() returns the match that starts first. This automatically
+	" ensures that the longest LHS is used for the mapping.
+	let lhs = matchstr(text, '\V\(' . s:LHS_{ft}_{charHash} . '\)\$')
+	if strlen(lhs) == 0
+		return a:char
+	endif
+	" enough back-spaces to erase the left-hand side; -1 for the last
+	" character typed:
+	let bs = substitute(strpart(lhs, 1), ".", "\<bs>", "g")
+	let hash = s:Hash(lhs)
+	return bs . IMAP_PutTextWithMovement(s:Map_{ft}_{hash},
+				\ s:phs_{ft}_{hash}, s:phe_{ft}_{hash})
 endfunction
 
 " }}}
-" IMAP_PutTextWithMovement: appends movement commands to a text  {{{
-" 		This enables which cursor placement.
-function! Tex_PutTextWithMovement(text)
-	
-	let s:oldenc = &encoding
-	if &encoding != 'latin1'
-		let &encoding='latin1'
+" IMAP_PutTextWithMovement: returns the string with movement appended {{{
+" Description:
+"   If a:str contains "placeholders", then appends movement commands to
+"   str in a way that the user moves to the first placeholder and enters
+"   insert or select mode. If supplied with 2 additional arguments, then
+"   they are assumed to be the placeholder specs. Otherwise, they are
+"   assumed to be '<+' and '+>'. These placeholder chars are replaced
+"   with the users settings of [bg]:Imap_PlaceHolderStart and
+"   [bg]:Imap_PlaceHolderEnd.
+function! IMAP_PutTextWithMovement(str, ...)
+
+	" The placeholders used in the particular input string. These can be
+	" different from what the user wants to use.
+	if a:0 < 2
+		let phs = '<+'
+		let phe = '+>'
+	else
+		let phs = escape(a:1, '\')
+		let phe = escape(a:2, '\')
 	endif
 
-	let text = a:text
+	let text = a:str
 
-	" if the user doesnt want to use place-holders, then remove them.
+	" If there are no place holders, just return the text.
+	if text !~ '\V'.phs.'\.\{-}'.phe
+		return text
+	endif
+
+	" The user's placeholder settings.
+	let phsUser = s:PlaceHolderStart()
+	let pheUser = s:PlaceHolderEnd()
+
+	" A very rare string: Do not use any special characters here. This is used
+	" for moving to the beginning of the inserted text
+	let marker = '<!--- @#% Start Here @#% ----!>'
+	let markerLength = strlen(marker)
+
+	" If the user does not want to use place-holders, then remove all but the
+	" first placeholder
 	if exists('g:Imap_UsePlaceHolders') && !g:Imap_UsePlaceHolders
-		" a heavy-handed way to just use the first placeholder or ä and remove
-		" the rest.
-		" substitute the placeholders with ä
-		let text = substitute(text, '«[^»]*»', 'ä', 'g')
-		" substitute the first ä with ë ...
-		let text = substitute(text, 'ä', 'ë', '')
-		" ... now remove all the ä's.
-		let text = substitute(text, 'ä', '', 'g')
-		" ... and substitute back the first ë with ä
-		let text = substitute(text, 'ë', 'ä', '')
+		" a heavy-handed way to just use the first placeholder and remove the
+		" rest.  Replace the first placeholder with phe ...
+		let text = substitute(text, '\V'.phs.'\.\{-}'.phe, phe, '')
+		" ... delete all the others ...
+		let text = substitute(text, '\V'.phs.'\.\{-}'.phe, '', 'g')
+		" ... and replace the first phe with phsUser.pheUser .
+		let text = substitute(text, '\V'.phe, phsUser.pheUser, '')
 	endif
 
-	" change the default values of the place-holder variables.
-	let phs = '«'
-	if exists('b:Imap_PlaceHolderStart')
-		let phs = b:Imap_PlaceHolderStart
-	elseif exists('g:Imap_PlaceHolderStart')
-		let phs = g:Imap_PlaceHolderStart
-	endif
-	let text = substitute(text, '«', phs, 'g')
-	let phe = '»'
-	if exists('b:Imap_PlaceHolderEnd')
-		let phe = b:Imap_PlaceHolderEnd
-	elseif exists('g:Imap_PlaceHolderEnd')
-		let phe = g:Imap_PlaceHolderEnd
-	endif
-	let text = substitute(text, '»', phe, 'g')
+	" now replace all occurences of the placeholders here with the users choice
+	" of placeholder settings.
+	" NOTE: There can be more than 1 placeholders here. Therefore use a global
+	"       search and replace.
+	let text = substitute(text, '\V'.phs.'\(\.\{-}\)'.phe, phsUser.'\1'.pheUser, 'g')
+	" Now append the marker (the rare string) to the beginning of the text so
+	" we know where the expansion started from
+	let text = marker.text
 
-	let fc = match(text, 'ä\|'.phs.'[^'.phe.']*'.phe)
-	if fc < 0
-		let initial = ""
-		let movement = ""
-	" if the place to go to is at the very beginning, then a simple back
-	" search will do...
-	elseif fc == 0
-		let initial = ""
-		let movement = "\<C-\>\<C-N>?ä\<cr>" . s:RemoveLastHistoryItem . "\<cr>s"
+	" This search will move us to the very beginning of the text to be
+	" inserted.
+	" The steps are:
+	" 1. enter escape mode (using <C-\><C-n> so it works in insertmode as
+	"    well)
+	" 2. Search backward for marker text.
+	" 3. delete from the beginning to the end of marker into the blackhole
+	"    register.
+	let movement = "\<C-\>\<C-N>"
+				\ . "?\\V".marker."\<CR>"
+				\ . '"_d/\V'.marker."/e\<CR>"
 
-	" however, if its somewhere in the middle, then we need to go back to the
-	" beginning of the pattern and then do a forward lookup from that point.
-	else
+	" Now enter insert mode and call IMAP_Jumpfunc() to take us to the next
+	" placeholder and get us either into visual or insert mode. Since we do
+	" at least one search in this function, remove it from the search history
+	" first.
+	" NOTE: Even if we performed more than one search, vim will only put one
+	"       of them in the user's search list.
+	let movement = movement.':'.s:RemoveLastHistoryItem."\<CR>"
+			\ . "i\<C-r>=IMAP_Jumpfunc('', 1)\<CR>"
 
-		" hopefully ¡¡IMAPS_Start!! is rare enough. prepend that to the text.
-		let initial = "¡¡IMAPS_Start!!"
-		" and then do a backwards lookup. this takes us to the beginning. then
-		" delete that dummy part. we are left at the very beginning.
-		let movement = "\<C-\>\<C-N>?¡¡IMAPS_Start!!\<cr>v".(strlen(initial)-1)."l\"_x"
-
-		" now proceed with the forward search for cursor placement
-		let movement = movement."/ä\\|".phs."[^".phe."]*".phe."\<cr>"
-
-		" we needed 2 searches to get here. remove them from the search
-		" history.
-		let movement = movement . s:RemoveLastHistoryItem . "\<cr>"
-
-		" if its a ä or «», then just delete it
-		if text[fc] == 'ä'
-			let movement = movement."\"_s"
-		elseif strpart(text, fc, 2) == phs.phe
-			let movement = movement."\"_2s"
-
-		" otherwise enter select mode...
-		else
-			let movement = movement."v/".iconv(phe, 'latin1', s:oldenc)."\<CR>\<C-g>"
-		end
-
-	end
-
-	if s:oldenc != 'latin1'
-		let &encoding = s:oldenc
-	endif
-	return initial.text.movement
-
-endfunction 
-
-" }}}
-" IMAP_Jumpfunc: takes user to next «place-holder» {{{
-" Author: Gergely Kontra
-"         taken from mu-template.vim by him This idea is originally
-"         from Stephen Riehm's bracketing system.
-" modified by SA to use optional place holder characters.
-function! IMAP_Jumpfunc()
-	let s:oldenc = &encoding
-	if s:oldenc != 'latin1'
-		setglobal encoding=latin1
-	endif
-
-
-	let phs = '«'
-	let phe = '»'
-
-	if exists('b:Imap_PlaceHolderStart')
-		let phs = b:Imap_PlaceHolderStart
-	elseif exists('g:Imap_PlaceHolderStart')
-		let phs = g:Imap_PlaceHolderStart
-	endif
-
-	if exists('b:Imap_PlaceHolderEnd')
-		let phe = b:Imap_PlaceHolderEnd
-	elseif exists('g:Imap_PlaceHolderEnd')
-		let phe = g:Imap_PlaceHolderEnd
-	endif
-
-	let phsc = iconv(phs, 'latin1', s:oldenc)
-	let phec = iconv(phe, 'latin1', s:oldenc)
-
-	if !search(phsc.'.\{-}'.phec,'W') "no more marks
-		echomsg "no marks found\n"
-		return "\<CR>"
-	else
-		if strpart (  
-					\ getline('.'), 
-					\ col('.') + strlen(phsc) - 1,
-					\ strlen(phec)
-					\ 
-					\ ) == phec
-
-			return substitute(phsc.phec, '.', "\<Del>", 'g')."\<C-r>=RestoreEncoding()\<CR>"
-		else
-			if col('.') > 1
-				return "\<Esc>lv/".phec."\<CR>\<Esc>:call RestoreEncoding()\<CR>gv\<C-g>"
-			else
-				return "\<C-\>\<C-n>v/".phe."\<CR>\<Esc>:call RestoreEncoding()\<CR>gv\<C-g>"
-			endif
-		endif
-	endif
+	return text.movement
 endfunction
 
+" }}}
+" IMAP_Jumpfunc: takes user to next <+place-holder+> {{{
+" Author: Luc Hermitte
+"
+function! IMAP_Jumpfunc(direction, inclusive)
+
+	" The user's placeholder settings.
+	let phsUser = s:PlaceHolderStart()
+	let pheUser = s:PlaceHolderEnd()
+
+	let searchOpts = a:direction
+	" If the user has nowrapscan set, then do not make the search wrap around
+	" the end (or beginning) of the file.
+	if ! &wrapscan 
+		let searchOpts = direction.'W'
+	endif
+
+	let searchString = ''
+	" If this is not an inclusive search or if it is inclusive, but the
+	" current cursor position does not contain a placeholder character, then
+	" search for the placeholder characters.
+	if !a:inclusive || strpart(getline('.'), col('.')-1) !~ '\V^'.phsUser
+		let searchString = '\V'.phsUser.'\.\{-}'.pheUser
+	endif
+
+	" If we didn't find any placeholders return quietly.
+	if searchString != '' && !search(searchString, searchOpts)
+		return ''
+	endif
+
+	" At this point, we are at the beginning of a placeholder. 
+	" Remember the position here.
+	let position = line('.') . "normal! ".virtcol('.').'|'
+	" Open any closed folds and make this part of the text visible.
+	silent! foldopen!
+
+	" Calculate if we have an empty placeholder or if it contains some
+	" description.
+	let template = 
+		\ matchstr(strpart(getline('.'), col('.')-1),
+		\          '\V\^'.phsUser.'\zs\.\{-}\ze'.pheUser)
+	let placeHolderEmpty = !strlen(template)
+
+	" This movement command selects the placeholder text. In the forward mode,
+	" we select left-right, otherwise right-left.
+	if a:direction =~ 'b'
+		" If we are going in the backward direction, make the selection from
+		" right to left so that a backward search for phsUser doesnt get us
+		" back to the same placeholder.
+		let movement = "\<C-\>\<C-N>:".position."\<CR>"
+			\ . "/\\V".pheUser."/e\<CR>"
+			\ . "v?\\V".phsUser."?b\<CR>"
+	else
+		let movement = "\<C-\>\<C-N>:".position."\<CR>v/\\V".pheUser."/e\<CR>"
+	endif
+
+	if placeHolderEmpty && g:Imap_DeleteEmptyPlaceHolders
+		" delete the empty placeholder into the blackhole.
+		return movement."\"_c\<C-o>:".s:RemoveLastHistoryItem."\<CR>"
+
+	else
+		return movement."\<C-\>\<C-N>:".s:RemoveLastHistoryItem."\<CR>gv\<C-g>"
+
+	endif
+	
+endfunction
+
+" }}}
+" Maps for IMAP_Jumpfunc {{{
 " map only if there is no mapping already. allows for user customization.
 if !hasmapto('IMAP_Jumpfunc')
-    inoremap <C-J> <c-r>=IMAP_Jumpfunc()<CR>
+    inoremap <C-J> <c-r>=IMAP_Jumpfunc('', 0)<CR>
+    inoremap <C-K> <c-r>=IMAP_Jumpfunc('b', 0)<CR>
     nmap <C-J> i<C-J>
+    nmap <C-K> i<C-K>
+	if exists('g:Imap_StickyPlaceHolders') && g:Imap_StickyPlaceHolders
+		vmap <C-J> <C-\><C-N>i<C-J>
+		vmap <C-K> <C-\><C-N>i<C-K>
+	else
+		vmap <C-J> <Del>i<C-J>
+		vmap <C-K> <Del>i<C-K>
+	endif
 end
 " }}}
-" RestoreEncoding: restores file encoding to what it was originally {{{
-" Description: 
-function! RestoreEncoding()
-	if s:oldenc != 'latin1'
-		let &g:encoding = s:oldenc
-	endif
-	return ''
-endfunction " }}}
 
-nmap <silent> <script> <plug>«SelectRegion» `<v`>
+nmap <silent> <script> <plug><+SelectRegion+> `<v`>
 
 " ============================================================================== 
 " enclosing selected region.
@@ -539,7 +505,7 @@ function! ExecMap(prefix, mode)
 			" use a plug to select the region instead of using something like
 			" `<v`> to avoid problems caused by some of the characters in
 			" '`<v`>' being mapped.
-			let gotoc = "\<plug>«SelectRegion»"
+			let gotoc = "\<plug><+SelectRegion+>"
 		else
 			let gotoc = ''
 		endif
@@ -564,6 +530,32 @@ endfun
 " Description: Execute this string to clean up the search history.
 let s:RemoveLastHistoryItem = ':call histdel("/", -1)|let @/=histget("/", -1)'
 
+" }}}
+" Hash: Return a version of a string that can be used as part of a variable" {{{
+" name.
+fun! s:Hash(text)
+	return substitute(a:text, '\([^[:alnum:]]\)',
+				\ '\="_".char2nr(submatch(1))."_"', 'g')
+endfun
+"" }}}
+" PlaceHolderStart and PlaceHolderEnd:  return the buffer-local " {{{
+" variable, or the global one, or the default.
+fun! s:PlaceHolderStart()
+	if exists("b:Imap_PlaceHolderStart") && strlen(b:Imap_PlaceHolderEnd)
+		return b:Imap_PlaceHolderStart
+	elseif exists("g:Imap_PlaceHolderStart") && strlen(g:Imap_PlaceHolderEnd)
+		return g:Imap_PlaceHolderStart
+	else
+		return "<+"
+endfun
+fun! s:PlaceHolderEnd()
+	if exists("b:Imap_PlaceHolderEnd") && strlen(b:Imap_PlaceHolderEnd)
+		return b:Imap_PlaceHolderEnd
+	elseif exists("g:Imap_PlaceHolderEnd") && strlen(g:Imap_PlaceHolderEnd)
+		return g:Imap_PlaceHolderEnd
+	else
+		return "+>"
+endfun
 " }}}
 
 " ============================================================================== 
@@ -601,4 +593,4 @@ endfunction
 com! -nargs=0 -range Snip :<line1>,<line2>call <SID>Snip()
 " }}}
 
-" vim6:fdm=marker:nowrap
+" vim:ft=vim:ts=4:sw=4:noet:fdm=marker:commentstring=\"\ %s:nowrap

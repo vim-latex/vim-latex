@@ -2,7 +2,7 @@
 " 	     File: packages.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: Fri Dec 13 12:00 PM 2002 EST
+" Last Change: Thu Dec 19 03:00 AM 2002 PST
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -247,12 +247,12 @@ function! Tex_pack(pack)
 						endif
 					endif
 				endif
-				let l_m_p_o_item = '&'.substitute(p_o_item, 'ä', '', '')
+				let l_m_p_o_item = '&'.substitute(p_o_item, '<++>', '', '')
 				let p_o_end = p_o_item[strlen(p_o_item) - 1]
 				if p_o_end !~ "[a-zA-Z}]"
-					let r_m_p_o_item = "<plug><C-r>=Tex_PutTextWithMovement('".p_o_item.'ä'.p_o_delimiter."«»')<cr>"
+					let r_m_p_o_item = "<plug><C-r>=IMAP_PutTextWithMovement('".p_o_item.'<++>'.p_o_delimiter."<++>')<cr>"
 				elseif p_o_end == '}'
-					let r_m_p_o_item = "<plug><C-r>=Tex_PutTextWithMovement('".p_o_item.p_o_delimiter."«»')<cr>"
+					let r_m_p_o_item = "<plug><C-r>=IMAP_PutTextWithMovement('".p_o_item.p_o_delimiter."<++>')<cr>"
 				else
 					let r_m_p_o_item = '<plug>'.p_o_item.p_o_delimiter
 				endif
@@ -285,15 +285,15 @@ function! Tex_pack(pack)
 			if p_item_def == 'bra'
 				let com_type = '{}'
 				let l_m_item = '\\&'.p_item_name.'{}'
-				let r_m_item = "<plug><C-r>=Tex_PutTextWithMovement('\\".p_item_name."{ä}«»')<cr>"
+				let r_m_item = "<plug><C-r>=IMAP_PutTextWithMovement('\\".p_item_name."{<++>}<++>')<cr>"
 			elseif p_item_def == 'brs' 
 				let com_type = '{}'
-				let l_m_item = '\\&'.substitute(p_item_name, "[ä«»]", '', 'g')
-				let r_m_item = "<plug><C-r>=Tex_PutTextWithMovement('\\".p_item_name."«»')<cr>"
+				let l_m_item = '\\&'.substitute(p_item_name, "[<++><++>]", '', 'g')
+				let r_m_item = "<plug><C-r>=IMAP_PutTextWithMovement('\\".p_item_name."<++>')<cr>"
 			elseif p_item_def == 'brd'
 				let com_type = '{}{}'
 				let l_m_item = '\\&'.p_item_name.'{}{}'
-				let r_m_item = "<plug><C-r>=Tex_PutTextWithMovement('\\".p_item_name."{ä}{«»}«»')<cr>"
+				let r_m_item = "<plug><C-r>=IMAP_PutTextWithMovement('\\".p_item_name."{<++>}{<++>}<++>')<cr>"
 			elseif p_item_def == 'sep'
 				let com_type = ''
 				let l_m_item = '-packsep'.basic_nu_p_list.'-'
@@ -301,17 +301,17 @@ function! Tex_pack(pack)
 			elseif p_item_def == 'env'
 				let com_type = '(E)'
 				let l_m_item = '&'.p_item_name.'(E)'
-				let r_m_item = '<plug>\begin{'.p_item_name.'}<cr> <cr>\end{'.p_item_name.'}«»<Up><Left>'
+				let r_m_item = '<plug>\begin{'.p_item_name.'}<cr> <cr>\end{'.p_item_name.'}<++><Up><Left>'
 			elseif p_item_def == 'ens'
 				let com_type = '(E)'
 				let p_env_spec = substitute(p_item_name, '.*:', '', '')
 				let p_env_name = matchstr(p_item_name, '^[^:]*')
 				let l_m_item = '&'.p_env_name.'(E)'
-				let r_m_item = '<plug>\begin{'.p_env_name.'}'.p_env_spec.'<cr>«»<cr>\end{'.p_env_name.'}«»<Up><Up><C-j>'
+				let r_m_item = '<plug>\begin{'.p_env_name.'}'.p_env_spec.'<cr><++><cr>\end{'.p_env_name.'}<++><Up><Up><C-j>'
 			elseif p_item_def == 'eno'
 				let com_type = '(E)'
 				let l_m_item = '&'.p_item_name.'(E)'
-				let r_m_item = '<plug>\begin[«»]{'.p_item_name.'}<cr>«»<cr>\end{'.p_item_name.'}«»<Up><Up><C-j>'
+				let r_m_item = '<plug>\begin[<++>]{'.p_item_name.'}<cr><++><cr>\end{'.p_item_name.'}<++><Up><Up><C-j>'
 			elseif p_item_def == 'nor'
 				let com_type = "\\\\'"
 				let l_m_item = '\\&'.p_item_name."'"
@@ -319,11 +319,11 @@ function! Tex_pack(pack)
 			elseif p_item_def == 'noo'
 				let com_type = '\\[]'
 				let l_m_item = '\\&'.p_item_name.'[]'
-				let r_m_item = "<plug><C-r>=Tex_PutTextWithMovement('\\".p_item_name."[ä]«»')<cr>"
+				let r_m_item = "<plug><C-r>=IMAP_PutTextWithMovement('\\".p_item_name."[<++>]<++>')<cr>"
 			elseif p_item_def == 'nob'
 				let com_type = '[]{}'
 				let l_m_item = '\\&'.p_item_name.'[]{}'
-				let r_m_item = "<plug><C-r>=Tex_PutTextWithMovement('\\".p_item_name."[ä]{«»}«»')<cr>"
+				let r_m_item = "<plug><C-r>=IMAP_PutTextWithMovement('\\".p_item_name."[<++>]{<++>}<++>')<cr>"
 			elseif p_item_def == 'pla'
 				let com_type = '(p)'
 				let l_m_item = '&'.p_item_name."'"
@@ -359,7 +359,7 @@ function! Tex_pack_supp(supp_pack)
 	call Tex_pack_check(a:supp_pack)
 	exe 'let g:s_p_o = g:TeX_package_option_'.a:supp_pack 
 	if exists('g:s_p_o') && g:s_p_o != ''
-		exe 'normal i\usepackage{'.a:supp_pack.'}«»'
+		exe 'normal i\usepackage{'.a:supp_pack.'}<++>'
 		exe 'normal F{i[]'."\<Right>"
 	else
 		exe 'normal i\usepackage{'.a:supp_pack."}\<cr>"

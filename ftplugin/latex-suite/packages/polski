@@ -1,6 +1,6 @@
 " Author: Mikolaj Machowski <mikmach@wp.pl>
 " (c) Copyright by Mikolaj Machowski 2002
-" Last Change: Fri Dec 13 12:00 PM 2002 EST
+" Last Change: Thu Dec 19 03:00 AM 2002 PST
 " License: Vim Charityware
 "
 " Plik jest w kodowaniu iso-8859-2. Je¶li chcesz go uzywac w MS-Windows musisz
@@ -48,7 +48,7 @@ let g:TeX_package_polski =
 " To wymaga calego pakietu vim-latexSuite - zakomentuj lub wytnij je¶li nie
 " u¿ywasz (albo go ¶ci±gnij z http://vim-latex.sf.net)
 function! TPackagePolskiTylda()
-	call Tex_IMAP (" ---", "~---", "tex")
+	call IMAP (" ---", "~---", "tex")
 endfunction
 call TPackagePolskiTylda()
 " --------8<-------------

@@ -195,9 +195,9 @@ function! s:Tex_section_name(section_value) "{{{
 	return section_name
 endfunction "}}}
 function! s:Tex_section_call(section_name) "{{{
-	exe "normal! i\\".a:section_name."{«»}«»\<Esc>0\<C-j>"
-"	let ret_section = "\\".a:section_name."{«»}«»"
-"	exe "normal! i\<C-r>=Tex_PutTextWithMovement(ret_section)\<CR>"
+	exe "normal! i\\".a:section_name."{<++>}<++>\<Esc>0\<C-j>"
+"	let ret_section = "\\".a:section_name."{<++>}<++>"
+"	exe "normal! i\<C-r>=IMAP_PutTextWithMovement(ret_section)\<CR>"
 "	normal f}i
 endfunction "}}}
 " vim:fdm=marker

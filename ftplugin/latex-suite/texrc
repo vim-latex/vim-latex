@@ -3,7 +3,7 @@
 " 	     File: texrc.vim
 "      Author: Srinath Avadhanula
 "     Created: Mon Apr 01 11:00 AM 2002 PST
-" Last Change: Fri Dec 13 09:00 AM 2002 EST
+" Last Change: Sat Dec 21 06:00 PM 2002 PST
 "
 "  Description: This file contains resource configuration information for the
 "               latex-suite package.
@@ -42,13 +42,14 @@
 "                   TexLet g:varname = 1
 "                   TexLet g:varname = '1'
 "                   TexLet g:varname = 'foo bar'
+"                   TexLet g:varname = "foo\nbar"
 "                   TexLet g:varname = foo bar
 function! <SID>SafeLet(arg)
 	let name = matchstr(a:arg, '^\s*\zs\(\S\+\)\ze\s*=')
 	let value = matchstr(a:arg, '=\s*\zs.*\ze')
 	let value = substitute(value, '\s*$', '', '')
 	if !exists(name)
-		if value =~ "^'"
+		if value =~ "^'\\|^\""
 			exec "let ".name." = ".value
 		else
 			exe "let ".name." = value"
@@ -180,12 +181,24 @@ TexLet g:Tex_Flavor = 'latex'
 " these options are actually used by imaps.vim, therefore the prefix is Imap_
 " and not Tex_. See |placeholders| for a description of how to use
 " place-holders. You can either completely disable placeholders (not
-" recommended) and/or you can change the place holder characters. The Start
-" and End characters should only be single characters. i.e, '' or ,, etc are
-" not allowed.
+" recommended) and/or you can change the place holder characters.
+
 TexLet g:Imap_UsePlaceHolders = 1 
-TexLet g:Imap_PlaceHolderStart = '«'
-TexLet g:Imap_PlaceHolderEnd = '»'
+TexLet g:Imap_PlaceHolderStart = '<+'
+TexLet g:Imap_PlaceHolderEnd = '+>'
+
+" This option when set to 1 makes <C-J> in insert mode delete
+" non-descriptive (empty) placeholders and enters insert mode.
+" NOTE: This option _has_ to be set in the .vimrc. Setting this in a filetype
+"       plugin file such as ftplugin/tex.vim will not have any affect.
+TexLet g:Imap_DeleteEmptyPlaceHolders = 0
+
+" When set to 1, in visual mode, <C-J> takes you to the next placeholder
+" without deleting the current placeholder.
+" NOTE: This option _has_ to be set in the .vimrc. Setting this in a filetype
+"       plugin file such as ftplugin/tex.vim will not have any affect.
+TexLet g:Imap_StickyPlaceHolders = 1
+
 
 " }}}
 " Menu Wizard Option: {{{
@@ -220,7 +233,7 @@ TexLet g:Tex_Diacritics = 1
 " }}}
 " Leader Options: {{{
 " The mappings in latex-suite are by default prefixed with the back-tick
-" character. For example, `/ inserts \frac{«»}{«»}«» etc. You can change the
+" character. For example, `/ inserts \frac{<++>}{<++>}<++> etc. You can change the
 " prefix with the following setting.
 " ',', '/', '`' are preferred values. '' or '\' will lead to a _lot_ of
 " trouble.
@@ -236,8 +249,8 @@ TexLet g:Tex_Leader2 = ','
 " Environment Macros: {{{
 " These mappings insert LaTeX "environments" such as 
 "       \begin{center}
-"           «»
-"       \end{center}«»
+"           <++>
+"       \end{center}<++>
 " with the cursor left at the first place-holder.
 " (See |placeholders| for what these are.)
 " Mnemonic:
@@ -273,7 +286,7 @@ TexLet g:Tex_EnvironmentMenus = 1
 " }}}
 " Font Macros: {{{
 " These mappings insert font descriptions such as:
-"       \textsf{«»}«»
+"       \textsf{<++>}<++>
 " again with the cursor at the first place-holder.
 " Mnemonic:
 " 1. first letter is always F (F for font)
@@ -330,7 +343,7 @@ TexLet g:Tex_SectionMenus = 1
 " standard latex environment such as table or figure, then latex-suite will
 " insert a template with additional fields, if not, just a bare bones
 " \begin{env}
-"   «»
+"   <++>
 " \end{env} 
 " is inserted.
 " \[ and $$ are also recognized.

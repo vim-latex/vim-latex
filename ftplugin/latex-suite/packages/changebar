@@ -17,7 +17,7 @@ let g:TeX_package_option_changebar =
 \.'traceoff'
 
 let g:TeX_package_changebar =
-\ 'ens:changebar:[«thickness»],'
+\ 'ens:changebar:[<+thickness+>],'
 \.'noo:cbstart,'
 \.'cbend,'
 \.'cbdelete,'

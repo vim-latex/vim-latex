@@ -73,7 +73,7 @@ let g:TeX_package_amsmath =
 \.'brd:binom,'
 \.'brd:dbinom,'
 \.'brd:tbinom,'
-\.'brs:genfrac{«ldelim»}{«rdelim»}{«thick»}{«style»}{«numer»}{«denom»}«»,'
+\.'brs:genfrac{<+ldelim+>}{<+rdelim+>}{<+thick+>}{<+style+>}{<+numer+>}{<+denom+>}<++>,'
 \.'sbr:Commands,'
 \.'nob:smash,'
 \.'bra:substack,'
@@ -93,6 +93,6 @@ let g:TeX_package_amsmath =
 \.'bra:leftroot,'
 \.'bra:uproot,'
 \.'bra:boxed,'
-\.'brs:DeclareMathSymbol{«»}{«»}{«»}{«»}«»,'
+\.'brs:DeclareMathSymbol{<++>}{<++>}{<++>}{<++>}<++>,'
 \.'bra:eqref'
 " vim:ft=vim

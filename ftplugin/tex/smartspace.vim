@@ -2,7 +2,7 @@
 " 	     File: smartspace.vim
 "      Author: Carl Muller
 "     Created: Fri Dec 06 12:00 AM 2002 PST
-" Last Change: Fri Dec 06 12:00 AM 2002 PST
+" Last Change: Mon Dec 09 12:00 PM 2002 PST
 " 
 " Description: 
 "     Maps the <space> key in insert mode so that mathematical formulaes are
@@ -27,8 +27,6 @@ let b:done_smartspace = 1
 "       broken because of the faulty 'tw' setting.
 if &l:tw > 0
 	let b:tw = &l:tw
-else
-	let b:tw = 79
 endif
 setlocal tw=0
 

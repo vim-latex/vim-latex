@@ -51,6 +51,9 @@ ltt:
 upload:
 	pscp latexSuite.* $(CVSUSER)@vim-latex.sf.net:/home/groups/v/vi/vim-latex/htdocs/download/
 
+betaup:
+	pscp latexSuite.zip $(CVSUSER)@vim-latex.sf.net:/home/groups/v/vi/vim-latex/htdocs/download/latexSuite-beta.zip
+
 # rsync is like cp (copy) on steroids.  Here are some useful options:
 # -C	auto ignore like CVS
 # -r	recurse into directories
