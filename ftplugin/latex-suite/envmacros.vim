@@ -2,7 +2,7 @@
 " 	     File: envmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
-" Last Change: Thu Dec 19 03:00 AM 2002 PST
+" Last Change: Tue Dec 24 02:00 AM 2002 PST
 " 
 "  Description: mappings/menus for environments. 
 "=============================================================================
@@ -664,16 +664,8 @@ if g:Tex_PromptedEnvironments != ''
 		" Function Tex_PutPackage is defined in packages.vim
 		let l = getline(".")
 		let pack = matchstr(l, '^\s*\zs.*')
-		if pack == ''
-			let pack = input('Package? ')
-			if pack != ''
-				return Tex_PutPackage(pack)
-			endif
-			return 0
-		else
-			normal 0D
-			return Tex_PutPackage(pack)
-		endif
+		normal!  0"_D
+		return Tex_pack_one(pack)
 	endfunction " }}}
 	" Tex_ChangeEnvironments: calls Change() to change the environment {{{
 	" Description:
