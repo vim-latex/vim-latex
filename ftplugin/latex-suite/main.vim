@@ -176,9 +176,11 @@ if !exists('s:doneMappings')
 	" Description: checks the text before the preceeding ` in order to account
 	" for the start of a double quote, otherwise when we try to write
 	" something like ``a (at the beginning of a quote), we immediately get 
-	" `\alpha.
+	" `\alpha. Also if there is a \ preceding the `, then do not insert a
+	" greek letter so we can insert greek letters such as \`a.
 	function! TEX_InsertGreekLetter(char)
 		if a:char =~ '[a-zA-Z]' && getline('.')[col('.')-2] != '`'
+					\ && getline('.')[col('.')-2] != "\\"
 			exe 'return s:greek_'.a:char
 		else
 			return g:Tex_Leader.a:char
