@@ -1692,16 +1692,19 @@ newfile.tex [Preview]                                         11,3           21%
    to compile and debug &latex; files from within &vim;.
   </para>
   <para>
-   If you are using commonly used LaTeX tools, then you should be all set as
-   soon as you download and install latex-suite.  In order to compile a LaTeX
-   file, simply press <literal>\ll</literal> while editing the file.  This
-   runs latex on the current file and displays the errors in a
-   |quickfix-window|. You can then scroll through the errors and press
-   <literal>&lt;enter&gt;</literal> to be taken to the location of the
-   corresponding error. Along with the errors being listed in the quickfix
-   window, the corresponding log file is also opened in |preview| mode beneath
-   the quickfix window. It is scrolled automatically to keep in sync with the
-   error being viewed in the quickfix window.
+   If you are using commonly used LaTeX tools, then you should be all set
+   as soon as you download and install latex-suite.  In order to compile a
+   LaTeX file, simply press <literal>\ll</literal> while editing the file.
+   This runs latex on the current file and displays the errors in a
+   |quickfix-window| below the file being edited. You can then scroll
+   through the errors and press <literal>&lt;enter&gt;</literal> to be
+   taken to the location of the corresponding error. Along with the errors
+   being listed in the quickfix window, the corresponding log file is also
+   opened in |preview| mode beneath the quickfix window. It is scrolled
+   automatically to keep in sync with the error being viewed in the
+   quickfix window. You will be automatically taken to the location of the
+   first error/warning unless you set the <link
+    linkend="Tex_GotoError">g:Tex_GotoError</link> variable to 0.
   </para>
   <para>
    &ls; also supports compiling &latex; into formats other than DVI. By
@@ -3509,6 +3512,24 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
        linkend="Tex_CompileRule_format">g:Tex_CompileRule_target</link>
       setting.
      </para>
+    </para>
+   </section>
+   <section id="Tex_GotoError">
+    <title>g:Tex_GotoError</title>
+    <informaltable frame="all">
+     <tgroup cols="2">
+      <tbody>
+       <row><entry>Type</entry><entry>boolean</entry></row>
+       <row><entry>Default Value</entry>
+        <entry><literal>1</literal></entry></row>
+      </tbody>
+     </tgroup>
+    </informaltable>
+    <para>
+     If set to 1, then pressing <literal>\ll</literal> will take you to
+     the location of the first warning/error, otherwise you will remain in
+     the original location but the errors/warnings will be listed in the
+     preview window.
     </para>
    </section>
   </section>
