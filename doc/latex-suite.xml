@@ -53,7 +53,14 @@
   </abstract>
  </articleinfo>
  <section id="recommended-settings">
-  <title>Recommended Settings</title>
+  <title>Installation and recommended Settings</title>
+  <para>
+   If you are reading this, it most probably means that you have already
+   installed &ls; and the help files. If this is not the case, follow the
+   detailed instructions on <ulink
+    url="http://vim-latex.sourceforge.net/index.php?subject=download">&ls;'s
+    download page</ulink>.
+  </para>
   <para>
    Make sure that you create a few necessary settings in your
    <literal>~/.vimrc.</literal>
@@ -147,6 +154,7 @@ set iskeyword+=:
     mappings.
    </para>
   </note>
+  <anchor id="place-holder" />
   <note id="place-holders">
    <title>Place Holders</title>
    <para>
@@ -237,7 +245,7 @@ set iskeyword+=:
      <orderedlist>
       <listitem>
        All environment mappings begin with <literal>E</literal>
-     </listitem>
+      </listitem>
       <listitem>
        If the environment can be broken up into 2 distinct words,
        such as flushright (flush + right), then the next 2 letters
@@ -294,7 +302,18 @@ quotation (_q_uotatio_n_)      ---&gt; EQN</programlisting>
      <programlisting>\begin{center}
     line
 \end{center}</programlisting>
-   </para>
+    </para>
+    <anchor id="ls-vmap-f5" />
+    <para>
+     You can also select a portion of text visually and press
+     <literal>&lt;F5&gt;</literal> while still in visual mode. This will
+     prompt you with a list of environments. (This list can be customized
+     via the <link
+      linkend="Tex_PromptedEnvironments">g:Tex_PromptedEnvironments</link>
+     setting). You can either choose from this list or type in a new
+     environment name. Once the selection is done, &ls; encloses the
+     visually selected portion in the chosen environment.
+    </para>
    </section>
    <section id="normal-mode-environment-mappings">
     <title>Normal Mode Mappings</title>
@@ -328,6 +347,7 @@ quotation (_q_uotatio_n_)      ---&gt; EQN</programlisting>
   <section id="latex-command-maps">
    <title>&latex; command maps</title>
    <anchor id="ls-imap-f7" />
+   <anchor id="ls-imap-s-f7" />
    <para>
     &ls; provides two simple mappings <literal>&lt;F7&gt;</literal> and
     <literal>&lt;S-F7&gt;</literal> which work in both insert and normal
@@ -345,6 +365,17 @@ quotation (_q_uotatio_n_)      ---&gt; EQN</programlisting>
     In both insert and normal mode <literal>&lt;S-F7&gt;</literal> will
     find out if you are presently within an environment and then prompt you
     with a list of commands to change it to.
+   </para>
+   <anchor id="ls-vmap-f7" />
+   <para>
+    You can also select a portion of text visually and press
+    <literal>&lt;F7&gt;</literal> while still in visual mode. This will
+    prompt you with a list of commands. (This list can be customized
+    via the <link
+     linkend="Tex_PromptedCommands">g:Tex_PromptedCommands</link>
+    setting). You can either choose from this list or type in a new
+    command name. Once the selection is done, &ls; encloses the
+    visually selected portion in the chosen command.
    </para>
   </section>
   <section id="font-maps">
@@ -1058,19 +1089,55 @@ Command can be also given without prefix:. The result is
   <title>Latex Completion</title>
   <para>
    This module provides an easy way to insert references to labels and
-   bibliographic entries. 
+   bibliographic entries. Although the completion capabilites are very
+   diverse, &ls; only uses a single key (<literal>&lt;F9&gt;</literal> by
+   default) to do all of it. Pressing the <literal>&lt;F9&gt;</literal> key
+   does different things based on where you are located. &ls; tries to
+   guess what you might be trying to complete at the location where you
+   pressed <literal>&lt;F9&gt;</literal>. For example, pressing
+   <literal>&lt;F9&gt;</literal> when you are within a
+   <literal>\ref</literal> command will try to list the
+   <literal>\label</literal>'s in the present directory. Pressing it when
+   you are in a <literal>\cite</literal> command will list bibliography
+   keys. &ls; also recognizes commands which need a file name argument and
+   will put up an explorer window for you to choose a filename.
   </para>
-  <para>
-   Consider the situation where you are editing a file with two equations
-   labelled <literal>eqn:euler</literal> and <literal>eqn:einstein</literal>.
-   Now you want to insert a reference to one of these equations. To do this,
-   you type the <literal>\ref{eqn:}</literal> command and with the cursor
-   placed after <literal>eqn:</literal>, press <literal>&lt;F9&gt;</literal>.
-   This will bring up two new windows beneath the main window you were working
-   in as shown in the figure below. 
-  </para>
-  <programlisting>
-      7
+  <note id="ls-set-grepprg">
+   <title>Before you start with &ls;'s completion function...</title>
+   <para>
+    All of &ls;'s completion capabilities depend on a external program
+    being available on your system which can search through a number of
+    files for a reg-exp pattern. On *nix systems, the pre-installed
+    <literal>grep</literal> utility is more than adequate.  Most windows
+    systems come with a utility <literal>findstr</literal>, but that has
+    proven to be very inadequate (for one, it does not have an option to
+    force the file name to be displayed when searching through a single
+    file). Your best bet is to install <ulink
+     url="http://www.cygwin.com">cygwin</ulink>, but if you think thats
+    overkill, you can <ulink
+     url="http://www.google.com/search?q=windows%20gnu%20grep">search
+     for</ulink> a windows implementation of GNU grep. (&ls; testing on
+    windows has been done with cygwin's port of GNU grep).
+   </para>
+   <para>
+    Once you have a <literal>grep</literal> program installed, you need to
+    set the <literal>'grepprg'</literal> option for vim. Make sure you use a
+    setting which forces the program to display file names even when you are
+    searching through a single file. For GNU grep, the syntax is
+    <programlisting>set grepprg=grep\ -nH\ $*</programlisting>
+   </para>
+  </note>
+  <section id="ls-completion-usage">
+   <title id="ls-completion-usage.title">&ls; completion example</title>
+   <para>
+    Consider the situation where you are editing a file with two equations
+    labelled <literal>eqn:euler</literal> and <literal>eqn:einstein</literal>.
+    Now you want to insert a reference to one of these equations. To do this,
+    you type the <literal>\ref{eqn:}</literal> command and with the cursor
+    placed after <literal>eqn:</literal>, press <literal>&lt;F9&gt;</literal>.
+    This will bring up two new windows beneath the main window you were working
+    in as shown in the figure below. 
+    <programlisting>
       8 These are a couple of equations:
       9 +--  4 lines: eqnarray (eqn:euler) :   e^{j\pi} + 1 &amp;=&amp; 0---------------
      13 +--  4 lines: equation (eqn:einstein) :   E = m c^2---------------------
@@ -1087,15 +1154,9 @@ Command can be also given without prefix:. The result is
 ~
 ~
 ~
-~
-~
-~
-~
 newfile.tex                                                   34,32          Bot
 newfile.tex|11| \label{eqn:euler}
 newfile.tex|15| \label{eqn:einstein}
-~
-~
 ~
 [Error List]                                                  1,1            All
       7
@@ -1110,112 +1171,99 @@ newfile.tex|15| \label{eqn:einstein}
      16 \end{equation}
 newfile.tex [Preview]                                         11,3           21%
   </programlisting>
-  <para>
-   The first window (shown as <literal>[Error&nbsp;List]</literal> above) is a
-   <literal>|cwindow|</literal> containing a list of possible matches for the
-   reference. The cursor will be located in the first line of this window. The
-   bottom window is a <literal>preview-window</literal> showing the context of
-   the <literal>\label</literal>. Moving around in the
-   <literal>[Error&nbsp;List]</literal> window automatically scrolls the
-   preview window so as to always keep showing the context of the
-   <literal>\label</literal> being viewed in the
-   <literal>[Error&nbsp;List]</literal> window. You can also press
-   <literal>J</literal> and <literal>K</literal> in the
-   <literal>[ErrorList]</literal> window to scroll the preview window up and
-   down.
-  </para>
-  <para>
-   To insert one of the labels, simply position the cursor in the correct line
-   in the <literal>[Error&nbsp;List]</literal> window and press
-   <literal>&lt;enter&gt;</literal>. This will immediately close the two newly
-   opened windows, get back to the correct location in the original file being
-   edited and insert the label into the <literal>\ref</literal> command. 
-  </para>
-  <para>
-   If you notice carefully in the example above, the
-   <literal>[Error&nbsp;List]</literal> window only showed the matches for the
-   equations and did not list any of the figure labels. This is because we
-   pressed <literal>&lt;F9&gt;</literal> after <literal>\ref{eqn:</literal>
-   instead of simply after <literal>\ref{</literal>. This caused &ls; to
-   search only for those labels which started with the string
-   <literal>eqn:</literal>. If you had pressed
-   <literal>&lt;F9&gt;</literal> after a <literal>\ref{</literal>, you would
-   have been shown matches from <emphasis>all</emphasis> labels, not just
-   those starting with <literal>eqn:</literal>.
-  </para>
-  <para>
-   Thus prefixing all your labels with <literal>eqn:</literal>,
-   <literal>fig:</literal>, <literal>tab:</literal> etc. depending on what you
-   are labelling will lead to an easier time completing references.
-  </para>
-  <para>
-   The same mechanism also works with citations by pressing &lt;F9&gt;
-   after typing "\cite{". In the case of citations, Latex-suite
-   automatically displays a list of bibliographic entries found in various
-   files in the present directory. 
-  </para>
-  <para>
-   This mechanism in fact works with all commands with "ref" or "cite" in them.
-   Thus you will get completion with \citen, \citenum or \pageref.  If you want
-   to create your own command which uses cite or ref mechanism make sure proper
-   word is inside it. Example:
-  <programlisting>\newcommand{\pref}[1]{~(p.~\pageref{#1})}</programlisting>
-  </para>
-  <para>
-   F9&gt; works also with normal words. You can use it as: "Its name is tetr&lt;F9&gt;".
-   Now Latex-suite will look in all .tex files in directory of edited file word
-   which is beginning with "tetr". Note: &lt;cr&gt; has here different behavior. It
-   does not try to complete word but moves you to location chosen in cwindow.
-  </para>
-  <para>
-   Under MS-Windows you may need to make additional configuration of 'grepgrg'
-   option. If you have grep program default value "grep -n" doesn't show file
-   names if there is only one matching file. Place
-   <programlisting>set grepprg=grep\ -Hn</programlisting>
-   in your _vimrc.
-  </para>
-  <para>
-   The functionality in this module is also available via three command-line
-   utilities: |TLook|, |TLookBib| and |TLookAll|.
-  </para>
-  <para>
-   You can use the <link
-    linkend="Tex_ViewerCwindowHeight">g:Tex_ViewerCwindowHeight</link> and
-   <link linkend="Tex_ViewerPreviewHeight">g:Tex_ViewerPreviewHeight</link>
-   options in texrc to configure the heights of the "[Error List]" and preview
-   window.
-  </para>
-  <para>
-   Latex-suite is distributed with slightly changed explorer.vim. This
-   modification allows to perform custom operations in explorer buffer.
-  </para>
-  <para>
-   After \includegraphics{&lt;F9&gt; Latex-suite will open explorer buffer with current
-   directory or directory defined with g:Tex_ImageDir variable. When you choose
-   graphic file with &lt;cr&gt; its name will be inserted into file as bib key or
-   label. If g:Tex_ImageDir is set Latex-suite assume you also defined
-   \graphicspath{} command and will insert just file name (without extension). If
-   g:Tex_ImageDir is empty (default) it will put relative path to graphic file.
-  </para>
-  <para>
-   After \bibliography{&lt;F9&gt; Latex-suite will open explorer buffer with current
-   directory. After &lt;cr&gt; name of relative path to chosen file (without extension)
-   will be inserted.
-  </para>
-  <para>
-   In both cases explorer window will open with basic filter. You should not see
-   uninteresting in current context files.
-  </para>
-  <para>
-   You can regulate height of explorer window with g:Tex_ExplorerHeight variable
-   (default 10).
-  </para>
+   </para>
+   <para>
+    The first window (shown as <literal>[Error&nbsp;List]</literal> above) is a
+    <literal>|cwindow|</literal> containing a list of possible matches for the
+    reference. The cursor will be located in the first line of this window. The
+    bottom window is a <literal>preview-window</literal> showing the context of
+    the <literal>\label</literal>. Moving around in the
+    <literal>[Error&nbsp;List]</literal> window automatically scrolls the
+    preview window so as to always keep showing the context of the
+    <literal>\label</literal> being viewed in the
+    <literal>[Error&nbsp;List]</literal> window. You can also press
+    <literal>J</literal> and <literal>K</literal> in the
+    <literal>[ErrorList]</literal> window to scroll the preview window up and
+    down.
+   </para>
+   <para>
+    To insert one of the labels, simply position the cursor in the correct line
+    in the <literal>[Error&nbsp;List]</literal> window and press
+    <literal>&lt;enter&gt;</literal>. This will immediately close the two newly
+    opened windows, get back to the correct location in the original file being
+    edited and insert the label into the <literal>\ref</literal> command. 
+   </para>
+   <para>
+    If you notice carefully in the example above, the
+    <literal>[Error&nbsp;List]</literal> window only showed the matches for the
+    equations and did not list any of the figure labels. This is because we
+    pressed <literal>&lt;F9&gt;</literal> after <literal>\ref{eqn:</literal>
+    instead of simply after <literal>\ref{</literal>. This caused &ls; to
+    search only for those labels which started with the string
+    <literal>eqn:</literal>. If you had pressed
+    <literal>&lt;F9&gt;</literal> after a <literal>\ref{</literal>, you would
+    have been shown matches from <emphasis>all</emphasis> labels, not just
+    those starting with <literal>eqn:</literal>.
+   </para>
+   <para>
+    Thus prefixing all your labels with <literal>eqn:</literal>,
+    <literal>fig:</literal>, <literal>tab:</literal> etc. depending on what you
+    are labelling will lead to an easier time completing references.
+   </para>
+  </section>
+  <section id="ls-completion-ref">
+   <title>&ls; \ref completion</title>
+   <para>
+    To complete a <literal>|\ref|</literal> command, position yourself
+    between the curly braces of a <literal>\ref</literal> command and press
+    <literal>&lt;F9&gt;</literal>. For example, you can press
+    <literal>&lt;F9&gt;</literal> just after <literal>\ref{</literal> or
+    after <literal>\ref{eqn:</literal>. &ls; will search for
+    <literal>\label</literal>'s in all tex files in the current directory
+    and display the results in two windows as desribed in section <link
+     linkend="ls-completion-usage"
+     endterm="ls-completion-usage.title"></link>.
+   </para>
+   <para>
+    Any command which contains the pattern <literal>ref</literal> in it is
+    treated as if it is a way to call <literal>\ref</literal> indirectly.
+    Thus pressing <literal>&lt;F9&gt;</literal> after something like
+    <literal>\pref{</literal> will also search for
+    <literal>\label</literal>'s.
+   </para>
+   <para>
+    When you press <literal>&lt;F9&gt;</literal> after typing
+    <literal>\ref{eqn:</literal> then &ls; will only list
+    <literal>\label</literal>'s which begin with <literal>eqn:</literal>
+    If you press <literal>&lt;F9&gt;</literal> after a simple
+    <literal>\ref{</literal>, then &ls; will list all
+    <literal>\label</literal>'s in all the tex files in the present
+    directory.
+   </para>
+   <note>
+    <title>HINT</title>
+    <para>
+     By prefixing your labels with eqn:, fig: etc, you can easily filter
+     out a lot of undesirable results.
+    </para>
+   </note>
+  </section>
   <section id="latex-completion-cite">
    <title>&ls; <literal>\cite</literal> completion</title>
    <para>
-    When you press <literal>&lt;F9&gt;</literal> in insert mode after a
-    <literal>\cite{</literal>, &ls; will try to complete it with
-    bibliographic entries.
+    When you press <literal>&lt;F9&gt;</literal> in insert mode after
+    <literal>\cite{pre</literal>, &ls; will present a list of valid
+    bibliographic keys starting with <literal>"pre"</literal> and ask you
+    to choose from one of them. ("pre" can be left empty in which case all
+    valid bibliographic keys will be listed). The window setup is as
+    described in section <link linkend="ls-completion-usage"
+     endterm="ls-completion-usage.title"></link>.
+   </para>
+   <para>
+    <literal>&lt;F9&gt;</literal> will also work in a similar way after any
+    command which contains the word <literal>cite</literal> in it. For
+    example, pressing <literal>&lt;F9&gt;</literal> will also work with
+    <literal>\citenum</literal> etc.
    </para>
    <para>
     The following logic is applied to find out which bibliographic entries
@@ -1292,6 +1340,59 @@ newfile.tex [Preview]                                         11,3           21%
      <literal>&lt;F9&gt;</literal>.
     </para>
    </section>
+  </section>
+  <section id="ls-filename-completion">
+   <title>&ls; filename completion</title>
+   <para>
+    When you press <literal>&lt;F9&gt;</literal> at a location where &ls;
+    guesses a filename needs to be typed, then a new explorer window will
+    open up with the list of files. You can use this window to change
+    directories etc. Pressing <literal>&lt;enter&gt;</literal> on a filename
+    in the explorer window will automatically close the explorer window,
+    return to the location where you pressed <literal>&lt;F9&gt;</literal>
+    from and insert the filename into that position.
+   </para>
+   <para>
+    &ls; also tries to guess what kinds of files you might not want to
+    insert and hides those accordingly. For example, if you press
+    <literal>&lt;F9&gt;</literal> when you are located at
+    <literal>\includegraphics{</literal>, then &ls; knows that you will not
+    want to insert <literal>.tex</literal> files. Therefore, the explorer
+    window will automatically hide these files.
+   </para>
+   <para>
+    As of now, &ls; recognizes the following commands for filename
+    completion. Along with the commands, this table also lists the
+    files which &ls; will not show for completing each command.
+   </para>
+   <informaltable frame="all">
+    <tgroup cols="2">
+     <thead>
+      <row>
+       <entry>command</entry>
+       <entry>hide pattern</entry>
+      </row>
+     </thead>
+     <tbody>
+      <row>
+       <entry><literal>\bibliography</literal></entry>
+       <entry><literal>'^\.,\.[^b]..$'</literal></entry>
+      </row>
+      <row>
+       <entry><literal>\include</literal> <literal>\includeonly</literal></entry>
+       <entry><literal>'^\.,\.[^t]..$'</literal></entry>
+      </row>
+      <row>
+       <entry><literal>\includegraphics</literal> <literal>\psfig</literal></entry>
+       <entry><literal>'^\.,\.tex$,\.bib$,\.bbl$,\.zip$,\.gz$'</literal></entry>
+      </row>
+      <row>
+       <entry><literal>\input</literal></entry>
+       <entry><literal>''</literal></entry>
+      </row>
+     </tbody>
+    </tgroup>
+   </informaltable>
   </section>
  </section>
  <section id="latex-compiling">
@@ -1594,7 +1695,6 @@ nmap \pdf :call Tex_CompileToPDF()&lt;CR&gt;</programlisting>
    label is found in the folded region, then those are used to make a more
    meaningful fold-text, otherwise the second line of the environment is displayed
    along with the name of the environment. In other words, the following
-  </para>
   <programlisting>\begin{figure}[h]
     \centerline{\psfig{figure=slidercrank.eps,height=6cm}}
     \caption{The Slider Crank Mechanism.}
@@ -1604,12 +1704,13 @@ nmap \pdf :call Tex_CompileToPDF()&lt;CR&gt;</programlisting>
 \begin{eqnarray}
     \sin(\pi) = 0
 \end{eqnarray}</programlisting>
+  </para>
   <para>
    will be shown as:
-  </para>
   <programlisting>+---  5 lines: figure (fig:slidercrank) : The Slider Crank Mechanism. -----
 % a LaTeX comment.
 +---  3 lines: eqnarray () : \sin(\pi) = 0 --------------------------------</programlisting>
+  </para>
  <section id="default-folding">
   <title>Default Folding Scheme in &ls;</title>
   <para>
@@ -2117,9 +2218,13 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
      directory of edited file for argument. It can be regexp. You
      don't have to enclose argument in "". &lt;cr&gt; takes you to
      location. Other keys work as described in |latex-viewer|.
-     Note: TLookBib uses :grep command and is using 'grepprg'.  Its
-     regular expressions can be different from those of Vim.
     </para>
+    <note>
+     <para>
+      TLookBib uses :grep command and is using 'grepprg'.  Its
+      regular expressions can be different from those of Vim.
+     </para>
+    </note>
    </section>
    <section id="TLookAll">
     <title>TLookAll</title>
@@ -2476,6 +2581,31 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
       ignored.
      </para>
     </note>
+   </section>
+   <section id="Tex_PromptedCommands">
+    <title>g:Tex_PromptedCommands</title>
+    <informaltable frame="all">
+     <tgroup cols="2">
+      <tbody>
+       <row><entry>Type</entry><entry>String</entry></row>
+       <row><entry>Default Value</entry> 
+        <entry>
+         <literal>'footnote,cite,pageref,label'</literal>
+       </entry>
+       </row>
+      </tbody>
+     </tgroup>
+    </informaltable>
+    <para>
+     This string represents a comma seperated list of &latex; commands
+     which &ls; uses for the <literal>&lt;F7&gt;</literal> and
+     <literal>&lt;S-F7&gt;</literal> maps as described <link
+      linkend="latex-command-maps">here</link>.
+    </para>
+    <para>
+     Leaving this string empty will leave the <literal>&lt;F7&gt;</literal>
+     key unmapped.
+    </para>
    </section>
   </section>
   <section id="customizing-smart-keys">
