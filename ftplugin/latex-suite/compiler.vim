@@ -117,7 +117,7 @@ function! Tex_CompileLatex()
 	" irrespective of whether *.latexmain exists or not. mainfname is still
 	" extracted from *.latexmain (if possible) log file name depends on the
 	" main file which will be compiled.
-	if !g:Tex_UseMakefile || glob('makefile') != '' || glob('Makefile') != ''
+	if g:Tex_UseMakefile && (glob('makefile') != '' || glob('Makefile') != '')
 		let _makeprg = &l:makeprg
 		let &l:makeprg = 'make $*'
 		if exists('s:target')
