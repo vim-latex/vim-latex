@@ -189,8 +189,8 @@ endfunction
 "
 " This function performs a reverse lookup when this character is typed in. It
 " loops over all the possible left-hand side variables ending in this
-" character and then if a possible match exists, ereases the left-hand side
-" and inserts the right hand side instead.
+" character and then if a possible match exists, erases the left-hand side
+" and inserts the right-hand side instead.
 function! <SID>LookupCharacter(char)
 	let charHash = char2nr(a:char)
 
@@ -328,7 +328,9 @@ function! IMAP_PutTextWithMovement(text)
 		" we needed 2 searches to get here. remove them from the search
 		" history.
 		let movement = movement.":call SAImaps_RemoveLastHistoryItem()\<cr>"
-		let movement = movement.":call SAImaps_RemoveLastHistoryItem()\<cr>"
+		" BNF 12 Nov 2002:  Functions never add more than one item to the searcg
+		" history.  I do not recall where this is documented...
+		" let movement = movement.":call SAImaps_RemoveLastHistoryItem()\<cr>"
 
 		" if its a ä or «», then just delete it
 		if text[fc] == 'ä'
