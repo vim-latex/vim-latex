@@ -8,12 +8,6 @@
 "         CVS: $Id$
 " ============================================================================
 
-if exists("g:Tex_Completion")
-	call Tex_SetTexViewerMaps()
-	finish
-endif
-let g:Tex_Completion = 1
-
 " Tex_SetTexViewerMaps: sets maps for this ftplugin {{{
 function! Tex_SetTexViewerMaps()
 	inoremap <silent> <Plug>Tex_Completion <Esc>:call Tex_Complete("default","text")<CR>
@@ -26,12 +20,17 @@ function! Tex_SetTexViewerMaps()
 	endif
 endfunction
 
-" call this function the first time
-call Tex_SetTexViewerMaps()
-" }}}
+augroup LatexSuite
+	au LatexSuite User LatexSuiteFileType 
+		\ call Tex_Debug('texviewer.vim: Catching LatexSuiteFileType event', 'view') | 
+		\ call Tex_SetTexViewerMaps()
+augroup END
+
 command -nargs=1 TLook    call Tex_Complete(<q-args>, 'tex')
 command -nargs=1 TLookAll call Tex_Complete(<q-args>, 'all')
 command -nargs=1 TLookBib call Tex_Complete(<q-args>, 'bib')
+
+" }}}
 
 " ==============================================================================
 " Main completion function
@@ -165,8 +164,8 @@ function! Tex_Complete(what, where)
 		call <SID>Tex_SetupCWindow()
 	endif
 
-endfunction " }}}
-
+endfunction 
+" }}}
 " Tex_CompleteWord: inserts a word at the chosen location {{{
 " Description: This function is meant to be called when the user press
 " 	``<enter>`` in one of the [Error List] windows which shows the list of
