@@ -3,7 +3,7 @@
 "      Author: Mikolaj Machowski
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: nie lis 10 06:00  2002 C
+" Last Change: pi± lis 15 11:00  2002 C
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -360,6 +360,16 @@ function! Tex_pack_supp(supp_pack)
 endfunction
 
 " }}}
+" Tex_PutPackage: inserts package from line {{{
+" (see Tex_package_from_line in envmacros.vim)
+function! Tex_PutPackage(package)
+	if filereadable(s:path."/packages/".a:package)
+		call Tex_pack_supp(a:package)
+		call Tex_pack_updateall()
+	else
+		exe 'normal i\usepackage{'.a:package."}\<Esc>$"
+	endif
+endfunction	" }}}
 
 if g:Tex_Menus
 	exe "amenu ".s:p_menu_lev."&UpdatePackage :call Tex_pack(expand('<cword>'))<cr>"
