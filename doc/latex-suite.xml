@@ -2340,29 +2340,6 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
      </tgroup>
     </informaltable>
    </section>
-   <section id="Tex_TEXINPUTS">
-    <title>g:Tex_TEXINPUTS</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>string</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>''</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     This setting describes the directories scanned by &ls; while searching
-     for custom user packages as desribed in the <link
-      linkend="custom-packages">custom packages</link> section. Do not
-     include the present directory in this setting. The present directory
-     is always scanned for custom packages.
-    </para>
-    <para>
-     This string should be set in the syntax accepted by &vim;'s native
-     <literal>'path'</literal> setting.
-    </para>
-   </section>
    <section id="Tex_BIBINPUTS">
     <title>g:Tex_BIBINPUTS</title>
     <informaltable frame="all">
@@ -2752,14 +2729,34 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
   </section>
   <section id="customizing-packages">
    <title>Package Handling Customization</title>
-   <para> &ls; is capable of handling simple projects in which all the
-    source files live in a single directory using the <link
-     linkend="latex-master-file">*.latexmain</link> method. However, for
-    more complex projects with files distributed in various directories,
-    define the <link
-     linkend="Tex_TEXINPUTS"><literal>g:Tex_TEXINPUTS</literal></link>
-    variable.  
+   <para> 
+    These settings affect the <link linkend="custom-packages">custom
+     packages</link> functionality in &ls;
    </para>
+   <section id="Tex_TEXINPUTS">
+    <title>g:Tex_TEXINPUTS</title>
+    <informaltable frame="all">
+     <tgroup cols="2">
+      <tbody>
+       <row><entry>Type</entry><entry>string</entry></row>
+       <row><entry>Default Value</entry>
+        <entry><literal>''</literal></entry></row>
+      </tbody>
+     </tgroup>
+    </informaltable>
+    <para>
+     This setting describes the directories scanned by &ls; while searching
+     for custom user packages as desribed in the <link
+      linkend="custom-packages">custom packages</link> section. Do not
+     include the present directory in this setting. The present directory
+     is always scanned for custom packages.
+    </para>
+    <para>
+     This string should be set in the syntax accepted by &vim;'s native
+     <literal>'path'</literal> setting.
+    </para>
+   </section>
+  </section>
  </section>
  <section id="latex-suite-credits">
   <title>Credits</title>

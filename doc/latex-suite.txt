@@ -1889,9 +1889,8 @@ $VIM/ftplugin/latex-suite/packages/german.
 Latex Completion Customization                    *ls_10_4*
                                                   *customizing-latex-completion*
 |ls_10_4_1| Window size settings
-|ls_10_4_2| g:Tex_TEXINPUTS
-|ls_10_4_3| g:Tex_BIBINPUTS
-|ls_10_4_4| g:Tex_RememberCiteSearch
+|ls_10_4_2| g:Tex_BIBINPUTS
+|ls_10_4_3| g:Tex_RememberCiteSearch
 
 The following settings affect the completion [|latex-completion|] functionality
 in Latex-Suite.
@@ -1921,22 +1920,7 @@ g:Tex_ExplorerHeight         The height of the explorer          10
 g:Tex_ImageDir               The directory to scan for images    ''
 
 
-g:Tex_TEXINPUTS                                                  *ls_10_4_2*
-                                                                 *Tex_TEXINPUTS*
-
-
-Type             string
-Default Value    ''
-
-This setting describes the directories scanned by Latex-Suite while searching
-for custom user packages as desribed in the custom packages [|custom-packages|]
-section. Do not include the present directory in this setting. The present
-directory is always scanned for custom packages.
-
-This string should be set in the syntax accepted by Vim's native 'path' setting.
-
-
-g:Tex_BIBINPUTS                                                  *ls_10_4_3*
+g:Tex_BIBINPUTS                                                  *ls_10_4_2*
                                                                  *Tex_BIBINPUTS*
 
 
@@ -1952,7 +1936,7 @@ Do not include the present directory '.'. While searching for bibliography
 files, the present directory will be prepended to this variable.
 
 
-g:Tex_RememberCiteSearch                                *ls_10_4_4*
+g:Tex_RememberCiteSearch                                *ls_10_4_3*
                                                         *Tex_RememberCiteSearch*
 
 
@@ -2216,26 +2200,26 @@ folds even when this variable is set to zero.
 --------------------------------------------------------------------------------
 Package Handling Customization                            *ls_10_9*
                                                           *customizing-packages*
-|ls_10_4_2| g:Tex_TEXINPUTS
+|ls_10_9_1| g:Tex_TEXINPUTS
 
-Latex-Suite is capable of handling simple projects in which all the source files
-live in a single directory using the *.latexmain [|latex-master-file|] method.
-However, for more complex projects with files distributed in various
-directories, define the g:Tex_TEXINPUTS variable.
+These settings affect the custom packages [|custom-packages|] functionality in
+Latex-Suite
 
 
 
-g:Tex_TEXINPUTS                                                  *ls_10_4_2*
+g:Tex_TEXINPUTS                                                  *ls_10_9_1*
                                                                  *Tex_TEXINPUTS*
 
 
-Type             String
+Type             string
 Default Value    ''
 
-This string defines a set of directories which contain user packages. This
-setting corresponds to the $TEXINPUTS environment variable.
+This setting describes the directories scanned by Latex-Suite while searching
+for custom user packages as desribed in the custom packages [|custom-packages|]
+section. Do not include the present directory in this setting. The present
+directory is always scanned for custom packages.
 
-TODO: The documentation for this part needs to be improved.
+This string should be set in the syntax accepted by Vim's native 'path' setting.
 
 ================================================================================
 Credits                                                    *ls_11*
