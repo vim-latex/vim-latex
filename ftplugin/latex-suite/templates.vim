@@ -69,9 +69,17 @@ function! <SID>ReadTemplate(...)
 	let _a = @a
 	normal! ggVG"ax
 	
+	let _fo = &fo
+	" Since IMAP_PutTextWithMovement simulates the key-presses, leading
+	" indendatation can get duplicated in strange ways if ``fo`` is non-empty.
+	" NOTE: the indentexpr thingie is still respected with an empty fo so that
+	" 	    environments etc are properly indented.
+	set fo=
+
 	call Tex_Debug("normal! i\<C-r>=IMAP_PutTextWithMovement(@a, '".s:phsTemp."', '".s:pheTemp."')\<CR>", 'templates')
 	exec "normal! i\<C-r>=IMAP_PutTextWithMovement(@a, '".s:phsTemp."', '".s:pheTemp."')\<CR>"
 
+	let &fo = _fo
 	let @a = _a
 
 	call Tex_Debug('phs = '.s:phsTemp.', phe = '.s:pheTemp.', exe = '.s:exeTemp.', com = '.s:comTemp, 'templates')
