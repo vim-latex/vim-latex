@@ -633,6 +633,17 @@ function! Tex_FindInRtp(filename, directory)
 endfunction
 
 " }}}
+" Tex_GetErrorList: returns vim's clist {{{
+" Description: returns the contents of the error list available via the :clist
+"              command.
+function! Tex_GetErrorList()
+	let _a = @a
+	redir @a | silent! clist | redir END
+	let errlist = @a
+	let @a = _a
+
+	return errlist
+endfunction " }}}
 
 " source texproject.vim before other files
 exe 'source '.s:path.'/texproject.vim'
