@@ -2,7 +2,7 @@
 "            Type: compiler plugin for LaTeX
 " Original Author: Artem Chuprina <ran@ran.pp.ru>
 "   Customization: Srinath Avadhanula <srinath@fastmail.fm>
-"     Last Change: Mon Apr 01 02:00 AM 2002 PST
+"     Last Change: Fri Nov 08 05:00 AM 2002 P
 " Description:  {{{
 "   This file sets the 'makeprg' and 'errorformat' options for the LaTeX
 "   compiler. It is customizable to optionally ignore certain warnings and
@@ -127,9 +127,9 @@ else
 		let &makeprg = current_compiler.' --src-specials -interaction=nonstopmode $*'
 	else
 		if &shell =~ 'sh'
-			let &makeprg = current_compiler.'\\nonstopmode \\input\{$*\}'
+			let &makeprg = current_compiler.' \\nonstopmode \\input\{$*\}'
 		else
-			let &makeprg = current_compiler.'\nonstopmode \input{$*}'
+			let &makeprg = current_compiler.' \nonstopmode \input{$*}'
 		endif
 	endif
 endif
