@@ -1,6 +1,6 @@
 *latex-suite*   Tools for an enhanced LaTeX environment in Vim
                         For Vim version 6.0 and above.
-                  Last Change: Mon Apr 29 01:00 PM 2002 PDT
+                  Last Change: czw maj 09 11:00  2002 U
 
                  By Srinath Avadhanula <srinath@fastmail.fm>,
                       Mikolaj Machowski <mikmach@wp.pl>
@@ -752,36 +752,36 @@ LATEX SUITE COMMANDS                   *latex-suite-commands* {{{
 LatexSuite defines set of commands for non-GUI and power users. They are
 taking care about Macros, Templates and Packages.
 
-:TexMacro [{macro}]                       *TexMacro*
+:TMacro [{macro}]                       *TMacro*
                 When used without any arguments lists all available macros
                 defined in latex-suite/macros/ directory and prompt you to
                 choose one of them.
                 With one argument |:read| this macro under cursor position.
                 With more than one argument it will not work :)
 
-:TexMacroEdit [{macro}]                   *TexMacroEdit*
+:TMacroEdit [{macro}]                   *TMacroEdit*
                 Splits window for editing {macro}.
                 When used without any arguments lists all available macros
                 defined in latex-suite/macros/ directory and prompt you to
                 choose one of them.
 
-:TexMacroNew                              *TexMacroNew*
+:TMacroNew                              *TMacroNew*
                 Splits window to write new macro. Directory in new buffer is
                 locally changed to latex-suite/macros/.
 
-:TexMacroDelete [{macro}]                 *TexMacroDelete*
+:TMacroDelete [{macro}]                 *TMacroDelete*
                 Delets {macro} from latex-suite/macros/ directory.
                 When used without any arguments lists all available macros
                 defined in latex-suite/macros/ directory and prompt you to
                 choose one of them.
 
-:TexPackage [{package} [{package} ...]]   *TexPackage*
+:TPackage [{package} [{package} ...]]   *TPackage*
                 When used without any arguments lists name of the packages for
                 which support is available. Report depends if you are using
                 GUI version and/or g:Tex_Menus is set to 1 or not. When you
                 are not using menus command lists files from
                 latex-suite/dictionaries/ (this is main support for non-menus
-                version of latexSuite) if menus are on |TexPackage| lists
+                version of latexSuite) if menus are on |TPackage| lists
                 files from latex-suite/packages/ directory.
 
                 When {package} is given command turns on all possible support
@@ -789,17 +789,17 @@ taking care about Macros, Templates and Packages.
                 |latex-packages-dictionary|). Number of arguments separated
                 with spaces is limited only with common sense.
 
-:TexPackageUpdate                        *TexPackageUpdate*
+:TPackageUpdate                        *TPackageUpdate*
                 This command `reads' name of package under cursor and turns on
                 possible support.
 
-:TexPackageUpdateAll                     *TexPackageUpdateAll*
+:TPackageUpdateAll                     *TPackageUpdateAll*
                 After issuing this command latexSuite scans the file in
                 looking for not declared packages, removing not needed entries
                 from Packages menu and turning off not necessary packages'
                 dictionaries.
 
-:TexTemplate [{template}]                *TexTemplate*
+:TTemplate [{template}]                *TTemplate*
                 When used without any arguments lists all available templates
                 from latex-suite/templates/ directory and prompts to choose
                 one of them.
