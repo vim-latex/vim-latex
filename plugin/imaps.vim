@@ -4,7 +4,7 @@
 "         WWW: http://robotics.eecs.berkeley.edu/~srinath/vim/.vim/imaps.vim
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
-" Last Change: Sun Oct 27 01:00 AM 2002 PST
+" Last Change: Mon Nov 04 02:00 PM 2002 PST
 " 
 " Documentation: {{{
 "
@@ -50,9 +50,9 @@
 " Some characters in the RHS have special meaning which help in cursor
 " placement.
 "
-" Consider a working example:
+" Example One:
 "
-" call IMAP ("bit`", "\\begin{itemize}\<cr>\\item ä\<cr>\\end{itemize}«»", "tex")
+" 	call IMAP ("bit`", "\\begin{itemize}\<cr>\\item «»\<cr>\\end{itemize}«»", "tex")
 " 
 " This effectively sets up the map for "bit`" whenever you edit a latex file.
 " When you type in this sequence of letters, the following text is inserted:
@@ -61,12 +61,27 @@
 " \item *
 " \end{itemize}«»
 "
-" where * shows the cursor position. The special character ä (typed as
-" CTRL-K + a + :) decides the cursor placement after the expansion. If there
-" is no ä, then the cursor is left at the end. Note also the «» characters.
-" They are "place-holders". Place holders are inspired by Stephen Reihm's
-" bracketing system and provide a convenient way of navigating. After you have
-" typed in the item, just press Control-J and you will be taken to «». 
+" where * shows the cursor position. The cursor position after inserting the
+" text is decided by the position of the first "place-holder". Place holders
+" are special characters which decide cursor placement and movement. In the
+" example above, the place holder characters are « and ». After you have typed
+" in the item, press <C-j> and you will be taken to the next set of «»'s.
+" Therefore by placing the «» characters appropriately, you can minimize the
+" use of movement keys.
+"
+" NOTE: Set g:Imap_UsePlaceHolders to 0 to disable placeholders altogether.
+" Set 
+" 	g:Imap_PlaceHolderStart and g:Imap_PlaceHolderEnd
+" to something else if you want different place holder characters.
+" Also, b:Imap_PlaceHolderStart and b:Imap_PlaceHolderEnd override the values
+" of g:Imap_PlaceHolderStart and g:Imap_PlaceHolderEnd respectively. This is
+" useful for setting buffer specific place hoders.
+" 
+" Example Two:
+" You can use the <C-r> command to insert dynamic elements such as dates.
+"	call IMAP ('date`', "\<c-r>=strftime('%b %d %Y')\<cr>", '')
+"
+" sets up the map for date` to insert the current date.
 "
 "--------------------------------------%<--------------------------------------
 " Bonus: This script also provides a command Snip which puts tearoff strings,
@@ -74,6 +89,12 @@
 " length of the string is chosen to be equal to the longest line in the range.
 "--------------------------------------%<--------------------------------------
 " }}}
+
+" Prevent resourcing this file.
+if exists('s:doneImaps')
+	finish
+endif
+let s:doneImaps = 1
 
 " ==============================================================================
 " functions for easy insert mode mappings.
@@ -517,23 +538,8 @@ endfunction
 " }}}
 
 " ============================================================================== 
-" examples of IMAP() usage and bonus function
+" A bonus function: Snip()
 " ============================================================================== 
-" Miscellaneous general purpose mappings. {{{
-" these are mappings which were originally in imaps.vim.
-"
-" extract the leader character. the mappings need to go *after* the functio
-" IMAP() is defined.
-let s:ml = exists('g:mapleader') ? g:mapleader : '\'
-" General purpose mappings {{{
-call IMAP ('date'.s:ml, "\<c-r>=strftime('%b %d %Y')\<cr>", '')
-call IMAP ('stamp'.s:ml, "Last Change: \<c-r>=strftime('%a %b %d %I:00 %p %Y PST')\<cr>", '')
-call IMAP ('winm'.s:ml, "http://robotics.eecs.berkeley.edu/~srinath/vim/winmanager-2.0.htm", '')
-call IMAP ('latexs'.s:ml, "http://robotics.eecs.berkeley.edu/~srinath/vim/latexSuite.zip", '')
-call IMAP ('homep'.s:ml, "http://robotics.eecs.berkeley.edu/~srinath", '')
-call IMAP ('()', '(ä)«»', "")
-" End general purpose mappings }}}
-" }}}
 " Snip: puts a scissor string above and below block of text {{{
 " Desciption:
 "-------------------------------------%<-------------------------------------
