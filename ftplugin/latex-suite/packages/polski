@@ -1,45 +1,67 @@
-let g:TeX_package_option_polski = "OT1,OT4,T1,plmath,nomathsymbols,MeX"
+" Maintainer: Mikolaj Machowski <mikmach@wp.pl>
+" Last Change: sob lis 23 09:00  2002 C
+
+let g:TeX_package_option_polski = 'OT1,OT4,T1,plmath,nomathsymbols,MeX'
 let g:TeX_package_polski = 
-\"sbr:Dywiz&Ska,".
-\"dywiz,".
-\"pauza,".
-\"ppauza,".
-\"prefixing,".
-\"nonprefixing,".
-\"PLdateending,".
-\"sbr:Matematyka,".
-\"arccos,".
-\"arcctan,".
-\"arcsin,".
-\"arctan,".
-\"ctan,".
-\"ctanh,".
-\"tan,".
-\"tanh,".
-\"bra:arc,".
-\"ctg,".
-\"ctgh,".
-\"tg,".
-\"tgh"
+\'sbr:Dywiz&Ska,'.
+\'nor:dywiz,'.
+\'nor:pauza,'.
+\'nor:ppauza,'.
+\'nor:prefixing,'.
+\'nor:nonprefixing,'.
+\'nor:PLdateending,'.
+\'sbr:Matematyka,'.
+\'nor:arccos,'.
+\'nor:arcctan,'.
+\'nor:arcsin,'.
+\'nor:arctan,'.
+\'nor:ctan,'.
+\'nor:ctanh,'.
+\'nor:tan,'.
+\'nor:tanh,'.
+\'nor:bra:arc,'.
+\'nor:ctg,'.
+\'nor:ctgh,'.
+\'nor:tg,'.
+\'nor:tgh'
 
 function! TPackagePolskiTylda()
-	call IMAP(" A ", " A~", "tex")
-	call IMAP(" a ", " a~", "tex")
-	call IMAP(" I ", " I~", "tex")
-	call IMAP(" i ", " i~", "tex")
-	call IMAP(" O ", " O~", "tex")
-	call IMAP(" o ", " o~", "tex")
-	call IMAP(" U ", " U~", "tex")
-	call IMAP(" u ", " u~", "tex")
-	call IMAP(" W ", " W~", "tex")
-	call IMAP(" w ", " w~", "tex")
-	call IMAP(" Z ", " Z~", "tex")
-	call IMAP(" z ", " z~", "tex")
-	call IMAP(" tys. ", "~tys. ", "tex")
-	call IMAP(" mln", "~mln", "tex")
-	call IMAP(" mld", "~mld", "tex")
-	call IMAP("...", "\ldots{}", "tex")
-	call IMAP(" ---", "~---", "tex")
-	call IMAP(" r. ", "~r. ", "tex")
+	call IMAP (" ---", "~---", "tex")
 endfunction
 call TPackagePolskiTylda()
+" Zmodyfikowana i rozwinieta funkcja Andrzeja Ostruszki
+" iunmap <Space> 
+inoremap <buffer> <silent> <Space> <Space><C-R>=<SID>TeXSpace()<CR>
+inoremap <buffer> <silent> <S-Space> ~
+inoremap <buffer> <silent> <C-Space> <Space>
+function! s:TeXSpace()
+	 if synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^texMath'
+		 return ''
+	 else
+		let g:place = strpart(getline('.'), col('.') - 5, 4)
+		if g:place =~? '^.\?[ ~(|]\?[aiouwz] $\|^[ ~]\?\u\. $'
+			return "\<BS>~"
+		elseif getline('.') =~? '\(\s\|^\|\~\)\(str\.\|ryc\.\|rys\.\|tab\.\|art\.\|vol\.\|nr\|tabl\.\|rozdz\.\|ss\.\|s\.\|t\.\|z\.\|prof\.\|hab\.\|red\.\|min\.\|gen\.\|kpt\.\|przew\.\|p³k\|mjr\|mgr\|bp\|ks\.\|o\+\.\|¶w\.\|dr\)\s\+$'
+			return "\<BS>~"
+		elseif getline('.') =~? '\d\s\+r\.\s\+$'
+			s/\(\d\)\s\+r\.\s\+$/\1\~r\.  /ei
+			normal A
+			return ''
+		elseif getline('.') =~? '[IVXLCM]\s\+w\.\s\+$'
+			s/\([IVXLCM]\)\s\+w\.\s\+$/\1\~w\.  /ei
+			normal A
+			return ''
+		elseif getline('.') =~? '\(\d\|mln\|mld\|tys\.\)\s\+\(z³\|gr\|ha\|t\|mies\|godz\|min\|sek\|cm\|km\|mln\|mld\|tys\.\)\.\?\s\+$'
+			s/\(\d\|mln\|mld\|tys\.\)\s\+\(z³\|gr\|ha\|m\|t\|mies\|godz\|min\|sek\|cm\|km\|mln\|mld\|tys\.\)\(\.\?\)\s\+$/\1\~\2\3  /ei
+			normal A
+			return ''
+		elseif getline('.') =~? '[a-z±æê³ñó¶¿¼]-[a-z±æê³ñó¶¿¼]'
+			s/\([a-z±æê³ñó¶¿¼]\)-\([a-z±æê³ñó¶¿¼]\)/\1\\dywiz \2/ei
+			normal A
+			return ''
+		endif
+		return ''
+	endif
+endfunction 
+
+" vim:ft=vim
