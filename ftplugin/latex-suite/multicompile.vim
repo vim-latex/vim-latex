@@ -1,5 +1,5 @@
 " ============================================================================
-" 	     File: latexm.vim
+" 	     File: multicompile.vim
 "      Author: Srinath Avadhanula
 "     Created: Sat Jul 05 03:00 PM 2003 
 " Description: compile a .tex file multiple times to get cross references
@@ -77,8 +77,8 @@ function! Tex_CompileMultipleTimes()
 
 			let biblinesBefore = Tex_CatFile(bibFileName)
 
-			echomsg "Running bibtex..."
-			let temp_mp = &mp | let &mp='bibtex'
+			echomsg "Running '" . g:Tex_BibtexFlavor . "' ..."
+			let temp_mp = &mp | let &mp = g:Tex_BibtexFlavor
 			exec 'silent! make '.mainFileName_root
 			let &mp = temp_mp
 

@@ -113,7 +113,7 @@ TexLet g:Tex_CompileRule_pdf = 'pdflatex -interaction=nonstopmode $*'
 
 TexLet g:Tex_CompileRule_html = 'latex2html $*.tex'
 
-TexLet g:Tex_CompileRule_bib = 'bibtex $*'
+TexLet g:Tex_CompileRule_bib = g:Tex_BibtexFlavor . ' $*'
 
 " Set Tex_UseMakefile to 0 if you want to ignore the presence of a Makefile 
 " when deciding how to compile
@@ -178,6 +178,9 @@ TexLet g:Tex_IgnoreLevel = 7
 "
 " specifies the current latex flavor.
 TexLet g:Tex_Flavor = 'latex'
+
+" specifies the BibTeX flavor and if necessary options.
+TexLet g:Tex_BibtexFlavor = 'bibtex'
 
 " By default the program described by g:Tex_Flavor above is called with the
 " flags '--src-specials --interaction=nonstopmode'. If your particular version
