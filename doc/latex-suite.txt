@@ -1,10 +1,11 @@
 *latex-suite*   Tools for an enhanced LaTeX environment in Vim
                         For Vim version 6.0 and above.
-                  Last Change: Sun Oct 27 10:00 PM 2002 PST
+                  Last Change: Sat Nov 02 02:00 AM 2002 PST
 
                  By Srinath Avadhanula <srinath@fastmail.fm>,
-                      Mikolaj Machowski <mikmach@wp.pl>
-                         et. al (|latex-suite-credits|)
+                      Mikolaj Machowski <mikmach@wp.pl>,
+                     Benji Fisher <benji@member.AMS.org>
+                        et. al (|latex-suite-credits|)
 
 
 Latex-Suite attempts to provide a comprehensive set of tools to view, edit and
@@ -921,9 +922,6 @@ CREDITS                                 *latex-suite-credits* {{{
 
 And finally, the credits:
 
-Benji Fisher      : a large number of functions, environments and valuable
-                    guidance. (You'll see the name often if you browse the
-                    files).
 Lubomir Host      : provided the diacritics and also helped in development.
 Alexander Wagner  : valuable suggestions during development.
 Luc Hermitte      : his variation of Stephen Riehm's bracketing system is used
