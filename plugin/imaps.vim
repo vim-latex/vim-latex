@@ -223,10 +223,10 @@ function! s:LookupCharacter(char)
 	" Use '\V' (very no-magic) so that only '\' is special, and it was already
 	" escaped when building up s:LHS_{&ft}_{charHash} .
 	if exists("s:LHS_" . &ft . "_" . charHash)
-				\ && text =~ '\V\(' . s:LHS_{&ft}_{charHash} . '\)\$'
+				\ && text =~ "\\C\\V\\(" . s:LHS_{&ft}_{charHash} . "\\)\\$"
 		let ft = &ft
 	elseif exists("s:LHS__" . charHash)
-				\ && text =~ '\V\(' . s:LHS__{charHash} . '\)\$'
+				\ && text =~ "\\C\\V\\(" . s:LHS__{charHash} . "\\)\\$"
 		let ft = ""
 	else
 		" If this is a character which could have been used to trigger an
@@ -265,7 +265,7 @@ function! s:LookupCharacter(char)
 	" matchstr() returns the match that starts first. This automatically
 	" ensures that the longest LHS is used for the mapping.
 	if !exists('lhs') || !exists('rhs')
-		let lhs = matchstr(text, '\V\(' . s:LHS_{ft}_{charHash} . '\)\$')
+		let lhs = matchstr(text, "\\C\\V\\(" . s:LHS_{ft}_{charHash} . "\\)\\$")
 		let hash = s:Hash(lhs)
 		let rhs = s:Map_{ft}_{hash}
 		let phs = s:phs_{ft}_{hash} 
