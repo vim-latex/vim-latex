@@ -61,8 +61,8 @@ function! Tex_completion(what, where)
 
 		elseif exists("s:type") && s:type =~ 'cite'
 			silent! grep! nothing %
-			let bibfiles = Tex_FindBibFiles()
-			let bblfiles = Tex_FindBblFiles()
+			let bibfiles = <SID>Tex_FindBibFiles()
+			let bblfiles = <SID>Tex_FindBblFiles()
 			let g:bib = bibfiles
 			let g:bbl = bblfiles
 			if bibfiles != ''
@@ -86,6 +86,18 @@ function! Tex_completion(what, where)
 			let s:curfile = expand("%:p")
 			exe 'silent! Sexplore '.s:search_directory
 			call <SID>Tex_explore_window("bibliography")
+
+		elseif exists("s:type") && s:type =~ 'include\(only\)\='
+			let s:storehidefiles = g:explHideFiles
+			let g:explHideFiles = '^\.,\.[^t]..$'
+			let s:curfile = expand("%:p")
+			exe 'silent! Sexplore '.s:search_directory
+			call <SID>Tex_explore_window("includefile")
+
+		elseif exists("s:type") && s:type == 'input'
+			let s:curfile = expand("%:p")
+			exe 'silent! Sexplore '.s:search_directory
+			call <SID>Tex_explore_window("input")
 
 		else
 			let s:word = matchstr(s:curline, '\zs\k\{-}$')
@@ -170,7 +182,13 @@ function! s:Tex_explore_window(type)
 		nnoremap <silent> <buffer> <cr> :silent! call <SID>CompleteName("includegraphics")<CR>
 	elseif a:type == 'bibliography'
 		nnoremap <silent> <buffer> <cr> :silent! call <SID>CompleteName("bibliography")<CR>
+	elseif a:type == 'includefile'
+		nnoremap <silent> <buffer> <cr> :silent! call <SID>CompleteName("includefile")<CR>
+	elseif a:type == 'input'
+		nnoremap <silent> <buffer> <cr> :silent! call <SID>CompleteName("input")<CR>
 	endif
+
+	nnoremap <silent> <buffer> q :wincmd q<cr>
 
 endfunction " }}}
 " UpdateViewerWindow: update error and preview window {{{
@@ -256,16 +274,20 @@ function! s:CompleteName(type)
 		let label = matchstr(getline('.'), '\\label{\zs.\{-}\ze}')
 		let completeword = strpart(label, strlen(s:prefix))
 
-	elseif a:type =~ 'includegraphics\|bibliography'
+	elseif a:type =~ 'includegraphics\|bibliography\|includefile\|input'
 		let line = substitute(strpart(getline('.'),0,b:maxFileLen),'\s\+$','','')
 		if isdirectory(b:completePath.line)
 			call EditEntry("", "edit")
 			exe 'nnoremap <silent> <buffer> <cr> :silent! call <SID>CompleteName("'.a:type.'")<CR>'
-			let g:explHideFiles = s:storehidefiles
+			nnoremap <silent> <buffer> q :wincmd q<cr>
 			return
 
 		else
-			let ifile = substitute(line, '\..\{-}$', '', '')
+			if a:type != 'input'
+				let ifile = substitute(line, '\..\{-}$', '', '')
+			else
+				let ifile = line
+			endif
 			let filename = b:completePath.ifile
 			
 			if g:Tex_ImageDir != '' && a:type =~ 'includegraphics'
@@ -286,7 +308,7 @@ function! s:CompleteName(type)
 		pclose!
 		cclose
 		exe s:pos
-	elseif s:type =~ 'includegraphics\|bibliography'
+	elseif s:type =~ 'bibliography\|include\|input'
 		wincmd q
 		exe s:pos
 	endif
@@ -322,7 +344,7 @@ endfunction " }}}
 " Tex_FindBibFiles: find *.bib files {{{
 " Description: scan files looking for \bibliography entries 
 "
-function! Tex_FindBibFiles()
+function! s:Tex_FindBibFiles()
 
 	let bibfiles = ''
 	let bibfiles2 = ''
@@ -330,16 +352,11 @@ function! Tex_FindBibFiles()
 
 	if search('\\bibliography{', 'w')
 		let bibfiles = matchstr(getline('.'), '\\bibliography{\zs.\{-}\ze}')
-		let g:b1 = bibfiles
 		let bibfiles = substitute(bibfiles, '\(,\|$\)', '.bib ', 'ge')
-		let g:b2 = bibfiles
 		let bibfiles = substitute(bibfiles, '\(^\| \)', ' '.curdir.'/', 'ge')
-		let g:b3 = bibfiles
 	else
 		let bibfiles = glob(curdir.'/*.bib')
-		let g:b4 = bibfiles
 		let bibfiles = substitute(bibfiles, '\n', ' ', 'ge')
-		let g:b5 = bibfiles
 	endif
 
 	if Tex_GetMainFileName() != ''
@@ -357,13 +374,13 @@ function! Tex_FindBibFiles()
 		wincmd q
 	endif
 
-	return bibfiles.bibfiles2
+	return bibfiles.' '.bibfiles2
 
 endfunction " }}}
 " Tex_FindBblFiles: find bibitem entries in tex files {{{
 " Description: scan files looking for \bibitem entries 
 "
-function! Tex_FindBblFiles()
+function! s:Tex_FindBblFiles()
 
 	let bblfiles = ''
 	let bblfiles2 = ''
@@ -383,7 +400,7 @@ function! Tex_FindBblFiles()
 
 	endif
 
-	return bblfiles.bblfiles2
+	return bblfiles.' '.bblfiles2
 
 endfunction " }}}
 
