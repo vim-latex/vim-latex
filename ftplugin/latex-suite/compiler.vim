@@ -222,8 +222,11 @@ function! Tex_RunLaTeX()
 			call Tex_CompileLatex()
 		endif
 
+		let errlist = Tex_GetErrorList()
+		call Tex_Debug("Tex_RunLaTeX: errlist = [".errlist."]", "comp")
+
 		" If there are any errors, then break from the rest of the steps
-		if Tex_GetErrorList() =~ '\v:\d+ (error|warning):'
+		if errlist =~  '\v(error|warning)'
 			call Tex_Debug('There were errors in compiling, breaking chain...', 'comp')
 			break
 		endif
@@ -501,9 +504,9 @@ function! Tex_CompileMultipleTimes()
 		" return. For now, do not bother with warnings because those might go
 		" away after compiling again or after bibtex is run etc.
 		let errlist = Tex_GetErrorList()
-		call Tex_Debug("errors = [".errlist."]", "comp")
+		call Tex_Debug("Tex_CompileMultipleTimes: errors = [".errlist."]", "comp")
 
-		if errlist =~ '\d\+\s\f\+:\d\+\serror'
+		if errlist =~ 'error'
 			let g:Tex_IgnoredWarnings = origpats
 			exec 'TCLevel '.origlevel
 
