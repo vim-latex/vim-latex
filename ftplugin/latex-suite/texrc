@@ -105,13 +105,11 @@ TexLet g:Tex_CompileRule_html = 'latex2html $*.tex'
 " NOTE: latex-suite will automatically append file.<format> to these functions
 "       when calling them. The viewer therefore cannot accept arguments after
 "       the filename.
-"       Important for Windows users:
-"       you should adapt the absolute path for gsview32 and AcroRd32 calls;
-"       below you can find some standard locations of those programs.
-"       Tex_ViewRule_dvi value can be set to 'yap -1' or 'windvi'.
+" NOTE: Windows users:
+" 		Set your $PATH variable to include the full path to these programs.
 if has('win32')
-        TexLet g:Tex_ViewRule_ps = 'C:\Ghostgum\gsview\gsview32'
-        TexLet g:Tex_ViewRule_pdf = 'C:\Progra~1\Adobe\Acroba~1.0\Reader\AcroRd32'
+        TexLet g:Tex_ViewRule_ps = 'gsview32'
+        TexLet g:Tex_ViewRule_pdf = 'AcroRd32'
         TexLet g:Tex_ViewRule_dvi = 'yap -1'
 elseif has('macunix')
 	" Let the system pick.  If you want, you can override the choice here.
@@ -415,6 +413,9 @@ TexLet g:Tex_SmartKeySpace = 0
 TexLet g:Tex_SmartKeyDot = 1
 
 " }}}
+
+" }}}
+" ==============================================================================
 " TeX Completion: {{{
 "
 " Options for preview window for ref/cite completion.
@@ -434,7 +435,11 @@ TexLet g:Tex_ExplorerHeight = 10
 " Default: '' 
 TexLet g:Tex_ImageDir = ''
 
-" }}}
+" whether or not searches for \cite's are cached.
+TexLet g:Tex_RememberCiteSearch = 1
+" Paths to the bibliography files and custom packages.
+TexLet g:Tex_BIBINPUTS = ''
+TexLet g:Tex_TEXINPUTS = ''
 
 " }}}
 " ==============================================================================
@@ -505,16 +510,6 @@ TexLet g:Tex_Folding = 1
 " NOTE: the MakeTeXFolds() function will still be available (unless disabled
 "       by g:Tex_Folding), so you can do <F6> or \rf to refresh/create folds.
 TexLet g:Tex_AutoFolding = 1 
-
-" }}}
-" ============================================================================== 
-" TEXINPUTS: check this directories for user packages {{{
-" Search some directories for user packages. They can contain, \usepackage,
-" \newcommand etc. commands. LaTeX uses $TEXINPUTS variable. Because relations
-" between Vim and shell aren't straightforward copy it here. Use exact syntax.
-" Example g:Tex_TEXINPUTS = '.:~/texmf//:'. More in |latex-package-scanning|.
-" Default: ''
-TexLet g:Tex_TEXINPUTS = ''
 
 " }}}
 " ============================================================================== 
