@@ -2,7 +2,7 @@
 " 	     File: envmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
-" Last Change: Tue Dec 24 02:00 AM 2002 PST
+" Last Change: Mon Dec 30 12:00 AM 2002 PST
 " 
 "  Description: mappings/menus for environments. 
 "=============================================================================
@@ -676,7 +676,7 @@ if g:Tex_PromptedEnvironments != ''
 	"
 	function! Tex_ChangeEnvironments() 
 
-		let env_line = searchpair("$$\|\\[\|begin{", '', "$$\|\\]\|end{", "bn")
+		let env_line = searchpair('$$\|\\[\|begin{', '', '$$\|\\]\|end{', "bn")
 
 		if env_line != 0
 			if getline(env_line) !~ 'begin{'
