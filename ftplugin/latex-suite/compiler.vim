@@ -3,7 +3,7 @@
 "      Author: Srinath Avadhanula
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Sun Oct 27 10:00 PM 2002 PST
+" Last Change: Tue Nov 12 08:00 AM 2002 PST
 " 
 "  Description: functions for compiling/viewing/searching latex documents
 "=============================================================================
@@ -110,7 +110,13 @@ function! RunLaTeX()
 
 	exec 'make '.mainfname
 
+	let bufnum = bufnr('%')
 	cwindow
+	" just open the cwindow, do not remain there...
+	if bufnr('%') != bufnum
+		wincmd w
+	endif
+
 	exec 'cd '.curd
 endfunction
 
