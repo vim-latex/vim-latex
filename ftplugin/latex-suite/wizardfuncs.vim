@@ -278,8 +278,7 @@ let g:generalshortcuts = ''
 \."\n <mapleader> is a value of <Leader>"
 \."\n ".s:mapleader.'ll	compile whole document'
 \."\n ".s:mapleader.'lv	view compiled document'
-\."\n ".s:mapleader.'lp	view last compiled part of document'
-\."\n ".s:mapleader.'ls	make forward searching if possible'
+\."\n ".s:mapleader.'ls	forward searching (if possible)'
 \."\n ".s:mapleader.'rf	refresh folds'
 " }}}
 " Environment shortcuts {{{
