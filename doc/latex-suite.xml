@@ -84,7 +84,7 @@ filetype indent on
   <para>
    In addition, the following settings could go in your ~/.vim/ftplugin/tex.vim
    file:
-  <programlisting>" this is mostly a matter of taste. but LaTeX looks good with just a bit
+   <programlisting>" this is mostly a matter of taste. but LaTeX looks good with just a bit
 " of indentation.
 set sw=2
 " TIP: if you write your \label's as \label{fig:something}, then if you
@@ -164,7 +164,7 @@ set iskeyword+=:
     locations where the next relevant editing has to be done. As an example,
     when you type <literal>EFI</literal> in |insert-mode|, you will get the
     following:
-   <programlisting>\begin{figure}[h]
+    <programlisting>\begin{figure}[h]
     \centerline{\psfig{figure=&lt;+eps file+&gt;}}
     \caption{&lt;+caption text+&gt;}
     \label{fig:&lt;+label+&gt;}
@@ -208,22 +208,22 @@ set iskeyword+=:
       name. This list can be customized via the <link
        linkend="Tex_PromptedEnvironments"><literal>g:Tex_PromptedEnvironments</literal></link>
       setting.
-    </para>
+     </para>
      <para>
       In addition to the <literal>Tex_PromptedEnvironments</literal>
       variable, &ls; also lists envionments found in custom packages as
       described in the section <link linkend="package-actions">Package
        actions.</link>
-    </para>
-   </section>
+     </para>
+    </section>
     <section>
      <title>Method 2</title>
      <para>
       If you press <literal>&lt;F5&gt;</literal> while on a line
       containing a single word, then latex-suite creates a
       environment of that name.
-    </para>
-   </section>
+     </para>
+    </section>
     <section>
      <title>Method 3</title>
      <para>
@@ -232,8 +232,8 @@ set iskeyword+=:
       to some common environments which you insert most often. The
       environments mapped to each key can also be customized via the <link
        linkend="Tex_HotKeyMappings">g:Tex_HotKeyMappings</link> setting.
-    </para>
-   </section>
+     </para>
+    </section>
     <section>
      <title>Method 4</title>
      <para>
@@ -241,7 +241,7 @@ set iskeyword+=:
       letter sequence starting with an <literal>E</literal>. The following subsection
       describes this in detail. The sequence of 3 letters generally
       tries to follow the following rules:
-    </para>
+     </para>
      <orderedlist>
       <listitem>
        All environment mappings begin with <literal>E</literal>
@@ -258,7 +258,7 @@ eqnarray   (_e_qn + _a_rray)   ---&gt; EEA</programlisting>
        first 2 letters of the name of the environment.
        Example:
        <programlisting>equation (_eq_uation)          ---&gt; EEQ</programlisting>
-     </listitem>
+      </listitem>
      </orderedlist>
      <para>
       Unfortunately there are some environments that cannot be
@@ -271,9 +271,9 @@ quotation (_q_uotatio_n_)      ---&gt; EQN</programlisting>
       this rule because of ambiguities. In case of doubt, pull down
       the Tex-Environments menu. The menu item should give the hint
       for the map.
-    </para>
+     </para>
+    </section>
    </section>
-  </section>
    <section id="visual-mode-environment-mapings">
     <title>Visual-mode Mappings</title>
     <para>
@@ -498,13 +498,13 @@ SSP for subparagraph</programlisting>
 `2   expands to   \sqrt{&ph;}&ph;
 `|   expands to   \Big|
 `I   expands to   \int_{&ph;}^{&ph;}&ph;</programlisting>
-    <para>
-     (again, notice the convenient place-holders)
-    </para>
-    <para>
-     In addition the visual mode macros are provided:
-    </para>
-    <programlisting>`(  encloses selection in \left( and \right)
+   <para>
+    (again, notice the convenient place-holders)
+   </para>
+   <para>
+    In addition the visual mode macros are provided:
+   </para>
+   <programlisting>`(  encloses selection in \left( and \right)
 `[  encloses selection in \left[ and \right]
 `{  encloses selection in \left\{ and \right\}
 `$  encloses selection in $$ or \[ \] depending on characterwise or
@@ -515,7 +515,7 @@ SSP for subparagraph</programlisting>
    <para>
     These mappings speed up typing European languages which contain diacritic
     characters such as a-umlaut etc. 
-   <programlisting>+&lt;l&gt;     expands to \v{&lt;l&gt;}
+    <programlisting>+&lt;l&gt;     expands to \v{&lt;l&gt;}
 =&lt;l&gt;     expands to \'{&lt;l&gt;}</programlisting>
     where <literal>&lt;l&gt;</literal> is an alphabet.
    </para>
@@ -558,80 +558,80 @@ publisher = {&ph;},
 year = {&ph;},
 otherinfo = {&ph;}
 }&ph;</programlisting>
-    </para>
+   </para>
+   <para>
+    <literal>&lt;+key+&gt;</literal> will be highlighted in select-mode and
+    you can type in the bib-key. After that you can use
+    <literal>&lt;Ctrl-J&gt;</literal> to navigate to successive locations
+    in the template and enter new values.
+   </para>
+   <para>
+    <literal>BBB</literal> inserts a template with only the fields
+    mandatorily required for a given entry type. <literal>BBL</literal>
+    inserts a template with commony used extra options.
+    <literal>BBH</literal> inserts a template with more options which are
+    not as commonly used. <literal>BBX</literal> inserts a template with
+    all the fields which the entry type supports.
+   </para>
+   <note>
+    <title>Mnemonic</title>
     <para>
-     <literal>&lt;+key+&gt;</literal> will be highlighted in select-mode and
-     you can type in the bib-key. After that you can use
-     <literal>&lt;Ctrl-J&gt;</literal> to navigate to successive locations
-     in the template and enter new values.
+     <literal>B</literal> for Bibliographic entry, <literal>L</literal>
+     for Large entry, <literal>H</literal> for Huge entry, and
+     <literal>X</literal> stands for all eXtras.
     </para>
+   </note>
+   <section id="adding-bib-options">
+    <title>Customizing Bib-TeX fields</title>
     <para>
-     <literal>BBB</literal> inserts a template with only the fields
-     mandatorily required for a given entry type. <literal>BBL</literal>
-     inserts a template with commony used extra options.
-     <literal>BBH</literal> inserts a template with more options which are
-     not as commonly used. <literal>BBX</literal> inserts a template with
-     all the fields which the entry type supports.
+     If you wish the <literal>BBB</literal> command to insert a few
+     additional fields in addition to the fields it creates, then you will
+     need to define global variables of the form
+     <programlisting>g:Bib_{type}_options</programlisting>
+     in you <literal>$VIM/ftplugin/bib.vim</literal> file, where
+     <literal>{option}</literal> is a string like
+     <literal>'article'</literal>, <literal>'book'</literal> etc. This
+     variable should contain one of the letters defined in the following
+     table
     </para>
-    <note>
-     <title>Mnemonic</title>
-     <para>
-      <literal>B</literal> for Bibliographic entry, <literal>L</literal>
-      for Large entry, <literal>H</literal> for Huge entry, and
-      <literal>X</literal> stands for all eXtras.
-     </para>
-    </note>
-    <section id="adding-bib-options">
-     <title>Customizing Bib-TeX fields</title>
-     <para>
-      If you wish the <literal>BBB</literal> command to insert a few
-      additional fields in addition to the fields it creates, then you will
-      need to define global variables of the form
-      <programlisting>g:Bib_{type}_options</programlisting>
-      in you <literal>$VIM/ftplugin/bib.vim</literal> file, where
-      <literal>{option}</literal> is a string like
-      <literal>'article'</literal>, <literal>'book'</literal> etc. This
-      variable should contain one of the letters defined in the following
-      table
-     </para>
-     <informaltable frame="all">
-      <tgroup cols="2">
-       <thead>
-        <row>
-         <entry>Character</entry>
-         <entry>Field Type</entry>
-        </row>
-       </thead>
-       <tbody>
-         <row><entry>w</entry><entry>address</entry></row>
-         <row><entry>a</entry><entry>author</entry></row>
-         <row><entry>b</entry><entry>booktitle</entry></row>
-         <row><entry>c</entry><entry>chapter</entry></row>
-         <row><entry>d</entry><entry>edition</entry></row>
-         <row><entry>e</entry><entry>editor</entry></row>
-         <row><entry>h</entry><entry>howpublished</entry></row>
-         <row><entry>i</entry><entry>institution</entry></row>
-         <row><entry>k</entry><entry>isbn</entry></row>
-         <row><entry>j</entry><entry>journal</entry></row>
-         <row><entry>m</entry><entry>month</entry></row>
-         <row><entry>z</entry><entry>note</entry></row>
-         <row><entry>n</entry><entry>number</entry></row>
-         <row><entry>o</entry><entry>organization</entry></row>
-         <row><entry>p</entry><entry>pages</entry></row>
-         <row><entry>q</entry><entry>publisher</entry></row>
-         <row><entry>r</entry><entry>school</entry></row>
-         <row><entry>s</entry><entry>series</entry></row>
-         <row><entry>t</entry><entry>title</entry></row>
-         <row><entry>u</entry><entry>type</entry></row>
-         <row><entry>v</entry><entry>volume</entry></row>
-         <row><entry>y</entry><entry>year</entry></row>
-       </tbody>
-      </tgroup>
-     </informaltable>
-     <para>
-      For example, by default, choosing <literal>'article'</literal> via
-      <literal>BBB</literal> inserts the following template by default
-      <programlisting>@ARTICLE{&lt;+key+&gt;,
+    <informaltable frame="all">
+     <tgroup cols="2">
+      <thead>
+       <row>
+        <entry>Character</entry>
+        <entry>Field Type</entry>
+       </row>
+      </thead>
+      <tbody>
+       <row><entry>w</entry><entry>address</entry></row>
+       <row><entry>a</entry><entry>author</entry></row>
+       <row><entry>b</entry><entry>booktitle</entry></row>
+       <row><entry>c</entry><entry>chapter</entry></row>
+       <row><entry>d</entry><entry>edition</entry></row>
+       <row><entry>e</entry><entry>editor</entry></row>
+       <row><entry>h</entry><entry>howpublished</entry></row>
+       <row><entry>i</entry><entry>institution</entry></row>
+       <row><entry>k</entry><entry>isbn</entry></row>
+       <row><entry>j</entry><entry>journal</entry></row>
+       <row><entry>m</entry><entry>month</entry></row>
+       <row><entry>z</entry><entry>note</entry></row>
+       <row><entry>n</entry><entry>number</entry></row>
+       <row><entry>o</entry><entry>organization</entry></row>
+       <row><entry>p</entry><entry>pages</entry></row>
+       <row><entry>q</entry><entry>publisher</entry></row>
+       <row><entry>r</entry><entry>school</entry></row>
+       <row><entry>s</entry><entry>series</entry></row>
+       <row><entry>t</entry><entry>title</entry></row>
+       <row><entry>u</entry><entry>type</entry></row>
+       <row><entry>v</entry><entry>volume</entry></row>
+       <row><entry>y</entry><entry>year</entry></row>
+      </tbody>
+     </tgroup>
+    </informaltable>
+    <para>
+     For example, by default, choosing <literal>'article'</literal> via
+     <literal>BBB</literal> inserts the following template by default
+     <programlisting>@ARTICLE{&lt;+key+&gt;,
 author = {&ph;},
 title = {&ph;},
 journal = {&ph;},
@@ -651,8 +651,8 @@ number = {&ph;},
 pages = {&ph;},
 otherinfo = {&ph;}
 }&ph;</programlisting>
-     </para>
-    </section>
+    </para>
+   </section>
   </section>
   <section id="smart-keys">
    <title>Smart Key Mappings</title>
@@ -757,23 +757,23 @@ otherinfo = {&ph;}
     </para>
    </section>
    <section id="Alt-C">
-     <title><literal>&lt;Alt-C&gt;</literal></title>
-     <para>
-      In insert mode, this key is polymorphic as follows:
-     </para>
-     <orderedlist>
-      <listitem>
-       If the previous character is a letter or number, then capitalize it and
-       enclose it in <literal>\mathcal{}</literal>.
-      </listitem>
-      <listitem>
-       otherwise insert <literal>\cite{}</literal>.
-      </listitem>
-     </orderedlist>
-     <para>
-      In visual mode, it will simply enclose the selection in
-      <literal>\mathcal{}</literal>
-     </para>
+    <title><literal>&lt;Alt-C&gt;</literal></title>
+    <para>
+     In insert mode, this key is polymorphic as follows:
+    </para>
+    <orderedlist>
+     <listitem>
+      If the previous character is a letter or number, then capitalize it and
+      enclose it in <literal>\mathcal{}</literal>.
+     </listitem>
+     <listitem>
+      otherwise insert <literal>\cite{}</literal>.
+     </listitem>
+    </orderedlist>
+    <para>
+     In visual mode, it will simply enclose the selection in
+     <literal>\mathcal{}</literal>
+    </para>
    </section>
   </section>
   <section id="custom-macros-menu">
@@ -838,7 +838,207 @@ otherinfo = {&ph;}
       </row>
      </tbody>
     </tgroup>
-   </informaltable>
+   </informaltable> 
+  </section>
+  <section id="ls-new-macros">
+   <title>Making your own Macros via <literal>IMAP()</literal></title>
+   <para>
+    If you find the need to create your own macros, then you can use the
+    <literal>IMAP()</literal> function provided with &ls;. See <link
+     linkend="why-IMAP" endterm="why-IMAP.title"></link> for a short
+    explanation of why you might prefer <literal>IMAP()</literal> over
+    &vim;'s standard <literal>:imap</literal> command. An example best
+    explains the usage:
+    <programlisting>:call IMAP('NOM', '\nomenclature{&ph;}&ph;', 'tex')</programlisting>
+    This will create a &ls;-style mapping, where if you type
+    <literal>NOM</literal> in insert mode, you will get
+    <literal>\nomenclature{&ph;}&ph;</literal> with the cursor left in
+    place of the first <literal>&ph;</literal> characters. See <link
+     linkend="ls-imaps-syntax" endterm="ls-imaps-syntax.title"></link> for
+    a detailed explanation of the <literal>IMAP()</literal> command.
+   </para>
+   <para>
+    For maps which are triggered for a given filetype, the
+    <literal>IMAP()</literal> command above should be put in the filetype
+    plugin script for that file. For example, for tex-specific mappings,
+    the <literal>IMAP()</literal> calls should go in
+    <literal>$VIM/ftplugin/tex.vim</literal>. For globally visible maps,
+    you will need to use the following in either your
+    <literal>~/.vimrc</literal> or a file in your
+    <literal>$VIM/plugin</literal> directory.
+    <programlisting>augroup MyIMAPs
+    au!
+    au VimEnter * call IMAP('Foo', 'foo', '')
+augroup END</programlisting>
+   </para>
+   <section id="why-IMAP">
+    <title id="why-IMAP.title">Why use <literal>IMAP()</literal></title>
+    <para>
+     Using <literal>IMAP</literal> instead of &vim;'s built-in
+     <literal>:imap</literal> command has a couple of advantages:
+     <orderedlist>
+      <listitem>
+       The 'ttimeout' option will generally limit how easily you can type
+       the left hand side for a normal <literal>:imap</literal>. if you type
+       the left hand side too slowly, then the mapping will not be
+       activated.
+      </listitem>
+      <listitem>
+       If you mistype one of the letters of the lhs, then the mapping is
+       deactivated as soon as you backspace to correct the mistake.
+      </listitem>
+      <listitem>
+       The characters in lhs are shown on top of each other. This is fairly
+       distracting. This becomes a real annoyance when a lot of characters
+       initiate mappings.
+      </listitem>
+     </orderedlist>
+    </para>
+   </section>
+   <section id="ls-imaps-syntax">
+    <title id="ls-imaps-syntax.title">IMAP() syntax</title>
+    <para>
+     Formally, the syntax which is used for the <literal>IMAP</literal>
+     function is:
+     <programlisting>call IMAP (lhs, rhs, ft [, phs, phe])</programlisting>
+    </para>
+    <para>
+     <informaltable frame="all">
+      <tgroup cols="2">
+       <thead>
+        <row>
+         <entry>Argument</entry>
+         <entry>Explanation</entry>
+        </row>
+       </thead>
+       <tbody>
+        <row>
+         <entry>lhs</entry>
+         <entry>
+          <para>
+           This is the "left-hand-side" of the mapping. When you use
+           <literal>IMAP</literal>, only the last character of this word is
+           actually mapped, although the effect is that the whole word is
+           mapped.
+          </para>
+          <para>
+           If you have two mappings which end in a common
+           <literal>lhs</literal>, then the mapping with the longer
+           <literal>lhs</literal> is used. For example, if you do
+           <programlisting>call IMAP('BarFoo', 'something', 'tex')
+call IMAP('Foo', 'something else', 'tex')</programlisting>
+            Then typing <literal>BarFoo</literal> inserts
+            <literal>"something"</literal>, whereas <literal>Foo</literal> by
+            itself inserts <literal>"something else"</literal>.
+          </para>
+          <para>
+           Also, the nature of <literal>IMAP()</literal> makes creating
+           certain combination of mappings impossible. For example if you
+           have
+           <programlisting>call IMAP('foo', 'something', 'tex')
+call IMAP('foobar', 'something else', 'tex')</programlisting>
+           Then you will never be able to trigger <literal>"foobar"</literal>
+           because typing <literal>"foo"</literal> will immediately insert
+           <literal>"something"</literal>. This is the "cost" which you incur
+           over the normal <literal>:imap</literal> command for the
+           convinience of no 'timeout' problems, the ability to correct
+           <literal>lhs</literal> etc.
+          </para>
+         </entry>
+        </row>
+        <row>
+         <entry>rhs</entry>
+         <entry>
+          <para>
+           The "right-hand-side" of the mapping. This is the expansion you
+           will get when you type <literal>lhs</literal>.
+          </para>
+          <para>
+           This string can also contain special characters such as
+           <literal>&lt;enter&gt;</literal> etc. To do this, you will need
+           to specify the second argument in double-quotes as follows:
+           <programlisting>:call IMAP('EFE', "\\begin{figure}\&lt;CR&gt;&ph;\\end{figure}&ph;", 'tex')</programlisting>
+           With this, typing <literal>EFE</literal> is equivalent to typing
+           in the right-hand side with all the special characters in
+           insert-mode. This has the advantage that if you have filetype
+           indentation set up, then the right hand side will also be
+           indented just as if you had typed it in normally.
+          </para>
+          <para>
+           You can also set up a &ls; style mapping which calls a custom function
+           as follows:
+           <programlisting>:call IMAP('FOO', "\&lt;C-r&gt;=MyFoonction()\&lt;CR&gt;", 'tex')</programlisting>
+           where <literal>MyFoonction</literal> is a custom function you have
+           written. If <literal>MyFoonction</literal> also has to return a string
+           containing <literal>&ph;</literal> characters, then you will need to
+           use the function <literal>IMAP_PutTextWithMovement()</literal>. An
+           example best explains the usage:
+          </para>
+          <programlisting>call IMAP('FOO', "\&lt;C-r&gt;=AskVimFunc()\&lt;CR&gt;", 'vim')
+" Askvimfunc: Asks For Function Name And Sets Up Template 
+" Description: 
+function! AskVimFunc()
+	let name = input('Name of the function : ')
+	if name == ''
+		let name = "&lt;+Function Name+&gt;"
+	end
+	let islocal = input('Is this function scriptlocal ? [y]/n : ', 'y')
+	if islocal == 'y'
+		let sidstr = '&lt;SID&gt;'
+	else
+		let sidstr = ''
+	endif
+	return IMAP_PutTextWithMovement( 
+		\ "\" ".name.": &lt;+short description+&gt; \&lt;cr&gt;" .
+		\ "Description: &lt;+long description+&gt;\&lt;cr&gt;" . 
+		\ "\&lt;C-u&gt;function! ".name."(&lt;+arguments+&gt;)&ph;\&lt;cr&gt;" . 
+		\       "&lt;+function body+&gt;\&lt;cr&gt;" . 
+		\ "endfunction \" "
+		\ )
+endfunction</programlisting>
+          <para>
+          </para>
+         </entry>
+        </row>
+        <row>
+         <entry>ft</entry>
+         <entry>
+          <para>
+           The file type for which this mapping is active. When this string
+           is left empty, the mapping applies for all file-types. A filetype
+           specific mapping will always take precedence.
+          </para>
+         </entry>
+        </row>
+        <row>
+         <entry>phs, phe</entry>
+         <entry>
+          <para>
+           If you prefer to write the <literal>rhs</literal> with characters
+           other than <literal>&lt;+</literal> and <literal>+&gt;</literal>
+           to denote place-holders, you can use the last 2 arguments to
+           specify which characters in the <literal>rhs</literal> specify
+           place-holders. By default, these are <literal>&lt;+</literal> and
+           <literal>+&gt;</literal> respectively.
+          </para>
+          <para>
+           Note that the <literal>phs</literal> and <literal>phe</literal>
+           arguments do not control what characters will be displayed for
+           the placeholders when the mapping is actually triggered. What
+           characters are used to display place-holders when you trigger an
+           <literal>IMAP</literal> are controlled by the <link
+            linkend="Imap_PlaceHolderStart"><literal>Imap_PlaceHolderStart</literal></link>
+           and <link
+            linkend="Imap_PlaceHolderEnd"><literal>Imap_PlaceHolderEnd</literal></link>
+           settings.
+          </para>
+         </entry>
+        </row>
+       </tbody>
+      </tgroup>
+     </informaltable>
+    </para>
+   </section>
   </section>
  </section>
  <section id="latex-packages">
@@ -915,7 +1115,7 @@ otherinfo = {&ph;}
     For example, the <literal>SIUnits</literal> package has a custom
     dictionary.
    </para>
-  <anchor id="latex-package-scanning" />
+   <anchor id="latex-package-scanning" />
    <para>
     If a package detected at startup is found by &ls; in the current
     directory or in a location specified by the <link
@@ -1423,9 +1623,9 @@ newfile.tex [Preview]                                         11,3           21%
    <link linkend="compiler-rules">section</link>), then &ls; will switch to
    that format.
   </para>
-   <para>Trying to choose a format for which no rule has been defined will
-    result in &ls; displaying a warning message without taking any action.
-   </para>
+  <para>Trying to choose a format for which no rule has been defined will
+   result in &ls; displaying a warning message without taking any action.
+  </para>
   <section id="compiler-rules">
    <title>Setting Compilation rules</title>
    <para>
@@ -1551,7 +1751,7 @@ nmap \pdf :call Tex_CompileToPDF()&lt;CR&gt;</programlisting>
    </para>
    <para>
     When TCLevel is called with the unquoted string strict as follows:
-   <programlisting>TClevel strict</programlisting>
+    <programlisting>TClevel strict</programlisting>
     then &ls; switches to a "verbose", "no-lines-ignored" mode which is useful
     when you want to make final checks of your document and want to be careful
     not to let things slip by.
@@ -1695,7 +1895,7 @@ nmap \pdf :call Tex_CompileToPDF()&lt;CR&gt;</programlisting>
    label is found in the folded region, then those are used to make a more
    meaningful fold-text, otherwise the second line of the environment is displayed
    along with the name of the environment. In other words, the following
-  <programlisting>\begin{figure}[h]
+   <programlisting>\begin{figure}[h]
     \centerline{\psfig{figure=slidercrank.eps,height=6cm}}
     \caption{The Slider Crank Mechanism.}
     \label{fig:slidercrank}
@@ -1707,16 +1907,16 @@ nmap \pdf :call Tex_CompileToPDF()&lt;CR&gt;</programlisting>
   </para>
   <para>
    will be shown as:
-  <programlisting>+---  5 lines: figure (fig:slidercrank) : The Slider Crank Mechanism. -----
+   <programlisting>+---  5 lines: figure (fig:slidercrank) : The Slider Crank Mechanism. -----
 % a LaTeX comment.
 +---  3 lines: eqnarray () : \sin(\pi) = 0 --------------------------------</programlisting>
   </para>
- <section id="default-folding">
-  <title>Default Folding Scheme in &ls;</title>
-  <para>
-   By default &ls; creates folds in the following manner:
-  </para>
-  <programlisting>\chapter
+  <section id="default-folding">
+   <title>Default Folding Scheme in &ls;</title>
+   <para>
+    By default &ls; creates folds in the following manner:
+   </para>
+   <programlisting>\chapter
 \section
 %%fakesection
     \subsection
@@ -1727,102 +1927,102 @@ nmap \pdf :call Tex_CompileToPDF()&lt;CR&gt;</programlisting>
                 \figure
                 \table
                 \footnote</programlisting>
- <para>
-  The indentation shows the "nestedness" of the folding scheme.
-  See the <link linkend="customizing-what-to-fold">next section</link> to
-  see how you can change this scheme.
- </para>
- </section>
- <section id="customizing-what-to-fold">
-  <title>Customizing what to fold</title>
-  <para>
-   At this time, there is no setting available to tweak the folds which are
-   created by &ls;. However, the folds created by &ls; are listed in
-   <literal>$VIM/ftplugin/latex-suite/folding.vim</literal>. You will need
-   to modify the function <literal>MakeTexFolds()</literal> defined in
-   that file to modify the fold syntax. <literal>MakeTexFolds</literal>
-   makes a number of calls to <literal>AddSyntaxFoldItem</literal>. Each
-   such call defines a new "fold item". The order in which these calls are
-   made defines how the folds are nested. For example, if you desire an
-   <literal>figure</literal> environment to be nested within a
-   <literal>section</literal>, then you should define the fold for the
-   <literal>figure</literal> first. The syntax of
-   <literal>AddSyntaxFoldItem</literal> is as follows:
-   <programlisting>AddSyntaxFoldItem(startpat, endpat, startoff, endoff [, startskip, endskip])</programlisting>
-   If the last two arguments are omitted, then they are assumed to default
-   to the empty strings <literal>''</literal>.
-   The explanation for each argument is as follows:
-  </para>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <thead>
-       <row>
-        <entry>Argument</entry>
-        <entry>Explanation</entry>
-       </row>
-      </thead>
-      <tbody>
-       <row>
-        <entry><literal>startpat</literal></entry>
-        <entry>a line matching this pattern defines
-         the beginning of a fold.
-        </entry>
-       </row>
-       <row>
-        <entry>
-         <literal>endpat</literal>
-        </entry>
-        <entry>
-         a line matching this pattern defines the end of a fold.
-        </entry>
-       </row>
-       <row>
-        <entry><literal>startoff</literal></entry>
-        <entry>
-         this is the offset from the starting line at which folding will
-         actually start
-        </entry>
-       </row>
-       <row>
-        <entry><literal>endoff</literal></entry>
-        <entry>
-         like <literal>startoff</literal>, but gives the offset of the actual fold end from
-         the line satisfying <literal>endpat</literal>.
-         <literal>startoff</literal> and <literal>endoff</literal> are necessary when the folding region does
-         not have a specific end pattern corresponding to a start
-         pattern. for example in latex,
-         <literal>\begin{section}</literal>
-         defines the beginning of a section, but its not necessary to
-         have a corresponding
-         <literal>\end{section}</literal>
-         the section is assumed to end 1 line <emphasis>before</emphasis> another section
-         starts.
-        </entry>
-       </row>
-       <row>
-        <entry>
-         <literal>startskip</literal>  
-        </entry>
-        <entry>
-         A Pattern Which Defines The Beginning Of A "Skipped" Region.
+   <para>
+    The indentation shows the "nestedness" of the folding scheme.
+    See the <link linkend="customizing-what-to-fold">next section</link> to
+    see how you can change this scheme.
+   </para>
+  </section>
+  <section id="customizing-what-to-fold">
+   <title>Customizing what to fold</title>
+   <para>
+    At this time, there is no setting available to tweak the folds which are
+    created by &ls;. However, the folds created by &ls; are listed in
+    <literal>$VIM/ftplugin/latex-suite/folding.vim</literal>. You will need
+    to modify the function <literal>MakeTexFolds()</literal> defined in
+    that file to modify the fold syntax. <literal>MakeTexFolds</literal>
+    makes a number of calls to <literal>AddSyntaxFoldItem</literal>. Each
+    such call defines a new "fold item". The order in which these calls are
+    made defines how the folds are nested. For example, if you desire an
+    <literal>figure</literal> environment to be nested within a
+    <literal>section</literal>, then you should define the fold for the
+    <literal>figure</literal> first. The syntax of
+    <literal>AddSyntaxFoldItem</literal> is as follows:
+    <programlisting>AddSyntaxFoldItem(startpat, endpat, startoff, endoff [, startskip, endskip])</programlisting>
+    If the last two arguments are omitted, then they are assumed to default
+    to the empty strings <literal>''</literal>.
+    The explanation for each argument is as follows:
+   </para>
+   <informaltable frame="all">
+    <tgroup cols="2">
+     <thead>
+      <row>
+       <entry>Argument</entry>
+       <entry>Explanation</entry>
+      </row>
+     </thead>
+     <tbody>
+      <row>
+       <entry><literal>startpat</literal></entry>
+       <entry>a line matching this pattern defines
+        the beginning of a fold.
+       </entry>
+      </row>
+      <row>
+       <entry>
+        <literal>endpat</literal>
+       </entry>
+       <entry>
+        a line matching this pattern defines the end of a fold.
+       </entry>
+      </row>
+      <row>
+       <entry><literal>startoff</literal></entry>
+       <entry>
+        this is the offset from the starting line at which folding will
+        actually start
+       </entry>
+      </row>
+      <row>
+       <entry><literal>endoff</literal></entry>
+       <entry>
+        like <literal>startoff</literal>, but gives the offset of the actual fold end from
+        the line satisfying <literal>endpat</literal>.
+        <literal>startoff</literal> and <literal>endoff</literal> are necessary when the folding region does
+        not have a specific end pattern corresponding to a start
+        pattern. for example in latex,
+        <literal>\begin{section}</literal>
+        defines the beginning of a section, but its not necessary to
+        have a corresponding
+        <literal>\end{section}</literal>
+        the section is assumed to end 1 line <emphasis>before</emphasis> another section
+        starts.
+       </entry>
+      </row>
+      <row>
+       <entry>
+        <literal>startskip</literal>  
+       </entry>
+       <entry>
+        A Pattern Which Defines The Beginning Of A "Skipped" Region.
 
-         For example, suppose we define a \itemize fold as follows:
-         <programlisting><literal>startpat</literal> =  '^\s*\\item',
+        For example, suppose we define a \itemize fold as follows:
+        <programlisting><literal>startpat</literal> =  '^\s*\\item',
 <literal>endpat</literal> = '^\s*\\item\|^\s*\\end{\(enumerate\|itemize\|description\)}',
 <literal>startoff</literal> = 0,
 <literal>endoff</literal> = -1</programlisting>
 
-         This defines a fold which starts with a line beginning with an
-         <literal>\item</literal> and ending one line before a line beginning with an
-         <literal>\item</literal> or <literal>\end{enumerate}</literal> etc.
+        This defines a fold which starts with a line beginning with an
+        <literal>\item</literal> and ending one line before a line beginning with an
+        <literal>\item</literal> or <literal>\end{enumerate}</literal> etc.
 
-         Then, as long as <literal>\item</literal>'s are not nested things are fine.
-         However, once items begin to nest, the fold started by one
-         <literal>\item</literal> can end because of an
-         <literal>\item</literal> in an <literal>\itemize</literal>
-         environment within this <literal>\item</literal>. i.e, the following can happen:
+        Then, as long as <literal>\item</literal>'s are not nested things are fine.
+        However, once items begin to nest, the fold started by one
+        <literal>\item</literal> can end because of an
+        <literal>\item</literal> in an <literal>\itemize</literal>
+        environment within this <literal>\item</literal>. i.e, the following can happen:
 
-         <programlisting>\begin{itemize}
+        <programlisting>\begin{itemize}
 \item Some text                         &lt;------- fold will start here
 This item will contain a nested item
 \begin{itemize}                         &lt;----- fold will end here because next line contains \item...
@@ -1831,55 +2031,55 @@ This item will contain a nested item
 \item Next item of the parent itemize  
 \end{itemize}</programlisting>
 
-         Therefore, in order to completely define a folding item which
-         allows nesting, we need to also define a "skip" pattern.
-         <literal>startskip</literal> and end skip do that.
-         Leave '' when there is no nesting.
-        </entry>
-       </row>
-       <row>
-        <entry>
-         <literal>endskip</literal>  
-        </entry>
-        <entry>
-         the pattern which defines the end of the "skip" pattern for
-         nested folds.
-        </entry>
-       </row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <note>
-     <title>Example 1</title>
-     <para>
-      A syntax fold region for the latex section is defined with the
-      following arguments to <literal>AddSyntaxFoldItem</literal>:
-      <programlisting>startpat = "\\section{"
+        Therefore, in order to completely define a folding item which
+        allows nesting, we need to also define a "skip" pattern.
+        <literal>startskip</literal> and end skip do that.
+        Leave '' when there is no nesting.
+       </entry>
+      </row>
+      <row>
+       <entry>
+        <literal>endskip</literal>  
+       </entry>
+       <entry>
+        the pattern which defines the end of the "skip" pattern for
+        nested folds.
+       </entry>
+      </row>
+     </tbody>
+    </tgroup>
+   </informaltable>
+   <note>
+    <title>Example 1</title>
+    <para>
+     A syntax fold region for the latex section is defined with the
+     following arguments to <literal>AddSyntaxFoldItem</literal>:
+     <programlisting>startpat = "\\section{"
 endpat   = "\\section{"
 startoff = 0
 endoff   = -1
 startskip = ''
 endskip = ''</programlisting>
-      Note that the start and end patterns are thus the same and
-      <literal>endoff</literal> has a negative value to capture the effect
-      of a section ending one line before the next starts.
-     </para>
-    </note>
-    <note>
-     <title>Example 2</title>
-     <para>
-      A syntax fold region for the \itemize environment is:
-      <programlisting>startpat = '^\s*\\item',
+     Note that the start and end patterns are thus the same and
+     <literal>endoff</literal> has a negative value to capture the effect
+     of a section ending one line before the next starts.
+    </para>
+   </note>
+   <note>
+    <title>Example 2</title>
+    <para>
+     A syntax fold region for the \itemize environment is:
+     <programlisting>startpat = '^\s*\\item',
 endpat = '^\s*\\item\|^\s*\\end{\(enumerate\|itemize\|description\)}',
 startoff = 0,
 endoff = -1,
 startskip = '^\s*\\begin{\(enumerate\|itemize\|description\)}',
 endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
-      Note the use of <literal>startskip</literal> and
-      <literal>endskip</literal> to allow nesting.
-     </para>
-    </note>
- </section>
+     Note the use of <literal>startskip</literal> and
+     <literal>endskip</literal> to allow nesting.
+    </para>
+   </note>
+  </section>
  </section>
  <section id="latex-suite-commands-maps">
   <title>&ls; Commands and Maps</title>
@@ -2591,7 +2791,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
        <row><entry>Default Value</entry> 
         <entry>
          <literal>'footnote,cite,pageref,label'</literal>
-       </entry>
+        </entry>
        </row>
       </tbody>
      </tgroup>
