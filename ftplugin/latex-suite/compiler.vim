@@ -2,7 +2,7 @@
 " 	     File: compiler.vim
 "      Author: Srinath Avadhanula
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Tue Nov 26 11:00 PM 2002 PST
+" Last Change: Thu Nov 28 01:00 AM 2002 PST
 " 
 "  Description: functions for compiling/viewing/searching latex documents
 "=============================================================================
@@ -271,7 +271,7 @@ function! PositionPreviewWindow(filename)
 
 	" if we are on an error, then count the number of lines before this in the
 	" quickfix window with an error on the same line.
-	if errpat =~ 'error'
+	if errpat =~ 'error|$'
 		" our location in the quick fix window.
 		let errline = line('.')
 
@@ -298,6 +298,8 @@ function! PositionPreviewWindow(filename)
 				call search(errpat, 'W')
 			endif
 		endwhile
+	else
+		let numrep = 1
 	endif
 
 	if getline('.') =~ '|\d\+ warning|'
@@ -320,12 +322,12 @@ function! PositionPreviewWindow(filename)
 	" TODO: This is not robust enough. Check that a wincmd j actually takes
 	" us to the preview window.
 	wincmd j
-	if searchpat =~ 'l.\d\+' && numrep > 1
-		while numrep > 0
-			call search(searchpat, 'W')
-			let numrep = numrep - 1
-		endwhile
-	endif
+	" now search forward from this position in the preview window for the
+	" numrep^th error of the current line in the quickfix window.
+	while numrep > 0
+		call search(searchpat, 'W')
+		let numrep = numrep - 1
+	endwhile
 	normal! z.
 
 endfunction " }}}
@@ -384,7 +386,7 @@ function! GotoErrorLocation(filename)
 			let partline = matchstr(brokenline, '^\M...\m\zs.*')
 			let normcmd = "0/\\V".escape(partline, "\\")."/e+1\<CR>"
 		else
-			let column = strlen(brokenline)
+			let column = strlen(brokenline) + 1
 			let normcmd = column.'|'
 		endif
 
