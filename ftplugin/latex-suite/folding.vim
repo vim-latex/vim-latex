@@ -228,7 +228,7 @@ function! MakeTexFolds(force)
 	" {{{ slide
 	call AddSyntaxFoldItem (
 		\ '^\s*\\begin{slide',
-		\ '^\s*\\appendix\W\|^\s*\\chapter\W\|^\s*\\begin{slide\|^\s*\\end{document',
+		\ '^\s*\\appendix\W\|^\s*\\chapter\W\|^\s*\\end{slide\|^\s*\\end{document',
 		\ 0,
 		\ 0
 		\ )
