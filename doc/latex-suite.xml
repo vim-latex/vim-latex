@@ -2271,7 +2271,10 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
      are not using menus command lists files from
      latex-suite/dictionaries/ (this is main support for non-menus
      version of latexSuite) if menus are on |TPackage| lists
-     files from latex-suite/packages/ directory.
+     files from latex-suite/packages/ directory. In package file can be
+     also additional functions and syntax descriptions for commands,
+     environments, etc. In &vim; 6.2 and above you can use command-line
+     completion.
 
      When {package} is given command turns on all possible support
      for this {package} (|latex-menu-packages|,
