@@ -1,6 +1,6 @@
 " Author: Mikolaj Machowski <mikmach@wp.pl>
 " (c) Copyright by Mikolaj Machowski 2002
-" Last Change: czw lis 28 01:00  2002 C
+" Last Change: wto gru 10 09:00  2002 C
 " License: Vim Charityware
 "
 " Plik jest w kodowaniu iso-8859-2. Je¶li chcesz go uzywac w MS-Windows musisz
@@ -65,6 +65,25 @@ inoremap <buffer> <silent> <S-Space> ~
 
 " Wymuszenie zwyklej spacji
 inoremap <buffer> <silent> <C-Space> <Space>
+
+" Latwe przelaczanie sie miedzy magiczna spacja a zwykla
+inoremap <buffer> <silent> <F8> <C-R>=<SID>TogglePolishSpace()<CR>
+
+function! s:TogglePolishSpace()
+    if !exists("b:polishspace")
+        iunmap <buffer> <Space>
+        iunmap <buffer> <CR>
+        let b:polishspace = 1
+		return ''
+    else
+        inoremap <buffer> <silent> <Space> <C-R>=<SID>Tex_polish_space()<CR>
+        inoremap <buffer> <silent> <CR> <C-R>=<SID>Tex_polish_space()<CR><BS><CR>
+        unlet b:polishspace
+		return ''
+    endif
+endfunction
+
+
 function! s:Tex_polish_space()
 	"Nic magicznego w matematyce
 	 if synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^texMath'
