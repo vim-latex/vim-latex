@@ -181,7 +181,7 @@ function! IMAP(lhs, rhs, ft, ...)
 	exe 'inoremap <silent>'
 				\ escape(lastLHSChar, '|')
 				\ '<C-r>=<SID>LookupCharacter("' .
-				\ escape(lastLHSChar, '\|') .
+				\ escape(lastLHSChar, '\|"') .
 				\ '")<CR>'
 endfunction
 
