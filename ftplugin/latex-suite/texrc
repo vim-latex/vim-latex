@@ -1,9 +1,9 @@
 "=============================================================================
-" vim:ft=vim:ts=4:sw=4:noet:fdm=marker:ff=unix:commentstring=\"\ %s
+" vim:ft=vim:ts=4:sw=4:noet:fdm=marker:commentstring=\"\ %s
 " 	     File: texrc.vim
 "      Author: Srinath Avadhanula
 "     Created: Mon Apr 01 11:00 AM 2002 PST
-" Last Change: sob maj 04 08:00  2002 U
+" Last Change: Sun Oct 27 02:00 AM 2002 PST
 "
 "  Description: This file contains resource configuration information for the
 "               latex-suite plugin.
