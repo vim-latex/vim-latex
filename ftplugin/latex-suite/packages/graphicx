@@ -29,7 +29,7 @@ let g:TeX_package_option_graphicx =
 
 let g:TeX_package_graphicx =
 \ 'sbr:Includegraphics,'
-\.'nob:includegraphics,'
+\.'brs:includegraphics[<++>]{<++>},'
 \.'spe:height=,'
 \.'spe:width=,'
 \.'spe:keepaspectratio=,'
