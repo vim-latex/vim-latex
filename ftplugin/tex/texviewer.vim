@@ -399,7 +399,7 @@ function! s:Tex_SyncPreviewWindow()
 
 	" Settings of preview window
 	exe g:Tex_ViewerPreviewHeight.' wincmd _'
-	setlocal foldlevel=10
+	setlocal nofoldenable
 
 	if exists('s:type') && s:type =~ 'cite'
 		" In cite context place bibkey at the top of preview window.
