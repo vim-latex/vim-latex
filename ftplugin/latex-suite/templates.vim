@@ -69,7 +69,7 @@ function! <SID>ReadTemplate(...)
 	" delete the first line into ze blackhole.
 	0 d _
 
-	call Tex_pack_updateall()
+	call Tex_pack_updateall(1)
 endfunction
 
 " }}}
