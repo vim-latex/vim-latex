@@ -555,30 +555,15 @@ function! GotoErrorLocation(filename)
 
 endfunction " }}}
 " SetCompilerMaps: sets maps for compiling/viewing/searching {{{
-" " Description: 
+" Description: 
 function! <SID>SetCompilerMaps()
 	if exists('b:Tex_doneCompilerMaps')
 		return
 	endif
-	let b:Tex_doneCompilerMaps = 1
-	" viewing/searching
-	if !hasmapto('RunLaTeX')
-		if has("gui")
-			nnoremap <buffer> <Leader>ll :silent! call RunLaTeX()<cr>
-			vnoremap <buffer> <Leader>ll :call Tex_PartCompile()<cr>
-			nnoremap <buffer> <Leader>lv :silent! call ViewLaTeX()<cr>
-			nnoremap <buffer> <Leader>ls :silent! call Tex_ForwardSearchLaTeX()<cr>
-		else
-			nnoremap <buffer> <Leader>ll :call RunLaTeX()<cr>
-			vnoremap <buffer> <Leader>ll :call Tex_PartCompile()<cr>
-			nnoremap <buffer> <Leader>lv :call ViewLaTeX()<cr>
-			nnoremap <buffer> <Leader>ls :call Tex_ForwardSearchLaTeX()<cr>
-		end
-	end
-	vnoremap <buffer> <silent> <Plug>Tex_PartCompile :call Tex_PartCompile()<CR>
-	if !hasmapto('<Plug>Tex_PartCompilation',"v")
-		vmap <buffer> <silent> <F10> <Plug>Tex_PartCompile
-	endif
+	nnoremap <buffer> <Leader>ll :call RunLaTeX()<cr>
+	vnoremap <buffer> <Leader>ll :call Tex_PartCompile()<cr>
+	nnoremap <buffer> <Leader>lv :call ViewLaTeX()<cr>
+	nnoremap <buffer> <Leader>ls :call Tex_ForwardSearchLaTeX()<cr>
 endif
 
 endfunction 
