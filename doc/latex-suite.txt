@@ -1,6 +1,6 @@
 *latex-suite*   Tools for an enhanced LaTeX environment in Vim
                         For Vim version 6.0 and above.
-                  Last Change: czw maj 09 11:00  2002 U
+                  Last Change: sob maj 11 05:00  2002 U
 
                  By Srinath Avadhanula <srinath@fastmail.fm>,
                       Mikolaj Machowski <mikmach@wp.pl>
@@ -219,7 +219,7 @@ depending on character-wise or line-wise selection.
 
 }}}
 ---------------------------------------------------------------------------
-Section Mappings: {{{
+Section Mappings: {{{ 
 
 Inserts LaTeX sections: >
       \section
@@ -752,30 +752,30 @@ LATEX SUITE COMMANDS                   *latex-suite-commands* {{{
 LatexSuite defines set of commands for non-GUI and power users. They are
 taking care about Macros, Templates and Packages.
 
-:TMacro [{macro}]                       *TMacro*
+:TMacro [{macro}]                      *TMacro*
                 When used without any arguments lists all available macros
                 defined in latex-suite/macros/ directory and prompt you to
                 choose one of them.
                 With one argument |:read| this macro under cursor position.
                 With more than one argument it will not work :)
 
-:TMacroEdit [{macro}]                   *TMacroEdit*
+:TMacroEdit [{macro}]                  *TMacroEdit*
                 Splits window for editing {macro}.
                 When used without any arguments lists all available macros
                 defined in latex-suite/macros/ directory and prompt you to
                 choose one of them.
 
-:TMacroNew                              *TMacroNew*
+:TMacroNew                             *TMacroNew*
                 Splits window to write new macro. Directory in new buffer is
                 locally changed to latex-suite/macros/.
 
-:TMacroDelete [{macro}]                 *TMacroDelete*
+:TMacroDelete [{macro}]                *TMacroDelete*
                 Delets {macro} from latex-suite/macros/ directory.
                 When used without any arguments lists all available macros
                 defined in latex-suite/macros/ directory and prompt you to
                 choose one of them.
 
-:TPackage [{package} [{package} ...]]   *TPackage*
+:TPackage [{package} [{package} ...]]  *TPackage*
                 When used without any arguments lists name of the packages for
                 which support is available. Report depends if you are using
                 GUI version and/or g:Tex_Menus is set to 1 or not. When you
@@ -806,6 +806,51 @@ taking care about Macros, Templates and Packages.
                 With one argument :0|read| {template} file.
                 With more than one argument it will not work :)
 
+:TSection [{argument}]                 *TSection*
+                Used without any arguments inserts last section type
+                (|latex-sectioning|).
+                Accepts arguments:
+                <n>     inserts section name in <n> logical level.
+                        Levels are:
+                        0 part
+                        1 chapter
+                        2 section
+                        3 subsection
+                        4 subsubsection
+                        5 paragraph
+                        6 subparagraph
+
+                +<n>    inserts section name <n> logical levels above the last
+                        used comand
+
+                -<n>    inserts section name <n> logical levels below the last
+                        used comand
+
+                +       inserts section name one logical level below the last
+                        used command (equal to +1).
+
+                ++      inserts section name two logical levels below the last
+                        used command (equal to +2).
+
+                -       inserts section name one logical level over the last
+                        used command (equal to -1).
+
+                --      inserts section name two logical levels over the last
+                        used command (equal to -2).
+
+                Command accepts also latexSuite mappings (|latex-macros|)
+                without preceding S and in lowercase: >
+                        :TSection pa 
+<               will result in \part{}. It is possible to use full names of
+                sections: >
+                        :TSection part 
+<
+:TSectionAdvanced                      *TSectionAdvanced*
+                Accepts the same arguments as |TSection| but leads to a couple
+                of questions (whether you want to include the section in the
+                table of contents, whether there is a shorter name for the
+                table of contents) and then creates a more intelligent
+                template.
 }}}
 ===========================================================================
 CREDITS                                 *latex-suite-credits* {{{
