@@ -1299,7 +1299,7 @@ information on why you would use one over the other.
 		change the default footnote number.
 
 ==============================================================================
-9. Lengths					*latex-lenghts*
+9. Lengths					*latex-lengths*
 
 A length is a measure of distance. Many LaTeX commands take a length as an
 argument.
