@@ -3,7 +3,7 @@
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
 "		   URL: 
-"  Last Change: Fri Jan 03 04:00 PM 2003 PST
+"  Last Change: Sun Jan 05 12:00 AM 2003 PST
 "
 " Help: 
 " Changes: {{{
@@ -450,7 +450,7 @@ function! Tex_PrintDebug(...)
 		let pattern = ''
 	endif
 	if exists('s:debugString_'.pattern)
-		echo s:debugString_{a:pattern}
+		echo s:debugString_{pattern}
 	endif
 endfunction " }}}
 " Tex_ClearDebug: clears the s:debugString string {{{
@@ -508,6 +508,11 @@ function! <SID>SetTeXOptions()
 	endif
 	if g:Tex_SmartKeyDot
 		inoremap <buffer> <silent> . <C-R>=<SID>SmartDots()<CR>
+	endif
+	call Tex_Debug('checking to see if Tex_SetFastEnvironmentMaps needs to be called.', 'main')
+	if g:Tex_PromptedEnvironments != '' || g:Tex_HotKeyMappings != ''
+		call Tex_Debug('calling Tex_SetFastEnvironmentMaps', 'main')
+		call Tex_SetFastEnvironmentMaps()
 	endif
 
 	" viewing/searching
