@@ -2,7 +2,7 @@
 " 	     File: packages.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: sob gru 07 12:00  2002 C
+" Last Change: nie gru 08 05:00  2002 C
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -79,6 +79,7 @@ endfunction
 
 " }}}
 " Tex_pack_one: {{{
+" Reads command-line and adds appropriate \usepackage lines 
 function! Tex_pack_one(...)
 	if a:0 == 0
 		let pwd = getcwd()
@@ -86,16 +87,23 @@ function! Tex_pack_one(...)
 		let packname = Tex_ChooseFile('Choose a package: ')
 		exe 'cd '.pwd
 		call Tex_pack_check(packname)
+		return Tex_pack_supp(packname)
+	elseif a:0 == 1
+		if filereadable(s:path.'/packages/'.a:1)
+			return Tex_pack_supp(a:1)
+		endif
 	else
 		let i = a:0
 		let omega = 1
 		while omega <= i
 			exe 'let packname = a:'.omega
-			call Tex_pack_check(packname)
-			let omega = omega + 1
+			if filereadable(s:path.'/packages/'.packname)
+				call Tex_pack_check(packname)
+				exe 'normal ko\usepackage{'.packname."}\<Esc>"
+				let omega = omega + 1
+			endif
 		endwhile
 	endif
-	return Tex_pack_supp(packname)
 endfunction
 " }}}
 " Tex_pack_all: scans the current file for \\usepackage{ lines {{{
