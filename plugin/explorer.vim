@@ -30,10 +30,10 @@
 "=============================================================================
 
 " Has this already been loaded?
-if exists("loaded_explorer")
+if exists("loaded_tex_explorer")
   finish
 endif
-let loaded_explorer=1
+let loaded_tex_explorer=1
 
 " Line continuation used here
 let s:cpo_save = &cpo
@@ -1341,19 +1341,6 @@ function! s:EditAll()
     call s:EditDir()
   endwhile
 endfunction
-
-"---
-" Set up the autocommand to allow directories to be edited
-"
-augroup fileExplorer
-  au!
-  " Fill the window when entering the buffer; ":edit dir".
-  au BufEnter * call s:EditDir()
-  " Set the window variables after a split; ":split".
-  au WinEnter * if !exists("w:sortdirection") | call s:EditDir() | endif
-  " Fill the windows after Vim has started up.
-  au VimEnter * call s:EditAll()
-augroup end
 
 " restore 'cpo'
 let &cpo = s:cpo_save
