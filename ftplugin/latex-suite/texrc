@@ -3,6 +3,7 @@
 " 	     File: texrc.vim
 "      Author: Srinath Avadhanula
 "     Created: Mon Apr 01 11:00 AM 2002 PST
+"         CVS: $Id$
 "
 "  Description: This file contains resource configuration information for the
 "               latex-suite package.
@@ -11,21 +12,18 @@
 "              this file will be over-written each time you install a new copy
 "              of latex-suite. 
 "
-" Installation:	This file should normally reside as:
-"                    $HOME/vimfiles/ftplugin/latex-suite/texrc   (WINDOWS)
-"               or 
-"                    $HOME/.vim/ftplugin/latex-suite/texrc       (UNIX)
+"              You can do one of the following:
+"              1. Copy this file into $VIMFILES/ftplugin/latex-suite/tex/texrc
+"                 and edit the values in that file.
+"                 $VIMFILES is ~/.vim for UNIX systems and ~/vimfiles for
+"                 WINDOWS systems.  Copying it to some arbitrary location even
+"                 within some other location in your 'runtimepath' will not
+"                 work.
 "
-"               Make your local copy as:
-"                    $HOME/vimfiles/ftplugin/tex/texrc   (WINDOWS)
-"               or 
-"                    $HOME/.vim/ftplugin/tex/texrc       (UNIX)
-"
-"               It will be :source'd automatically when you edit a LaTeX file.
-"               You can edit your local copy with the command
-"                   :Ttexrc
-"               or with the menu item
-"                   TeX-Suite/Edit texrc
+"              2. Just set values of each setting individually in your
+"                 $VIMFILES/ftplugin/tex.vim file. (See above for what
+"                 $VIMFILES is). You will need to use :let instead of :TexLet
+"                 in this case.
 "
 "        NOTE: This file is best viewed with Vim-6.0+ with folding turned on.
 "=============================================================================
@@ -137,13 +135,13 @@ endif
 " This is a handy way of specifying which warnings/errors to ignore. This is a
 " list of patterns seperated by '¡'
 TexLet g:Tex_IgnoredWarnings =
-	\'Underfull¡'.
-	\'Overfull¡'.
-	\'specifier changed to¡'.
-	\'You have requested¡'.
-	\'Missing number, treated as zero.¡'.
-	\'There were undefined references¡'.
-	\'Citation %.%# undefined¡'
+	\'Underfull'."\n".
+	\'Overfull'."\n".
+	\'specifier changed to'."\n".
+	\'You have requested'."\n".
+	\'Missing number, treated as zero.'."\n".
+	\'There were undefined references'."\n".
+	\'Citation %.%# undefined'
 
 " the 'ignore level' of the 'efm'. A value of 4 says that the first 4 kinds of
 " warnings in the list above will be ignored. Use the command TCLevel to set a
