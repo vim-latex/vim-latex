@@ -453,4 +453,8 @@ if g:Tex_Menus
 
 endif
 
+augroup LatexSuite
+	au LatexSuite User LatexSuiteInit call Tex_pack_updateall()
+augroup END
+
 " vim:fdm=marker:ts=4:sw=4:noet:ff=unix
