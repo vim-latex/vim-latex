@@ -735,11 +735,17 @@ function! <SID>SetCompilerMaps()
 	if exists('b:Tex_doneCompilerMaps')
 		return
 	endif
-	nnoremap <buffer> <Leader>ll :call Tex_RunLaTeX()<cr>
-	vnoremap <buffer> <Leader>ll :call Tex_PartCompile()<cr>
-	nnoremap <buffer> <Leader>lv :call Tex_ViewLaTeX()<cr>
-	nnoremap <buffer> <Leader>ls :call Tex_ForwardSearchLaTeX()<cr>
+	let s:ml = exists('g:mapleader') ? g:mapleader : "\\"
 
+	nnoremap <buffer> <Plug>Tex_Compile :call Tex_RunLaTeX()<cr>
+	vnoremap <buffer> <Plug>Tex_Compile :call Tex_PartCompile()<cr>
+	nnoremap <buffer> <Plug>Tex_View :call Tex_ViewLaTeX()<cr>
+	nnoremap <buffer> <Plug>Tex_ForwardSearch :call Tex_ForwardSearchLaTeX()<cr>
+
+	call Tex_MakeMap(s:ml."ll", "<Plug>Tex_Compile", 'n', '<buffer>')
+	call Tex_MakeMap(s:ml."ll", "<Plug>Tex_Compile", 'v', '<buffer>')
+	call Tex_MakeMap(s:ml."lv", "<Plug>Tex_View", 'n', '<buffer>')
+	call Tex_MakeMap(s:ml."ls", "<Plug>Tex_ForwardSearch", 'ls', '<buffer>')
 endfunction 
 " }}}
 
