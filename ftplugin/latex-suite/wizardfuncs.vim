@@ -330,11 +330,11 @@ endfunction
 let g:generalshortcuts = ''
 \."\n General shortcuts"
 \."\n <mapleader> is a value of g:Tex_Leader"
-\."\n ".g:Tex_Leader.'ll	compile whole document'
-\."\n ".g:Tex_Leader.'lv	view compiled document'
-\."\n ".g:Tex_Leader.'lp	view last compiled part of document'
-\."\n ".g:Tex_Leader.'ls	make forward searching if possible'
-\."\n ".g:Tex_Leader.'rf	refresh folds'
+\."\n ".mapleader.'ll	compile whole document'
+\."\n ".mapleader.'lv	view compiled document'
+\."\n ".mapleader.'lp	view last compiled part of document'
+\."\n ".mapleader.'ls	make forward searching if possible'
+\."\n ".mapleader.'rf	refresh folds'
 " }}}
 " Environment shortcuts {{{
 let g:environmentshortcuts = ''
