@@ -9,6 +9,7 @@
 let s:path = expand("<sfile>:p:h")
 let s:up_path = expand("<sfile>:p:h:h")
 let s:mainmenuname = g:Tex_MenuPrefix.'S&uite.'
+let s:mapleader = exists('mapleader') ? mapleader : "\\"
 
 if g:Tex_NestPackagesMenu
 	let g:Tex_PackagesMenuLocation = '81.10 '.s:mainmenuname.'&Packages.'
@@ -33,15 +34,15 @@ if has('gui_running') && g:Tex_Menus
 	exec 'anoremenu 80.25 '. s:mainmenuname.'-sepsuite0-  :'
 
 	" menus for compiling / viewing etc.
-	exec 'anoremenu 80.30 '.s:mainmenuname.'&Compile<tab>'.mapleader.'ll'.
+	exec 'anoremenu 80.30 '.s:mainmenuname.'&Compile<tab>'.s:mapleader.'ll'.
 		\'   :silent! call RunLaTeX()<CR>'
-	exec 'vnoremenu 80.35 '.s:mainmenuname.'Compile&Part<tab>'.mapleader.'lc'.
+	exec 'vnoremenu 80.35 '.s:mainmenuname.'Compile&Part<tab>'.s:mapleader.'lc'.
 		\'   :call Tex_PartCompilation("f","l","v")<CR>'
-	exec 'anoremenu 80.40 '.s:mainmenuname.'&View<tab>'.mapleader.'lv'.
+	exec 'anoremenu 80.40 '.s:mainmenuname.'&View<tab>'.s:mapleader.'lv'.
 		\'   :silent! call ViewLaTeX("all")<CR>'
-	exec 'anoremenu 80.45 '.s:mainmenuname.'Vi&ewPart<tab>'.mapleader.'lp'.
+	exec 'anoremenu 80.45 '.s:mainmenuname.'Vi&ewPart<tab>'.s:mapleader.'lp'.
 		\'   :silent! call ViewLaTeX("part")<CR>'
-	exec 'anoremenu 80.50 '.s:mainmenuname.'&Search<tab>'.mapleader.'ls'.
+	exec 'anoremenu 80.50 '.s:mainmenuname.'&Search<tab>'.s:mapleader.'ls'.
 		\'   :silent! call ForwardSearchLaTeX()<CR>'
 	exec 'anoremenu 80.60 '.s:mainmenuname.'&Target\ Format<tab>:TTarget'.
 		\'   :call SetTeXTarget()<CR>'
@@ -63,7 +64,7 @@ if has('gui_running') && g:Tex_Menus
 	exec 'anoremenu 80.110 '.s:mainmenuname.'-sepsuite1- :'
 	" refreshing folds
 	if g:Tex_Folding
-		exec 'anoremenu 80.120 '.s:mainmenuname.'&Refresh\ Folds<tab>'.mapleader.'rf'.
+		exec 'anoremenu 80.120 '.s:mainmenuname.'&Refresh\ Folds<tab>'.s:mapleader.'rf'.
 			\'   :call MakeTexFolds(1)<CR>'
 		exec 'anoremenu 80.130 '.s:mainmenuname.'-sepsuite2- :'
 	endif

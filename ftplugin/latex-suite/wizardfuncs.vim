@@ -11,6 +11,8 @@ if exists('s:doneOnce')
 	finish
 endif
 let s:doneOnce = 1
+
+let s:mapleader = exists('mapleader') ? mapleader : "\\"
 " ==============================================================================
 " Specialized functions for handling sections from command line
 " ============================================================================== 
@@ -330,11 +332,11 @@ endfunction
 let g:generalshortcuts = ''
 \."\n General shortcuts"
 \."\n <mapleader> is a value of g:Tex_Leader"
-\."\n ".mapleader.'ll	compile whole document'
-\."\n ".mapleader.'lv	view compiled document'
-\."\n ".mapleader.'lp	view last compiled part of document'
-\."\n ".mapleader.'ls	make forward searching if possible'
-\."\n ".mapleader.'rf	refresh folds'
+\."\n ".s:mapleader.'ll	compile whole document'
+\."\n ".s:mapleader.'lv	view compiled document'
+\."\n ".s:mapleader.'lp	view last compiled part of document'
+\."\n ".s:mapleader.'ls	make forward searching if possible'
+\."\n ".s:mapleader.'rf	refresh folds'
 " }}}
 " Environment shortcuts {{{
 let g:environmentshortcuts = ''
