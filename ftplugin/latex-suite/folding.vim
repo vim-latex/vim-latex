@@ -112,7 +112,7 @@ function! MakeTexFolds(force)
 	endif
 	
     if !exists('g:Tex_FoldedSections')
-		let g:Tex_FoldedSections = 'slide,part,chapter,section,%%fakesection,'
+		let g:Tex_FoldedSections = 'part,chapter,section,%%fakesection,'
 								\. 'subsection,subsubsection,paragraph'
 	endif
 
@@ -283,7 +283,7 @@ function! MakeTexFolds(force)
 		call Tex_FoldSections(g:Tex_FoldedSections,
 			\ '^\s*\\frontmatter\|^\s*\\mainmatter\|^\s*\\backmatter\|'
 			\. '^\s*\\begin{thebibliography\|>>>\|^\s*\\endinput\|'
-			\. '^\s*\\end{document')
+			\. '^\s*\\begin{slide\|^\s*\\end{document')
 	endif
 	" }}} 
 	
