@@ -481,7 +481,9 @@ TexLet g:Tex_MenuPrefix = 'TeX-'
 " Use utf-8 menus. There is plenty of math symbols in LaTeX. It is hard to
 " remember them. You can display them with utf-8. Your system/GUI interface
 " have to support utf-8. This addition is necessary for resetting 'encoding'.
-if exists("g:Tex_UseUtfMenus") && g:Tex_UseUtfMenus != 0 && has("gui_running")
+TexLet g:Tex_UseUtfMenus = 0
+
+if g:Tex_UseUtfMenus != 0 && has("gui_running")
 	set encoding=utf-8
 endif
 
