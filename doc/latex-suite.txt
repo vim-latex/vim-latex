@@ -1291,9 +1291,12 @@ Latex-Suite \ref completion                                   *ls_5_2* *ls_a_bP*
 
 To complete a |\ref| command, position yourself between the curly braces of a
 \ref command and press <F9>. For example, you can press <F9> just after \ref{ or
-after \ref{eqn:. Latex-Suite will search for \label's in all tex files in the
-current directory and display the results in two windows as desribed in section
-[|ls_a_bO|].
+after \ref{eqn:. Latex-Suite will search for \label's in the main file
+corresponding to the file being presently edited and display the results in two
+windows as desribed in section [|ls_a_bO|]. See latex-master-file [|ls_a_bY|]
+for a description of how Latex-Suite finds out which file is the master file
+corresponding to the current file. Latex-Suite will also search recursively for
+\label's in all files \include'd or \input'ed in the master file.
 
 Any command which contains the pattern ref in it is treated as if it is a way to
 call \ref indirectly. Thus pressing <F9> after something like \pref{ will also
