@@ -3,7 +3,7 @@
 "      Author: Srinath Avadhanula
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Tue Nov 19 11:00 PM 2002 PST
+" Last Change: Mon Dec 30 01:00 AM 2002 PST
 " 
 "  Description: functions to interact with Syntaxfolds.vim
 "=============================================================================
@@ -162,7 +162,7 @@ function! MakeTexFolds(force)
 	" {{{ subsubsection
 	call AddSyntaxFoldItem (
 		\ '^\s*\\subsubsection\W',
-		\ '^\s*\\appendix\W\|^\s*\\subsubsection\W\|^\s*\\subsection\W\|^\s*\\section\W\|^\s*%%fakesection\|^\s*\\chapter\W\|^\s*\\begin{slide',
+		\ '^\s*\\appendix\W\|^\s*\\subsubsection\W\|^\s*\\subsection\W\|^\s*\\section\W\|^\s*%%fakesection\|^\s*\\chapter\W\|^\s*\\begin{slide\|^\s*\\end{document',
 		\ 0,
 		\ -1,
 		\ )
@@ -170,7 +170,7 @@ function! MakeTexFolds(force)
 	" {{{ subsection
 	call AddSyntaxFoldItem (
 		\ '^\s*\\subsection\W',
-		\ '^\s*\\appendix\W\|^\s*\\subsection\W\|^\s*\\section\W\|^\s*%%fakesection\|^\s*\\chapter\W\|^\s*\\begin{slide',
+		\ '^\s*\\appendix\W\|^\s*\\subsection\W\|^\s*\\section\W\|^\s*%%fakesection\|^\s*\\chapter\W\|^\s*\\begin{slide\|^\s*\\end{document',
 		\ 0,
 		\ -1,
 		\ )
@@ -178,7 +178,7 @@ function! MakeTexFolds(force)
 	" {{{ section
 	call AddSyntaxFoldItem (
 		\ '^\s*\\section\W',
-		\ '^\s*\\appendix\W\|^\s*\\section\W\|^\s*%%fakesection\|^\s*\\chapter\W\|^\s*\\begin{slide',
+		\ '^\s*\\appendix\W\|^\s*\\section\W\|^\s*%%fakesection\|^\s*\\chapter\W\|^\s*\\begin{slide\|^\s*\\end{document',
 		\ 0,
 		\ -1,
 		\ )
@@ -186,7 +186,7 @@ function! MakeTexFolds(force)
 	" {{{ fakesection (for forcinga fold item manually)
 	call AddSyntaxFoldItem (
 		\ '^\s*%%fakesection',
-		\ '^\s*\\appendix\W\|^\s\\section\W\|^\s*%%fakesection\|^\s*\\chapter\W\|^\s*\\begin{slide',
+		\ '^\s*\\appendix\W\|^\s\\section\W\|^\s*%%fakesection\|^\s*\\chapter\W\|^\s*\\begin{slide\|^\s*\\end{document',
 		\ 0,
 		\ -1,
 		\ )
@@ -194,7 +194,7 @@ function! MakeTexFolds(force)
 	" {{{ chapter
 	call AddSyntaxFoldItem(
 		\ '^\s*\\chapter\W',
-		\ '^\s*\\appendix\W\|^\s*\\chapter\W\|^\s*\\begin{slide',
+		\ '^\s*\\appendix\W\|^\s*\\chapter\W\|^\s*\\begin{slide\|^\s*\\end{document',
 		\ 0,
 		\ -1
 		\ )
@@ -202,7 +202,7 @@ function! MakeTexFolds(force)
 	" {{{ slide
 	call AddSyntaxFoldItem (
 		\ '^\s*\\begin{slide',
-		\ '^\s*\\appendix\W\|^\s*\\chapter\W\|^\s*\\begin{slide',
+		\ '^\s*\\appendix\W\|^\s*\\chapter\W\|^\s*\\begin{slide\|^\s*\\end{document',
 		\ 0,
 		\ 0
 		\ )
