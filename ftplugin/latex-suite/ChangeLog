@@ -1,0 +1,25 @@
+After 8 May 2003
+
+	Features
+	* texviewer.vim:
+		Look for bibfiles in $BIBINPUTS env variable (Soren Debois)
+	* envmacros.vim:
+		Check in package variables for templates for environments inserted
+		from line with <F5> (MM)
+	* packages/amsmath:
+		Templates for alignat and alignat* envs in amsmath package file (MM)
+	* compiler.vim:
+		Added support for regular viewing and forward searching for kdvi (KDE
+		viewer of .dvi files) (MM)
+	* mathmacros.vim, main.vim, texrc, latex-suite.txt:
+		Added utf-8 menus for math (MM)
+	* ChangeLog:
+		Add ChangeLog file in ftplugin/latex-suite directory (MM)
+	* wizardfuncs.vim, latex-suite.txt:
+		Tshortcuts - new command show various shortcuts (MM)
+	* latex-suite.txt:
+		more cross-references with main Vim help, corrected mispells (MM)
+
+	Bugfixes
+	* compiler.vim:
+		Compile file with current file expansion, not always .tex file (MM)
