@@ -370,7 +370,6 @@ function! IMAP_Jumpfunc(direction, inclusive)
 		return ''
 	endif
 
-	let position = line('.') . "normal! ".virtcol('.').'|'
 	" Open any closed folds and make this part of the text visible.
 	silent! foldopen!
 
