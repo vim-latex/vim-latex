@@ -3,7 +3,7 @@
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
 "		   URL: 
-"  Last Change: Thu Dec 26 03:00 PM 2002 PST
+"  Last Change: Fri Dec 27 02:00 PM 2002 PST
 "
 " Help: 
 " Changes: {{{
@@ -357,12 +357,17 @@ nmap <silent> <script> <plug>cleanHistory :call Tex_CleanSearchHistory()<CR>
 " Description:  returns '' if .latexmain doesnt exist.
 "               i.e if main.tex.latexmain exists, then returns:
 "                   d:/path/to/main
-function! Tex_GetMainFileName()
+function! Tex_GetMainFileName(...)
+	if a:0 > 0
+		let modifier = a:1
+	else
+		let modifier = ':p:r:r'
+	endif
 	let curd = getcwd()
 	exe 'cd '.expand('%:p:h')
 	let lheadfile = glob('*.latexmain')
 	if lheadfile != ''
-		let lheadfile = fnamemodify(lheadfile, ':p:r:r')
+		let lheadfile = fnamemodify(lheadfile, modifier)
 	endif
 	exe 'cd '.curd
 	return lheadfile
