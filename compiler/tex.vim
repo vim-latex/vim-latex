@@ -208,6 +208,7 @@ function! <SID>SetLatexEfm()
 	setlocal efm+=%+WLaTeX\ %.%#Warning:\ %m
 
 	exec 'setlocal efm+=%'.pm.'Cl.%l\ %m'
+	exec 'setlocal efm+=%'.pm.'Cl.%l\ '
 	exec 'setlocal efm+=%'.pm.'C\ \ %m'
 	exec 'setlocal efm+=%'.pm.'C%.%#-%.%#'
 	exec 'setlocal efm+=%'.pm.'C%.%#[]%.%#'
