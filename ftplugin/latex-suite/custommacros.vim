@@ -13,8 +13,8 @@ let s:path = expand('<sfile>:p:h')
 " SetCustomMacrosMenu: sets up the menu for Macros {{{
 function! <SID>SetCustomMacrosMenu()
 	let flist = glob(s:path."/macros/*")
-	exe 'amenu '.g:Tex_MacrosMenuLocation.'&New :call NewMacro()<CR>'
-	exe 'amenu '.g:Tex_MacrosMenuLocation.'&Redraw :call RedrawMacro()<CR>'
+	exe 'amenu '.g:Tex_MacrosMenuLocation.'&New :call <SID>NewMacro()<CR>'
+	exe 'amenu '.g:Tex_MacrosMenuLocation.'&Redraw :call <SID>RedrawMacro()<CR>'
 
 	let i = 1
 	while 1
@@ -45,7 +45,7 @@ endfunction
 
 " }}}
 " RedrawMacro: refreshes macro menu {{{
-function! RedrawMacro()
+function! <SID>RedrawMacro()
 	aunmenu TeX-Suite.Macros
 	call <SID>SetCustomMacrosMenu()
 endfunction
@@ -79,7 +79,7 @@ function! <SID>DeleteMacro(...)
 	if ch == 1
 		call delete(s:path.'/macros/'.filename)
 	endif
-	call RedrawMacro()
+	call s:RedrawMacro()
 endfunction
 
 " }}}
