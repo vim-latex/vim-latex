@@ -2,7 +2,7 @@
 "            Type: compiler plugin for LaTeX
 " Original Author: Artem Chuprina <ran@ran.pp.ru>
 "   Customization: Srinath Avadhanula <srinath@fastmail.fm>
-"     Last Change: Fri Nov 08 05:00 AM 2002 P
+"     Last Change: Tue Nov 19 09:00 PM 2002 PST
 " Description:  {{{
 "   This file sets the 'makeprg' and 'errorformat' options for the LaTeX
 "   compiler. It is customizable to optionally ignore certain warnings and
@@ -106,24 +106,53 @@ endif
 " }}}
 " ==============================================================================
 " Customization of 'makeprg': {{{
-" If buffer-local variable 'tex_flavor' exists, it defines TeX flavor,
-" otherwize the same for global variable with same name, else it will be LaTeX
-if exists("b:tex_flavor")
-	let current_compiler = b:tex_flavor
-elseif exists("g:tex_flavor")
-	let current_compiler = g:tex_flavor
+
+" There are several alternate ways in which 'makeprg' is set up. 
+"
+" Case 1
+" ------
+" The first is when this file is a part of latex-suite. In this case, a
+" variable called g:Tex_DefaultTargetFormat exists, which gives the default
+" format .tex files should be compiled into. In this case, we use the TTarget
+" command provided by latex-suite.
+"
+" Case 2
+" ------
+" The user is using this file without latex-suite AND he wants to directly
+" specify the complete 'makeprg'. Then he should set the g:Tex_CompileRule_dvi
+" variable. This is a string which should be directly be able to be cast into
+" &makeprg. An example of one such string is:
+"
+" 	g:Tex_CompileRule_dvi = 'pdflatex \\nonstopmode \\input\{$*\}'
+"
+" NOTE: You will need to escape back-slashes, {'s etc yourself if you are
+"       using this file independently of latex-suite.
+" TODO: Should we also have a check for backslash escaping here based on
+"       platform?
+"
+" Case 3
+" ------
+" The use is using this file without latex-suite and he doesnt want any
+" customization. In this case, this file makes some intelligent guesses based
+" on the platform. If he doesn't want to specify the complete 'makeprg' but
+" only the name of the compiler program (for example 'pdflatex' or 'latex'),
+" then he sets b:tex_flavor or g:tex_flavor. 
+
+if exists('g:Tex_DefaultTargetFormat')
+	exec 'TTarget '.g:Tex_DefaultTargetFormat
+elseif exists('g:Tex_CompileRule_dvi')
+	let &l:makeprg = g:Tex_CompileRule_dvi
 else
-	let current_compiler = "latex"
-end
-" If the user wants a particular way in which the latex compiler needs to be
-" called, then he should use the g:Tex_CompilerFormat variable. This variable
-" needs to be complete, i.e it should contain $* and stuff.
-if exists('g:Tex_CompilerFormat')
-	let &l:makeprg = current_compiler.' '.g:Tex_CompilerFormat
-else
-	if exists('g:Tex_EscapeChars')	" Use this if LaTeX Suite is installed.
-		let escChars = g:Tex_EscapeChars
-	elseif has('win32')
+	" If buffer-local variable 'tex_flavor' exists, it defines TeX flavor,
+	" otherwize the same for global variable with same name, else it will be LaTeX
+	if exists("b:tex_flavor")
+		let current_compiler = b:tex_flavor
+	elseif exists("g:tex_flavor")
+		let current_compiler = g:tex_flavor
+	else
+		let current_compiler = "latex"
+	end
+	if has('win32')
 		let escChars = ''
 	else
 		let escChars = '{}\'
