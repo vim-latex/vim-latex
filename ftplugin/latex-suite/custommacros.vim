@@ -3,8 +3,7 @@
 "      Author: Mikolaj Machowski
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-<<<<<<< custommacros.vim
-" Last Change: ¶ro maj 08 07:00  2002 U
+" Last Change: czw maj 09 10:00  2002 U
 " 
 "  Description: functions for processing custom macros in the
 "               latex-suite/macros directory
