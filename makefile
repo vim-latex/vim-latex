@@ -42,8 +42,7 @@ latexs:
 
 # target for removing archive files.
 clean:
-	rm -f latexSuite.zip
-	rm -f latexSuite.tar.gz
+	rm -f latexSuite200*
 
 # make a local install directory.
 ltt:
