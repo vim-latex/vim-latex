@@ -2157,15 +2157,15 @@ Customizing Latex-Suite                                        *ls_10* *ls_a_cC*
 
 
 Customizing Latex-Suite is done by defining certain global variables in
-$VIM/ftplugin/tex/texrc.vim, where $VIM corresponds to ~/.vim for *nix machines
-and ~/vimfiles for windows machines. This file is not part of the Latex-Suite
+$VIM/ftplugin/tex/texrc, where $VIM corresponds to ~/.vim for *nix machines and
+~/vimfiles for windows machines. This file is not part of the Latex-Suite
 distribution. You will need to create this file if you need to change any
 default settinngs. Since this file is not included as part of the Latex-Suite
 distribution, it will not be over-written in subsequent updates.
 
 NOTE: It is also possible to define any customization in the
       $VIM/ftplugin/tex.vim file, but for the sake of clarity, you might want to
-      use the texrc.vim file described above
+      use the texrc file described above
       
       
 The default settings in Latex-Suite are defined in
