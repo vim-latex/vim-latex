@@ -1,9 +1,8 @@
 "=============================================================================
 " 	     File: compiler.vim
 "      Author: Srinath Avadhanula
-" 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Thu Nov 14 09:00 AM 2002 PST
+" Last Change: Wed Nov 20 03:00 AM 2002 PST
 " 
 "  Description: functions for compiling/viewing/searching latex documents
 "=============================================================================
@@ -89,6 +88,9 @@ function! RunLaTeX()
 	let curd = getcwd()
 	exec 'cd '.expand("%:p:h")
 
+	" close any preview windows left open.
+	pclose!
+
 	" if a makefile exists, just use the make utility
 	if glob('makefile') != '' || glob('Makefile') != ''
 		let _makeprg = &l:makeprg
@@ -111,9 +113,25 @@ function! RunLaTeX()
 	endif
 
 	let winnum = winnr()
+
+	" close the quickfix window before trying to open it again, otherwise
+	" whether or not we end up in the quickfix window after the :cwindow
+	" command is not fixed.
+	cclose
 	cwindow
-	" just open the cwindow, do not remain there...
-	execute winnum "wincmd w"
+	" if we moved to a different window, then it means we had some errors.
+	if winnum != winnr()
+		call UpdatePreviewWindow(mainfname)
+		exe 'nnoremap <buffer> <silent> j j:call UpdatePreviewWindow("'.mainfname.'")<CR>'
+		exe 'nnoremap <buffer> <silent> k k:call UpdatePreviewWindow("'.mainfname.'")<CR>'
+		exe 'nnoremap <buffer> <silent> <up> <up>:call UpdatePreviewWindow("'.mainfname.'")<CR>'
+		exe 'nnoremap <buffer> <silent> <down> <down>:call UpdatePreviewWindow("'.mainfname.'")<CR>'
+		exe 'nnoremap <buffer> <silent> <enter> :call GotoErrorLocation("'.mainfname.'", '.winnum.')<CR>'
+
+		" resize the window to just fit in with the number of lines.
+		exec ( line('$') < 4 ? line('$') : 4 ).' wincmd _'
+		call GotoErrorLocation(mainfname, winnum)
+	endif
 
 	exec 'cd '.curd
 endfunction
@@ -216,5 +234,77 @@ function! ForwardSearchLaTeX()
 endfunction
 
 " }}}
+" PositionPreviewWindow: positions the preview window correctly. {{{
+" Description: 
+function! PositionPreviewWindow(filename)
+	if getline('.') !~ '|\d\+ \(error\|warning\)|'
+		if !search('|\d\+ \(error\|warning\)|')
+			pclose!
+			return
+		endif
+	endif
+	let linenum = matchstr(getline('.'), '|\zs\d\+\ze \(error\|warning\)|')
+	if getline('.') =~ '|\d\+ warning|'
+		let searchpat = escape(matchstr(getline('.'), '|\d\+ warning|\s*\zs.*'), '\ ')
+	else
+		let searchpat = 'l.'.linenum
+	endif
+	exec 'bot pedit +/'.searchpat.'/ '.a:filename.'.log'
+	" TODO: This is not robust enough. Check that a wincmd j actually takes
+	" us to the preview window. Moreover, the resizing should be done only the
+	" first time around.
+	wincmd j
+endfunction " }}}
+" UpdatePreviewWindow: updates the view of the log file {{{
+" Description: 
+"       This function should be called when focus is in a quickfix window.
+"       It opens the log file in a preview window and makes it display that
+"       part of the log file which corresponds to the error which the user is
+"       currently on in the quickfix window. Control returns to the quickfix
+"       window when the function returns. 
+"
+function! UpdatePreviewWindow(filename)
+	call PositionPreviewWindow(a:filename)
+	6 wincmd _
+	wincmd k
+endfunction " }}}
+" GotoErrorLocation: goes to the correct location of error in the tex file {{{
+" Description: 
+"   This function should be called when focus is in a quickfix window. This
+"   function will first open the preview window of the log file (if it is not
+"   already open), position the display of the preview to coincide with the
+"   current error under the cursor and then take the user to the file in
+"   which this error has occured. 
+"
+"   The position is both the correct line number and the column number.
+"
+" TODO: When there are multiple errors on the same line, this only takes you
+"       to the very first error every time. 
+function! GotoErrorLocation(filename, winnum)
+
+	let linenum = matchstr(getline('.'), '|\zs\d\+\ze \(warning\|error\)|')
+	call PositionPreviewWindow(a:filename)
+
+	if getline('.') =~ 'l.\d\+'
+
+		let brokenline = matchstr(getline('.'), 'l.'.linenum.' \zs.*\ze')
+		let column = strlen(brokenline)
+		let normcmd = column.'|'
+
+	elseif getline('.') =~ 'LaTeX Warning: Citation `.*'
+
+		let ref = matchstr(getline('.'), "LaTeX Warning: Citation `\\zs[^']\\+\\ze'")
+		let normcmd = '0/'.ref."\<CR>"
+
+	else
+
+		let normcmd = '0'
+
+	endif
+
+	exec a:winnum.' wincmd w'
+	exec 'silent! '.linenum.' | normal! '.normcmd
+
+endfunction " }}}
 
 " vim:fdm=marker:ts=4:sw=4
