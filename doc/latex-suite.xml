@@ -388,15 +388,26 @@ quotation (_q_uotatio_n_)      ---&gt; EQN</programlisting>
    <para>
     &ls; provides two simple mappings <literal>&lt;F7&gt;</literal> and
     <literal>&lt;S-F7&gt;</literal> which work in both insert and normal
-    mode in an idential manner. Pressing <literal>&lt;F7&gt;</literal>
-    prompts you with a list of commands to choose from and then inserts it
-    into the text of the document. The list of commands is constructed from
-    the <link
+    mode in an idential manner. In insert mode, if the cursor is located on
+    (or just after) a non-whitespace character, then a command from the
+    last word (<literal>&lt;cword&gt;</literal>) is created. If the cursor
+    is located on a white-space character, then you will be prompted with a
+    list of commands to choose from. The list of commands is constructed
+    from the <link
      linkend="Tex_PromptedCommands"><literal>g:Tex_PromptedCommands</literal></link>
     setting and also from commands which &ls; finds while scanning custom
     packages which &ls; finds. See the <link
      linkend="package-actions">Package actions</link> section for details
     on which files are scanned etc.
+   </para>
+   <para>
+    For certain common commands, &ls; will expand them to include
+    additional arguments as needed. Otherwise, it will simply change the
+    word under the cursor as follows
+    <programlisting>word --> \word{&ph;}&ph;</programlisting>
+    You can define custom expansios of commands using the
+    <literal>Tex_Com_{name}</literal> setting as described in <link
+     linkend="Tex_Com_name">here</link>.
    </para>
    <para>
     In both insert and normal mode <literal>&lt;S-F7&gt;</literal> will
@@ -588,12 +599,12 @@ SSP for subparagraph</programlisting>
     <literal>'book'</literal> via the map <literal>BBB</literal>, then
     the following template will be inserted:
     <programlisting>@BOOK{&lt;+key+&gt;,
-author = {&ph;},
-editor = {&ph;},
-title = {&ph;},
-publisher = {&ph;},
-year = {&ph;},
-otherinfo = {&ph;}
+    author = {&ph;},
+    editor = {&ph;},
+    title = {&ph;},
+    publisher = {&ph;},
+    year = {&ph;},
+    otherinfo = {&ph;}
 }&ph;</programlisting>
    </para>
    <para>
@@ -669,24 +680,24 @@ otherinfo = {&ph;}
      For example, by default, choosing <literal>'article'</literal> via
      <literal>BBB</literal> inserts the following template by default
      <programlisting>@ARTICLE{&lt;+key+&gt;,
-author = {&ph;},
-title = {&ph;},
-journal = {&ph;},
-year = {&ph;},
-otherinfo = {&ph;}
+    author = {&ph;},
+    title = {&ph;},
+    journal = {&ph;},
+    year = {&ph;},
+    otherinfo = {&ph;}
 }&ph;</programlisting>
      However, if <literal>g:Bib_article_options</literal> is defined as
      <literal>'mnp'</literal>, then <literal>'article'</literal> will
      insert the following template
      <programlisting>@ARTICLE{&lt;+key+&gt;,
-author = {&ph;},
-title = {&ph;},
-journal = {&ph;},
-year = {&ph;},
-month = {&ph;},
-number = {&ph;},
-pages = {&ph;},
-otherinfo = {&ph;}
+    author = {&ph;},
+    title = {&ph;},
+    journal = {&ph;},
+    year = {&ph;},
+    month = {&ph;},
+    number = {&ph;},
+    pages = {&ph;},
+    otherinfo = {&ph;}
 }&ph;</programlisting>
     </para>
    </section>
@@ -3085,10 +3096,9 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
       <programlisting>let g:Tex_Env_theorem = "\\begin{theorem}\&lt;CR&gt;&ph;\&lt;CR&gt;\\end{theorem}"</programlisting>
       </para>
      <para>
-      Notice how special characters such as carriage return are specified
-      using the <literal>"\&lt;key&gt;"</literal> notation. Also use double
-      quotes if you wish to enter such special keys. Also backslashes have
-      to be doubled.
+      If the expaniosn uses special keys such as carriage return etc, then
+      use double-quotes and use the <literal>"\&lt;key&gt;"</literal>
+      notation for special keys. Backslashes have to be doubled.
      </para>
      <para>
       You could even use strings returned by functions as the expansion by
@@ -3108,6 +3118,25 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
 	&ph; &amp;=&amp; &ph;
 \end{eqnarray*}&ph;</programlisting>
      </para>
+   </section>
+   <section id="Tex_Com_name">
+    <title>Tex_Com_name</title>
+    <para>
+     If you wish to define new expansions for fast command insertion as
+     described <link linkend="latex-command-maps">here</link>, or redefine
+     expansios from the default values in &ls;, you will need to define
+     variables of the form <literal>g:Tex_Com_{name}</literal> where
+     <literal>name</literal> is a command name. For example, with the
+     setting
+     <programlisting>let g:Tex_Com_frac = "\\frac{&ph;}{&ph;}&ph;"</programlisting>
+     pressing <literal>&lt;F7&gt;</literal> after typing
+     <literal>frac</literal> will change it to <literal>\frac{&ph;}{&ph;}&ph;</literal>
+    </para>
+    <para>
+     See <link linkend="Tex_Env_name">Tex_Env_name</link> for additional
+     details on how to create this setting in various special
+     circumstances.
+    </para>
    </section>
   </section>
   <section id="customizing-smart-keys">
