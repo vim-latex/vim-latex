@@ -109,6 +109,12 @@ function! RunLaTeX()
 			exec 'make'
 		endif
 		let &l:makeprg = _makeprg
+	elseif exists("g:partcomp")
+		let curdir = getcwd()
+		let pcomdir = fnamemodify(g:tfile, ":p:h")
+		exe 'lcd '.pcomdir
+		exec 'make '.g:tfile
+		exe 'lcd '.curdir
 	else
 		exec 'make '.mainfname
 	endif
@@ -144,7 +150,7 @@ endfunction
 " Description: opens the DVI viewer for the file being currently edited.
 " Again, if the current file is a \input in a master file, see text above
 " RunLaTeX() to see how to set this information.
-function! ViewLaTeX()
+function! ViewLaTeX(size)
 	if &ft != 'tex'
 		echo "calling ViewLaTeX from a non-tex file"
 		return
@@ -164,27 +170,43 @@ function! ViewLaTeX()
 		" unfortunately, yap does not allow the specification of an external
 		" editor from the command line. that would have really helped ensure
 		" that this particular vim and yap are connected.
-		exec '!start' s:viewer mainfname . '.' . s:target
+		if a:size == "all" 
+			exec '!start' s:viewer mainfname . '.' . s:target
+		else
+			exec '!start' s:viewer g:tfile . '.' . s:target
+		endif
 	elseif has('macunix')
 		if strlen(s:viewer)
 			let s:viewer = '-a ' . s:viewer
 		endif
-		execute '!open' s:viewer mainfname . '.' . s:target
+		if a:size == "all"
+			execute '!open' s:viewer mainfname . '.' . s:target
+		else
+			execute '!open' s:viewer g:tfile . '.' . s:target
+		endif
 	else
 		" taken from Dimitri Antoniou's tip on vim.sf.net (tip #225).
 		" slight change to actually use the current servername instead of
-		" hardcocing it as xdvi.
+		" hardcoding it as xdvi.
 		" Using an option for specifying the editor in the command line
 		" because that seems to not work on older bash'es.
 		if s:target == 'dvi'
 			if exists('g:Tex_UseEditorSettingInDVIViewer') &&
-						\ g:Tex_UseEditorSettingInDVIViewer == 1
+						\ g:Tex_UseEditorSettingInDVIViewer == 1 && a:size == "all"
 				exec '!'.s:viewer.' -editor "gvim --servername '.v:servername.' --remote-silent +%l %f" '.mainfname.'.dvi &'
 			else
-				exec '!'.s:viewer.' '.mainfname.'.dvi &'
+				if a:size == "all"
+					exec '!'.s:viewer.' '.mainfname.'.dvi &'
+				else
+					exec '!'.s:viewer.' '.g:tfile.'.dvi &'
+				endif
 			endif
 		else
-			exec '!'.s:viewer.' '.mainfname.'.'.s:target.' &'
+			if a:size == "all"
+				exec '!'.s:viewer.' '.mainfname.'.'.s:target.' &'
+			else
+				exec '!'.s:viewer.' '.g:tfile.'.'.s:target.' &'
+			endif
 		endif
 	end
 
@@ -418,11 +440,13 @@ function! <SID>SetCompilerMaps()
 	if !hasmapto('RunLaTeX')
 		if has("gui")
 			nnoremap <buffer> <Leader>ll :silent! call RunLaTeX()<cr>
-			nnoremap <buffer> <Leader>lv :silent! call ViewLaTeX()<cr>
+			nnoremap <buffer> <Leader>lv :silent! call ViewLaTeX("all")<cr>
+			nnoremap <buffer> <Leader>lp :silent! call ViewLaTeX("part")<cr>
 			nnoremap <buffer> <Leader>ls :silent! call ForwardSearchLaTeX()<cr>
 		else
 			nnoremap <buffer> <Leader>ll :call RunLaTeX()<cr>
-			nnoremap <buffer> <Leader>lv :call ViewLaTeX()<cr>
+			nnoremap <buffer> <Leader>lv :call ViewLaTeX("all")<cr>
+			nnoremap <buffer> <Leader>lp :call ViewLaTeX("part")<cr>
 			nnoremap <buffer> <Leader>ls :call ForwardSearchLaTeX()<cr>
 		end
 	end
