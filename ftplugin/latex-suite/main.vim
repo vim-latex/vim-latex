@@ -177,9 +177,11 @@ end
 " TexQuotes: inserts `` or '' instead of " {{{
 if g:Tex_SmartKeyQuote
 
-	" TexQuotes: inserts `` or '' instead of
+	" TexQuotes: inserts `` or '' instead of "
 	" Taken from texmacro.vim by Benji Fisher <benji@e-math.AMS.org>
 	" TODO:  Deal with nested quotes.
+	" The :imap that calls this function should insert a ", move the cursor to
+	" the left of that character, then call this with <C-R>= .
 	function! s:TexQuotes()
 		let l = line(".")
 		let c = col(".")
@@ -187,13 +189,32 @@ if g:Tex_SmartKeyQuote
 		normal! H
 		let restore_cursor = "normal!" . line(".") . "Gzt" . restore_cursor
 		execute restore_cursor
+		" In math mode, or when preceded by a \, just move the cursor past the
+		" already-inserted " character.
 		if synIDattr(synID(l, c, 1), "name") =~ "^texMath"
 			\ || (c > 1 && getline(l)[c-2] == '\')
-			return '"'
+			return "\<Right>"
 		endif
-		let open = exists("g:Tex_SmartQuoteOpen") ? g:Tex_SmartQuoteOpen : "``"
-		let close = exists("g:Tex_SmartQuoteClose") ? g:Tex_SmartQuoteClose : "''"
+		" Find the appropriate open-quote and close-quote strings.
+		if exists("b:Tex_SmartQuoteOpen")
+			let open = b:Tex_SmartQuoteOpen
+		elseif exists("g:Tex_SmartQuoteOpen")
+			let open = g:Tex_SmartQuoteOpen
+		else
+			let open = "``"
+		endif
+		if exists("b:Tex_SmartQuoteClose")
+			let close = b:Tex_SmartQuoteClose
+		elseif exists("g:Tex_SmartQuoteClose")
+			let close = g:Tex_SmartQuoteClose
+		else
+			let close = "''"
+		endif
 		let boundary = '\|'
+		" This code seems to be obsolete, since this script variable is never
+		" set.  The idea is that some languages use ",," as an open- or
+		" close-quote string, and we want to avoid confusing ordinary ","
+		" with a quote boundary.
 		if exists("s:TeX_strictquote")
 			if( s:TeX_strictquote == "open" || s:TeX_strictquote == "both" )
 				let boundary = '\<' . boundary
@@ -202,10 +223,10 @@ if g:Tex_SmartKeyQuote
 				let boundary = boundary . '\>'
 			endif
 		endif
+		" Eventually return q; set it to the default value now.
 		let q = open
 		while 1	" Look for preceding quote (open or close), ignoring
 			" math mode and '\"' .
-			" execute 'normal ?^$\|"\|' . open . boundary . close . "\r"
 			call search(open . boundary . close . '\|^$\|"', "bw")
 			if synIDattr(synID(line("."), col("."), 1), "name") !~ "^texMath"
 				\ && (col(".") == 1 || getline(".")[col(".")-2] != '\')
@@ -213,9 +234,10 @@ if g:Tex_SmartKeyQuote
 			endif
 		endwhile
 		" Now, test whether we actually found a _preceding_ quote; if so, is it
-		" and open quote?
+		" an open quote?
 		if ( line(".") < l || line(".") == l && col(".") < c )
-			if strlen(getline(".")) && (getline(".")[col(".")-1] == open[0])
+			if strpart(getline("."), col(".")-1) =~
+						\ '\V\^' . escape(open, '\')
 				if line(".") == l && col(".") + strlen(open) == c
 					" Insert "<++>''<++>" instead of just "''".
 					let q = IMAP_PutTextWithMovement("<++>".close."<++>")
