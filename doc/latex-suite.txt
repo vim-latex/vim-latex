@@ -956,7 +956,7 @@ First contain package options, second various commands supplied with
 Package option variable: >
     g:TeX_package_option_<package> = "Option,Option2="
 = at the end gives: >
-    Option2=x,<<>>
+    Option2=x,<++>
 Here is allowed one prefix:
 {sbr:option} Breaks option menu into submenu. {option} is the name of submenu.
 
@@ -965,32 +965,32 @@ Package variable: >
 More detailed example is in latex-suite/packages/exmpl file (slightly
 outdated).
 Here is short summary of prefixes which can be used in package files:
-(x - place with cursor, <<>> - |placeholder|)
+(x - place with cursor, <++> - |placeholder|)
 
 {env:command}  Environment: creates simple environment template >
             \begin{command}
                 x
-            \end{command}<<>>
+            \end{command}<++>
 {eno:command}  Environment with option: >
             \begin[x]{command}
-                <<>>
-            \end{command}<<>>
+                <++>
+            \end{command}<++>
 {ens:command[<<option>>]...}  Environment special: >
             \begin[<<option>>]...{command}
-                <<>>
-            \end{command}<<>>
+                <++>
+            \end{command}<++>
 {bra:command} Brackets: >
-            \command{x}<<>>
+            \command{x}<++>
 {brd:command} Brackets double: >
-            \command{x}{<<>>}<<>>
+            \command{x}{<++>}<++>
 {brs:command[<<option>>]...} Brackets special (as environment special: >
-            \command[<<x>>]{<<>>}{<<>>}<<>>
+            \command[<+x+>]{<++>}{<++>}<++>
 {nor:command} Normal: >
             \command<Space>
 {noo:command} Normal with option: >
-            \command[x]<<>>
+            \command[x]<++>
 {nob:command} Normal with option and brackets: >
-            \command[x]{<<>>}<<>>
+            \command[x]{<++>}<++>
 {pla:command} Plain: >
             command<Space>
 {spe:command} Special: >
