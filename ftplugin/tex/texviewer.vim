@@ -385,23 +385,47 @@ function! s:Tex_FindBibFiles()
 		return bibfiles
 
 	else
+		let bibnames = ''
 		let bibfiles = ''
 		let bibfiles2 = ''
-		let curdir = expand("%:p:h")
-		let curdir = substitute(curdir, ' ', "\\", 'ge')
 
 		if search('\\bibliography{', 'w')
-			let bibfiles = matchstr(getline('.'), '\\bibliography{\zs.\{-}\ze}')
-			let bibfiles = substitute(bibfiles, '\(,\|$\)', '.bib ', 'ge')
-			let bibfiles = substitute(bibfiles, '\(^\| \)', ' '.curdir.'/', 'ge')
-		else
-			let bibfiles = glob(curdir.'/*.bib')
-			let bibfiles = substitute(bibfiles, '\n', ' ', 'ge')
+			let bibnames = matchstr(getline('.'), '\\bibliography{\zs.\{-}\ze}')
+			let bibnames = substitute(bibnames, '\(,\|$\)', '.bib ', 'ge')
 		endif
+
+		let dirs = expand("%:p:h") . ":" . expand("$BIBINPUTS")
+		let dirs = substitute(dirs, ':\+', ':', 'g')
+
+		let i = 1
+		while Tex_Strntok(dirs, ':', i) != ''
+			let curdir = Tex_Strntok(dirs, ':', i) 
+			let curdir = substitute(curdir, ' ', "\\", 'ge')
+			let tmp = ''
+
+			if bibnames != ''
+				let j = 1
+				while Tex_Strntok(bibnames, ' ', j) != ''
+					let fname = curdir.'/'.Tex_Strntok(bibnames, ' ', j)
+					if filereadable(fname)
+						let tmp = tmp . ' ' . fname
+					endif
+					let j = j + 1
+				endwhile
+			else
+				let tmp = glob(curdir.'/*.bib')
+				let tmp = substitute(tmp, "\n", ' ', 'ge')
+			endif
+
+			let bibfiles = bibfiles . ' ' . tmp
+			let i = i + 1
+		endwhile
 
 		if Tex_GetMainFileName() != ''
 			let mainfname = Tex_GetMainFileName()
 			let mainfdir = fnamemodify(mainfname, ":p:h")
+                        let curdir = expand("%:p:h")
+                        let curdir = substitute(curdir, ' ', "\\", 'ge')
 			exe 'bot 1 split '.mainfname
 			if search('\\bibliography{', 'w')
 				let bibfiles2 = matchstr(getline('.'), '\\bibliography{\zs.\{-}\ze}')
