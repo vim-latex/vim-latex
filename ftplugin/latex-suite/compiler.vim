@@ -2,7 +2,7 @@
 " 	     File: compiler.vim
 "      Author: Srinath Avadhanula
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Wed Nov 20 03:00 AM 2002 PST
+" Last Change: Thu Nov 21 12:00 AM 2002 PST
 " 
 "  Description: functions for compiling/viewing/searching latex documents
 "=============================================================================
@@ -120,13 +120,13 @@ function! RunLaTeX()
 	cclose
 	cwindow
 	" if we moved to a different window, then it means we had some errors.
-	if winnum != winnr()
+	if winnum != winnr() && glob(mainfname.'.log') != ''
 		call UpdatePreviewWindow(mainfname)
 		exe 'nnoremap <buffer> <silent> j j:call UpdatePreviewWindow("'.mainfname.'")<CR>'
 		exe 'nnoremap <buffer> <silent> k k:call UpdatePreviewWindow("'.mainfname.'")<CR>'
 		exe 'nnoremap <buffer> <silent> <up> <up>:call UpdatePreviewWindow("'.mainfname.'")<CR>'
 		exe 'nnoremap <buffer> <silent> <down> <down>:call UpdatePreviewWindow("'.mainfname.'")<CR>'
-		exe 'nnoremap <buffer> <silent> <enter> :call GotoErrorLocation("'.mainfname.'", '.winnum.')<CR>'
+		exe 'nnoremap <buffer> <silent> <enter> <enter>:wincmd w<cr>:call GotoErrorLocation("'.mainfname.'", '.winnum.')<CR>'
 
 		" resize the window to just fit in with the number of lines.
 		exec ( line('$') < 4 ? line('$') : 4 ).' wincmd _'
@@ -237,23 +237,52 @@ endfunction
 " PositionPreviewWindow: positions the preview window correctly. {{{
 " Description: 
 function! PositionPreviewWindow(filename)
+
 	if getline('.') !~ '|\d\+ \(error\|warning\)|'
 		if !search('|\d\+ \(error\|warning\)|')
 			pclose!
 			return
 		endif
 	endif
+
+	let errpat = matchstr(getline('.'), '\zs|\d\+ \(error\|warning\)|\ze')
 	let linenum = matchstr(getline('.'), '|\zs\d\+\ze \(error\|warning\)|')
+
+	let errline = line('.')
+	0
+	let numrep = 0
+	while 1
+		if getline('.') =~ errpat
+			let numrep = numrep + 1
+			normal! 0
+			call search('|\d\+ \(warning\|error\)|')
+		endif
+		if line('.') == errline
+			break
+		else
+			call search(errpat, 'W')
+		endif
+	endwhile
+
 	if getline('.') =~ '|\d\+ warning|'
 		let searchpat = escape(matchstr(getline('.'), '|\d\+ warning|\s*\zs.*'), '\ ')
 	else
 		let searchpat = 'l.'.linenum
 	endif
+
 	exec 'bot pedit +/'.searchpat.'/ '.a:filename.'.log'
 	" TODO: This is not robust enough. Check that a wincmd j actually takes
 	" us to the preview window. Moreover, the resizing should be done only the
 	" first time around.
 	wincmd j
+	if searchpat =~ 'l.\d\+' && numrep > 1
+		while numrep > 1
+			call search(searchpat, 'W')
+			normal! z.
+			let numrep = numrep - 1
+		endwhile
+	endif
+
 endfunction " }}}
 " UpdatePreviewWindow: updates the view of the log file {{{
 " Description: 
