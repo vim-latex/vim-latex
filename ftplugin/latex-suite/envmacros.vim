@@ -500,33 +500,15 @@ endfunction
 " ==============================================================================
 " Contributions / suggestions from Carl Mueller (auctex.vim)
 " ============================================================================== 
-" SetUpEnvironmentsPrompt: sets up a prompt string using g:Tex_PromptedEnvironments {{{
-" Description: 
-" 
-let g:Tex_PromptedEnvironmentsDefault = g:Tex_PromptedEnvironments
-function! SetUpEnvironmentsPrompt()
-	let num_common = GetListCount(g:Tex_PromptedEnvironments)
-
-	let i = 1
-	let s:common_env_prompt = "\n"
-
-	while i < num_common
-
-		let env1 = Tex_Strntok(g:Tex_PromptedEnvironments, ',', i)
-		let env2 = Tex_Strntok(g:Tex_PromptedEnvironments, ',', i + 1)
-
-		let s:common_env_prompt = s:common_env_prompt.'('.i.') '.env1."\t".( strlen(env1) < 4 ? "\t" : '' ).'('.(i+1).') '.env2."\n"
-
-		let i = i + 2
-	endwhile
-	let s:common_env_prompt = s:common_env_prompt.'Enter number or name of environment: '
-endfunction " }}}
 " PromptForEnvironment: prompts for an environment {{{
 " Description: 
 function! PromptForEnvironment(ask)
 
 	if !exists('s:common_env_prompt')
-		call SetUpEnvironmentsPrompt()
+		let s:common_env_prompt = 
+					\ "\n" .
+					\ Tex_CreatePrompt(g:Tex_PromptedEnvironments, 2, ',') .
+					\ "Enter number or name of environment: "
 	endif
 
 	let inp = input(a:ask.s:common_env_prompt)
@@ -611,9 +593,9 @@ if g:Tex_PromptedEnvironments != ''
 	" Provide only <plug>s here. main.vim will create the actual maps.
 	inoremap <silent> <Plug>Tex_FastEnvironmentInsert  <C-r>=Tex_FastEnvironmentInsert("no")<cr>
 	nnoremap <silent> <Plug>Tex_FastEnvironmentInsert  i<C-r>=Tex_FastEnvironmentInsert("no")<cr>
-	inoremap <silent> <Plug>Tex_FastEnvironmentChange  <C-O>:call Tex_ChangeEnvironments("no")<CR>
-	nnoremap <silent> <Plug>Tex_FastEnvironmentChange  :call Tex_ChangeEnvironments("no")<CR>
 	vnoremap <silent> <Plug>Tex_FastEnvironmentInsert  <C-\><C-N>:call Tex_FastEnvironmentInsert("yes")<CR>
+	inoremap <silent> <Plug>Tex_FastEnvironmentChange  <C-O>:call Tex_ChangeEnvironments()<CR>
+	nnoremap <silent> <Plug>Tex_FastEnvironmentChange  :call Tex_ChangeEnvironments()<CR>
 
 	" Tex_FastEnvironmentInsert: maps <F5> to prompt for env and insert it " {{{
 	" Description:
@@ -712,22 +694,22 @@ if g:Tex_PromptedEnvironments != ''
 		endif
 
 		exe 'echomsg "You are within a '.env_name.' environment."'
-		let s:change_env = PromptForEnvironment('Do you want to change it to (number or name)? ')
+		let change_env = PromptForEnvironment('What do you want to change it to? ')
 
-		if s:change_env == 'eqnarray'
+		if change_env == 'eqnarray'
 			call <SID>Change('eqnarray', 1, '', 1)
-		elseif s:change_env == 'eqnarray*'
+		elseif change_env == 'eqnarray*'
 			call <SID>Change('eqnarray*', 0, '\\nonumber', 0)
-		elseif s:change_env == 'align'
+		elseif change_env == 'align'
 			call <SID>Change('align', 1, '', 1)
-		elseif s:change_env == 'align*'
+		elseif change_env == 'align*'
 			call <SID>Change('align*', 0, '\\nonumber', 0)
-		elseif s:change_env == 'equation*'
+		elseif change_env == 'equation*'
 			call <SID>Change('equation*', 0, '&\|\\lefteqn{\|\\nonumber\|\\\\', 0)
-		elseif s:change_env == ''
+		elseif change_env == ''
 			return 0
 		else
-			call <SID>Change(s:change_env, 0, '', '')
+			call <SID>Change(change_env, 0, '', '')
 			return 0
 		endif
 
@@ -817,7 +799,7 @@ endif
 " Map <S-F1> through <S-F4> to insert environments {{{
 if g:Tex_HotKeyMappings != ''
 
-	" SetUpHotKeys: maps <F1> through <F4> to insert environments {{{
+	" SetUpHotKeys: maps <F1> through <F4> to insert environments
 	" Description: 
 	function! <SID>SetUpHotKeys()
 		let i = 1
@@ -831,7 +813,7 @@ if g:Tex_HotKeyMappings != ''
 			
 		endwhile
 
-	endfunction " }}}
+	endfunction
 
 endif
 
@@ -865,40 +847,15 @@ endfunction " }}}
 " ==============================================================================
 " Implementation of Fast Environment commands for LaTeX commands 
 " ==============================================================================
-" SetUpCommandPrompt: sets up a prompt string using g:Tex_PromptedCommands {{{
-" Description: 
-" 
-
-" This variable is default string for promting useful with updating new
-" commands
-let g:Tex_PromptedCommandsDefault = g:Tex_PromptedCommands
-
-function! SetUpCommandPrompt()
-	let num_common = GetListCount(g:Tex_PromptedCommands)
-
-	let i = 1
-	let s:common_com_prompt = "\n"
-
-	while i < num_common
-
-		let com1 = Tex_Strntok(g:Tex_PromptedCommands, ',', i)
-		let com2 = Tex_Strntok(g:Tex_PromptedCommands, ',', i + 1)
-
-		let s:common_com_prompt = s:common_com_prompt.'('.i.') '.com1."\t".( strlen(com1) < 4 ? "\t" : '' ).'('.(i+1).') '.com2."\n"
-
-		let i = i + 2
-	endwhile
-	let s:common_com_prompt = s:common_com_prompt.'Enter number or name of command: '
-endfunction " }}}
 " PromptForCommand: prompts for a command {{{
 " Description: 
 function! PromptForCommand(ask)
 
-	if !exists('s:common_com_prompt')
-		call SetUpCommandPrompt()
-	endif
+	let common_com_prompt = 
+				\ Tex_CreatePrompt(g:Tex_PromptedCommands, 2, ',') . "\n" .
+				\ "Enter number or command name :"
 
-	let inp = input(a:ask.s:common_com_prompt)
+	let inp = input(a:ask."\n".common_com_prompt)
 	if inp =~ '^[0-9]\+$'
 		let com = Tex_Strntok(g:Tex_PromptedCommands, ',', inp)
 	else
@@ -912,7 +869,7 @@ endfunction " }}}
 "
 function! Tex_DoCommand(...)
 	if a:0 < 1
-		let com = PromptForCommand('Choose which command to insert: ')
+		let com = PromptForCommand('Choose a command to insert: ')
 		if com != ''
 			return Tex_PutCommand(com)
 		else
@@ -968,7 +925,7 @@ if g:Tex_PromptedCommands != ''
 	nnoremap <silent> <Plug>Tex_FastCommandChange  :call Tex_ChangeCommand('no')<CR>
 	vnoremap <silent> <Plug>Tex_FastCommandInsert  <C-\><C-N>:call Tex_FastCommandInsert('yes')<CR>
 
-	" Tex_FastEnvironmentInsert: maps <F7> to prompt for command and insert it " {{{
+	" Tex_FastCommandInsert: maps <F7> to prompt for command and insert it " {{{
 	" Description:
 	"	Here we are not solving if we are in preamble, behaviour is always the
 	"	same. 
@@ -984,7 +941,7 @@ if g:Tex_PromptedCommands != ''
 	endfunction 
 
 	" }}}
-	" Tex_ChangeEnvironments: calls ChangeCommand() to change the environment {{{
+	" Tex_ChangeCommand: calls ChangeCommand() to change the environment {{{
 	" Description:
 	"   Finds out which environment the cursor is positioned in and changes
 	"   that to the chosen new environment. This function knows the changes
@@ -993,7 +950,7 @@ if g:Tex_PromptedCommands != ''
 	"
 	function! Tex_ChangeCommand(isvisual) 
 
-		let s:pos_com = line('.').' | normal! '.virtcol('.').'|'
+		let pos_com = line('.').' | normal! '.virtcol('.').'|'
 
 		let com_line = searchpair('\\\k\{-}{', '', '}', 'b')
 
@@ -1004,28 +961,31 @@ if g:Tex_PromptedCommands != ''
 		
 		if !exists('com_name')
 			echomsg "You are not inside command"
+			exe pos_com
 			return 0
 		endif
 
 		exe 'echomsg "You are within a '.com_name.' command."'
-		let s:change_com = PromptForCommand('Do you want to change it to (number or name)? ')
+		let change_com = PromptForCommand('Do you want to change it to (number or name)? ')
 
-		if s:change_com == ''
+		if change_com == ''
+			exe pos_com
 			return 0
 		else
-			call <SID>ChangeCommand(s:change_com)
+			call <SID>ChangeCommand(change_com)
+			exe pos_com
 			return 0
 		endif
 
 	endfunction 
 
+	" }}}
 	" ChangeCommand: Changes current command according to prompt menu {{{
 	" Description:
 	"
 	function! s:ChangeCommand(newcom)
 
 		exe 'normal ct{'.a:newcom."\<Esc>"
-		exe s:pos_com
 		
 	endfunction
 	" }}}
@@ -1056,7 +1016,6 @@ endif
 
 " }}}
 
-" }}}
 " this statement has to be at the end.
 let s:doneOnce = 1
 
