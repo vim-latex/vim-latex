@@ -3,7 +3,7 @@
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
 "		   URL: 
-"  Last Change: Thu Nov 07 06:00 PM 2002 PST
+"  Last Change: Mon Nov 11 09:00 PM 2002 PST
 "
 " Help: 
 " Changes: {{{
@@ -54,10 +54,9 @@ let s:path = expand('<sfile>:p:h')
 let s:up_path = expand('<sfile>:p:h:h')
 if filereadable(s:up_path.'/tex/texrc')
 	exe "so ".s:up_path.'/tex/texrc'
-else
-" set up global defaults.
-	exe "so ".s:path.'/texrc'
 endif
+" set up global defaults.
+exe "so ".s:path.'/texrc'
 
 " }}}
 
