@@ -139,16 +139,16 @@ Miscelleneous Stuff
 ===========================================================================
 LATEX MACROS                                   *latex-macros* {{{
 
-Latex-Suite ships with a very comprehensive set of insert mode and visual mode
-mappings and menu items to typeset most of the LaTeX elements.
+Latex-Suite ships with a very comprehensive set of insert mode and
+|visual-mode| mappings and menu items to typeset most of the LaTeX elements.
 
                                               *placeholders* *placeholder*
                                               *place-holder* *place-holders*
 All these macros implement Stephen Riem's bracketing system and Gergely
 Kontra's JumpFunc() for handling place-holders. This consists of using
 "place-holders" to mark off locations where the next relevant editing has to
-be done. As an example, when the user types in "EFI" in insert mode, she will
-get the following: >
+be done. As an example, when the user types in "EFI" in |insert-mode|, she
+will get the following: >
 
     \begin{figure}[h]
         \centerline{\psfig{figure=<+eps file+>}}
@@ -220,6 +220,13 @@ Method 4:
        Example: >
             equation (_eq_uation)          ---> EEQ
 
+<      Unfortunately there are some environments that cannot be split in two
+       words and first two letters in name are identical. In this case
+       shortcut is created from E, first and last letter.
+       Example: >
+            quote     (_q_uot_e_)          ---> EQE
+            quotation (_q_uotatio_n_)      ---> EQN
+
 <      Of course, not every last one of the environments can follow this rule
        because of ambiguities. In case of doubt, pull down the
        Tex-Environments menu. The menu item should give the hint for the map.
@@ -230,7 +237,7 @@ These maps are related to the corresponding insert mode mappings by the
 following rule: >
     ECE           --> ,ce
 and so on. i.e, the leading E becomes ',' and the next 2 letters are small
-case. Some of the visual mode mappings are sensetive to whether you choose
+case. Some of the visual mode mappings are sensitive to whether you choose
 line-wise or character wise. For example, if you choose a word and press
 ,ce, then you get \centerline{word}, whereas if you press ,ce on a line-wise
 selection, you get: >
@@ -340,7 +347,7 @@ NOTE: There is no menu item for these mappings. (as of this writing).
 
 }}}
 ---------------------------------------------------------------------------
-Diacritics: (by Lubomir Host) {{{
+Diacritics: (by Lubomir Host - currently disabled by default in texrc) {{{
 
 Diacritics speed up typing European languages.
 
@@ -549,39 +556,40 @@ if the current file name is name.tex.
 NOTE: Templates are also accessible for non-gui users with the command
 |:TexTemplate|. The argument should be name of the corresponding template
 file.  If the command is called without arguments (preferred usage), then a
-list of avaiable templates is displayed and the user is asked to choose one of
+list of available templates is displayed and the user is asked to choose one of
 them.
 
-You can ofcourse place your own templates in this directory.
+You can of course place your own templates in this directory.
 
 }}}
 ===========================================================================
 LATEX PROJECT                               *latex-project* {{{
 
-LaTeX-suite is quite smart with looking for components of LaTeX document. In 
-simple projects which can be put in one, two or three directories LaTeX-suite 
-can find bibliography, included or image files. But it is impossible to guess 
-all combinations, especially in projects dispersed in many directories, in 
+LaTeX-suite is quite smart with looking for components of LaTeX document. In
+simple projects which can be put in one, two or three directories LaTeX-suite
+can find bibliography, included or image files. But it is impossible to guess
+all combinations, especially in projects dispersed in many directories, in
 deep levels. For such situations you can create projects.
 
 Creating project
 
-To create project file make sure you don't have *.latexmain file 
-(|latex-master-file|). Open file which is the skelet of your whole work. Use 
-|:TProjectEdit| command. It will create file "yourmainfile.tex.latexmain" and 
-read in template of project file. This is just Vim file. Now you have two 
-commented variables: g:projName and g:projFiles. First isn't obligatory. It 
-will be visible in Explorer window to show you are editing project. This is 
-list of files separated with commas. File/dir name cannot contain 
-spaces. Example: 
->
+To create project file make sure you don't have *.latexmain file
+(|latex-master-file|). Open file which is the skelet of your whole work. Use
+|:TProjectEdit| command. It will create file "yourmainfile.tex.latexmain" and
+read in template of project file. This is just Vim file. Now you have two
+commented variables: g:projName and g:projFiles. First isn't obligatory. It
+will be visible in Explorer window to show you are editing project. This is
+list of files separated with commas. File/dir name cannot contain
+spaces. Example: >
+
     let g:projFiles="main.tex,roz1/roz1.tex,roz1/roz1.bib,main.bib,newfile.tex"
 
 Editing project file
 
-After |:TProjectEdit| screen will be split and you can make corrections, 
-comments or new files to project. To make changes available to Vim issue
-command |:TProjectWrite|. This will save file and source it immediately.
+After |:TProjectEdit| screen will be split and you can make corrections,
+comments or add new files to project (or remove them). To make changes
+available to Vim issue command |:TProjectWrite|. This will save file and
+source it immediately (simple ":write" don't change values of variables).
 
 }}}
 ===========================================================================
@@ -599,7 +607,7 @@ if wanted.
 
 When you choose a macro from the menu, the corresponding file is read into the
 current buffer after the current cursor position. In non-gui mode, you can
-use the |TexMacro| command instead of choosing from the menu. This command
+use the |TMacro| command instead of choosing from the menu. This command
 takes the macro file name as an argument. When called without arguments
 (preferred usage), then a list of avaiable macro files is displayed and the
 user is prompted to choose one of them).
@@ -1045,30 +1053,30 @@ LATEX SUITE COMMANDS                   *latex-suite-commands* {{{
 LatexSuite defines set of commands for non-GUI and power users. They are
 taking care about Macros, Templates and Packages.
 
-:TMacro [{macro}]                      *TMacro*
+:TMacro [{macro}]                      *:TMacro*
                 When used without any arguments lists all available macros
                 defined in latex-suite/macros/ directory and prompts you to
                 choose one of them.
                 With one argument |:read| this macro under cursor position.
                 With more than one argument it will not work :)
 
-:TMacroEdit [{macro}]                  *TMacroEdit*
+:TMacroEdit [{macro}]                  *:TMacroEdit*
                 Splits window for editing {macro}.
                 When used without any arguments lists all available macros
                 defined in latex-suite/macros/ directory and prompt you to
                 choose one of them.
 
-:TMacroNew                             *TMacroNew*
+:TMacroNew                             *:TMacroNew*
                 Splits window to write new macro. Directory in new buffer is
                 locally changed to latex-suite/macros/.
 
-:TMacroDelete [{macro}]                *TMacroDelete*
+:TMacroDelete [{macro}]                *:TMacroDelete*
                 Delets {macro} from latex-suite/macros/ directory.
                 When used without any arguments lists all available macros
                 defined in latex-suite/macros/ directory and prompt you to
                 choose one of them.
 
-:TPackage [{package} [{package} ...]]  *TPackage*
+:TPackage [{package} [{package} ...]]  *:TPackage*
                 When used without any arguments lists name of the packages for
                 which support is available. Report depends if you are using
                 GUI version and/or g:Tex_Menus is set to 1 or not. When you
@@ -1082,24 +1090,24 @@ taking care about Macros, Templates and Packages.
                 |latex-packages-dictionary|). Number of arguments separated
                 with spaces is limited only with common sense.
 
-:TPackageUpdate                        *TPackageUpdate*
+:TPackageUpdate                        *:TPackageUpdate*
                 This command `reads' name of package under cursor and turns on
                 possible support.
 
-:TPackageUpdateAll                     *TPackageUpdateAll*
+:TPackageUpdateAll                     *:TPackageUpdateAll*
                 After issuing this command latexSuite scans the file in
                 looking for not declared packages, removing not needed entries
                 from Packages menu and turning off not necessary packages'
                 dictionaries.
 
-:TTemplate [{template}]                *TTemplate*
+:TTemplate [{template}]                *:TTemplate*
                 When used without any arguments lists all available templates
                 from latex-suite/templates/ directory and prompts to choose
                 one of them.
                 With one argument :0|read| {template} file.
                 With more than one argument it will not work :)
 
-:TSection [{argument}]                 *TSection*
+:TSection [{argument}]                 *:TSection*
                 Used without any arguments inserts last section type
                 (|latex-sectioning|).
                 Accepts arguments:
@@ -1138,14 +1146,14 @@ taking care about Macros, Templates and Packages.
                 sections: >
                         :TSection part
 <
-:TSectionAdvanced                      *TSectionAdvanced*
+:TSectionAdvanced                      *:TSectionAdvanced*
                 Accepts the same arguments as |TSection| but leads to a couple
                 of questions (whether you want to include the section in the
                 table of contents, whether there is a shorter name for the
                 table of contents) and then creates a more intelligent
                 template.
 
-:TLook                                 *TLook*
+:TLook                                 *:TLook*
                 Accepts one argument. Will look through .tex files in
                 directory of edited file for argument. It can be regexp. You
                 don't have to enclose argument in "". <cr> takes you to
@@ -1153,7 +1161,7 @@ taking care about Macros, Templates and Packages.
                 Note: TLook uses :grep command and is using 'grepprg'. Its
                 regular expressions can be different from those of Vim.
 
-:TLookBib                              *TLookBib*
+:TLookBib                              *:TLookBib*
                 Accepts one argument. Will look through .bib files in
                 directory of edited file for argument. It can be regexp. You
                 don't have to enclose argument in "". <cr> takes you to
@@ -1161,7 +1169,7 @@ taking care about Macros, Templates and Packages.
                 Note: TLookBib uses :grep command and is using 'grepprg'.  Its
                 regular expressions can be different from those of Vim.
 
-:TLookAll                              *TLookAll*
+:TLookAll                              *:TLookAll*
                 Accepts one argument. Will look through all files in directory
                 of edited file for argument. It can be regexp. You don't have
                 to enclose argument in "". <cr> takes you to location. Other
@@ -1169,12 +1177,12 @@ taking care about Macros, Templates and Packages.
                 Note: TLookuses :grep command and is using 'grepprg'.  Its
                 regular expressions can be different from those of Vim.
 
-:TPartComp                             *TPartComp*
+:TPartComp                             *:TPartComp*
                 No argument allowed but accepts range in all formats. Define
                 fragment of interest with :'a,'b, :/a/,/b/, :'<,'> or :20,30.
                 All other rules of compilation apply.
 
-:TPartView                             *TPartView*
+:TPartView                             *:TPartView*
                 Show last compiled fragment. All rules of viewing apply but
                 |latex-searching|.
 
