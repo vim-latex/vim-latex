@@ -64,7 +64,7 @@ function! Tex_completion(what, where)
 		let s:prefix = matchstr(s:curline, '{\zs.\{-}$')
 		let s:type = matchstr(s:curline, '\\\zs.\{-}\ze{.\{-}$')
 		let s:typeoption = matchstr(s:type, '\zs[.*]\ze')
-		let s:type = matchstr(s:type, '.\{-}\ze')
+		let s:type = substitute(s:type, '[.*', '', 'e')
 
 		if exists("s:type") && s:type =~ 'ref'
 			exe 'silent! grep! "\\label{'.s:prefix.'" '.s:search_directory.'*.tex'
@@ -190,7 +190,6 @@ endfunction " }}}
 function! s:Tex_explore_window(type) 
 
 	exe g:Tex_ExplorerHeight.' wincmd _'
-	let g:type = a:type
 
 	if a:type =~ 'includegraphics\|bibliography\|includefile'
 		nnoremap <silent> <buffer> <cr> :silent! call <SID>CompleteName("expl_noext")<CR>
