@@ -125,7 +125,6 @@ TexLet g:Tex_IgnoredWarnings =
 	\'Overfull¡'.
 	\'specifier changed to¡'.
 	\'You have requested¡'.
-	\'Reference¡'.
 	\'Missing number, treated as zero.'
 
 " the 'ignore level' of the 'efm'. A value of 4 says that the first 4 kinds of
