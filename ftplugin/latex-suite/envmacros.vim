@@ -994,7 +994,8 @@ function! Tex_DoCommand(...)
 				return ''
 			endif
 		else
-			let lastword = expand('<cword>')
+			let lastword = matchstr(getline('.'), '\w\+$')
+			call Tex_Debug("Tex_DoCommand: getting lastword = ".lastword, "env")
 			if lastword != ''
 				return substitute(lastword, '.', "\<bs>", 'g').Tex_PutCommand(lastword)
 			endif
@@ -1041,7 +1042,7 @@ if g:Tex_PromptedCommands != ''
 	let b:DoubleDollars = 0
 
 	inoremap <silent> <Plug>Tex_FastCommandInsert  <C-r>=Tex_FastCommandInsert('no')<cr>
-	nnoremap <silent> <Plug>Tex_FastCommandInsert  i<C-r>=Tex_FastCommandInsert('no')<cr>
+	nnoremap <silent> <Plug>Tex_FastCommandInsert  ea<C-r>=Tex_FastCommandInsert('no')<cr>
 	inoremap <silent> <Plug>Tex_FastCommandChange  <C-O>:call Tex_ChangeCommand('no')<CR>
 	nnoremap <silent> <Plug>Tex_FastCommandChange  :call Tex_ChangeCommand('no')<CR>
 	vnoremap <silent> <Plug>Tex_FastCommandInsert  <C-\><C-N>:call Tex_FastCommandInsert('yes')<CR>
