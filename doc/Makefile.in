@@ -24,4 +24,6 @@ lsq-chunk:
 lsq-txt:
 	db2vim --prefix=lq_ latex-suite-quickstart.xml > latex-suite.txt
 
+cvsci:
+	cvs ci latex-suite.xml latex-suite.txt
 # vim:nowrap
