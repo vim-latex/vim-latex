@@ -20,11 +20,7 @@ imap <silent> <script> <C-o><plug> <Nop>
 let s:figure =     "\\begin{figure}[<+htpb+>]\<cr>\\begin{center}\<cr>\\psfig{figure=<+eps file+>}\<cr>\\end{center}\<cr>\\caption{<+caption text+>}\<cr>\\label{fig:<+label+>}\<cr>\\end{figure}<++>"
 let s:minipage =   "\\begin{minipage}[<+tb+>]{<+width+>}\<cr><++>\<cr>\\end{minipage}<++>"
 let s:picture =    "\\begin{picture}(<+width+>, <+height+>)(<+xoff+>,<+yoff+>)\<cr>\\put(<+xoff+>,<+yoff+>){\\framebox(<++>,<++>){<++>}}\<cr>\\end{picture}<++>"
-let s:list =       "\\begin{list}{<+label+>}{<+commands+>}\<cr>\\item <++>\<cr>\\end{list}<++>"
-let s:enumerate =  "\\begin{enumerate}{<+label+>}{<+commands+>}\<cr>\\item <++>\<cr>\\end{enumerate}<++>"
-let s:itemize =    "\\begin{itemize}{<+label+>}{<+commands+>}\<cr>\\item <++>\<cr>\\end{itemize}<++>"
-let s:theindex =   "\\begin{theindex}{<+label+>}{<+commands+>}\<cr>\\item <++>\<cr>\\end{theindex}<++>"
-let s:trivlist =   "\\begin{trivlist}{<+label+>}{<+commands+>}\<cr>\\item <++>\<cr>\\end{trivlist}<++>"
+let s:list =       "\\begin{list}{<+label+>}{<+spacing+>}\<cr>\\item <++>\<cr>\\end{list}<++>"
 let s:table =      "\\begin{table}\<cr>\\centering\<cr>\\begin{tabular}{<+dimensions+>}\<cr><++>\<cr>\\end{tabular}\<cr>\\caption{<+Caption text+>}\<cr>\\label{tab:<+label+>}\<cr>\\end{table}<++>"
 let s:array =      "\\left<++>\<cr>\\begin{array}{<+dimension+>}\<cr><+elements+>\<cr>\\end{array}\<cr>\\right<++>"
 let s:description ="\\begin{description}\<cr>\\item[<+label+>]<++>\<cr>\\end{description}<++>"
@@ -206,6 +202,7 @@ call s:Tex_SpecialMacros('', '', '-sepenv0-', ' :', 0)
 " }}}
 " Lists {{{
 call s:Tex_SpecialMacros('ELI', '&Lists.',  'list', s:list)
+call s:Tex_SpecialMacros('EDE', '&Lists.',  'description', s:description)
 call s:Tex_EnvMacros('EEN', '&Lists.', 'enumerate')
 call s:Tex_EnvMacros('EIT', '&Lists.', 'itemize')
 call s:Tex_EnvMacros('ETI', '&Lists.', 'theindex')
@@ -257,7 +254,7 @@ call s:Tex_SectionMacros('SCH', 'chapter')
 call s:Tex_SectionMacros('SSE', 'section')
 call s:Tex_SectionMacros('SSS', 'subsection')
 call s:Tex_SectionMacros('SS2', 'subsubsection')
-call s:Tex_SectionMacros('SPR', 'paragraph')
+call s:Tex_SectionMacros('SPG', 'paragraph')
 call s:Tex_SectionMacros('SSP', 'subparagraph')
 " }}}
 " Miscellaneous {{{
