@@ -2,7 +2,6 @@
 " 	     File: diacritics.vim
 "      Author: Lubomir Host
 "     Created: Tue Apr 23 07:00 PM 2002 PST
-" Last Change: Thu Dec 19 03:00 AM 2002 PST
 " 
 "  Description: shortcuts for all diacritics. 
 "=============================================================================
@@ -122,4 +121,4 @@ call IMAP ('+Z', "\\v{Z}", 'tex')
 call IMAP ('+}', "\\\"{a}", 'tex')
 call IMAP ('+:', "\\^{o}", 'tex')
 
-" vim:fdm=marker:ts=4:sw=4:noet
+" vim:fdm=marker:ff=unix:noet:ts=4:sw=4

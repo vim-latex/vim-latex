@@ -3,7 +3,6 @@
 "      Author: Mikolaj Machowski
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Sun Dec 29 04:00 PM 2002 PST
 " 
 "  Description: functions for processing custom macros in the
 "               latex-suite/macros directory
@@ -136,4 +135,4 @@ com! -nargs=? TMacroDelete    :call <SID>DeleteMacro(<f-args>)
 
 " }}}
 
-" vim:fdm=marker:ts=4:sw=4:noet
+" vim:fdm=marker:ff=unix:noet:ts=4:sw=4

@@ -1,12 +1,10 @@
 "        File: wizardfuncs.vim
 "      Author: Mikolaj Machowski <mikmach@wp.pl>
-" Last change: wto lis 12 09:00  2002 C
 " Description: 
 " 
 " Installation:
 "      History: pluginized by Srinath Avadhanula
 "               ( srinath@fastmail.fm)
-"         TODO:
 "=============================================================================
 
 if exists('s:doneOnce')
@@ -200,4 +198,5 @@ function! s:Tex_section_call(section_name) "{{{
 "	exe "normal! i\<C-r>=IMAP_PutTextWithMovement(ret_section)\<CR>"
 "	normal f}i
 endfunction "}}}
-" vim:fdm=marker
+
+" vim:fdm=marker:ff=unix:noet:ts=4:sw=4

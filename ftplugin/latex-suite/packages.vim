@@ -2,7 +2,6 @@
 " 	     File: packages.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: Sat Jan 04 06:00 PM 2003 PST
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -401,4 +400,4 @@ if g:Tex_Menus
 
 endif
 
-" vim:fdm=marker:ts=4:sw=4:noet:fo-=wa1
+" vim:fdm=marker:ts=4:sw=4:noet:ff=unix

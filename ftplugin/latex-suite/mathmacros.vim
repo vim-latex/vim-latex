@@ -2,7 +2,6 @@
 " 	     File: mathmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: Thu Dec 19 03:00 AM 2002 PST
 " 
 "  Description: macros for everything mathematical in latex.
 "=============================================================================
@@ -692,4 +691,4 @@ exe s:pA18.'negmedspace             <plug>\negmedspace '
 exe s:pA18.'negthickspace           <plug>\negthickspace '
 " 1}}}
 
-" vim:fdm=marker:ts=4:sw=4:noet
+" vim:fdm=marker:ff=unix:noet:ts=4:sw=4

@@ -2,7 +2,6 @@
 " 	       File: bibtex.vim
 "      Function: BibT
 "        Author: Alan G Isaac <aisaac@american.edu>
-"   Last Change: Thu Dec 19 03:00 AM 2002 PST
 "=============================================================================
 
 if exists('s:done')
@@ -267,4 +266,4 @@ endfunction
 
 " }}}
 
-" vim:fdm=marker
+" vim:fdm=marker:ff=unix:noet:ts=4:sw=4

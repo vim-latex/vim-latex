@@ -512,4 +512,4 @@ exe 'source '.s:path.'/packages.vim'
 
 let &cpo = s:save_cpo
 
-" vim:fdm=marker:nowrap:noet:ts=4:sw=4
+" vim:fdm=marker:ff=unix:noet:ts=4:sw=4:nowrap

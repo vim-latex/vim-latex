@@ -2,7 +2,6 @@
 " 	     File: elementmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: Thu Dec 19 03:00 AM 2002 PST
 " 
 "  Description: macros for dimensions/fonts/counters.
 "               and various common commands such ref/label/footnote.
@@ -336,4 +335,4 @@ endif
 " this is for avoiding reinclusion of imaps from next time on.
 let s:doneOnce = 1
 
-" vim:fdm=marker:ts=4:sw=4:noet
+" vim:fdm=marker:ff=unix:noet:ts=4:sw=4

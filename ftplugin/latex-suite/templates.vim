@@ -4,7 +4,6 @@
 "              (minor modifications by Srinath Avadhanula)
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Sun Dec 22 05:00 PM 2002 PST
 " 
 "  Description: functions for handling templates in latex-suite/templates
 "               directory.
@@ -113,4 +112,4 @@ com! -nargs=? TTemplate :call <SID>ReadTemplate(<f-args>)
 	\| :exec "normal! i\<C-r>=IMAP_Jumpfunc('', 1)\<CR>"
 	\| :startinsert
 
-" vim:fdm=marker:ts=4:sw=4:noet
+" vim:fdm=marker:ff=unix:noet:ts=4:sw=4

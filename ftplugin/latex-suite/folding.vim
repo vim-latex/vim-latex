@@ -3,7 +3,6 @@
 "      Author: Srinath Avadhanula
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Mon Dec 30 01:00 AM 2002 PST
 " 
 "  Description: functions to interact with Syntaxfolds.vim
 "=============================================================================
@@ -247,4 +246,4 @@ function! TexFoldTextFunction()
 endfunction
 " }}}
 
-" vim:fdm=marker:ts=4:sw=4:noet
+" vim:fdm=marker:ff=unix:noet:ts=4:sw=4

@@ -2,7 +2,6 @@
 " 	     File: compiler.vim
 "      Author: Srinath Avadhanula
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Thu Nov 28 01:00 AM 2002 PST
 " 
 "  Description: functions for compiling/viewing/searching latex documents
 "=============================================================================
@@ -407,4 +406,4 @@ function! GotoErrorLocation(filename)
 
 endfunction " }}}
 
-" vim:fdm=marker:ts=4:sw=4
+" vim:fdm=marker:ff=unix:noet:ts=4:sw=4

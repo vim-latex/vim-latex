@@ -3,9 +3,6 @@
 "      Author: Srinath Avadhanula <srinath@fastmail.fm>
 " Description: 
 " 
-" Installation:
-"  Last Change: Mon Nov 11 12:00 AM 2002 PST
-"         TODO:
 "=============================================================================
 
 " Paths, crucial for functions
@@ -126,4 +123,4 @@ if g:Tex_Menus
 	exe 'amenu 80.900 '.s:mainmenuname.'Configure\ Menu.Load\ Packages\ Menu    :call Tex_MenuConfigure("packages", 1)<cr>'
 endif
 
-" vim6:fdm=marker
+" vim:fdm=marker:ff=unix:noet:ts=4:sw=4
