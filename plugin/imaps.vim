@@ -735,15 +735,13 @@ function! IMAP_DebugClear(pattern)
 		let s:debug_{a:pattern} = ''
 	endif
 endfunction " }}}
-" IMAP_DebugPrint: interface to Tex_DebugPrint if avaialable, otherwise emulate it {{{
+" IMAP_PrintDebug: interface to Tex_DebugPrint if avaialable, otherwise emulate it {{{
 " Description: 
-function! IMAP_DebugPrint(pattern)
-	if exists('*Tex_DebugPrint')
-		call Tex_DebugPrint(a:pattern)
+function! IMAP_PrintDebug(pattern)
+	if exists('*Tex_PrintDebug')
+		call Tex_PrintDebug(a:pattern)
 	else
 		if exists('s:debug_'.a:pattern)
-			let s:debug_{a:pattern} = ''
-		else
 			echo s:debug_{a:pattern}
 		endif
 	endif
