@@ -287,7 +287,7 @@ function! Tex_ViewLaTeX()
 						\ (s:viewer == "xdvi" || s:viewer == "xdvik")
 				let execString = 'silent! !'.s:viewer.' -editor "gvim --servername '.v:servername.
 							\ ' --remote-silent +\%l \%f" '.mainfname.'.dvi &'
-			elseif Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1
+			elseif Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1 &&
 						\ s:viewer == "kdvi"
 				let execString = 'silent! !kdvi --unique '.mainfname.'.dvi &'
 			else
