@@ -126,6 +126,7 @@ function! RunLaTeX()
 		exe 'lcd '.pcomdir
 		exec 'make '.g:tfile
 		exe 'lcd '.curdir
+		redraw!
     else 
         let mainfname = Tex_GetMainFileName()
         " if a makefile and no *.latexmain exists, just use the make utility
@@ -148,6 +149,7 @@ function! RunLaTeX()
             endif
             exec 'make '.mainfname
         endif
+		redraw!
     endif
 
 	let winnum = winnr()
@@ -241,12 +243,14 @@ function! ViewLaTeX(size)
 					exec '!'.s:viewer.' '.g:tfile.'.dvi &'
 				endif
 			endif
+			redraw!
 		else
 			if a:size == "all"
 				exec '!'.s:viewer.' '.mainfname.'.'.s:target.' &'
 			else
 				exec '!'.s:viewer.' '.g:tfile.'.'.s:target.' &'
 			endif
+			redraw!
 		endif
 	end
 
@@ -304,6 +308,7 @@ function! ForwardSearchLaTeX()
 					\ viewer == "kdvi"
 			exec '!kdvi --unique file:'.mainfname.'.dvi\#src:'.line('.').Tex_GetMainFileName(":p:t:r").' &'
 		endif
+		redraw!
 	end
 
 	exec 'cd '.curd
