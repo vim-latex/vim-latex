@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-    docbk2vim file.xml
+    db2vim file.xml
 """
 
 import xml.dom.minidom
@@ -20,6 +20,16 @@ TEXT_WIDTH = 80
 ELEMENT_SPACE = "\n"
 BLOCK_QUOTE = 4
 COL_SPACE = 2
+
+# a bunch of globals used in creating the Table of contents.
+TOC_HASH = {}
+LEVEL_HASH = {}
+TITLE_HASH = {}
+FILENAME = ''
+
+# STDERR for printing debugging info.
+STDERR = sys.stderr
+
 
 ################################################################################
 # Generalized function for handling dom elements.
@@ -121,7 +131,7 @@ def handleElement(rootElement, width=TEXT_WIDTH, strict=0):
 def handleArticleInfo(articleinfo, width):
     title = articleinfo.getChildrenByTagName('title')
     if title is None:
-        print "Article should have a title!"
+        print >> STDERR, "Article should have a title!"
         sys.exit(1)
 
     name = GetText(title[0].childNodes)
@@ -140,13 +150,14 @@ def handleArticleInfo(articleinfo, width):
         authorText = authorText + firstname + ' ' + surname + ' <' + email + '>\n'
         
 
-    abstract = articleinfo.getChildrenByTagName('abstract')[0]
-    abstractText = handleElement(abstract, width)
+    abstractText = ''
+    abstract = articleinfo.getChildrenByTagName('abstract')
+    if abstract is not None:
+        abstractText = '\n\n' + CenterText('Abstract\n========', width)
+        abstractText += handleElement(abstract[0], width) + '\n'
 
-    filename = 'latex-suite.txt' 
 
-    retText = CenterText(name + '\n*' + filename + '*\n' + authorText, width)
-    retText += '\n\n' + CenterText('Abstract\n========', width)
+    retText = CenterText(name + '\n*' + FILENAME + '*\n' + authorText, width)
     retText += abstractText
 
     toc = makeTOC(articleinfo.parentNode, width)
@@ -157,14 +168,57 @@ Viewing this file
 
 This file can be viewed with all the sections and subsections folded to ease
 navigation. By default, vim does not fold help documents. To create the folds,
-press za now.
+press za now. The folds are created via a foldexpr which can be seen in the
+last section of this file.
 
 See |usr_28.txt| for an introduction to folding and |fold-commands| for key
 sequences and commands to work with folds.
 '''
 
-    return retText + '\n' + RightJustify('*' + filename + '-toc*', width) + '\n' + toc + foldwarn
+    return retText + '\n' + RightJustify('*' + FILENAME + '-toc*', width) + '\n' + toc + foldwarn
 
+# makeTOC(node, width): {{{
+
+def makeTOC(parent, width, prefix='', level=0, maxlevel=1):
+    retText = ""
+    sectionsTable = []
+    lastLabelUsed = 0
+
+    for section in parent.getChildrenByTagName('section'):
+
+        sectionid = section.getAttribute('id')
+        if sectionid and TOC_HASH.has_key(sectionid):
+            thisLabel = TOC_HASH[sectionid]
+            titleText = TITLE_HASH[sectionid]
+
+        else:
+            title = section.getChildrenByTagName('title')[0]
+            titleText = handleElement(title, width)
+            lastLabelUsed += 1
+            thisLabel = 'ls_' + prefix + str(lastLabelUsed)
+
+            sectionid = section.getAttribute('id')
+            if not sectionid:
+                section.setAttribute('id', thisLabel)
+                sectionid = thisLabel
+
+            TOC_HASH[sectionid] = thisLabel
+            LEVEL_HASH[sectionid] = level
+            TITLE_HASH[sectionid] = titleText
+
+        if level <= maxlevel:
+            retText += '|' + thisLabel + '| ' +  titleText + "\n"
+
+        if section.getChildrenByTagName('section'):
+            childText = makeTOC(section, width-5, 
+                prefix = (prefix + str(lastLabelUsed) + '_'),
+                level = level + 1)
+            childText = re.sub(r'\n+$', '', childText)
+            if level < maxlevel:
+                retText += VertCatString("    ", 4, childText) + '\n'
+
+    return retText
+# }}}
 # }}}
 # handleOption(option, width): {{{
 def handleOption(option, width):
@@ -226,7 +280,6 @@ def handleTableRoot(root, width):
 
     return headTable + '\n'+ re.sub(r'\n+$', '', bodyTable) + '\n\n'
 
-# }}}
 # calculateColumnWidths(rows, width): {{{
 def calculateColumnWidths(rows, alloc_widths):
     widths = {}
@@ -285,6 +338,7 @@ def calculateColumnWidthsDoublePass(rows, width):
 
     return newmaxwidth, newtext
 
+# }}}
 # }}}
 # handleCode(code, width): {{{
 def handleCode(code, width):
@@ -399,10 +453,10 @@ def handleSection(section, width):
 
     sectionid = section.getAttribute('id')
     tagsformatted = ''
-    if tocHash.has_key(sectionid):
-        tagsformatted = '*%s* ' % tocHash[sectionid]
+    if TOC_HASH.has_key(sectionid):
+        tagsformatted = '*%s* ' % TOC_HASH[sectionid]
 
-    if sectionid and sectionid != tocHash[sectionid]:
+    if sectionid and sectionid != TOC_HASH[sectionid]:
         tagsformatted += '*%s*' % sectionid
 
     # try to indent to a width of 20
@@ -418,10 +472,10 @@ def handleSection(section, width):
     section.removeChild(title)
     text = handleElement(section, width)
 
-    if levelHash[sectionid] == 0:
+    if LEVEL_HASH[sectionid] == 0:
         delim = '='
         newlines = '\n\n'
-    elif levelHash[sectionid] == 1:
+    elif LEVEL_HASH[sectionid] == 1:
         delim = '-'
         newlines = '\n'
     else:
@@ -429,65 +483,16 @@ def handleSection(section, width):
         newlines = '\n'
 
     thisTOC = ''
-    if levelHash[sectionid] <= 1:
+    if LEVEL_HASH[sectionid] <= 1:
         thisTOC = makeTOC(section, width, maxlevel=0)
 
     return "\n" + (delim * TEXT_WIDTH) + \
         "\n" + header + newlines + thisTOC + newlines + re.sub(r'\n+$', '', text) + "\n"
 
 # }}}
-# makeTOC(node, width): {{{
-
-tocHash = {}
-levelHash = {}
-titleHash = {}
-lastLabelUsed = 99
-
-def makeTOC(parent, width, prefix='', level=0, maxlevel=1):
-    retText = ""
-    sectionsTable = []
-    lastLabelUsed = 0
-
-    for section in parent.getChildrenByTagName('section'):
-
-        sectionid = section.getAttribute('id')
-        if sectionid and tocHash.has_key(sectionid):
-            thisLabel = tocHash[sectionid]
-            titleText = titleHash[sectionid]
-
-        else:
-            title = section.getChildrenByTagName('title')[0]
-            titleText = handleElement(title, width)
-            lastLabelUsed += 1
-            thisLabel = 'ls_' + prefix + str(lastLabelUsed)
-
-            sectionid = section.getAttribute('id')
-            if not sectionid:
-                section.setAttribute('id', thisLabel)
-                sectionid = thisLabel
-
-            tocHash[sectionid] = thisLabel
-            levelHash[sectionid] = level
-            titleHash[sectionid] = titleText
-
-        if level <= maxlevel:
-            retText += '|' + thisLabel + '| ' +  titleText + "\n"
-
-        if section.getChildrenByTagName('section'):
-            childText = makeTOC(section, width-5, 
-                prefix = (prefix + str(lastLabelUsed) + '_'),
-                level = level + 1)
-            childText = re.sub(r'\n+$', '', childText)
-            if level < maxlevel:
-                retText += VertCatString("    ", 4, childText) + '\n'
-
-    return retText
-# }}}
 
 ################################################################################
 # A dictionary for mapping xml tags to functions.
-#
-# TODO: Ideally, each function would be responsible for registering itself
 ################################################################################
 # {{{
 handlerMaps = {
@@ -522,6 +527,9 @@ if __name__ == "__main__":
         sys.exit(1)
 
     fileName = args[0]
+
+    FILENAME = re.sub(r'\.\w+$', r'.txt', fileName)
+
     try:
         fp = open(fileName)
     except:
@@ -531,21 +539,31 @@ if __name__ == "__main__":
 
     modeline = r'''
 ================================================================================
-Vim folding
+About this file
 
-The following modelines should nicely fold up the help manual.
+This file was created automatically from its XML variant using db2vim. db2vim is
+a python script which understands a very limited subset of the Docbook XML 4.2
+DTD and outputs a plain text file in vim help format.
 
-vim:ft=help:fdm=expr
+db2vim can be obtained via anonymous CVS from sourceforge.net. Use
+
+cvs -d:pserver:anonymous@cvs.vim-latex.sf.net:/cvsroot/vim-latex co db2vim
+
+Or you can visit the web-interface to sourceforge CVS at:
+http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/vim-latex/db2vim/
+
+The following modelines should nicely fold up this help manual.
+
+vim:ft=help:fdm=expr:nowrap
 vim:foldexpr=getline(v\:lnum-1)=~'-\\{80}'?'>2'\:getline(v\:lnum-1)=~'=\\{80}'?'>1'\:getline(v\:lnum)=~'=\\{80}'?'0'\:getline(v\:lnum)=~'-\\{80}'?'1'\:'='
-vim:foldtext=v\:folddashes.substitute(getline(v\:foldstart),"\\\\s*\\\\*.*","","")
+vim:foldtext=substitute(v\:folddashes.substitute(getline(v\:foldstart),'\\s*\\*.*',"",""),'^--','--\ \ \ \ ','')
 ================================================================================'''
 
     processedDoc = handleElement(dom.documentElement)
     processedDoc = re.sub(r'&codeend;([^\n]*)\n\s([ ]+)', '\n<\g<2>\g<1>\n \g<2>', processedDoc)
     processedDoc = re.sub(r'&codeend;([^\n]*)\n(?=[^ ]|\n)', '\n\g<1>\n', processedDoc)
     processedDoc = processedDoc + modeline
-    print processedDoc
+    print processedDoc.encode('iso-8859-1')
 
 # }}}
-
 # vim:et:sts=4:fdm=marker
