@@ -3,7 +3,7 @@
 " 	     File: texrc.vim
 "      Author: Srinath Avadhanula
 "     Created: Mon Apr 01 11:00 AM 2002 PST
-" Last Change: pon lis 18 11:00  2002 C
+" Last Change: wto lis 26 09:00  2002 C
 "
 "  Description: This file contains resource configuration information for the
 "               latex-suite plugin.
@@ -78,7 +78,7 @@ if has('win32')
 	let s:CompileFlags = '--src-specials'
 	TexLet g:Tex_EscapeChars = ''
 else
-	let s:CompileFlags = ''
+	let s:CompileFlags = '--src-specials'
 	TexLet g:Tex_EscapeChars = '{}\'
 endif
 TexLet g:Tex_CompileRule_dvi = 'latex ' . s:CompileFlags .
@@ -115,7 +115,7 @@ elseif has('macunix')
 	TexLet g:Tex_ViewRule_dvi = ''
 else
 	TexLet g:Tex_ViewRule_ps = 'ghostview'
-	TexLet g:Tex_ViewRule_pdf = 'acroread'
+	TexLet g:Tex_ViewRule_pdf = 'xpdf'
 	TexLet g:Tex_ViewRule_dvi = 'xdvi'
 	" the option below specifies an editor for the dvi viewer while starting
 	" up the dvi viewer according to Dimitri Antoniou's tip on vim.sf.net (tip
