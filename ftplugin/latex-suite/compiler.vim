@@ -95,6 +95,8 @@ com! -nargs=? TTarget :call SetTeXTarget(<f-args>)
 " in the ~/thesis directory. this will then run "latex main.tex" when
 " RunLaTeX() is called.
 function! RunLaTeX()
+
+	call Tex_Debug('getting to RunLaTeX, b:fragmentFile = '.exists('b:fragmentFile'))
 	if &ft != 'tex'
 		echo "calling RunLaTeX from a non-tex file"
 		return
@@ -107,50 +109,36 @@ function! RunLaTeX()
 	pclose!
 
     " Logic to choose how to compile:
-    " if g:partcomp is set
-    "   do partial compilation
-    " else if there is a makefile and no .latexmain
-    "   do make
-    " else
-    "   call the latex compiler on
-    "     the current file if there is not .latexmain
-    "     .latexmain if there is one
-    "
-    " if partial compilation is wanted
-	if exists("g:partcomp")
-		" Change directory to location of temporary file. In this way output 
-		" files will be in temporary directory (no garbage in real current 
-		" directory). System will take care about space.
-		let curdir = getcwd()
-		let pcomdir = fnamemodify(g:tfile, ":p:h")
-		exe 'lcd '.pcomdir
-		exec 'make '.g:tfile
-		exe 'lcd '.curdir
-		redraw!
-    else 
-        let mainfname = Tex_GetMainFileName()
-        " if a makefile and no *.latexmain exists, just use the make utility
-        " this also sets mainfname for the rest of the function
-        if (glob('makefile') != '' || glob('Makefile') != '')
-            let mainfname = expand("%:t:r")
-            let _makeprg = &l:makeprg
-            let &l:makeprg = 'make $*'
-            if exists('s:target')
-                exec 'make '.s:target
-            else
-                exec 'make'
-            endif
-            let &l:makeprg = _makeprg
-        else
-            " otherwise, if a *.latexmain file is found, then use that file to
-            " construct a main file.
-            if mainfname == ''
-				let mainfname = expand("%:t")
-			endif
-            exec 'make '.mainfname
-        endif
-		redraw!
-    endif
+	" if b:fragmentFile exists, then this is a fragment
+	" 	therefore, just compile this file
+	" else
+	" 	if makefile or Makefile exists, then use that
+	" elseif *.latexmain exists 
+	" 	use that
+	" else use current file
+	"
+	" if mainfname exists, then it means it was supplied to RunLaTeX().
+	let mainfname = Tex_GetMainFileName()
+	if exists('b:fragmentFile') || mainfname == ''
+		let mainfname = expand('%:t')
+	endif
+
+	" if a makefile exists, then use that irrespective of whether *.latexmain
+	" exists or not. mainfname is still extracted from *.latexmain (if
+	" possible) log file name depends on the main file which will be compiled.
+	if glob('makefile') != '' || glob('Makefile') != ''
+		let _makeprg = &l:makeprg
+		let &l:makeprg = 'make $*'
+		if exists('s:target')
+			exec 'make '.s:target
+		else
+			exec 'make'
+		endif
+		let &l:makeprg = _makeprg
+	else
+		exec 'make '.mainfname
+	endif
+	redraw!
 
 	let winnum = winnr()
 
@@ -159,10 +147,11 @@ function! RunLaTeX()
 	" command is not fixed.
 	cclose
 	cwindow
-	" remove extension from mainfname
-	let mfnlog = fnamemodify(mainfname, ":r") 
+	" create log file name from mainfname
+	let mfnlog = fnamemodify(mainfname, ":t:r").'.log'
+	call Tex_Debug('mfnlog = '.mfnlog, 'comp')
 	" if we moved to a different window, then it means we had some errors.
-	if winnum != winnr() && glob(mfnlog.'.log') != ''
+	if winnum != winnr()
 		call UpdatePreviewWindow(mfnlog)
 		exe 'nnoremap <buffer> <silent> j j:call UpdatePreviewWindow("'.mfnlog.'")<CR>'
 		exe 'nnoremap <buffer> <silent> k k:call UpdatePreviewWindow("'.mfnlog.'")<CR>'
@@ -188,7 +177,7 @@ endfunction
 " If ViewLaTeX was called with argument "part" show file which name is stored 
 " in g:tfile variable. If g:tfile doesnt exist, no problem. Function is called 
 " as silent. 
-function! ViewLaTeX(size)
+function! ViewLaTeX()
 	if &ft != 'tex'
 		echo "calling ViewLaTeX from a non-tex file"
 		return
@@ -198,7 +187,10 @@ function! ViewLaTeX(size)
 	let curd = getcwd()
 	exec 'cd '.expand("%:p:h")
 	
-	if Tex_GetMainFileName() != ''
+	" If b:fragmentFile is set, it means this file was compiled as a fragment
+	" using Tex_PartCompile, which means that we want to ignore any
+	" *.latexmain or makefile's.
+	if Tex_GetMainFileName() != '' && !exists('b:fragmentFile')
 		let mainfname = Tex_GetMainFileName()
 	else
 		let mainfname = expand("%:p:t:r")
@@ -208,20 +200,12 @@ function! ViewLaTeX(size)
 		" unfortunately, yap does not allow the specification of an external
 		" editor from the command line. that would have really helped ensure
 		" that this particular vim and yap are connected.
-		if a:size == "all" 
-			exec '!start' s:viewer mainfname . '.' . s:target
-		else
-			exec '!start' s:viewer g:tfile . '.' . s:target
-		endif
+		exec '!start' s:viewer mainfname . '.' . s:target
 	elseif has('macunix')
 		if strlen(s:viewer)
 			let s:viewer = '-a ' . s:viewer
 		endif
-		if a:size == "all"
-			execute '!open' s:viewer mainfname . '.' . s:target
-		else
-			execute '!open' s:viewer g:tfile . '.' . s:target
-		endif
+		execute '!open' s:viewer mainfname . '.' . s:target
 	else
 		" taken from Dimitri Antoniou's tip on vim.sf.net (tip #225).
 		" slight change to actually use the current servername instead of
@@ -239,19 +223,11 @@ function! ViewLaTeX(size)
 						\ s:viewer == "kdvi"
 				exec '!kdvi --unique '.mainfname.'.dvi &'
 			else
-				if a:size == "all"
-					exec '!'.s:viewer.' '.mainfname.'.dvi &'
-				else
-					exec '!'.s:viewer.' '.g:tfile.'.dvi &'
-				endif
+				exec '!'.s:viewer.' '.mainfname.'.dvi &'
 			endif
 			redraw!
 		else
-			if a:size == "all"
-				exec '!'.s:viewer.' '.mainfname.'.'.s:target.' &'
-			else
-				exec '!'.s:viewer.' '.g:tfile.'.'.s:target.' &'
-			endif
+			exec '!'.s:viewer.' '.mainfname.'.'.s:target.' &'
 			redraw!
 		endif
 	end
@@ -317,6 +293,45 @@ function! ForwardSearchLaTeX()
 endfunction
 
 " }}}
+" Tex_PartCompile: compiles selected fragment {{{
+" Description: creates a temporary file from the selected fragment of text
+"       prepending the preamble and \end{document} and then asks RunLaTeX() to
+"       compile it.
+function! Tex_PartCompile() range
+
+	call Tex_Debug('getting to Tex_PartCompile', 'comp')
+	" Save position
+	let pos = line('.').' | normal! '.virtcol('.').'|'
+
+	" Create temporary file and save its name into global variable to use in
+	" compiler.vim
+	let tmpfile = tempname().'.tex'
+
+	" If mainfile exists open it in tiny window and extract preamble there,
+	" otherwise do it from current file
+	let mainfile = Tex_GetMainFileName(":p:r")
+	if mainfile != ''
+		exe 'bot 1 split '.mainfile
+		exe '1,/\s*\\begin{document}/w '.tmpfile
+		wincmd q
+	else
+		exe '1,/\s*\\begin{document}/w '.tmpfile
+	endif
+
+	exe a:firstline.','.a:lastline."w! >> ".tmpfile
+
+	" edit the temporary file
+	exec 'drop '.tmpfile
+
+	" append the \end{document} line.
+	$ put ='\end{document}'
+	w
+	
+	" set this as a fragment file.
+	let b:fragmentFile = 1
+
+	silent! call RunLaTeX()
+endfunction " }}}
 
 " ==============================================================================
 " Helper functions for 
@@ -395,9 +410,9 @@ function! PositionPreviewWindow(filename)
 	" searching forward from the beginning of the log file for l.9 will always
 	" land us on the error in a.tex.
 	if errfile != ''
-		exec 'bot pedit +/(\(\f\|\[\|\]\)*'.errfile.'/ '.a:filename.'.log'
+		exec 'bot pedit +/(\(\f\|\[\|\]\)*'.errfile.'/ '.a:filename
 	else
-		exec 'bot pedit +0 '.a:filename.'.log'
+		exec 'bot pedit +0 '.a:filename
 	endif
 	" Goto the preview window
 	" TODO: This is not robust enough. Check that a wincmd j actually takes
@@ -437,15 +452,18 @@ endfunction " }}}
 "   which this error has occured. 
 "
 "   The position is both the correct line number and the column number.
-"
-" TODO: When there are multiple errors on the same line, this only takes you
-"       to the very first error every time. 
 function! GotoErrorLocation(filename)
 
 	" first use vim's functionality to take us to the location of the error
 	" accurate to the line (not column). This lets us go to the correct file
 	" without applying any logic.
 	exec "normal! \<enter>"
+	" If the log file is not found, then going to the correct line number is
+	" all we can do.
+ 	if glob(a:filename) == ''
+		return
+	endif
+
 	let winnum = winnr()
 	" then come back to the quickfix window
 	wincmd w
@@ -498,23 +516,31 @@ function! <SID>SetCompilerMaps()
 	if !hasmapto('RunLaTeX')
 		if has("gui")
 			nnoremap <buffer> <Leader>ll :silent! call RunLaTeX()<cr>
-			vnoremap <buffer> <Leader>lc :call Tex_PartCompilation("f","l","v")<cr>
-			nnoremap <buffer> <Leader>lv :silent! call ViewLaTeX("all")<cr>
-			nnoremap <buffer> <Leader>lp :silent! call ViewLaTeX("part")<cr>
+			vnoremap <buffer> <Leader>ll :call Tex_PartCompile()<cr>
+			nnoremap <buffer> <Leader>lv :silent! call ViewLaTeX()<cr>
 			nnoremap <buffer> <Leader>ls :silent! call ForwardSearchLaTeX()<cr>
 		else
 			nnoremap <buffer> <Leader>ll :call RunLaTeX()<cr>
-			vnoremap <buffer> <Leader>lc :call Tex_PartCompilation("f","l","v")<cr>
-			nnoremap <buffer> <Leader>lv :call ViewLaTeX("all")<cr>
-			nnoremap <buffer> <Leader>lp :call ViewLaTeX("part")<cr>
+			vnoremap <buffer> <Leader>ll :call Tex_PartCompile()<cr>
+			nnoremap <buffer> <Leader>lv :call ViewLaTeX()<cr>
 			nnoremap <buffer> <Leader>ls :call ForwardSearchLaTeX()<cr>
 		end
 	end
+	vnoremap <buffer> <silent> <Plug>Tex_PartCompile :call Tex_PartCompile()<CR>
+	if !hasmapto('<Plug>Tex_PartCompilation',"v")
+		vmap <buffer> <silent> <F10> <Plug>Tex_PartCompile
+	endif
+endif
+
 endfunction 
 " }}}
 
 augroup LatexSuite
-	au LatexSuite User LatexSuiteFileType call <SID>SetCompilerMaps()
+	au LatexSuite User LatexSuiteFileType 
+		\ call Tex_Debug('compiler.vim: Catching LatexSuiteFileType event') | 
+		\ call <SID>SetCompilerMaps()
 augroup END
+
+command! -nargs=0 -range=% TPartCompile :<line1>, <line2> silent! call Tex_PartCompile()
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4

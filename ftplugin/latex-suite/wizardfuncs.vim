@@ -234,66 +234,6 @@ function! s:TexHelp()
 endfunction " }}}
 
 " ==============================================================================
-" Partial compilation and viewing output
-" ============================================================================== 
-"
-noremap <buffer> <silent> <Plug>Tex_PartCompilation :call Tex_PartCompilation("f","l","v")<CR>
-
-if !hasmapto('<Plug>Tex_PartCompilation',"v")
-	vmap <buffer> <silent> <F10> <Plug>Tex_PartCompilation
-endif
-
-command! -nargs=0 -range TPartComp silent! call Tex_PartCompilation(<line1>,<line2>, "c")
-command! -nargs=0 TPartView silent! call ViewLaTeX("part")
-
-" Tex_PartCompilation: compilation of selected fragment {{{
-function! Tex_PartCompilation(fline,lline,mode) range
-
-	" Set partial compilation flag
-	let g:partcomp = 1
-	" Save position
-	let pos = line('.').' | normal! '.virtcol('.').'|'
-
-	" Create temporary file and save its name into global variable to use in
-	" compiler.vim
-	let tmpfile = tempname()
-	let g:tfile = tmpfile
-	let tmpfile = tmpfile.'.tex'
-
-	"Create temporary file
-	" If mainfile exists open it in tiny window and extract preamble there,
-	" otherwise do it from current file
-	let mainfile = Tex_GetMainFileName(":p:r")
-	if mainfile != ''
-		exe 'bot 1 split '.mainfile
-		exe '1,/\s*\\begin{document}/w '.tmpfile
-		wincmd q
-	else
-		exe '1,/\s*\\begin{document}/w '.tmpfile
-	endif
-	" Write range to file, check how it works with marks, range and //,//
-	if a:mode == 'v'
-		exe a:firstline.','.a:lastline."w! >> ".tmpfile
-	else
-		exe a:fline.','.a:lline."w! >> ".tmpfile
-	endif
-	" Add \end{document} to temporary file. Is it really the only way?
-	let _clipboard = @c
-	let @c = '\end{document}'
-	exe 'redir >> '.tmpfile
-	echo @c
-	redir END
-	let @c = _clipboard
-
-	silent! call RunLaTeX()
-
-	" Unlet partial compilation flag for not interfering with normal
-	" compilation. Maybe argument for RunLaTeX() is better?
-	unlet g:partcomp
-
-endfunction " }}}
-
-" ==============================================================================
 " Tables of shortcuts
 " ============================================================================== 
 "
