@@ -25,6 +25,12 @@ nmap <silent> <plug> i
 
 let g:Tex_package_supported = ''
 let g:Tex_package_detected = ''
+" Remember the defaults because we want g:Tex_PromptedEnvironments to contain
+" in addition to the default, \newenvironments, and the \newenvironments might
+" change...
+let g:Tex_PromptedEnvironmentsDefault = g:Tex_PromptedEnvironments
+let g:Tex_PromptedCommandsDefault = g:Tex_PromptedCommands
+
 
 " Tex_pack_check: creates the package menu and adds to 'dict' setting. {{{
 "
