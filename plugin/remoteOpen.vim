@@ -49,6 +49,7 @@ function! RemoteOpen(arglist)
 		let linenum = 1
 		let filename = matchstr(a:arglist, '^\s*\zs.*\ze')
 	endif
+	let filename = escape(filename, ' ')
 	call Tex_Debug("linenum = ".linenum.', filename = '.filename, "ropen")
 
 	" If there is no clientserver functionality, then just open in the present
