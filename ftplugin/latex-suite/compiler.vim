@@ -2,7 +2,7 @@
 " 	     File: compiler.vim
 "      Author: Srinath Avadhanula
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Tue Nov 26 10:00 PM 2002 PST
+" Last Change: Tue Nov 26 11:00 PM 2002 PST
 " 
 "  Description: functions for compiling/viewing/searching latex documents
 "=============================================================================
@@ -281,7 +281,9 @@ function! PositionPreviewWindow(filename)
 				break
 			else
 				" otherwise, search for the next line which contains the same
-				" error pattern again.
+				" error pattern again. goto the end of the current line so we
+				" dont count this line again.
+				normal! $
 				call search(errpat, 'W')
 			endif
 		endwhile
