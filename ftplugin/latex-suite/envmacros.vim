@@ -558,7 +558,9 @@ function! Tex_PutEnvironment(env)
 		" let g:Tex_Env_theorem = "\\begin{theorem}\<CR><++>\<CR>\\end{theorem}"
 		" This will effectively over-write the default definition of the
 		" theorem environment which uses a \label.
-		if exists("g:Tex_Env_{'".a:env."'}")
+		if exists("b:Tex_Env_{'".a:env."'}")
+			return IMAP_PutTextWithMovement(b:Tex_Env_{a:env})
+		elseif exists("g:Tex_Env_{'".a:env."'}")
 			return IMAP_PutTextWithMovement(g:Tex_Env_{a:env})
 		elseif a:env =~ 'equation*\|eqnarray*\|theorem\|lemma\|equation\|eqnarray\|align\*\|align\>\|multline'
 			let g:aa = a:env
@@ -869,6 +871,11 @@ endfunction " }}}
 " ==============================================================================
 " Implementation of Fast Environment commands for LaTeX commands 
 " ==============================================================================
+" Define certain commonly used command definitions {{{
+"
+TexLet g:Tex_Com_{'newtheorem'} = '\newtheorem{<+name+>}{<+caption+>}[<+within+>]'
+TexLet g:Tex_Com_{'frac'} = '\frac{<+n+>}{<+d+>}<++>'
+" }}}
 " PromptForCommand: prompts for a command {{{
 " Description: 
 function! PromptForCommand(ask)
@@ -891,6 +898,12 @@ endfunction " }}}
 "
 function! Tex_DoCommand(...)
 	if a:0 < 1
+		if getline('.') != ''
+			let lastword = expand('<cword>')
+			if lastword != ''
+				return substitute(lastword, '.', "\<bs>", 'g').Tex_PutCommand(lastword)
+			endif
+		endif
 		let com = PromptForCommand('Choose a command to insert: ')
 		if com != ''
 			return Tex_PutCommand(com)
@@ -905,9 +918,7 @@ endfunction " }}}
 " Description: 
 "   Based on input argument, it calls various specialized functions.
 function! Tex_PutCommand(com)
-
 	if exists("s:isvisual") && s:isvisual == "yes"
-
 		let s:isvisual = 'no'
 
 		if a:com == '$'
@@ -917,17 +928,17 @@ function! Tex_PutCommand(com)
 		else
 			return VEnclose("\\".a:com.'{', '}', "\\".a:com.'{', '}')
 		endif
-
 	else
-
-		if a:com == '$'
+		if exists('b:Tex_Com_{"'.a:com.'"}')
+			return IMAP_PutTextWithMovement(b:Tex_Com_{a:com})
+		elseif exists('g:Tex_Com_{"'.a:com.'"}')
+			return IMAP_PutTextWithMovement(g:Tex_Com_{a:com})
+		elseif a:com == '$'
 			return IMAP_PutTextWithMovement('$<++>$')
 		else
 			return IMAP_PutTextWithMovement("\\".a:com.'{<++>}<++>')
 		endif
-
 	endif
-
 endfunction " }}}
 " Mapping the <F7> key to prompt/insert for command {{{
 " and <S-F7> to prompt/replace command
@@ -940,7 +951,6 @@ if g:Tex_PromptedCommands != ''
 
 	let b:DoubleDollars = 0
 
-	" Provide only <plug>s here. main.vim will create the actual maps.
 	inoremap <silent> <Plug>Tex_FastCommandInsert  <C-r>=Tex_FastCommandInsert('no')<cr>
 	nnoremap <silent> <Plug>Tex_FastCommandInsert  i<C-r>=Tex_FastCommandInsert('no')<cr>
 	inoremap <silent> <Plug>Tex_FastCommandChange  <C-O>:call Tex_ChangeCommand('no')<CR>
@@ -951,7 +961,6 @@ if g:Tex_PromptedCommands != ''
 	" Description:
 	"	Here we are not solving if we are in preamble, behaviour is always the
 	"	same. 
-	"
 	function! Tex_FastCommandInsert(isvisual)
 
 		let start_line = line('.')
