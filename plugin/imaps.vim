@@ -313,7 +313,7 @@ function! IMAP_PutTextWithMovement(text)
 	" search will do...
 	elseif fc == 0
 		let initial = ""
-		let movement = "\<C-\>\<C-N>?ä\<cr>:call SAImaps_RemoveLastHistoryItem()\<cr>s"
+		let movement = "\<C-\>\<C-N>?ä\<cr>" . s:RemoveLastHistoryItem . "\<cr>s"
 
 	" however, if its somewhere in the middle, then we need to go back to the
 	" beginning of the pattern and then do a forward lookup from that point.
@@ -330,10 +330,7 @@ function! IMAP_PutTextWithMovement(text)
 
 		" we needed 2 searches to get here. remove them from the search
 		" history.
-		let movement = movement.":call SAImaps_RemoveLastHistoryItem()\<cr>"
-		" BNF 12 Nov 2002:  Functions never add more than one item to the searcg
-		" history.
-		" let movement = movement.":call SAImaps_RemoveLastHistoryItem()\<cr>"
+		let movement = movement . s:RemoveLastHistoryItem . "\<cr>"
 
 		" if its a ä or «», then just delete it
 		if text[fc] == 'ä'
@@ -468,7 +465,7 @@ function! VEnclose(vstart, vend, VStart, VEnd)
 		" this is to restore the r register.
 		let @r = _r
 		" and finally, this is to restore the search history.
-		call SAImaps_RemoveLastHistoryItem()
+		execute s:RemoveLastHistoryItem
 
 	else
 
@@ -553,13 +550,9 @@ fun! <SID>Strntok(s, tok, n)
 endfun
 
 " }}}
-" SAImaps_RemoveLastHistoryItem: removes last search item from search history {{{
-" Description: This function needs to be globally visible because its
-"              called from outside the script during expansion.
-function! SAImaps_RemoveLastHistoryItem()
-  call histdel("/", -1)
-  let @/ = histget("/", -1)
-endfunction
+" s:RemoveLastHistoryItem: removes last search item from search history {{{
+" Description: Execute this string to clean up the search history.
+let s:RemoveLastHistoryItem = ':call histdel("/", -1)|let @/=histget("/", -1)'
 
 " }}}
 
