@@ -1,7 +1,7 @@
 " ==============================================================================
 " Author: Carl Mueller
 " 		  (incorporated into latex-suite by Srinath Avadhanula)
-" Last Change: Fri Dec 06 06:00 PM 2002 PST
+" Last Change: Mon Dec 09 12:00 PM 2002 PST
 " Desciption:
 " 	This ftplugin provides the following maps:
 " . <M-b> encloses the previous character in \mathbf{}
@@ -47,13 +47,13 @@ let b:did_brackets = 1
 " ============================================================================== 
 " {{{
 
-if !hasmapto('Tex_MathBF')
+if !hasmapto('Tex_MathBF', 'i') && mapcheck('<M-b>', 'i') == ''
 	inoremap <buffer> <silent> <M-b> <C-r>=Tex_MathBF()<CR>
 endif
-if !hasmapto('Tex_MathCal') && mapcheck('<M-c>') == ''
+if !hasmapto('Tex_MathCal', 'i') && mapcheck('<M-c>', 'i') == ''
 	inoremap <buffer> <silent> <M-c> <C-R>=Tex_MathCal()<CR>
 endif
-if !hasmapto('Tex_LeftRight')
+if !hasmapto('Tex_LeftRight', 'i') && mapcheck('<M-l>', 'i') == ''
 	inoremap <buffer> <silent> <M-l> <C-r>=Tex_LeftRight()<CR>
 endif
 
