@@ -152,8 +152,8 @@ function! ViewLaTeX()
 		" Using an option for specifying the editor in the command line
 		" because that seems to not work on older bash'es.
 		if s:target == 'dvi'
-			if exists('g:Tex_UseEditorSettingInDVIViewer') && \
-				g:Tex_UseEditorSettingInDVIViewer == 1
+			if exists('g:Tex_UseEditorSettingInDVIViewer') &&
+						\ g:Tex_UseEditorSettingInDVIViewer == 1
 				exec '!'.s:viewer.' -editor "gvim --servername '.v:servername.' --remote-silent +%l %f" '.mainfname.'.dvi &'
 			else
 				exec '!'.s:viewer.' '.mainfname.'.dvi &'
