@@ -3,7 +3,7 @@
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
 "		   URL: 
-"  Last Change: Fri Dec 06 01:00 AM 2002 PST
+"  Last Change: sob gru 07 12:00  2002 C
 "
 " Help: 
 " Changes: {{{
@@ -396,13 +396,19 @@ function! Tex_ChooseFile(dialog)
 	echo a:dialog
 	let filenames = substitute(files, "\\v(^|\n)", "\\=submatch(0).Tex_IncrementNumber(1).' : '", 'g')
 	echo filenames
-	let num = input('Enter Choice :')
-	if num == ''
-		let num = 1
+	let choice = input('Enter Choice : ')
+	let g:choice = choice
+	if choice == ''
+		return ''
 	endif
-	let retval = Tex_Strntok(files, "\n", num)
+	if choice =~ '^\s*\d\+\s*$'
+		let retval = Tex_Strntok(files, "\n", choice)
+	else
+		let filescomma = substitute(files, "\n", ",", "g")
+		let retval = GetListMatchItem(filescomma, choice)
+	endif
 	if retval == ''
-		let ret = Tex_Strntok(files, "\n", 1)
+		return ''
 	endif
 	return retval
 endfunction 
