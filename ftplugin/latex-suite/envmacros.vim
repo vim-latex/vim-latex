@@ -529,7 +529,9 @@ endfunction " }}}
 function! Tex_DoEnvironment(...)
 	if a:0 < 1
 		let env = matchstr(getline('.'), '^\s*\zs\w*\*\=\ze\s*$')
-		if env == ''
+		" If in current line is more than one word or in visual mode
+		" ignore contents of line and prompt for environment
+		if env == '' || (exists('s:isvisual') && s:isvisual == 'yes')
 			let env = PromptForEnvironment('Choose which environment to insert: ')
 			if env != ''
 				return Tex_PutEnvironment(env)
