@@ -10,32 +10,27 @@
 " Tex_SetTeXCompilerTarget: sets the 'target' for the next call to Tex_RunLaTeX() {{{
 function! Tex_SetTeXCompilerTarget(type, target)
 	if a:target == ''
-		if g:Tex_DefaultTargetFormat == 'dvi'
-			let target = input('Enter the target ([dvi]/ps/pdf/...) for '.a:type.'r: ')
-		elseif g:Tex_DefaultTargetFormat == 'ps'
-			let target = input('Enter the target (dvi/[ps]/pdf/...) for '.a:type.'r: ')
-		elseif g:Tex_DefaultTargetFormat =~ 'pdf'
-			let target = input('Enter the target (dvi/ps/[pdf]/...) for '.a:type.'r: ')
-		else
-			let target = input('Enter the target (dvi/ps/pdf/['.g:Tex_DefaultTargetFormat.']) for '.a:type.'r: ')
-		endif
+		let target = Tex_GetVarValue('Tex_DefaultTargetFormat')
+		let target = input('Enter the target format for '.a:type.'r: ', target)
 	else
 		let target = a:target
 	endif
 	if target == ''
 		let target = 'dvi'
 	endif
-	if exists('g:Tex_'.a:type.'Rule_'.target)
+
+	let targetRule = Tex_GetVarValue('Tex_'.a:type.'Rule_'.target)
+	if targetRule != ''
 		if a:type == 'Compile'
-			let &l:makeprg = escape(g:Tex_CompileRule_{target}, g:Tex_EscapeChars)
+			let &l:makeprg = escape(targetRule, Tex_GetVarValue('Tex_EscapeChars'))
 		elseif a:type == 'View'
-			exec 'let s:viewer = g:Tex_'.a:type.'Rule_'.target
+			let s:viewer = targetRule
 		endif
 		let s:target = target
 	else
 		let curd = getcwd()
 		exe 'cd '.expand('%:p:h')
-		if glob('makefile*') == '' && glob('Makefile*') == ''
+		if !Tex_GetVarValue('Tex_UseMakefile') || (glob('makefile*') == '' && glob('Makefile*') == '')
 			if has('gui_running')
 				call confirm(
 					\'No '.a:type.' rule defined for target '.target."\n".
@@ -52,7 +47,7 @@ function! Tex_SetTeXCompilerTarget(type, target)
 					\)
 			endif
 		else
-			echomsg 'assuming target is for makefile'
+			echomsg 'Assuming target is for makefile'
 			let s:target = target
 		endif
 		exe 'cd '.curd
@@ -61,21 +56,15 @@ endfunction
 
 function! SetTeXTarget(...)
 	if a:0 < 1
-		if g:Tex_DefaultTargetFormat == 'dvi'
-			let target = input('Enter the target for compiler and viewer ([dvi]/ps/pdf/...): ')
-		elseif g:Tex_DefaultTargetFormat == 'ps'
-			let target = input('Enter the target for compiler and viewer (dvi/[ps]/pdf/...): ')
-		elseif g:Tex_DefaultTargetFormat =~ 'pdf'
-			let target = input('Enter the target for compiler and viewer (dvi/ps/[pdf]/...): ')
-		else
-			let target = input('Enter the target for compiler and viewer (dvi/ps/pdf/['.g:Tex_DefaultTargetFormat.']): ')
-		endif
+		let target = Tex_GetVarValue('Tex_DefaultTargetFormat')
+		let target = input('Enter the target format for compiler and viewer: ', target)
 	else
 		let target = a:1
 	endif
 	if target == ''
 		let target = 'dvi'
 	endif
+
 	call Tex_SetTeXCompilerTarget('Compile', target)
 	call Tex_SetTeXCompilerTarget('View', target)
 endfunction
@@ -118,7 +107,7 @@ function! Tex_CompileLatex()
 	" irrespective of whether *.latexmain exists or not. mainfname is still
 	" extracted from *.latexmain (if possible) log file name depends on the
 	" main file which will be compiled.
-	if g:Tex_UseMakefile && (glob('makefile') != '' || glob('Makefile') != '')
+	if Tex_GetVarValue('Tex_UseMakefile') && (glob('makefile') != '' || glob('Makefile') != '')
 		let _makeprg = &l:makeprg
 		let &l:makeprg = 'make $*'
 		if exists('s:target')
@@ -170,7 +159,7 @@ function! Tex_SetupErrorWindow()
 
 		" resize the window to just fit in with the number of lines.
 		exec ( line('$') < 4 ? line('$') : 4 ).' wincmd _'
-        if exists('g:Tex_GotoError') && g:Tex_GotoError == 1
+        if Tex_GetVarValue('Tex_GotoError') == 1
  	        call Tex_GotoErrorLocation(mfnlog)
         else
 			exec s:origwinnum.' wincmd w'
@@ -200,13 +189,13 @@ function! Tex_RunLaTeX()
 	" first get the dependency chain of this format.
 	call Tex_Debug("Tex_RunLaTeX: compiling to target [".s:target."]", "comp")
 
-	let dependency = s:target
-	if exists('g:Tex_FormatDependency_'.s:target)
-		if g:Tex_FormatDependency_{s:target} !~ ','.s:target.'$'
-			let dependency = g:Tex_FormatDependency_{s:target}.','.s:target
-		else
-			let dependency = g:Tex_FormatDependency_{s:target}
+	if Tex_GetVarValue('Tex_FormatDependency_'.s:target) != ''
+		let dependency = Tex_GetVarValue('Tex_FormatDependency_'.s:target)
+		if dependency !~ ','.s:target.'$'
+			let dependency = dependency.','.s:target
 		endif
+	else
+		let dependency = s:target
 	endif
 
 	call Tex_Debug('Tex_RunLaTeX: getting dependency chain = ['.dependency.']', 'comp')
@@ -219,7 +208,7 @@ function! Tex_RunLaTeX()
 		call Tex_SetTeXCompilerTarget('Compile', s:target)
 		call Tex_Debug('Tex_RunLaTeX: setting target to '.s:target, 'comp')
 
-		if g:Tex_MultipleCompileFormats =~ '\<'.s:target.'\>'
+		if Tex_GetVarValue('Tex_MultipleCompileFormats') =~ '\<'.s:target.'\>'
 			call Tex_Debug("Tex_RunLaTeX: compiling file multiple times via Tex_CompileMultipleTimes", "comp")
 			call Tex_CompileMultipleTimes()
 		else
@@ -290,14 +279,12 @@ function! Tex_ViewLaTeX()
 		" Using an option for specifying the editor in the command line
 		" because that seems to not work on older bash'es.
 		if s:target == 'dvi'
-			if exists('g:Tex_UseEditorSettingInDVIViewer') &&
-						\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
+			if Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1 &&
 						\ exists('v:servername') &&
 						\ (s:viewer == "xdvi" || s:viewer == "xdvik")
 				let execString = 'silent! !'.s:viewer.' -editor "gvim --servername '.v:servername.
 							\ ' --remote-silent +\%l \%f" '.mainfname.'.dvi &'
-			elseif exists('g:Tex_UseEditorSettingInDVIViewer') &&
-						\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
+			elseif Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1
 						\ s:viewer == "kdvi"
 				let execString = 'silent! !kdvi --unique '.mainfname.'.dvi &'
 			else
@@ -341,10 +328,10 @@ function! Tex_ForwardSearchLaTeX()
 	" some newer versions of xdvi) on unices. Therefore forward searching will
 	" automatically open the DVI viewer irrespective of what the user chose as
 	" the default view format.
-	if !exists('g:Tex_ViewRule_dvi')
+	if Tex_GetVarValue('Tex_ViewRule_dvi') == ''
 		return
 	endif
-	let viewer = g:Tex_ViewRule_dvi
+	let viewer = Tex_GetVarValue('Tex_ViewRule_dvi')
 	
 	let curd = getcwd()
 
@@ -361,8 +348,7 @@ function! Tex_ForwardSearchLaTeX()
 		let execString = 'silent! !start '. viewer.' -s '.line('.').expand('%:p:t').' '.mainfnameRoot
 
 	else
-		if exists('g:Tex_UseEditorSettingInDVIViewer') &&
-					\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
+		if Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1 &&
 					\ exists('v:servername') &&
 					\ (viewer == "xdvi" || viewer == "xdvik") 
 
@@ -370,9 +356,7 @@ function! Tex_ForwardSearchLaTeX()
 						\ ' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.
 						\ mainfnameRoot.'.dvi &'
 
-		elseif exists('g:Tex_UseEditorSettingInDVIViewer') &&
-					\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
-					\ viewer == "kdvi"
+		elseif Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1 && viewer == "kdvi"
 
 			let execString = 'silent! !kdvi --unique file:'.mainfnameRoot.'.dvi\#src:'.line('.').expand("%").' &'
 
@@ -413,17 +397,17 @@ function! Tex_PartCompile() range
 
 	" Remember all the temp files and for each temp file created, remember
 	" where the temp file came from.
-	let g:Tex_NumTempFiles = (exists('g:Tex_NumTempFiles') ? g:Tex_NumTempFiles + 1 : 1)
-	let g:Tex_TempFiles = (exists('g:Tex_TempFiles') ? g:Tex_TempFiles : '')
+	let s:Tex_NumTempFiles = (exists('s:Tex_NumTempFiles') ? s:Tex_NumTempFiles + 1 : 1)
+	let s:Tex_TempFiles = (exists('s:Tex_TempFiles') ? s:Tex_TempFiles : '')
 		\ . tmpfile."\n"
-	let g:Tex_TempFile_{g:Tex_NumTempFiles} = tmpfile
+	let s:Tex_TempFile_{s:Tex_NumTempFiles} = tmpfile
 	" TODO: For a function Tex_RestoreFragment which restores a temp file to
 	"       its original location.
-	let g:Tex_TempFileOrig_{g:Tex_NumTempFiles} = expand('%:p')
-	let g:Tex_TempFileRange_{g:Tex_NumTempFiles} = a:firstline.','.a:lastline
+	let s:Tex_TempFileOrig_{s:Tex_NumTempFiles} = expand('%:p')
+	let s:Tex_TempFileRange_{s:Tex_NumTempFiles} = a:firstline.','.a:lastline
 
 	" Set up an autocmd to clean up the temp files when Vim exits.
-	if g:Tex_RemoveTempFiles
+	if Tex_GetVarValue('Tex_RemoveTempFiles')
 		augroup RemoveTmpFiles
 			au!
 			au VimLeave * :call Tex_RemoveTempFiles()
@@ -456,12 +440,12 @@ endfunction " }}}
 "              visually selected text are created. These files need to be
 "              removed when Vim exits to avoid "file leakage".
 function! Tex_RemoveTempFiles()
-	if !exists('g:Tex_NumTempFiles') || !g:Tex_RemoveTempFiles
+	if !exists('s:Tex_NumTempFiles') || !Tex_GetVarValue('Tex_RemoveTempFiles')
 		return
 	endif
 	let i = 1
-	while i <= g:Tex_NumTempFiles
-		let tmpfile = g:Tex_TempFile_{i}
+	while i <= s:Tex_NumTempFiles
+		let tmpfile = s:Tex_TempFile_{i}
 		" Remove the tmp file and all other associated files such as the
 		" .log files etc.
 		call Tex_DeleteFile(fnamemodify(tmpfile, ':p:r').'.*')
@@ -484,8 +468,8 @@ function! Tex_CompileMultipleTimes()
 	" First ignore undefined references and the 
 	" "rerun to get cross-references right" message from 
 	" the compiler output.
-	let origlevel = g:Tex_IgnoreLevel
-	let origpats = g:Tex_IgnoredWarnings
+	let origlevel = Tex_GetVarValue('Tex_IgnoreLevel')
+	let origpats = Tex_GetVarValue('Tex_IgnoredWarnings')
 
 	let g:Tex_IgnoredWarnings = g:Tex_IgnoredWarnings."\n"
 		\ . 'Reference %.%# undefined'."\n"
@@ -540,8 +524,8 @@ function! Tex_CompileMultipleTimes()
 
 			let biblinesBefore = Tex_CatFile(bibFileName)
 
-			echomsg "Running '".g:Tex_BibtexFlavor."' ..."
-			let temp_mp = &mp | let &mp = g:Tex_BibtexFlavor
+			echomsg "Running '".Tex_GetVarValue('Tex_BibtexFlavor')."' ..."
+			let temp_mp = &mp | let &mp = Tex_GetVarValue('Tex_BibtexFlavor')
 			exec 'silent! make '.mainFileName_root
 			let &mp = temp_mp
 
