@@ -105,6 +105,7 @@ function! Tex_completion(what, where)
 			" help-docs say. This was expected. So use something improbable.
 			" TODO: Is there a way to clear the search-history w/o making a
 			"       useless, inefficient search?
+			let s:prefix = matchstr(s:prefix, '\([^,]\+,\)\+\zs\([^,]\+\)\ze$')
 			silent! grep! ____HIGHLY_IMPROBABLE___ %
 			if g:Tex_RememberCiteSearch && exists('s:citeSearchHistory')
 				call <SID>Tex_c_window_setup(s:citeSearchHistory)
