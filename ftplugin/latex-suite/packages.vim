@@ -3,7 +3,7 @@
 "      Author: Mikolaj Machowski
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: Sun May 05 05:00 PM 2002 PDT
+" Last Change: ¶ro maj 08 07:00  2002 U
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -20,9 +20,9 @@ let s:p_menu_lev = g:Tex_PackagesMenuLocation
 let s:path = expand("<sfile>:p:h")
 let s:menu_div = "20"
 
-com! -nargs=* TexPackage call Tex_pack_one(<f-args>)
-com! -nargs=0 TexPackageUpdate :silent! call Tex_pack_one(expand("<cword>"))
-com! -nargs=0 TexPackageUpdateAll :silent! call Tex_pack_updateall()
+com! -nargs=* TPackage call Tex_pack_one(<f-args>)
+com! -nargs=0 TPackageUpdate :silent! call Tex_pack_one(expand("<cword>"))
+com! -nargs=0 TPackageUpdateAll :silent! call Tex_pack_updateall()
 
 let g:Tex_package_supported = ""
 let g:Tex_package_detected = ""
