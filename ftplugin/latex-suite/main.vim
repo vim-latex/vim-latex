@@ -3,7 +3,7 @@
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
 "		   URL: 
-"  Last Change: Fri Dec 06 12:00 AM 2002 PST
+"  Last Change: Fri Dec 06 01:00 AM 2002 PST
 "
 " Help: 
 " Changes: {{{
@@ -221,102 +221,116 @@ end
 " Smart key-mappings
 " ============================================================================== 
 " TexQuotes: inserts `` or '' instead of " {{{
-" Taken from texmacro.vim by Benji Fisher <benji@e-math.AMS.org>
-" TODO:  Deal with nested quotes.
-function! s:TexQuotes()
-	let l = line(".")
-	let c = col(".")
-	let restore_cursor = l . "G" . virtcol(".") . "|"
-	normal! H
-	let restore_cursor = "normal!" . line(".") . "Gzt" . restore_cursor
-	execute restore_cursor
-	if synIDattr(synID(l, c, 1), "name") =~ "^texMath"
-		\ || (c > 1 && getline(l)[c-2] == '\')
-		return '"'
-	endif
-	let open = exists("g:Tex_SmartQuoteOpen") ? g:Tex_SmartQuoteOpen : "``"
-	let close = exists("g:Tex_SmartQuoteClose") ? g:Tex_SmartQuoteClose : "''"
-	let boundary = '\|'
-	if exists("s:TeX_strictquote")
-		if( s:TeX_strictquote == "open" || s:TeX_strictquote == "both" )
-			let boundary = '\<' . boundary
+if g:Tex_SmartKeyQuote
+
+	" TexQuotes: inserts `` or '' instead of
+	" Taken from texmacro.vim by Benji Fisher <benji@e-math.AMS.org>
+	" TODO:  Deal with nested quotes.
+	function! s:TexQuotes()
+		let l = line(".")
+		let c = col(".")
+		let restore_cursor = l . "G" . virtcol(".") . "|"
+		normal! H
+		let restore_cursor = "normal!" . line(".") . "Gzt" . restore_cursor
+		execute restore_cursor
+		if synIDattr(synID(l, c, 1), "name") =~ "^texMath"
+			\ || (c > 1 && getline(l)[c-2] == '\')
+			return '"'
 		endif
-		if( s:TeX_strictquote == "close" || s:TeX_strictquote == "both" )
-			let boundary = boundary . '\>'
-		endif
-	endif
-	let q = open
-	while 1	" Look for preceding quote (open or close), ignoring
-		" math mode and '\"' .
-		" execute 'normal ?^$\|"\|' . open . boundary . close . "\r"
-		call search(open . boundary . close . '\|^$\|"', "bw")
-		if synIDattr(synID(line("."), col("."), 1), "name") !~ "^texMath"
-			\ && (col(".") == 1 || getline(".")[col(".")-2] != '\')
-			break
-		endif
-	endwhile
-	" Now, test whether we actually found a _preceding_ quote; if so, is it
-	" and open quote?
-	if ( line(".") < l || line(".") == l && col(".") < c )
-		if strlen(getline("."))
-			if ( getline(".")[col(".")-1] == open[0] )
-				let q = close
+		let open = exists("g:Tex_SmartQuoteOpen") ? g:Tex_SmartQuoteOpen : "``"
+		let close = exists("g:Tex_SmartQuoteClose") ? g:Tex_SmartQuoteClose : "''"
+		let boundary = '\|'
+		if exists("s:TeX_strictquote")
+			if( s:TeX_strictquote == "open" || s:TeX_strictquote == "both" )
+				let boundary = '\<' . boundary
+			endif
+			if( s:TeX_strictquote == "close" || s:TeX_strictquote == "both" )
+				let boundary = boundary . '\>'
 			endif
 		endif
-	endif
-	" Return to line l, column c:
-	execute restore_cursor
-	return q
-endfunction
+		let q = open
+		while 1	" Look for preceding quote (open or close), ignoring
+			" math mode and '\"' .
+			" execute 'normal ?^$\|"\|' . open . boundary . close . "\r"
+			call search(open . boundary . close . '\|^$\|"', "bw")
+			if synIDattr(synID(line("."), col("."), 1), "name") !~ "^texMath"
+				\ && (col(".") == 1 || getline(".")[col(".")-2] != '\')
+				break
+			endif
+		endwhile
+		" Now, test whether we actually found a _preceding_ quote; if so, is it
+		" and open quote?
+		if ( line(".") < l || line(".") == l && col(".") < c )
+			if strlen(getline("."))
+				if ( getline(".")[col(".")-1] == open[0] )
+					let q = close
+				endif
+			endif
+		endif
+		" Return to line l, column c:
+		execute restore_cursor
+		return q
+	endfunction
+
+endif
 " }}}
 " SmartBS: smart backspacing {{{
-" SmartBS lets you treat diacritic characters (those \'{a} thingies) as a
-" single character. This is useful for example in the following situation:
-"
-" \v{s}\v{t}astn\'{y}    ('happy' in Slovak language :-) )
-" If you will delete this normally (without using smartBS() function), you
-" must press <BS> about 19x. With function smartBS() you must press <BS> only
-" 7x. Strings like "\v{s}", "\'{y}" are considered like one character and are
-" deleted with one <BS>.
-"
-let s:smartBS_pat = '\(' .
-			\ "\\\\[\"^'=v]{\\S}"      . '\|' .
-			\ "\\\\[\"^'=]\\S"         . '\|' .
-			\ '\\v \S'                 . '\|' .
-			\ "\\\\[\"^'=v]{\\\\[iI]}" . '\|' .
-			\ '\\v \\[iI]'             . '\|' .
-			\ '\\q \S'                 . '\|' .
-			\ '\\-'                    .
-			\ '\)' . "$"
-fun! s:SmartBS_pat()
-	return s:smartBS_pat
-endfun
+if g:Tex_SmartKeyBS 
 
-" This function comes from Benji Fisher <benji@e-math.AMS.org>
-" http://vim.sourceforge.net/scripts/download.php?src_id=409 
-" (modified/patched by Lubomir Host 'rajo' <host8 AT keplerDOTfmphDOTuniba.sk>)
-function! s:SmartBS(pat)
-	let init = strpart(getline("."), 0, col(".")-1)
-	let matchtxt = matchstr(init, a:pat)
-	if matchtxt != ''
-		let bstxt = substitute(matchtxt, '.', "\<bs>", 'g')
-		return bstxt
-	else
-		return "\<bs>"
-	endif
-endfun
-" }}}
+	" SmartBS: smart backspacing
+	" SmartBS lets you treat diacritic characters (those \'{a} thingies) as a
+	" single character. This is useful for example in the following situation:
+	"
+	" \v{s}\v{t}astn\'{y}    ('happy' in Slovak language :-) )
+	" If you will delete this normally (without using smartBS() function), you
+	" must press <BS> about 19x. With function smartBS() you must press <BS> only
+	" 7x. Strings like "\v{s}", "\'{y}" are considered like one character and are
+	" deleted with one <BS>.
+	"
+	let s:smartBS_pat = '\(' .
+		\ "\\\\[\"^'=v]{\\S}"      . '\|' .
+		\ "\\\\[\"^'=]\\S"         . '\|' .
+		\ '\\v \S'                 . '\|' .
+		\ "\\\\[\"^'=v]{\\\\[iI]}" . '\|' .
+		\ '\\v \\[iI]'             . '\|' .
+		\ '\\q \S'                 . '\|' .
+		\ '\\-'                    .
+		\ '\)' . "$"
+	fun! s:SmartBS_pat()
+		return s:smartBS_pat
+	endfun
+
+	" This function comes from Benji Fisher <benji@e-math.AMS.org>
+	" http://vim.sourceforge.net/scripts/download.php?src_id=409 
+	" (modified/patched by Lubomir Host 'rajo' <host8 AT keplerDOTfmphDOTuniba.sk>)
+	function! s:SmartBS(pat)
+		let init = strpart(getline("."), 0, col(".")-1)
+		let matchtxt = matchstr(init, a:pat)
+		if matchtxt != ''
+			let bstxt = substitute(matchtxt, '.', "\<bs>", 'g')
+			return bstxt
+		else
+			return "\<bs>"
+		endif
+	endfun
+	
+endif " }}}
 " SmartDots: inserts \cdots instead of ... in math mode otherwise \ldots {{{
-function! <SID>SmartDots()
-	if synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^texMath'
-		\&& strpart(getline('.'), col('.')-3, 2) == '..' 
-		return "\<bs>\<bs>\\cdots"
-	elseif strpart(getline('.'), col('.')-3, 2) == '..' 
-		return "\<bs>\<bs>\\ldots"
-	else
-		return '.'
-	endif
-endfunction " }}}
+if g:Tex_SmartKeyDot
+
+	function! <SID>SmartDots()
+		if synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^texMath'
+			\&& strpart(getline('.'), col('.')-3, 2) == '..' 
+			return "\<bs>\<bs>\\cdots"
+		elseif strpart(getline('.'), col('.')-3, 2) == '..' 
+			return "\<bs>\<bs>\\ldots"
+		else
+			return '.'
+		endif
+	endfunction 
+
+endif
+" }}}
 
 " ==============================================================================
 " Helper Functions
@@ -441,9 +455,16 @@ function! <SID>SetTeXOptions()
 	endif
 
 	" smart functions
-	inoremap <buffer> <silent> " "<Left><C-R>=<SID>TexQuotes()<CR><Del>
-	inoremap <buffer> <silent> <BS> <C-R>=<SID>SmartBS(<SID>SmartBS_pat())<CR>
-	inoremap <buffer> <silent> . <C-R>=<SID>SmartDots()<CR>
+	if g:Tex_SmartKeyQuote 
+		inoremap <buffer> <silent> " "<Left><C-R>=<SID>TexQuotes()<CR><Del>
+	endif
+	if g:Tex_SmartKeyBS
+		inoremap <buffer> <silent> <BS> <C-R>=<SID>SmartBS(<SID>SmartBS_pat())<CR>
+	endif
+	if g:Tex_SmartKeyDot
+		inoremap <buffer> <silent> . <C-R>=<SID>SmartDots()<CR>
+	endif
+
 	" viewing/searching
 	if !hasmapto('RunLaTeX')
 		if has("gui")
