@@ -4,7 +4,7 @@
 "         WWW: http://robotics.eecs.berkeley.edu/~srinath/vim/.vim/imaps.vim
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
-" Last Change: Mon Apr 15 09:00 PM 2002 PDT
+" Last Change: Wed May 01 07:00 PM 2002 PDT
 " 
 " Documentation: {{{
 "
@@ -361,6 +361,8 @@ if !hasmapto('IMAP_Jumpfunc')
 end
 " }}}
 
+nmap <silent> <script> <plug>«SelectRegion» `<v`>
+
 " ============================================================================== 
 " enclosing selected region.
 " ============================================================================== 
@@ -369,32 +371,59 @@ end
 "              selection or visual characterwise selection. preserves the
 "              marks and search history.
 function! VEnclose(vstart, vend, VStart, VEnd)
-	if ( col("'<") == 1 && col("'>") > strlen(getline("'>")) ) ||
-		\ ( col("'>") == 1 && col("'<") > strlen(getline("'<")) ) ||
-		\ ( col("'>") == 1 && col("'<") < 0 )
-		let linewise = 1
-	else
-		let linewise = 0
-	endif
-	if !linewise
+
+	" its characterwise if
+	" 1. characterwise selection and valid values for vstart and vend.
+	" OR
+	" 2. linewise selection and invalid values for VStart and VEnd
+	if (visualmode() == 'v' && (a:vstart != '' || a:vend != '')) || (a:VStart == '' && a:VEnd == '')
+
+		let newline = ""
 		let _r = @r
-		exec "normal! \<C-\>\<C-n>`<v`>\"rxi".a:vstart."!!mark!!".a:vend
-			\."\<C-\>\<C-N>?!!mark!!\<CR>v7l\"_s\<C-r>r\<C-\>\<C-n>"
-		" the next normal! is for restoring the marks.
-		if strlen(@r) > 1
-			let len = strlen(@r) - 1
+
+		let normcmd = "normal! \<C-\>\<C-n>`<v`>\"_s"
+
+		exe "normal! \<C-\>\<C-n>`<v`>\"ry"
+		if @r =~ "\n$"
+			let newline = "\n"
+			let @r = substitute(@r, "\n$", '', '')
+		endif
+
+		let normcmd = normcmd.
+			\a:vstart."!!mark!!".a:vend.newline.
+			\"\<C-\>\<C-N>?!!mark!!\<CR>v7l\"_s\<C-r>r\<C-\>\<C-n>"
+
+		" this little if statement is because till very recently, vim used to
+		" report col("'>") > length of selected line when `> is $. on some
+		" systems it reports a -ve number.
+		if col("'>") < 0 || col("'>") > strlen(getline("'>"))
+			let lastcol = strlen(getline("'>"))
+		else
+			let lastcol = col("'>")
+		endif
+		if lastcol - col("'<") != 0
+			let len = lastcol - col("'<")
 		else
 			let len = ''
 		endif
-		exec "normal! `<v".len."l\<C-\>\<C-N>"
+
+		" the next normal! is for restoring the marks.
+		let normcmd = normcmd."`<v".len."l\<C-\>\<C-N>"
+
+		silent! exe normcmd
 		" this is to restore the r register.
 		let @r = _r
 		" and finally, this is to restore the search history.
 		call SAImaps_RemoveLastHistoryItem()
+
 	else
+
 		exec 'normal! `<O'.a:VStart."\<C-\>\<C-n>"
 		exec 'normal! `>o'.a:VEnd."\<C-\>\<C-n>"
-		normal! `>
+		if &indentexpr != ''
+			silent! normal! `<kV`>j=
+		endif
+		silent! normal! `>
 	endif
 endfunction 
 
@@ -445,22 +474,22 @@ function! ExecMap(prefix, mode)
 		echon "\rEnter Map: " . mapCmd
 	endwhile
 	if foundMap
-		echomsg "running normal command ".mapCmd
 		if a:mode == 'v'
-			" TODO: what happens if the user has some combination of the
-			" following characters mapped in normal mode? How to disable all
-			" possible combinations temporarily?
-			let goto = "`<v`>"
+			" use a plug to select the region instead of using something like
+			" `<v`> to avoid problems caused by some of the characters in
+			" '`<v`>' being mapped.
+			let gotoc = "\<plug>«SelectRegion»"
 		else
-			let goto = ''
+			let gotoc = ''
 		endif
-		exec "normal ".goto.mapCmd
+		exec "normal ".gotoc.mapCmd
 	endif
 	exec a:mode.'noremap '.a:prefix.' '.myMap
 endfunction
 
 " }}}
 
+" ============================================================================== 
 " helper functions
 " ============================================================================== 
 " Strntok: extract the n^th token from a list {{{
@@ -477,11 +506,10 @@ function! SAImaps_RemoveLastHistoryItem()
   call histdel("/", -1)
   let @/ = histget("/", -1)
 endfunction
-nmap <silent> <script> <plug>cleanHistory :call SAImaps_RemoveLastHistoryItem()<CR>
 
 " }}}
-" ============================================================================== 
 
+" ============================================================================== 
 " examples of IMAP() usage and bonus function
 " ============================================================================== 
 " Miscellaneous general purpose mappings. {{{
@@ -530,6 +558,5 @@ endfunction
 
 com! -nargs=0 -range Snip :<line1>,<line2>call <SID>Snip()
 " }}}
-" ============================================================================== 
 
 " vim6:fdm=marker:nowrap
