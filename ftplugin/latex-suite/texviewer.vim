@@ -552,8 +552,6 @@ function! Tex_ScanFileForCite(prefix)
 			let i = i + 1
 		endwhile
 
-		let &path = _path
-
 		if foundCiteFile
 			return 1
 		endif
