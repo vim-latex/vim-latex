@@ -2,10 +2,10 @@
 " 	     File: elementmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: Sat Apr 27 01:00 PM 2002 PDT
+" Last Change: pon lis 04 09:00  2002 C
 " 
 "  Description: macros for dimensions/fonts/counters.
-"               (basic elements of tex formatting)
+"               and various common commands such ref/label/footnote.
 "=============================================================================
 
 nmap <silent> <script> <plug> i
@@ -19,6 +19,7 @@ if exists('s:lastElementsLocation')
 	exe 'aunmenu '.s:lastElementsLocation.'Font.'
 	exe 'aunmenu '.s:lastElementsLocation.'Dimension.'
 	exe 'aunmenu '.s:lastElementsLocation.'Counters.'
+	exe 'aunmenu '.s:lastElementsLocation.'Various.'
 endif
 
 let s:lastElementsLocation = g:Tex_ElementsMenuLocation
@@ -26,6 +27,7 @@ let s:lastElementsLocation = g:Tex_ElementsMenuLocation
 let s:fontMenuLoc       = g:Tex_ElementsMenuLocation.'Font.'
 let s:dimensionMenuLoc  = g:Tex_ElementsMenuLocation.'Dimension.'
 let s:counterMenuLoc    = g:Tex_ElementsMenuLocation.'Counters.'
+let s:variousMenuLoc    = g:Tex_ElementsMenuLocation.'Various.'
 
 " ==============================================================================
 " Set up the functions the first time.
@@ -39,6 +41,7 @@ if !exists('s:definedFuncs') " {{{
 		exe 'silent! aunmenu '.s:lastElementsLocation.'Font.'
 		exe 'silent! aunmenu '.s:lastElementsLocation.'Dimension.'
 		exe 'silent! aunmenu '.s:lastElementsLocation.'Counters.'
+		exe 'silent! aunmenu '.s:lastElementsLocation.'Various.'
 	endfunction
 
 	" }}}
@@ -95,10 +98,16 @@ if !exists('s:definedFuncs') " {{{
 		exe "amenu ".location." <plug>\\".a:rhs
 		exe "vunmenu ".location
 	endfunction " }}}
-	" Tex_DimMenus: set up dimension menus {{{
+	" Tex_CounterMenus: set up counters menus {{{
 	function! <SID>Tex_CounterMenus(submenu, rhs)
 		let location = s:counterMenuLoc.a:submenu.'.'.a:rhs.'<tab>'
 		exe "amenu ".location." <plug>\\".a:rhs
+		exe "vunmenu ".location
+	endfunction " }}}
+	" Tex_VariousMenus: set up various menus {{{
+	function! <SID>Tex_VariousMenus(desc, lhs)
+		let location = s:variousMenuLoc.a:desc.'<tab>'
+		exe "amenu ".location." <plug><C-r>=IMAP_PutTextWithMovement('".a:lhs."')<CR>"
 		exe "vunmenu ".location
 	endfunction " }}}
 endif
@@ -302,6 +311,19 @@ if g:Tex_Menus
 	call <SID>Tex_CounterMenus('Type', 'arabic')
 	call <SID>Tex_CounterMenus('Type', 'roman')
 	call <SID>Tex_CounterMenus('Type', 'Roman')
+	" }}}
+endif
+
+" ==============================================================================
+" Various
+" ============================================================================== 
+if g:Tex_Menus
+	" Various {{{
+	call <SID>Tex_VariousMenus('ref{}'         , '\ref{ä}«»')
+	call <SID>Tex_VariousMenus('label{}'       , '\label{ä}«»')
+	call <SID>Tex_VariousMenus('footnote{}'    , '\footnote{ä}«»')
+	call <SID>Tex_VariousMenus('footnotemark{}', '\footnotemark{ä}«»')
+	call <SID>Tex_VariousMenus('footnotemark{}', '\footnotetext{ä}«»')
 	" }}}
 endif
 
