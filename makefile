@@ -15,6 +15,20 @@ latexs:
 	zip latexSuite.zip compiler/tex.vim
 	# external tools
 	zip latexSuite.zip ltags
+	make -s zip2tar
+zip2tar:
+	# copy over zip file to temp dir.
+	mkdir -p $(TMP)/latexSuite0793
+	cp latexSuite.zip $(TMP)/latexSuite0793/
+	# now unzip the .zip file there, and create a .tar.gz file from the
+	# directory contents.
+	( \
+		cd $(TMP)/latexSuite0793/ ; \
+		unzip -o latexSuite.zip ; \
+		\rm latexSuite.zip ; \
+		tar cvzf latexSuite.tar.gz * \
+	)
+	\mv $(TMP)/latexSuite0793/latexSuite.tar.gz ./
 clean:
 	rm -f latexSuite.zip
 ltt:
@@ -22,4 +36,4 @@ ltt:
 	cp -f latexSuite.zip /tmp/ltt/vimfiles/
 	cd /tmp/ltt/vimfiles; unzip latexSuite.zip
 upload:
-	pscp latexSuite.zip srinathava@vim-latex.sf.net:/home/groups/v/vi/vim-latex/htdocs/download/latexSuite.zip
+	pscp latexSuite.* $(CVSUSER)@vim-latex.sf.net:/home/groups/v/vi/vim-latex/htdocs/download/
