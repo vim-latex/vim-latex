@@ -96,22 +96,23 @@ function! Tex_CompileLatex()
 	" close any preview windows left open.
 	pclose!
 
-    " Logic to choose how to compile:
-	" if b:fragmentFile exists, then this is a fragment
-	" 	therefore, just compile this file
-	" else
-	" 	if makefile or Makefile exists, then use that
-	" elseif *.latexmain exists 
-	" 	use that
-	" else use current file
-	"
-	" if mainfname exists, then it means it was supplied to Tex_RunLaTeX().
-	" Extract the complete file name including the extension.
-	let mainfname = Tex_GetMainFileName(':r')
+	let curd = getcwd()
+
+	" Find the main file corresponding to this file. Always cd to the
+	" directory containing the file to avoid problems with the directory
+	" containing spaces.
+	" Latex on linux seems to be unable to handle file names with spaces at
+	" all! Therefore for the moment, do not attempt to handle spaces in the
+	" file name.
+	if exists('b:fragmentFile')
+		let mainfname = expand('%:p:t')
+		call Tex_CD(expand('%:p:h')
+	else
+		let mainfname = Tex_GetMainFileName(':p:t')
+		call Tex_CD(Tex_GetMainFileName(':p:h'))
+	end
+
 	call Tex_Debug('Tex_CompileLatex: getting mainfname = ['.mainfname.'] from Tex_GetMainFileName', 'comp')
-	if exists('b:fragmentFile') || mainfname == ''
-		let mainfname = escape(expand('%:t'), ' ')
-	endif
 
 	" if a makefile exists and the user wants to use it, then use that
 	" irrespective of whether *.latexmain exists or not. mainfname is still
@@ -138,14 +139,13 @@ function! Tex_CompileLatex()
 		exec 'make! '.mainfname
 	endif
 	redraw!
+
+	call Tex_CD(curd)
 endfunction " }}}
 " Tex_SetupErrorWindow: sets up the cwindow and preview of the .log file {{{
 " Description: 
 function! Tex_SetupErrorWindow()
-	let mainfname = Tex_GetMainFileName(':r')
-	if exists('b:fragmentFile') || mainfname == ''
-		let mainfname = expand('%:t')
-	endif
+	let mainfname = Tex_GetMainFileName()
 
 	let winnum = winnr()
 
@@ -193,7 +193,7 @@ function! Tex_RunLaTeX()
 
 	let dir = expand("%:p:h").'/'
 	let curd = getcwd()
-	exec 'cd '.expand("%:p:h")
+	call Tex_CD(expand("%:p:h"))
 
 	" first get the dependency chain of this format.
 	let dependency = s:target
@@ -215,8 +215,10 @@ function! Tex_RunLaTeX()
 		call Tex_Debug('setting target to '.s:target, 'comp')
 
 		if g:Tex_MultipleCompileFormats =~ '\<'.s:target.'\>'
+			call Tex_Debug("compiling file multiple times via Tex_CompileMultipleTimes", "comp")
 			call Tex_CompileMultipleTimes()
 		else
+			call Tex_Debug("compiling file once via Tex_CompileLatex", "comp")
 			call Tex_CompileLatex()
 		endif
 
@@ -232,7 +234,7 @@ function! Tex_RunLaTeX()
 	let s:origwinnum = winnr()
 	call Tex_SetupErrorWindow()
 
-	exec 'cd '.curd
+	call Tex_CD(curd)
 endfunction
 
 " }}}
@@ -249,17 +251,19 @@ function! Tex_ViewLaTeX()
 		return
 	end
 	
-	let dir = expand("%:p:h").'/'
 	let curd = getcwd()
-	exec 'cd '.expand("%:p:h")
 	
 	" If b:fragmentFile is set, it means this file was compiled as a fragment
 	" using Tex_PartCompile, which means that we want to ignore any
 	" *.latexmain or makefile's.
-	if Tex_GetMainFileName() != '' && !exists('b:fragmentFile')
-		let mainfname = Tex_GetMainFileName()
+	if !exists('b:fragmentFile')
+		" cd to the location of the file to avoid having to deal with spaces
+		" in the directory name.
+		let mainfname = Tex_GetMainFileName(':p:t:r')
+		call Tex_CD(Tex_GetMainFileName(':p:h'))
 	else
 		let mainfname = expand("%:p:t:r")
+		call Tex_CD(expand("%:p:h"))
 	endif
 
 	if has('win32')
@@ -305,7 +309,7 @@ function! Tex_ViewLaTeX()
 		redraw!
 	endif
 
-	exec 'cd '.curd
+	call Tex_CD(curd)
 endfunction
 
 " }}}
@@ -335,21 +339,19 @@ function! Tex_ForwardSearchLaTeX()
 	endif
 	let viewer = g:Tex_ViewRule_dvi
 	
-	let dir = expand("%:p:h").'/'
 	let curd = getcwd()
-	exec 'cd '.expand("%:p:h")
 
-	if Tex_GetMainFileName() != ''
-		let mainfname = Tex_GetMainFileName()
-	else
-		let mainfname = expand("%:p:t:r")
-	endif
+	let mainfname = Tex_GetMainFileName(':t')
+	let mainfnameRoot = fnamemodify(Tex_GetMainFileName(), ':t:r')
+	" cd to the location of the file to avoid problems with directory name
+	" containing spaces.
+	call Tex_CD(Tex_GetMainFileName(':p:h'))
 	
 	" inverse search tips taken from Dimitri Antoniou's tip and Benji Fisher's
 	" tips on vim.sf.net (vim.sf.net tip #225)
 	if has('win32')
 
-		let execString = 'silent! !start '. viewer.' -s '.line('.').expand('%:p:t').' '.mainfname
+		let execString = 'silent! !start '. viewer.' -s '.line('.').expand('%:p:t').' '.mainfnameRoot
 
 	else
 		if exists('g:Tex_UseEditorSettingInDVIViewer') &&
@@ -357,19 +359,19 @@ function! Tex_ForwardSearchLaTeX()
 					\ exists('v:servername') &&
 					\ (viewer == "xdvi" || viewer == "xdvik") 
 
-			let execString = '!'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').
+			let execString = '!'.viewer.' -name xdvi -sourceposition '.line('.').mainfname.
 						\ ' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.
-						\ mainfname.'.dvi &'
+						\ mainfnameRoot.'.dvi &'
 
 		elseif exists('g:Tex_UseEditorSettingInDVIViewer') &&
 					\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
 					\ viewer == "kdvi"
 
-			let execString = 'silent! !kdvi --unique file:'.mainfname.'.dvi\#src:'.line('.').Tex_GetMainFileName(":p:t:r").' &'
+			let execString = 'silent! !kdvi --unique file:'.mainfnameRoot.'.dvi\#src:'.line('.').mainfname.' &'
 
 		else
 
-			let execString = 'silent! !'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').' '.mainfname.'.dvi &'
+			let execString = 'silent! !'.viewer.' -name xdvi -sourceposition '.line('.').mainfname.' '.mainfnameRoot.'.dvi &'
 
 		endif
 	end
@@ -380,7 +382,7 @@ function! Tex_ForwardSearchLaTeX()
 		redraw!
 	endif
 
-	exec 'cd '.curd
+	call Tex_CD(curd)
 endfunction
 
 " }}}
@@ -424,13 +426,9 @@ function! Tex_PartCompile() range
 	" If mainfile exists open it in tiny window and extract preamble there,
 	" otherwise do it from current file
 	let mainfile = Tex_GetMainFileName(":p:r")
-	if mainfile != ''
-		exe 'bot 1 split '.mainfile
-		exe '1,/\s*\\begin{document}/w '.tmpfile
-		wincmd q
-	else
-		exe '1,/\s*\\begin{document}/w '.tmpfile
-	endif
+	exe 'bot 1 split '.escape(mainfile, ' ')
+	exe '1,/\s*\\begin{document}/w '.tmpfile
+	wincmd q
 
 	exe a:firstline.','.a:lastline."w! >> ".tmpfile
 
@@ -470,11 +468,11 @@ endfunction " }}}
 " Tex_CompileMultipleTimes: The main function {{{
 " Description: compiles a file multiple times to get cross-references right.
 function! Tex_CompileMultipleTimes()
-	let mainFileName_root = Tex_GetMainFileName(':p:t:r:r')
-
-	if mainFileName_root == ''
-		let mainFileName_root = expand("%:p:t:r")
-	endif
+	" Just extract the root without any extension because we want to construct
+	" the log file names etc from it.
+	let curd = getcwd()
+	let mainFileName_root = Tex_GetMainFileName(':p:t:r')
+	call Tex_CD(Tex_GetMainFileName(':p:h'))
 
 	" First ignore undefined references and the 
 	" "rerun to get cross-references right" message from 
@@ -499,13 +497,14 @@ function! Tex_CompileMultipleTimes()
 
 		" first run latex.
 		echomsg "latex run number : ".(runCount+1)
+		call Tex_Debug("Tex_CompileMultipleTimes: latex run number : ".(runCount+1), "comp") 
 		silent! call Tex_CompileLatex()
 		
 		" If there are errors in any latex compilation step, immediately
 		" return. For now, do not bother with warnings because those might go
 		" away after compiling again or after bibtex is run etc.
 		let errlist = Tex_GetErrorList()
-		call Tex_Debug("errors = [".errlist."]", "err")
+		call Tex_Debug("errors = [".errlist."]", "comp")
 
 		if errlist =~ '\d\+\s\f\+:\d\+\serror'
 			let g:Tex_IgnoredWarnings = origpats
@@ -566,6 +565,8 @@ function! Tex_CompileMultipleTimes()
 	" errors/warnings to handle the situation where the clist might have been
 	" emptied because of bibtex/makeindex being run as the last step.
 	exec 'silent! cfile '.mainFileName_root.'.log'
+
+	call Tex_CD(curd)
 endfunction " }}}
 
 " ==============================================================================
@@ -763,7 +764,7 @@ endfunction
 
 augroup LatexSuite
 	au LatexSuite User LatexSuiteFileType 
-		\ call Tex_Debug('compiler.vim: Catching LatexSuiteFileType event') | 
+		\ call Tex_Debug('compiler.vim: Catching LatexSuiteFileType event', 'comp') | 
 		\ call <SID>SetCompilerMaps()
 augroup END
 
