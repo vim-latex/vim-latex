@@ -4,14 +4,14 @@
 " Description: 
 " 
 " Installation:
-"  Last Change: Thu Nov 07 06:00 PM 2002 PST
+"  Last Change: Mon Nov 11 12:00 AM 2002 PST
 "         TODO:
 "=============================================================================
 
 " Paths, crucial for functions
 let s:path = expand("<sfile>:p:h")
 let s:up_path = expand("<sfile>:p:h:h")
-let s:mainmenuname = 'Te&X-Suite.'
+let s:mainmenuname = g:Tex_MenuPrefix.'Suite.'
 
 if g:Tex_NestPackagesMenu
 	let g:Tex_PackagesMenuLocation = '81.10 '.s:mainmenuname.'&Packages.'
@@ -33,7 +33,7 @@ endif
 " Set up the compiler/viewer menus. {{{
 "
 if has('gui_running') && g:Tex_Menus
-	anoremenu 80.25 Te&X-Suite.-sepsuite0-  :
+	exec 'anoremenu 80.25 '. s:mainmenuname.'-sepsuite0-  :'
 
 	" menus for compiling / viewing etc.
 	exec 'anoremenu 80.30 '.s:mainmenuname.'&Compile<tab>\\ll'.
@@ -70,7 +70,6 @@ endif
 " ============================================================================== 
 command! -nargs=0 Ttexrc :call Tex_texrc()
 function! Tex_texrc()
-	echomsg 's:path = '.s:path.', s:up_path = '.s:up_path
 	if filereadable(s:up_path.'/tex/texrc')
 		exec 'split '.s:up_path.'/tex/texrc'
 		lcd
