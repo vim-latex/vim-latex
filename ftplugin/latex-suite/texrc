@@ -3,7 +3,7 @@
 " 	     File: texrc.vim
 "      Author: Srinath Avadhanula
 "     Created: Mon Apr 01 11:00 AM 2002 PST
-" Last Change: Mon Nov 11 12:00 AM 2002 PST
+" Last Change: Sat Nov 16 05:00 PM 2002 PST
 "
 "  Description: This file contains resource configuration information for the
 "               latex-suite plugin.
@@ -132,19 +132,19 @@ endif
 " this is the list of patterns which will be ignored from the compiler output.
 " This is a handy way of specifying which warnings/errors to ignore. This is a
 " list of patterns seperated by '¡'
-" NOTE: There is trailing space at the end of the next line. This is
-"       necessary!!!
-TexLet g:Tex_IgnoredWarnings =   
+TexLet g:Tex_IgnoredWarnings =
 	\'Underfull¡'.
 	\'Overfull¡'.
 	\'specifier changed to¡'.
 	\'You have requested¡'.
-	\'Missing number, treated as zero.'
+	\'Missing number, treated as zero.¡'.
+	\'There were undefined references¡'.
+	\'Citation %.%# undefined¡'
 
 " the 'ignore level' of the 'efm'. A value of 4 says that the first 4 kinds of
 " warnings in the list above will be ignored. Use the command TCLevel to set a
 " level dynamically.
-TexLet g:Tex_IgnoreLevel = 4
+TexLet g:Tex_IgnoreLevel = 7
 
 " NOTE: The values of g:Tex_Flavor and g:Tex_CompilerFlags are provided as a
 "       way to make compiler/tex.vim standalone. i.e independent of the rest
