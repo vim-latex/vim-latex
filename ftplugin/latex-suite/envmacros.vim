@@ -1105,7 +1105,7 @@ endfunction " }}}
 " Catch the Filetype event so we set maps for each buffer {{{
 augroup LatexSuite
 	au LatexSuite User LatexSuiteFileType 
-		\ call Tex_Debug('envmacros.vim: Catching LatexSuiteFileType event') |
+		\ call Tex_Debug('envmacros.vim: Catching LatexSuiteFileType event', 'env') |
 		\ call s:SetEnvMacrosOptions()
 augroup END
 " }}}
