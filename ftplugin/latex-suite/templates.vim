@@ -4,7 +4,7 @@
 "              (minor modifications by Srinath Avadhanula)
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: ¶ro maj 08 12:00  2002 U
+" Last Change: Thu Nov 07 05:00 PM 2002 P
 " 
 "  Description: functions for handling templates in latex-suite/templates
 "               directory.
@@ -43,7 +43,7 @@ endif
 function! <SID>ReadTemplate(...)
 
 	if a:0 > 0
-		let filename = a:1
+		let filename = a:1.'.*'
 	else
 		let pwd = getcwd()
 		exe 'cd '.s:path.'/templates'
@@ -51,7 +51,7 @@ function! <SID>ReadTemplate(...)
 		exe 'cd '.pwd
 	endif
 
-	let fname = glob(s:path."/templates/".filename.'.*')
+	let fname = glob(s:path."/templates/".filename)
 	exe "0read ".fname
 	call TeX_pack_all()
 endfunction
