@@ -199,4 +199,27 @@ function! s:Tex_section_call(section_name) "{{{
 "	normal f}i
 endfunction "}}}
 
+" ==============================================================================
+" Add looking help into latexhelp.txt
+" ============================================================================== 
+
+inoremap <buffer> <silent> <F1> <C-O>:silent! call TexHelp()<CR>
+nnoremap <buffer> <silent> <F1> :silent! call TexHelp()<CR>
+
+function! TexHelp()
+	if synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^tex'
+		setlocal isk+=\
+		let curword = expand('<cword>')
+		setlocal isk-=\
+		if curword =~ "^\\"
+			exe 'help ' . curword
+		else
+			help
+		endif
+	else
+		help
+	endif
+endfunction
+
+"
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4
