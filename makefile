@@ -10,8 +10,8 @@ latexs:
 	zip -q latexSuite.zip plugin/imaps.vim
 	zip -q latexSuite.zip plugin/SyntaxFolds.vim
 	zip -q latexSuite.zip plugin/libList.vim
-	zip -q latexSuite.zip plugin/explorer.vim
 	zip -q latexSuite.zip plugin/remoteOpen.vim
+	zip -q latexSuite.zip plugin/filebrowser.vim
 	# ftplugins
 	zip -q latexSuite.zip ftplugin/tex_latexSuite.vim
 	zip -q latexSuite.zip ftplugin/bib_latexSuite.vim
