@@ -240,6 +240,10 @@ TexLet g:Tex_MakeIndexFlavor = 'makeindex $*.idx'
 " errors after compilation
 TexLet g:Tex_GotoError = 1
 
+" If set to 1, then latex-suite shows the context of the error in a preview
+" window beneath the window showing the actual errors.
+TexLet g:Tex_ShowErrorContext = 1
+
 " Remove temp files created during part compilations when vim exits.
 TexLet g:Tex_RemoveTempFiles = 1
 

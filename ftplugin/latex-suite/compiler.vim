@@ -134,42 +134,6 @@ function! Tex_CompileLatex()
 
 	call Tex_CD(curd)
 endfunction " }}}
-" Tex_SetupErrorWindow: sets up the cwindow and preview of the .log file {{{
-" Description: 
-function! Tex_SetupErrorWindow()
-	let mainfname = Tex_GetMainFileName()
-
-	let winnum = winnr()
-
-	" close the quickfix window before trying to open it again, otherwise
-	" whether or not we end up in the quickfix window after the :cwindow
-	" command is not fixed.
-	cclose
-	cwindow
-	" create log file name from mainfname
-	let mfnlog = fnamemodify(mainfname, ":t:r").'.log'
-	call Tex_Debug('Tex_SetupErrorWindow: mfnlog = '.mfnlog, 'comp')
-	" if we moved to a different window, then it means we had some errors.
-	if winnum != winnr()
-		call Tex_UpdatePreviewWindow(mfnlog)
-		exe 'nnoremap <buffer> <silent> j j:call Tex_UpdatePreviewWindow("'.mfnlog.'")<CR>'
-		exe 'nnoremap <buffer> <silent> k k:call Tex_UpdatePreviewWindow("'.mfnlog.'")<CR>'
-		exe 'nnoremap <buffer> <silent> <up> <up>:call Tex_UpdatePreviewWindow("'.mfnlog.'")<CR>'
-		exe 'nnoremap <buffer> <silent> <down> <down>:call Tex_UpdatePreviewWindow("'.mfnlog.'")<CR>'
-		exe 'nnoremap <buffer> <silent> <enter> :call Tex_GotoErrorLocation("'.mfnlog.'")<CR>'
-
-		setlocal nowrap
-
-		" resize the window to just fit in with the number of lines.
-		exec ( line('$') < 4 ? line('$') : 4 ).' wincmd _'
-        if Tex_GetVarValue('Tex_GotoError') == 1
- 	        call Tex_GotoErrorLocation(mfnlog)
-        else
-			exec s:origwinnum.' wincmd w'
-        endif
-	endif
-
-endfunction " }}}
 " Tex_RunLaTeX: compilation function {{{
 " this function runs the latex command on the currently open file. often times
 " the file being currently edited is only a fragment being \input'ed into some
@@ -594,6 +558,44 @@ endfunction " }}}
 " . going to the correct line _and column_ number from from the quick fix
 "   window.
 " ============================================================================== 
+" Tex_SetupErrorWindow: sets up the cwindow and preview of the .log file {{{
+" Description: 
+function! Tex_SetupErrorWindow()
+	let mainfname = Tex_GetMainFileName()
+
+	let winnum = winnr()
+
+	" close the quickfix window before trying to open it again, otherwise
+	" whether or not we end up in the quickfix window after the :cwindow
+	" command is not fixed.
+	cclose
+	cwindow
+	" create log file name from mainfname
+	let mfnlog = fnamemodify(mainfname, ":t:r").'.log'
+	call Tex_Debug('Tex_SetupErrorWindow: mfnlog = '.mfnlog, 'comp')
+	" if we moved to a different window, then it means we had some errors.
+	if winnum != winnr()
+		if Tex_GetVarValue('Tex_ShowErrorContext')
+			call Tex_UpdatePreviewWindow(mfnlog)
+			exe 'nnoremap <buffer> <silent> j j:call Tex_UpdatePreviewWindow("'.mfnlog.'")<CR>'
+			exe 'nnoremap <buffer> <silent> k k:call Tex_UpdatePreviewWindow("'.mfnlog.'")<CR>'
+			exe 'nnoremap <buffer> <silent> <up> <up>:call Tex_UpdatePreviewWindow("'.mfnlog.'")<CR>'
+			exe 'nnoremap <buffer> <silent> <down> <down>:call Tex_UpdatePreviewWindow("'.mfnlog.'")<CR>'
+		endif
+		exe 'nnoremap <buffer> <silent> <enter> :call Tex_GotoErrorLocation("'.mfnlog.'")<CR>'
+
+		setlocal nowrap
+
+		" resize the window to just fit in with the number of lines.
+		exec ( line('$') < 4 ? line('$') : 4 ).' wincmd _'
+        if Tex_GetVarValue('Tex_GotoError') == 1
+ 	        call Tex_GotoErrorLocation(mfnlog)
+        else
+			exec s:origwinnum.' wincmd w'
+        endif
+	endif
+
+endfunction " }}}
 " Tex_PositionPreviewWindow: positions the preview window correctly. {{{
 " Description: 
 " 	The purpose of this function is to count the number of times an error
@@ -759,6 +761,9 @@ function! Tex_GotoErrorLocation(filename)
 	exec winnum.' wincmd w'
 	exec 'silent! '.linenum.' | normal! '.normcmd
 
+	if !Tex_GetVarValue('Tex_ShowErrorContext')
+		pclose!
+	endif
 endfunction " }}}
 " Tex_SetCompilerMaps: sets maps for compiling/viewing/searching {{{
 " Description: 
