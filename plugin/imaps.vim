@@ -7,7 +7,7 @@
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
 "
-" Last Change: Tue Dec 31 10:00 AM 2002 PST
+" Last Change: Fri Jan 03 12:00 AM 2003 PST
 " 
 " Documentation: {{{
 "
@@ -275,7 +275,6 @@ function! IMAP_PutTextWithMovement(str, ...)
 	else
 		let marker = '<!---@#%_Start_Here_@#%----!>'
 	endif
-	call Tex_Debug('marker = '.marker)
 	let markerLength = strlen(marker)
 
 	" Problem:  depending on the setting of the 'encoding' option, a character
@@ -290,6 +289,7 @@ function! IMAP_PutTextWithMovement(str, ...)
 
 	" If there are no place holders, just return the text.
 	if textEnc !~ '\V'.phs.'\.\{-}'.phe
+		call IMAP_Debug('Not getting '.phs.' and '.phe.' in '.textEnc, 'imap')
 		return text
 	endif
 
@@ -601,6 +601,8 @@ let s:RemoveLastHistoryItem = ':call histdel("/", -1)|let @/=histget("/", -1)'
 " }}}
 " Hash: Return a version of a string that can be used as part of a variable" {{{
 " name.
+" 	Converts every non alphanumeric characteer into _{ascii}_ where {ascii} is
+" 	the ASCII code for that character...
 fun! s:Hash(text)
 	return substitute(a:text, '\([^[:alnum:]]\)',
 				\ '\="_".char2nr(submatch(1))."_"', 'g')
@@ -625,6 +627,41 @@ function! IMAP_GetPlaceHolderEnd()
 		return "+>"
 endfun
 " }}}
+" IMAP_Debug: interface to Tex_Debug if available, otherwise emulate it {{{
+" Description: 
+function! IMAP_Debug(string, pattern)
+	if exists('*Tex_Debug')
+		call Tex_Debug(a:string, a:pattern)
+	else
+		if !exists('s:debug_'.a:pattern)
+			let s:debug_{a:pattern} = a:string
+		else
+			let s:debug_{a:pattern} = s:debug_{a:pattern}.a:string
+		endif
+	endif
+endfunction " }}}
+" IMAP_DebugClear: interface to Tex_DebugClear if avaialable, otherwise emulate it {{{
+" Description: 
+function! IMAP_DebugClear(pattern)
+	if exists('*Tex_DebugClear')
+		call Tex_DebugClear(a:pattern)
+	else	
+		let s:debug_{a:pattern} = ''
+	endif
+endfunction " }}}
+" IMAP_DebugClear: interface to Tex_DebugClear if avaialable, otherwise emulate it {{{
+" Description: 
+function! IMAP_DebugPrint(pattern)
+	if exists('*Tex_DebugPrint')
+		call Tex_DebugPrint(a:pattern)
+	else
+		if exists('s:debug_'.a:pattern)
+			let s:debug_{a:pattern} = ''
+		else
+			echo s:debug_{a:pattern}
+		endif
+	endif
+endfunction " }}}
 
 " ============================================================================== 
 " A bonus function: Snip()
