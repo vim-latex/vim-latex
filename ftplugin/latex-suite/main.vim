@@ -3,7 +3,7 @@
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
 "		   URL: 
-"  Last Change: Sun Apr 28 04:00 AM 2002 PDT
+"  Last Change: sob maj 04 08:00  2002 U
 "
 " Help: 
 " Changes: {{{
@@ -51,8 +51,15 @@ let s:doneFunctionDefinitions = 1
 " these lines need to be outside the function.
 let s:path = expand('<sfile>:p:h')
 
+ 
+" set up personal defaults.
+let s:up_path = substitute(s:path, "latex-suite", "", "")
+if filereadable(s:up_path.'tex/texrc')
+	exe "so ".s:up_path.'tex/texrc'
+else
 " set up global defaults.
-exe "so ".s:path.'/texrc'
+	exe "so ".s:path.'/texrc'
+endif
 
 " }}}
 
