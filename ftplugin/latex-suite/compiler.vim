@@ -114,7 +114,7 @@ function! RunLaTeX()
         let mainfname = Tex_GetMainFileName()
         " if a makefile and no *.latexmain exists, just use the make utility
         " this also sets mainfname for the rest of the function
-        if (glob('makefile') != '' || glob('Makefile') != '') && mainfname == ''
+        if (glob('makefile') != '' || glob('Makefile') != '')
             let mainfname = expand("%:t:r")
             let _makeprg = &l:makeprg
             let &l:makeprg = 'make $*'
