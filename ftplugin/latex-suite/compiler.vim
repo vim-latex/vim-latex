@@ -60,7 +60,15 @@ endfunction
 
 function! SetTeXTarget(...)
 	if a:0 < 1
-		let target = input('Enter target for compiler and viewer ([dvi]/ps/pdf/...) :')
+		if g:Tex_DefaultTargetFormat == 'dvi'
+			let target = input('Enter the target for compiler and viewer ([dvi]/ps/pdf/...): ')
+		elseif g:Tex_DefaultTargetFormat == 'ps'
+			let target = input('Enter the target for compiler and viewer (dvi/[ps]/pdf/...): ')
+		elseif g:Tex_DefaultTargetFormat =~ 'pdf'
+			let target = input('Enter the target for compiler and viewer (dvi/ps/[pdf]/...): ')
+		else
+			let target = input('Enter the target for compiler and viewer (dvi/ps/pdf/['.g:Tex_DefaultTargetFormat.']): ')
+		endif
 	else
 		let target = a:1
 	endif
@@ -73,7 +81,7 @@ endfunction
 
 com! -nargs=1 TCTarget :call SetTeXCompilerTarget('Compile', <f-args>)
 com! -nargs=1 TVTarget :call SetTeXCompilerTarget('View', <f-args>)
-com! -nargs=1 TTarget :call SetTeXTarget(<f-args>)
+com! -nargs=? TTarget :call SetTeXTarget(<f-args>)
 
 " }}}
 " RunLaTeX: compilation function {{{
