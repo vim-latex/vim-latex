@@ -35,8 +35,12 @@ if has('gui_running') && g:Tex_Menus
 	" menus for compiling / viewing etc.
 	exec 'anoremenu 80.30 '.s:mainmenuname.'&Compile<tab>\\ll'.
 		\'   :silent! call RunLaTeX()<CR>'
+	exec 'anoremenu 80.35 '.s:mainmenuname.'Compile&Part<tab>\\lc'.
+		\'   :silent! call Tex_PartCompilation()<CR>'
 	exec 'anoremenu 80.40 '.s:mainmenuname.'&View<tab>\\lv'.
-		\'   :silent! call ViewLaTeX()<CR>'
+		\'   :silent! call ViewLaTeX("all")<CR>'
+	exec 'anoremenu 80.45 '.s:mainmenuname.'Vi&ewPart<tab>\\lp'.
+		\'   :silent! call ViewLaTeX("part")<CR>'
 	exec 'anoremenu 80.50 '.s:mainmenuname.'&Search<tab>\\ls'.
 		\'   :silent! call ForwardSearchLaTeX()<CR>'
 	exec 'anoremenu 80.60 '.s:mainmenuname.'&Target\ Format<tab>:TTarget'.
