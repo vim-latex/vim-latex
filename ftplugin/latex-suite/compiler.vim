@@ -3,7 +3,7 @@
 "      Author: Srinath Avadhanula
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Sun May 05 05:00 PM 2002 PDT
+" Last Change: Sun Oct 27 10:00 PM 2002 PST
 " 
 "  Description: functions for compiling/viewing/searching latex documents
 "=============================================================================
@@ -144,8 +144,15 @@ function! ViewLaTeX()
 		" taken from Dimitri Antoniou's tip on vim.sf.net (tip #225).
 		" slight change to actually use the current servername instead of
 		" hardcocing it as xdvi.
+		" Using an option for specifying the editor in the command line
+		" because that seems to not work on older bash'es.
 		if s:target == 'dvi'
-			exec '!'.s:viewer.' -editor "gvim --servername '.v:servername.' --remote-silent +%l %f" '.mainfname.'.dvi &'
+			if exists('g:Tex_UseEditorSettingInDVIViewer') && \
+				g:Tex_UseEditorSettingInDVIViewer == 1
+				exec '!'.s:viewer.' -editor "gvim --servername '.v:servername.' --remote-silent +%l %f" '.mainfname.'.dvi &'
+			else
+				exec '!'.s:viewer.' '.mainfname.'.dvi &'
+			endif
 		else
 			exec '!'.s:viewer.' '.mainfname.'.'.s:target.' &'
 		endif
@@ -183,7 +190,7 @@ function! ForwardSearchLaTeX()
 	exec 'cd '.expand("%:p:h")
 
 	if Tex_GetMainFileName() != ''
-		let lheadfile = Tex_GetMainFileName()
+		let mainfname = Tex_GetMainFileName()
 	else
 		let mainfname = expand("%:p:t:r")
 	endif
