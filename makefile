@@ -37,6 +37,8 @@ latexs:
 		tar czf latexSuite.tar.gz * ; \
 		\mv latexSuite.tar.gz $(DIR1)/ ; \
 	)
+		mv latexSuite.zip latexSuite`date +%Y%m%d`.zip ; \
+		mv latexSuite.tar.gz latexSuite`date +%Y%m%d`.tar.gz ; \
 
 # target for removing archive files.
 clean:
