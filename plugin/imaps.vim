@@ -4,7 +4,7 @@
 "         WWW: http://robotics.eecs.berkeley.edu/~srinath/vim/.vim/imaps.vim
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
-" Last Change: Mon Dec 02 04:00 AM 2002 PST
+" Last Change: Fri Dec 06 04:00 PM 2002 PST
 " 
 " Documentation: {{{
 "
@@ -271,7 +271,9 @@ endfunction
 function! IMAP_PutTextWithMovement(text)
 	
 	let s:oldenc = &encoding
-	let &encoding='latin1'
+	if &encoding != 'latin1'
+		let &encoding='latin1'
+	endif
 
 	let text = a:text
 
@@ -344,7 +346,10 @@ function! IMAP_PutTextWithMovement(text)
 		end
 
 	end
-	let &encoding = s:oldenc
+
+	if s:oldenc != 'latin1'
+		let &encoding = s:oldenc
+	endif
 	return initial.text.movement
 
 endfunction 
@@ -357,7 +362,10 @@ endfunction
 " modified by SA to use optional place holder characters.
 function! IMAP_Jumpfunc()
 	let s:oldenc = &encoding
-	setglobal encoding=latin1
+	if s:oldenc != 'latin1'
+		setglobal encoding=latin1
+	endif
+
 
 	let phs = '«'
 	let phe = '»'
@@ -408,7 +416,9 @@ end
 " RestoreEncoding: restores file encoding to what it was originally {{{
 " Description: 
 function! RestoreEncoding()
-	let &g:encoding = s:oldenc
+	if s:oldenc != 'latin1'
+		let &g:encoding = s:oldenc
+	endif
 	return ''
 endfunction " }}}
 
