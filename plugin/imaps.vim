@@ -372,6 +372,7 @@ function! IMAP_PutTextWithMovement(str, ...)
 	let text = text . "\<C-\>\<C-N>:call IMAP_Mark('go')\<CR>"
 	let text = text . "i\<C-r>=IMAP_Jumpfunc('', 1)\<CR>"
 
+	call IMAP_Debug('IMAP_PutTextWithMovement: text = ['.text.']', 'imap')
 	return text
 endfunction
 
@@ -749,11 +750,19 @@ endfunction " }}}
 " IMAP_Mark:  Save the cursor position (if a:action == 'set') in a" {{{
 " script-local variable; restore this position if a:action == 'go'.
 let s:Mark = "(0,0)"
+let s:initBlanks = ''
 function! IMAP_Mark(action)
 	if a:action == 'set'
 		let s:Mark = "(" . line(".") . "," . col(".") . ")"
+		let s:initBlanks = matchstr(getline('.'), '^\s*')
 	elseif a:action == 'go'
 		execute "call cursor" s:Mark
+		let blanksNow = matchstr(getline('.'), '^\s*')
+		if strlen(blanksNow) > strlen(s:initBlanks)
+			execute 'silent! normal! '.(strlen(blanksNow) - strlen(s:initBlanks)).'l'
+		elseif strlen(blanksNow) < strlen(s:initBlanks)
+			execute 'silent! normal! '.(strlen(s:initBlanks) - strlen(blanksNow)).'h'
+		endif
 	endif
 endfunction	"" }}}
 " IMAP_GetVal: gets the value of a variable {{{
