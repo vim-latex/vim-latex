@@ -118,7 +118,8 @@ function! RunLaTeX()
 	" else use current file
 	"
 	" if mainfname exists, then it means it was supplied to RunLaTeX().
-	let mainfname = Tex_GetMainFileName()
+	" Extract the complete file name including the extension.
+	let mainfname = Tex_GetMainFileName(':r')
 	if exists('b:fragmentFile') || mainfname == ''
 		let mainfname = expand('%:t')
 	endif
@@ -136,6 +137,11 @@ function! RunLaTeX()
 		endif
 		let &l:makeprg = _makeprg
 	else
+		" If &makeprg has something like "$*.ps", it means that it wants the
+		" file-name without the extension... Therefore remove it.
+		if &makeprg =~ '\$\*\.\w\+'
+			let mainfname = fnamemodify(mainfname, ':r')
+		endif
 		exec 'make '.mainfname
 	endif
 	redraw!
