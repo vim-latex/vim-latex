@@ -365,6 +365,14 @@ TexLet g:Tex_PromptedEnvironments =
 TexLet g:Tex_HotKeyMappings = 
 	\ 'eqnarray*,eqnarray,bmatrix'
 
+" Similar to above mechanisms works <F7> key. It prompts for command with list
+" of commands from g:Tex_PromptedCommands. There are not HotKeys for commands.
+" It works for commands of style \com{}. Changing of current command is done
+" with <S-F7> 
+
+TexLet g:Tex_PromptedCommands = 
+   \ 'footnote,cite,pageref,label'
+
 " }}}
 " Smart Key Mappings: {{{
 " Latex-suite shites with a number of 'smart' maps, where the behavior of
