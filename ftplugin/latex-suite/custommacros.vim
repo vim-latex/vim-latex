@@ -51,6 +51,18 @@ function! RedrawMacro()
 endfunction
 
 " }}}
+" ChooseMacro: choose a macro file {{{
+" " Description: 
+function! s:ChooseMacro(ask)
+	let pwd = getcwd()
+	exe 'cd '.s:path.'/macros'
+	let filename = Tex_ChooseFromPrompt(
+				\ a:ask."\n" . 
+				\ Tex_CreatePrompt(glob('*'), 2, "\n") .
+				\ "\nEnter number or filename :",
+				\ glob('*'), "\n")
+	exe 'cd '.pwd
+endfunction " }}}
 " DeleteMacro: deletes macro file {{{
 function! <SID>DeleteMacro(...)
 	if a:0 > 0
@@ -58,7 +70,7 @@ function! <SID>DeleteMacro(...)
 	else
 		let pwd = getcwd()
 		exe 'cd '.s:path.'/macros'
-		let filename = Tex_ChooseFile('Choose a macro file for deletion :')
+		let filename = s:ChooseMacro('Choose a macro file for deletion :')
 		exe 'cd '.pwd
 	endif
 
@@ -78,7 +90,7 @@ function! <SID>EditMacro(...)
 	else
 		let pwd = getcwd()
 		exe 'cd '.s:path.'/macros'
-		let filename = Tex_ChooseFile('Choose a macro file for insertion:')
+		let filename = s:ChooseMacro('Choose a macro file for insertion:')
 		exe 'cd '.pwd
 	endif
 
@@ -97,7 +109,7 @@ function! <SID>ReadMacro(...)
 	else
 		let pwd = getcwd()
 		exe 'cd '.s:path.'/macros'
-		let filename = Tex_ChooseFile('Choose a macro file for insertion:')
+		let filename = s:ChooseMacro('Choose a macro file for insertion:')
 		exe 'cd '.pwd
 	endif
 
