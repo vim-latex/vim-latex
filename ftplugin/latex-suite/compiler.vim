@@ -9,7 +9,15 @@
 " SetTeXCompilerTarget: sets the 'target' for the next call to RunLaTeX() {{{
 function! SetTeXCompilerTarget(type, target)
 	if a:target == ''
-		let target = input('Enter the target ([dvi]/ps/pdf/...) for '.a:type.'r:')
+		if g:Tex_DefaultTargetFormat == 'dvi'
+			let target = input('Enter the target ([dvi]/ps/pdf/...) for '.a:type.'r: ')
+		elseif g:Tex_DefaultTargetFormat == 'ps'
+			let target = input('Enter the target (dvi/[ps]/pdf/...) for '.a:type.'r: ')
+		elseif g:Tex_DefaultTargetFormat =~ 'pdf'
+			let target = input('Enter the target (dvi/ps/[pdf]/...) for '.a:type.'r: ')
+		else
+			let target = input('Enter the target (dvi/ps/pdf/[...]) for '.a:type.'r: ')
+		endif
 	else
 		let target = a:target
 	endif
