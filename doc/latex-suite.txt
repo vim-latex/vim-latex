@@ -803,6 +803,7 @@ PACKAGE HANDLING                             *latex-packages* {{{
 
 This functionality is avaiable via the Tex-Packages menu.
 
+                                                 *latex-package-scanning*
 This module provides ways of customizing the menus based on which packages
 are being used in the current LaTeX file. When latex-suite first starts up, it
 scans the |latex-master-file| for >
@@ -810,6 +811,17 @@ scans the |latex-master-file| for >
 lines and if the corresponding package is found in the latex-suite/packages/
 directory, then creates a sub-menu based on the specification found in that
 file.
+Often preamble is too long and you can put whole stuff into your own package 
+and place it somewhere. Most obvious place is directory of edited file. But 
+LaTeX looks for this such packages in places pointed in $TEXINPUTS environment 
+variable. You can copy this variable to your texrc file in g:Tex_TEXINPUTS 
+variable. Example: >
+    TexLet g:Tex_TEXINPUTS = '.:~/texmf//:'
+Short explanation. '.' means looking in current directory, '~/texmf//' in 
+~/texmf directory and its all subdirectories. Last ':' means looking in normal 
+TeX directories. Alas, Vim cannot (yet :) look in all subdirectories. Thus it 
+find only '~/texmf/mypack.sty' and '~/texmf/sty/mypack.sty' but not 
+'~texmf/tex/sty/mypack.sty'.
 
                                                   *latex-package-dictionary*
 Furthermore, if a file with the same name is found in the
