@@ -140,20 +140,24 @@ Inserting Templates                                             *ls_2* *ls_a_bd*
 This functionality is available via the TeX-Suite > Templates menu. This module
 provides a way to insert custom templates at the beginning of the current file.
 
-When latex-suite first starts up, it scans the
-$VIM/ftplugin/latex-suite/templates/ directory and creates menu items based on
-the files found there. When you select a template from this menu, the file will
-be read in above the first line of the current file.
+When latex-suite first starts up, it scans
+ftplugin/latex-suite/templates/ directories in 'runtimepath' and creates
+menu items based on the files found there. When you select a template
+from this menu, the file will be read in above the first line of the
+current file.
 
 A template file can utlilize placeholders for initializing the cursor position
 when the template is read in and subsequent movement. In addition, template
 files can contain dynamic elements such as the time of creation of a file etc,
 by using vim expressions.
 
-You can place your own templates in the $VIM/ftplugin/latex-suite/templates/
-directory in order for them to be available via the menu. Unless Latex-Suite
+You can place your own templates in the $HOME/.vim/ftplugin/latex-suite/templates/
+directory in order for them to be available via the menu. Unless LaTeX-Suite
 releases a template with the same name, these files should not get over-written
-when you install a new release over an existing one.
+when you install a new release over an existing one. If name of your
+template is equal to default template from LaTeX-Suite it will
+overshadow default template and from menu (and :TTemplate command) will
+be read local template.
 
 NOTE: Templates are also accessible for non-gui users with the command
       |:TTemplate|. The argument should be name of the corresponding template
@@ -164,7 +168,7 @@ NOTE: Templates are also accessible for non-gui users with the command
       
 
 ================================================================================
-Latex-Suite Macros                                              *ls_3* *ls_a_be*
+LaTeX-Suite Macros                                              *ls_3* *ls_a_be*
                                                                   *latex-macros*
 
 |ls_3_1| Environment Mappings
@@ -745,17 +749,17 @@ In visual mode, it will simply enclose the selection in \mathcal{}
 Custom Macros                                                *ls_3_11* *ls_a_bA*
                                                             *custom-macros-menu*
 
-This functionality available via the TeX-Suite.Macros menu, provides a way of
-inserting customized macros into the current file via the menu.
+This functionality available via the TeX-Suite > Macros menu, provides
+a way of inserting customized macros into the current file via the menu.
 
-When latex-suite starts up, it scans the $VIM/ftplugin/latex-suite/macros/
-directory and creates a menu from the files found there. Each file is considered
-as a single macro. You can place your own macros in this directory, using
-placeholders [|ls_a_ef|] if wanted.
+When LaTeX-Suite starts up, it scans the ftplugin/latex-suite/macros/
+directories in runtimepath and creates a menu from the files found
+there. Each file is considered as a single macro. You can place your own
+macros in local directory, using placeholders [|ls_a_ef|] if wanted.
 
 When you choose a macro from the menu, the corresponding file is read into the
 current buffer after the current cursor position. In non-gui mode, you can use
-the |TMacro| command instead of choosing from the menu. This command takes the
+the |:TMacro| command instead of choosing from the menu. This command takes the
 macro file name as an argument. When called without arguments (preferred usage),
 then a list of avaiable macro files is displayed and the user is prompted to
 choose one of them).
@@ -765,11 +769,16 @@ There are some other tools provided in this menu, namely:
 
 {New}       Creates a new (unnamed) buffer in the latex-suite/macros/ directory.
             Use the command :TexMacroNew in non-gui mode.
-{Edit}      Opens up the corresponding macro file for editing. Use :TexMacroEdit
-            in non-gui mode.
+{Edit}      Opens up the corresponding macro file for editing. Use
+            |:TexMacroEdit| in non-gui mode. When you try to edit
+            {macro} not from local directory LaTeX-Suite will copy it to
+            your local directory with suffix "-local". If local copy
+            already exists LaTeX-Suite prompt for overwriting it.
 {Delete}    Deletes the corresponding macro. Use the prefixed numbers for fast
-            navigation of menus. Use :TexMacroDelete in non-gui mode.
-{Redraw}    Rescans the macros/ directory and refreshes the macros list.
+            navigation of menus. Use |:TexMacroDelete| in non-gui mode.
+            When you choose to delete {macro} which is not in your local
+            directory LaTeX-Suite will refuse to delete it.
+{Redraw}    Rescans the macros/ directories and refreshes the macros list.
 
 --------------------------------------------------------------------------------
 Making your own Macros via IMAP()                            *ls_3_12* *ls_a_bB*
@@ -1946,17 +1955,24 @@ Latex Suite Commands                                          *ls_9_2* *ls_a_ck*
 :TMacro [{macro}]                                  *ls_9_2_1* *ls_a_cl* *TMacro*
 
 When used without any arguments lists all available macros defined in
-latex-suite/macros/ directory and prompts you to choose one of them. With one
-argument |:read| this macro under cursor position. With more than one argument
-it will not work :)
+runtime ftplugin/latex-suite/macros/ directories and prompts you to
+choose one of them. With one argument |:read| this macro under cursor
+position. With more than one argument it will not work :)
+In Vim >= 6.2 works completion of names of macros (see 'wildmenu',
+'wildmode' for more about command-line completion).
 
 
-TMacroEdit [{macro}]                                        *ls_9_2_2* *ls_a_cm*
+:TMacroEdit [{macro}]                                       *ls_9_2_2* *ls_a_cm*
                                                                     *TMacroEdit*
 
-Splits window for editing {macro}. When used without any arguments lists all
-available macros defined in latex-suite/macros/ directory and prompt you to
-choose one of them.
+Splits window for editing {macro}. When used without any arguments lists
+all available macros defined in runtime ftplugin/latex-suite/macros/
+directories and prompt you to choose one of them.
+When you try to edit {macro} not from local directory LaTeX-Suite
+will copy it to your local directory with suffix "-local". If local copy
+already exists LaTeX-Suite prompt for overwriting it.
+In Vim >= 6.2 works completion of names of macros (see 'wildmenu',
+'wildmode' for more about command-line completion).
 
 
 :TMacroNew                                                  *ls_9_2_3* *ls_a_cn*
@@ -1969,9 +1985,13 @@ latex-suite/macros/.
 :TMacroDelete [{macro}]                                     *ls_9_2_4* *ls_a_co*
                                                                   *TMacroDelete*
 
-Delets {macro} from latex-suite/macros/ directory. When used without any
-arguments lists all available macros defined in latex-suite/macros/ directory
-and prompt you to choose one of them.
+Delets {macro} from your local ftplugin/latex-suite/macros/ directory.
+When used without any arguments lists all available macros defined in
+latex-suite/macros/ directory and prompt you to choose one of them.
+When you choose to delete {macro} which is not in your local directory
+LaTeX-Suite will refuse to delete it.
+In Vim >= 6.2 works completion of names of macros (see 'wildmenu',
+'wildmode' for more about command-line completion)
 
 
 :TPackage [{package, ...}]                                  *ls_9_2_5* *ls_a_cp*
@@ -2015,6 +2035,8 @@ When used without any arguments lists all available templates from
 latex-suite/templates/ directory and prompts to choose one of them. With one
 argument :0|read| {template} file. With more than one argument it will not work
 :)
+In Vim >= 6.2 works completion of names of macros (see 'wildmenu',
+'wildmode' for more about command-line completion)
 
 
 :TSection [{argument}]                                      *ls_9_2_9* *ls_a_ct*
@@ -2051,7 +2073,7 @@ will result in \part{}. It is possible to use full names of sections: :TSection
 part
 
 
-TSectionAdvanced                                           *ls_9_2_10* *ls_a_cu*
+:TSectionAdvanced                                          *ls_9_2_10* *ls_a_cu*
                                                               *TSectionAdvanced*
 
 Accepts the same arguments as |TSection| but leads to a couple of questions
@@ -2060,7 +2082,7 @@ is a shorter name for the table of contents) and then creates a more intelligent
 template.
 
 
-TLook                                              *ls_9_2_11* *ls_a_cv* *TLook*
+:TLook                                             *ls_9_2_11* *ls_a_cv* *TLook*
 
 Accepts one argument. Will look through .tex files in directory of edited file
 for argument. It can be regexp. You don't have to enclose argument in "". <cr>
@@ -2069,7 +2091,7 @@ TLook uses :grep command and is using 'grepprg'. Its regular expressions can be
 different from those of Vim.
 
 
-TLookBib                                                   *ls_9_2_12* *ls_a_cw*
+:TLookBib                                                  *ls_9_2_12* *ls_a_cw*
                                                                       *TLookBib*
 
 Accepts one argument. Will look through .bib files in directory of edited file
@@ -2082,7 +2104,7 @@ NOTE: TLookBib uses :grep command and is using 'grepprg'. Its regular
       
 
 
-TLookAll                                                   *ls_9_2_13* *ls_a_cx*
+:TLookAll                                                  *ls_9_2_13* *ls_a_cx*
                                                                       *TLookAll*
 
 Accepts one argument. Will look through all files in directory of edited file
@@ -2092,7 +2114,7 @@ TLookuses :grep command and is using 'grepprg'. Its regular expressions can be
 different from those of Vim.
 
 
-TPartComp                                                  *ls_9_2_14* *ls_a_cy*
+:TPartComp                                                 *ls_9_2_14* *ls_a_cy*
                                                                      *TPartComp*
 
 No argument allowed but accepts range in all formats. Define fragment of
@@ -2100,13 +2122,13 @@ interest with :'a,'b, :/a/,/b/, :'<,'> or :20,30. All other rules of compilation
 apply.
 
 
-TPartView                                                  *ls_9_2_15* *ls_a_cz*
+:TPartView                                                 *ls_9_2_15* *ls_a_cz*
                                                                      *TPartView*
 
 Show last compiled fragment. All rules of viewing apply but |latex-searching|.
 
 
-Tshortcuts [{arg}]                                         *ls_9_2_16* *ls_a_cA*
+:Tshortcuts [{arg}]                                        *ls_9_2_16* *ls_a_cA*
                                                                     *Tshortcuts*
 
 Show shortcuts in terminal (not using menu). Without {arg} you will see simple
