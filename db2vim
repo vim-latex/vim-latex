@@ -151,7 +151,19 @@ def handleArticleInfo(articleinfo, width):
 
     toc = makeTOC(articleinfo.parentNode, width)
 
-    return retText + '\n' + RightJustify('*' + filename + '-toc*', width) + '\n' + toc
+    foldwarn = r'''
+================================================================================
+Viewing this file
+
+This file can be viewed with all the sections and subsections folded to ease
+navigation. By default, vim does not fold help documents. To create the folds,
+press za now.
+
+See |usr_28.txt| for an introduction to folding and |fold-commands| for key
+sequences and commands to work with folds.
+'''
+
+    return retText + '\n' + RightJustify('*' + filename + '-toc*', width) + '\n' + toc + foldwarn
 
 # }}}
 # handleOption(option, width): {{{
@@ -216,15 +228,17 @@ def handleTableRoot(root, width):
 
 # }}}
 # calculateColumnWidths(rows, width): {{{
-def calculateColumnWidths(rows, width):
+def calculateColumnWidths(rows, alloc_widths):
     widths = {}
     text = []
     for row in rows:
         cols = row.getChildrenByTagName("entry")
+        if len(alloc_widths) == 1:
+            alloc_widths *= len(cols)
 
         colwidths = []
         rowtext = []
-        for col in cols:
+        for col, width in zip(cols, alloc_widths):
             coltext = handleElement(col, width)
 
             rowtext.append(coltext)
@@ -245,7 +259,7 @@ def calculateColumnWidths(rows, width):
 # }}}
 # calculateColumnWidthsDoublePass(rows, width): {{{
 def calculateColumnWidthsDoublePass(rows, width):
-    maxwidths, text = calculateColumnWidths(rows, width)
+    maxwidths, text = calculateColumnWidths(rows, [width])
 
     # now find out how many columns exceed the maximum permitted width.
     # nlarge: number of columns which are too wide.
@@ -261,9 +275,13 @@ def calculateColumnWidthsDoublePass(rows, width):
     # newmaxwidth: width which each of the large columns is allowed.
     newmaxwidth = remainingWidth/max(nlarge, 1)
 
+    newcolwidths = []
+    for colwidth in maxwidths.values():
+        newcolwidths += [max(colwidth, newmaxwidth)]
+
     # make another run and this time ask each cell to restrict itself to
     # newmaxwidth as calculated above.
-    newmaxwidth, newtext = calculateColumnWidths(rows, newmaxwidth)
+    newmaxwidth, newtext = calculateColumnWidths(rows, newcolwidths)
 
     return newmaxwidth, newtext
 
@@ -518,10 +536,9 @@ Vim folding
 The following modelines should nicely fold up the help manual.
 
 vim:ft=help:fdm=expr
-vim:foldexpr=getline(v\:lnum-1)=~"=\\\\{80,}"?"a1"\:(getline(v\:lnum+1)=~"=\\\\{80,}"?"s1"\:"=")
+vim:foldexpr=getline(v\:lnum-1)=~'-\\{80}'?'>2'\:getline(v\:lnum-1)=~'=\\{80}'?'>1'\:getline(v\:lnum)=~'=\\{80}'?'0'\:getline(v\:lnum)=~'-\\{80}'?'1'\:'='
 vim:foldtext=v\:folddashes.substitute(getline(v\:foldstart),"\\\\s*\\\\*.*","","")
-================================================================================
-'''
+================================================================================'''
 
     processedDoc = handleElement(dom.documentElement)
     processedDoc = re.sub(r'&codeend;([^\n]*)\n\s([ ]+)', '\n<\g<2>\g<1>\n \g<2>', processedDoc)
