@@ -1,2 +1,22 @@
-let g:TeX_package_cite = "bra:halo,sep:,env:ja"
-let g:TeX_package_option_cite = "to,ja,bede"
+let g:TeX_package_option_cite = 
+\ "verbose,"
+\."nospace,"
+\."space,"
+\."nosort,"
+\."sort,"
+\."noadjust"
+
+let g:TeX_package_cite = 
+\ "bra:cite,"
+\."bra:citen,"
+\."bra:citenum,"
+\."bra:citeonline,"
+\."bra:nocite,"
+\."sep:redefine,"
+\."bra:citeform,"
+\."bra:citepunct,"
+\."bra:citeleft,"
+\."bra:citeright,"
+\."bra:citemid,"
+\."bra:citedash"
+
