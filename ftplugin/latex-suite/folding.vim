@@ -35,7 +35,7 @@ function! Tex_SetFoldOptions()
 	call Tex_MakeMap(s:ml."rf", "<Plug>Tex_RefreshFolds", 'n', '<silent> <buffer>')
 
 endfunction " }}}
-" FoldSections: creates section folds {{{
+" Tex_FoldSections: creates section folds {{{
 " Author: Zhang Linbo
 " Description:
 " 	This function takes a comma seperated list of "sections" and creates fold
@@ -44,17 +44,21 @@ endfunction " }}}
 " 	definition of the lst input argument.
 "
 " 	**works recursively**
-function! FoldSections(lst, endpat)
+function! Tex_FoldSections(lst, endpat)
 	let i = match(a:lst, ',')
 	if i > 0
 		let s = strpart(a:lst, 0, i)
 	else
 		let s = a:lst
 	endif
-	let s = '^\s*\\' . s . '\W'
+	if s =~ '%%fakesection'
+		let s = '^\s*' . s
+	else
+		let s = '^\s*\\' . s . '\W'
+	endif
 	let endpat = s . '\|' . a:endpat
 	if i > 0
-		call FoldSections(strpart(a:lst,i+1), endpat)
+		call Tex_FoldSections(strpart(a:lst,i+1), endpat)
 	endif
 	let endpat = '^\s*\\appendix\W\|' . endpat
 	call AddSyntaxFoldItem(s, endpat, 0, -1)
@@ -276,7 +280,7 @@ function! MakeTexFolds(force)
 
 	" Sections {{{
 	if g:Tex_FoldedSections != '' 
-		call FoldSections(g:Tex_FoldedSections,
+		call Tex_FoldSections(g:Tex_FoldedSections,
 			\ '^\s*\\frontmatter\|^\s*\\mainmatter\|^\s*\\backmatter\|'
 			\. '^\s*\\begin{thebibliography\|>>>\|^\s*\\endinput\|'
 			\. '^\s*\\end{document')
