@@ -1801,7 +1801,7 @@ Tex_FoldedSections                                          *ls_8_2_1* *ls_a_ch*
 
 This entry defines which sections will be folded. This setting is a comma
 seperated list of section names. The default value is:  >
-    slide,part,chapter,section,%%fakesection,
+    part,chapter,section,%%fakesection,
     subsection,subsubsection,paragraph
 Each of the entries in the list will fold up a section of the corresponding
 name. The %%fakesection section is provided as a means for the user to group
@@ -1834,7 +1834,7 @@ Tex_FoldedCommands                                          *ls_8_2_3* *ls_a_cj*
                                                             *Tex_FoldedCommands*
 
 This entry defines which commands will be folded. It is a comma seperated string
-of words each of which defines a single command. The defualt setting is empty,
+of words each of which defines a single command. The default setting is empty,
 i.e no commands are folded. The words need not be standard Latex commands. You
 can use whatever words you like. Each word will fold all commands whose name
 begins with that word as in the case of the Tex_FoldedEnvironments [|ls_a_ci|]
