@@ -18,7 +18,11 @@ let g:Tex_Completion = 1
 function! Tex_SetTexViewerMaps()
 	inoremap <silent> <Plug>Tex_Completion <Esc>:call Tex_completion("default","text")<CR>
 	if !hasmapto('<Plug>Tex_Completion', 'i')
-		imap <buffer> <silent> <F9> <Plug>Tex_Completion
+		if has('gui_running')
+			imap <buffer> <silent> <F9> <Plug>Tex_Completion
+		else
+			imap <buffer> <F9> <Plug>Tex_Completion
+		endif
 	endif
 endfunction
 
@@ -79,7 +83,7 @@ function! Tex_completion(what, where)
 		" from which we need to extract
 		" 	s:type = 'psfig'
 		" 	s:typeoption = '[option=value]'
-		let pattern = '.*\\\(\w\{-}\)\(\[.\{-}\]\)\?{\(\a\+=\)\?$'
+		let pattern = '.*\\\(\w\{-}\)\(\[.\{-}\]\)\?{\(\S\+\)\?$'
 		if s:curline =~ pattern
 			let s:type = substitute(s:curline, pattern, '\1', 'e')
 			let s:typeoption = substitute(s:curline, pattern, '\2', 'e')
@@ -92,6 +96,7 @@ function! Tex_completion(what, where)
 		if exists("s:type") && s:type =~ 'ref'
 			call Tex_Debug("silent! grep! '\\label{".s:prefix."' ".s:search_directory.'*.tex', 'view')
 			exe "silent! grep! '\\label{".s:prefix."' ".s:search_directory.'*.tex'
+			redraw!
 			call <SID>Tex_c_window_setup()
 
 		elseif exists("s:type") && s:type =~ 'cite'
@@ -106,6 +111,7 @@ function! Tex_completion(what, where)
 			else
 				call Tex_Debug('calling Tex_GrepForBibItems', 'bib')
 				call Tex_GrepForBibItems(s:prefix)
+				redraw!
 				call <SID>Tex_c_window_setup()
 			endif
 			if g:Tex_RememberCiteSearch && &ft == 'qf'
