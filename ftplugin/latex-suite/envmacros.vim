@@ -25,6 +25,8 @@ let s:table =      "\\begin{table}\<cr>\\centering\<cr>\\begin{tabular}{<+dimens
 let s:array =      "\\left<++>\<cr>\\begin{array}{<+dimension+>}\<cr><+elements+>\<cr>\\end{array}\<cr>\\right<++>"
 let s:description ="\\begin{description}\<cr>\\item[<+label+>]<++>\<cr>\\end{description}<++>"
 let s:document =   "\\documentclass[<+options+>]{<+class+>}\<cr>\<cr>\\begin{document}\<cr><++>\<cr>\\end{document}"
+let s:tabular = "\\begin{tabular}[<+hbtp+>]{<+format+>}\<cr><++>\<cr>\\end{tabular}"
+let s:tabular_star = "\\begin{tabular*}[<+hbtp+>]{<+format+>}\<cr><++>\<cr>\\end{tabular*}"
 
 " }}}
 " define environments with special behavior in line wise selection. {{{
@@ -213,8 +215,8 @@ call s:Tex_SpecialMacros('ETE', '&Tables.', 'table', s:table)
 call s:Tex_EnvMacros('ETG', '&Tables.', 'tabbing')
 call s:Tex_EnvMacros('',    '&Tables.', 'table*')
 call s:Tex_EnvMacros('',    '&Tables.', 'table2')
-call s:Tex_EnvMacros('ETR', '&Tables.', 'tabular')
-call s:Tex_EnvMacros('',    '&Tables.', 'tabular*')
+call s:Tex_SpecialMacros('ETR', '&Tables.', 'tabular', s:tabular)
+call s:Tex_SpecialMacros('', '&Tables.', 'tabular*', s:tabular_star)
 " }}}
 " Math {{{
 call s:Tex_EnvMacros('EAR', '&Math.', 'array')
