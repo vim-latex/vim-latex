@@ -74,9 +74,15 @@ function! Tex_Complete(what, where)
 		endif
 
 		if exists("s:type") && s:type =~ 'ref'
-			call Tex_Debug("silent! grep! ".Tex_EscapeForGrep('\\label{'.s:prefix)." *.tex", 'view')
-			silent! grep! ____HIGHLY_IMPROBABLE___ %
-			call Tex_GrepHelper(s:prefix, 'label')
+			if Tex_GetVarValue('Tex_UseSimpleLabelSearch', 0) == 1
+				call Tex_Debug("Tex_Complete: searching for \\labels in all .tex files in the present directory", "view")
+				call Tex_Debug("Tex_Complete: silent! grep! ".Tex_EscapeForGrep('\\label{'.s:prefix)." *.tex", 'view')
+				exec "silent! grep! ".Tex_EscapeForGrep('\\label{'.s:prefix)." *.tex"
+			else
+				call Tex_Debug("Tex_Complete: calling Tex_GrepHelper", "view")
+				silent! grep! ____HIGHLY_IMPROBABLE___ %
+				call Tex_GrepHelper(s:prefix, 'label')
+			endif
 			redraw!
 			call <SID>Tex_SetupCWindow()
 
@@ -91,7 +97,6 @@ function! Tex_Complete(what, where)
 			if g:Tex_RememberCiteSearch && exists('s:citeSearchHistory')
 				call <SID>Tex_SetupCWindow(s:citeSearchHistory)
 			else
-				call Tex_Debug('calling Tex_GrepHelper', 'view')
 				call Tex_GrepHelper(s:prefix, 'bib')
 				redraw!
 				call <SID>Tex_SetupCWindow()
