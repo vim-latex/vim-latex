@@ -1,6 +1,6 @@
 " Author: Mikolaj Machowski <mikmach@wp.pl>
 " (c) Copyright by Mikolaj Machowski 2002
-" Last Change: wto gru 10 09:00  2002 C
+" Last Change: czw gru 12 11:00  2002 C
 " License: Vim Charityware
 "
 " Plik jest w kodowaniu iso-8859-2. Je¶li chcesz go uzywac w MS-Windows musisz
@@ -86,7 +86,7 @@ endfunction
 
 function! s:Tex_polish_space()
 	"Nic magicznego w matematyce
-	 if synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^texMath'
+	 if synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^texMath\|^texZone'
 		 return ' '
 	 else
 		let s:col = col('.')
