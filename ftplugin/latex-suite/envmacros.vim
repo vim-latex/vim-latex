@@ -71,7 +71,6 @@ function! <SID>Tex_EnvMacros(lhs, submenu, name)
 		let location = location.a:lhs.'\ ('.vlhs.')'
 
 		if g:Tex_EnvironmentMaps && !exists('s:doneOnce')
-			" call IMAP (a:lhs, '\begin{'.a:name."}\<CR>".extra."<++>\<CR>\\end{".a:name."}<++>", 'tex')
 			call IMAP(a:lhs, "\<C-r>=Tex_PutEnvironment('".a:name."')\<CR>", 'tex')
 			exec 'vnoremap <silent> '.vlhs.' '.vrhs
 		endif
