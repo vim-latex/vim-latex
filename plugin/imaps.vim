@@ -7,7 +7,7 @@
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
 "
-" Last Change: Mon Dec 30 02:00 AM 2002 PST
+" Last Change: Tue Dec 31 01:00 AM 2002 PST
 " 
 " Documentation: {{{
 "
@@ -268,7 +268,14 @@ function! IMAP_PutTextWithMovement(str, ...)
 
 	" A very rare string: Do not use any special characters here. This is used
 	" for moving to the beginning of the inserted text.
-	let marker = '<!---@#%_Start_Here_@#%----!>'
+	" When phs != phe, we are guarenteed that unless the user has done bad
+	" things, phs.phs will never occur in the file.
+	if phsUser != pheUser
+		let marker = phsUser.phsUser
+	else
+		let marker = '<!---@#%_Start_Here_@#%----!>'
+	endif
+	call Tex_Debug('marker = '.marker)
 	let markerLength = strlen(marker)
 
 	" Problem:  depending on the setting of the 'encoding' option, a character
@@ -403,20 +410,59 @@ endfunction
 
 " }}}
 " Maps for IMAP_Jumpfunc {{{
+"
+" These mappings use <Plug> and thus provide for easy user customization. When
+" the user wants to map some other key to jump forward, he can do for
+" instance:
+"   nmap ,f   <plug>IMAP_JumpForward
+" etc.
+
+" jumping forward and back in insert mode.
+imap <silent> <Plug>IMAP_JumpForward    <c-r>=IMAP_Jumpfunc('', 0)<CR>
+imap <silent> <Plug>IMAP_JumpBack       <c-r>=IMAP_Jumpfunc('b', 0)<CR>
+
+" jumping in normal mode
+nmap <silent> <Plug>IMAP_JumpForward        i<c-r>=IMAP_Jumpfunc('', 0)<CR>
+nmap <silent> <Plug>IMAP_JumpBack           i<c-r>=IMAP_Jumpfunc('b', 0)<CR>
+
+" deleting the present selection and then jumping forward.
+vmap <silent> <Plug>IMAP_DeleteAndJumpForward       "_<Del>i<c-r>=IMAP_Jumpfunc('', 0)<CR>
+vmap <silent> <Plug>IMAP_DeleteAndJumpBack          "_<Del>i<c-r>=IMAP_Jumpfunc('b', 0)<CR>
+
+" jumping forward without deleting present selection.
+vmap <silent> <Plug>IMAP_JumpForward       <C-\><C-N>i<c-r>=IMAP_Jumpfunc('', 0)<CR>
+vmap <silent> <Plug>IMAP_JumpBack          <C-\><C-N>i<c-r>=IMAP_Jumpfunc('b', 0)<CR>
+
+" }}}
+" Default maps for IMAP_Jumpfunc {{{
 " map only if there is no mapping already. allows for user customization.
-if !hasmapto('IMAP_Jumpfunc')
-    inoremap <C-J> <c-r>=IMAP_Jumpfunc('', 0)<CR>
-    inoremap <C-K> <c-r>=IMAP_Jumpfunc('b', 0)<CR>
-    nmap <C-J> i<C-J>
-    nmap <C-K> i<C-K>
-	if exists('g:Imap_StickyPlaceHolders') && g:Imap_StickyPlaceHolders
-		vmap <C-J> <C-\><C-N>i<C-J>
-		vmap <C-K> <C-\><C-N>i<C-K>
-	else
-		vmap <C-J> <Del>i<C-J>
-		vmap <C-K> <Del>i<C-K>
+if !hasmapto('<Plug>IMAP_JumpForward', 'i')
+    imap <C-J> <Plug>IMAP_JumpForward
+endif
+if !hasmapto('<Plug>IMAP_JumpBack', 'i')
+    imap <S-C-J> <Plug>IMAP_JumpBack
+endif
+if !hasmapto('<Plug>IMAP_JumpForward', 'n')
+    nmap <C-J> <Plug>IMAP_JumpForward
+endif
+if !hasmapto('<Plug>IMAP_JumpBack', 'n')
+    nmap <S-C-J> <Plug>IMAP_JumpBack
+endif
+if exists('g:Imap_StickyPlaceHolders') && g:Imap_StickyPlaceHolders
+	if !hasmapto('<Plug>IMAP_JumpForward', 'v')
+		vmap <C-J> <Plug>IMAP_JumpForward
 	endif
-end
+	if !hasmapto('<Plug>IMAP_JumpBack', 'v')
+		vmap <S-C-J> <Plug>IMAP_JumpBack
+	endif
+else
+	if !hasmapto('<Plug>IMAP_DeleteAndJumpForward', 'v')
+		vmap <C-J> <Plug>IMAP_DeleteAndJumpForward
+	endif
+	if !hasmapto('<Plug>IMAP_DeleteAndJumpBack', 'v')
+		vmap <S-C-J> <Plug>IMAP_DeleteAndJumpBack
+	endif
+endif
 " }}}
 
 nmap <silent> <script> <plug><+SelectRegion+> `<v`>
