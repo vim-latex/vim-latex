@@ -140,6 +140,7 @@ if !exists('s:doneMappings')
 	" This function sets up fake maps of the following forms:
 	" 	``[aA]  -> ``[aA]    (for writing in quotations)
 	" 	\`[aA]  -> \`[aA]    (for writing diacritics)
+	" 	"`[aA]  -> "`[aA]    (for writing german quotations)
 	" It does this for all printable lower ascii characters just to make sure
 	" we dont let anything slip by.
 	function! s:ProtectLetters(first, last)
@@ -148,6 +149,7 @@ if !exists('s:doneMappings')
 			if nr2char(i) =~ '[[:print:]]'
 				call IMAP('``'.nr2char(i), '``'.nr2char(i), 'tex')
 				call IMAP('\`'.nr2char(i), '\`'.nr2char(i), 'tex')
+				call IMAP('"`'.nr2char(i), '\`'.nr2char(i), 'tex')
 			endif
 			let i = i + 1
 		endwhile
