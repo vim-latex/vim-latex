@@ -1,7 +1,6 @@
 " ==============================================================================
 " Author: Carl Mueller
 " 		  (incorporated into latex-suite by Srinath Avadhanula)
-" Last Change: Tue Dec 31 11:00 AM 2002 PST
 " Description:
 " 	This ftplugin provides the following maps:
 " . <M-b> encloses the previous character in \mathbf{}
@@ -21,6 +20,10 @@
 "       2. <<M-l>       \langle\rangle
 "       3. q<M-l>       \lefteqn{}
 "     otherwise insert  \label{}
+" . <M-i> inserts \item commands at the current cursor location depending on
+"       the surrounding environment. For example, inside itemize, it will
+"       insert a simple \item, but within a description, it will insert
+"       \item[<+label+>] etc.
 " 
 " These functions make it extremeley easy to do all the \left \right stuff in
 " latex.
@@ -52,6 +55,7 @@ let b:did_brackets = 1
 inoremap <silent> <Plug>Tex_MathBF      <C-r>=Tex_MathBF()<CR>
 inoremap <silent> <Plug>Tex_MathCal     <C-r>=Tex_MathCal()<CR>
 inoremap <silent> <Plug>Tex_LeftRight   <C-r>=Tex_LeftRight()<CR>
+inoremap <Plug>Tex_InsertItem <Esc>a<C-r>=Tex_InsertItem()<CR>
 
 " Provide mappings only if the user hasn't provided a map already or if the
 " target lhs doesn't have a mapping.
@@ -65,6 +69,9 @@ if !hasmapto('<Plug>Tex_MathCal', 'i') && mapcheck('<M-c>', 'i') == ''
 endif
 if !hasmapto('<Plug>Tex_LeftRight', 'i') && mapcheck('<M-l>', 'i') == ''
 	imap <buffer> <silent> <M-l>        <Plug>Tex_LeftRight
+endif
+if !hasmapto("\<Plug>Tex_InsertItem")
+    inoremap <M-i> <C-R>=Tex_InsertItem()<CR>
 endif
 
 " }}}
@@ -157,5 +164,53 @@ function! Tex_PutLeftRight()
 		exe "normal i\\right\<Esc>l%i\\left\<Esc>l%"
 	endif
 endfunction " }}}
+" Tex_InsertItem: insert item into a list {{{
+" Description: a polymorphic function which inserts various formatted \item
+" commands depending on the environment surrounding the cursor. If outside a
+" list, then do nothing.
+"
+" (C) 2003 by Johannes Tanzler, <johannes.tanzler@aon.at>
+"     modifications by Srinath Avadhanula
+function! Tex_InsertItem()
+    " Remember where we are.
+    let curpos = line('.').' | normal! |'.virtcol('.')
+    let curline = line('.')
+
+    " Get one of the relevant environments before this line.
+    let env_line = search( 
+        \ '^\s*\\begin{\(itemize\|enumerate\|theindex\|description\|labeling\|thebibliography\)', 'bW')
+    " If none found then return.
+    if env_line == 0
+        return ''
+    endif
+    " We are at the beginning of the environment.
+    let env = matchstr(getline(env_line), '{\zs.\{-}\ze}')
+    call Tex_Debug("env = ".env, "bra")
+    " search forward for the end of the environment. If the end of the
+    " environment occurs before where we originally were, means we were
+    " outside (after the end) of the environment. In this do nothing.
+    let env_line_end = search('^\s*\\end{'.env)
+
+    call Tex_Debug("env_line = ".env_line.', env_line_end = '.env_line_end, "bra")
+    if env_line_end < curline
+        exec curpos
+        return ''
+    endif
+
+    exec curpos
+
+    if env =~ '\(itemize\|enumerate\|theindex\)'
+        return IMAP_PutTextWithMovement("\\item ")
+    elseif env =~ '\(description\|labeling\)'
+        if env =~ 'labeling' | let add = '\sfb ' | else | let add = '' | endif
+        return IMAP_PutTextWithMovement("\\item[" . add . "<+label+>] <++>")
+    elseif env =~ '\(thebibliography\)'
+        return IMAP_PutTextWithMovement("\\item[<+biblabel+>]{<+bibkey+>}<++>")
+    else
+        return ""
+    endif
+endfunction
+
+" }}}
 
 " vim:fdm=marker
