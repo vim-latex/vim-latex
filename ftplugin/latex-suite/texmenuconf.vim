@@ -4,10 +4,13 @@
 " Description: 
 " 
 " Installation:
-"  Last Change: Mon Apr 29 04:00 PM 2002 PDT
+"  Last Change: sob maj 04 10:00  2002 U
 "         TODO:
 "=============================================================================
 
+" Paths, crucial for functions
+let s:path = expand("<sfile>:p:h")
+let s:up_path = substitute(s:path, "latex-suite", "", "")
 let s:mainmenuname = 'Te&X-Suite.'
 
 if g:Tex_NestPackagesMenu
@@ -54,11 +57,19 @@ if has('gui_running') && g:Tex_Menus
 			\'   :call MakeTexFolds(1)<CR>'
 		exec 'anoremenu 80.110 '.s:mainmenuname.'-sepsuite2- :'
 	endif
+
+	if filereadable(s:up_path.'tex/texrc')
+		function! Tex_texrc()
+			exec 'split '.s:up_path.'tex/texrc'
+		endfunction
+		com! -nargs=0 TexTexrc :call Tex_texrc()
+		exec 'anoremenu 80.120 '.s:mainmenuname.'Edit\ &texrc<tab>:TexTexrc'.
+			\' :TexTexrc<CR>'
+	endif
 endif
 
 " }}}
 
-let s:path = expand("<sfile>:p:h")
 
 " ==============================================================================
 " MenuConf: configure the menus as compact/extended, with/without math
