@@ -10,7 +10,7 @@ if !(has('gui_running') && g:Tex_MathMenus && g:Tex_Menus)
 	finish
 endif
 
-let s:MathMenuName = g:Tex_MenuPrefix.'Ma&th.'
+let s:MathMenuName = g:Tex_MenuPrefix.'&Math.'
 
 function! Tex_MathMenuRemove()
 	exe 'silent! aunmenu '.s:MathMenuName

@@ -8,7 +8,7 @@
 " Paths, crucial for functions
 let s:path = expand("<sfile>:p:h")
 let s:up_path = expand("<sfile>:p:h:h")
-let s:mainmenuname = g:Tex_MenuPrefix.'Suite.'
+let s:mainmenuname = g:Tex_MenuPrefix.'S&uite.'
 
 if g:Tex_NestPackagesMenu
 	let g:Tex_PackagesMenuLocation = '81.10 '.s:mainmenuname.'&Packages.'
@@ -19,10 +19,10 @@ endif
 let g:Tex_TemplatesMenuLocation = '80.20 '.s:mainmenuname.'&Templates.'
 let g:Tex_MacrosMenuLocation = '80.20 '.s:mainmenuname.'&Macros.'
 
-let g:Tex_EnvMenuLocation = '82.20 '.g:Tex_MenuPrefix.'Environments.'
+let g:Tex_EnvMenuLocation = '82.20 '.g:Tex_MenuPrefix.'E&nvironments.'
 
 if g:Tex_NestElementMenus
-	let g:Tex_ElementsMenuLocation = '83.20 '.g:Tex_MenuPrefix.'Elements.'
+	let g:Tex_ElementsMenuLocation = '83.20 '.g:Tex_MenuPrefix.'E&lements.'
 else
 	let g:Tex_ElementsMenuLocation = '83.20 '.g:Tex_MenuPrefix
 endif
