@@ -3,7 +3,7 @@
 "      Author: Srinath Avadhanula
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Fri Apr 26 04:00 PM 2002 PDT
+" Last Change: Sun May 05 05:00 PM 2002 PDT
 " 
 "  Description: functions for compiling/viewing/searching latex documents
 "=============================================================================
@@ -102,9 +102,9 @@ function! RunLaTeX()
 	" otherwise if a *.latexmain file is found, then use that file to
 	" construct a main file.
 	elseif Tex_GetMainFileName() != ''
-		let lheadfile = Tex_GetMainFileName()
-	" otherwise just use this file.
+		let mainfname = Tex_GetMainFileName()
 	else
+		" otherwise just use this file.
 		let mainfname = expand("%:t:r")
 	endif
 
@@ -130,7 +130,7 @@ function! ViewLaTeX()
 	exec 'cd '.expand("%:p:h")
 	
 	if Tex_GetMainFileName() != ''
-		let lheadfile = Tex_GetMainFileName()
+		let mainfname = Tex_GetMainFileName()
 	else
 		let mainfname = expand("%:p:t:r")
 	endif
