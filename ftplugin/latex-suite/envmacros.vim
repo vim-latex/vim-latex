@@ -567,7 +567,7 @@ endfunction " }}}
 " Description: 
 "   Based on input argument, it calls various specialized functions.
 function! Tex_PutEnvironment(env)
-	if s:isvisual == "yes"
+	if exists("s:isvisual") && s:isvisual == "yes"
 		if a:env == '\['
 			return VEnclose('', '', '\[', '\]')
 		elseif a:env == '$$'
