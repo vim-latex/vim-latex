@@ -451,7 +451,7 @@ endfunction " }}}
 " Tex_GrepForBibItems: grep main filename for bib items {{{
 " Description: 
 function! Tex_GrepForBibItems(prefix)
-	let mainfname = Tex_GetMainFileName(':p:r')
+	let mainfname = Tex_GetMainFileName(':p')
 
 	let toquit = 0
 	if bufnr('%') != bufnr(mainfname)
