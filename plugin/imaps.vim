@@ -699,7 +699,7 @@ function! s:Iconv(text, mode)
 		return a:text
 	endif
 	let textEnc = iconv(a:text, "latin1", "utf8")
-	if textEnc !~ '\V\^' . escape(a:text, '\') . '\$''
+	if textEnc !~ '\V\^' . escape(a:text, '\') . '\$'
 		call IMAP_Debug('Encoding problems with text '.a:text.' ', 'imap')
 	endif
 	return textEnc
