@@ -201,7 +201,11 @@ function! Tex_pack_all(fname)
 	let endline = search('\\end{document}', 'W')
 	0
 
-	" Scan
+	" Scan the file. First open up all the folds, because the command
+	" /somepattern
+	" issued in a closed fold _always_ goes to the first match.
+	normal! ggVGzO
+
 	while search('^\s*\\usepackage\_.\{-}{\_.\+}', 'W')
 
 		if !exists("s:Tex_up_check")
@@ -227,7 +231,7 @@ function! Tex_pack_all(fname)
 		" The following statement puts the stuff between the { }'s of a
 		" \usepackage{stuff,foo} into @a. Do not use matchstr() and the like
 		" because we can have things split across lines and such.
-       	exec "normal! /{\<CR>\"ayi}"
+       	exec "normal! /{\<CR>\"ay/}\<CR>"
 
 		" now remove all whitespace from @a. We need to remove \n and \r
 		" because we can encounter stuff like
@@ -260,8 +264,12 @@ function! Tex_pack_all(fname)
 
 		" restore @a
 		let @a = saveA
-
 	endwhile
+
+	" TODO: This needs to be changed. In the future, we might have
+	" functionality to remember the fold-state before opening up all the folds
+	" and then re-creating them. Use mkview.vim.
+	normal! ggVGzC
 
 	" Because creating list of detected packages gives string
 	" ',pack1,pack2,pack3' remove leading ,
@@ -324,6 +332,7 @@ function! Tex_pack_all(fname)
 		while Tex_Strntok(tpd_orig, ',', fn) != ''
 			let userpackage = Tex_Strntok(tpd_orig, ',', fn)
 			let stypath = expand("%:p:h").'/'.userpackage.'.sty'
+			call Tex_Debug('userpackage = '.userpackage.', stypath = '.stypath, 'pack')
 
 			" If package with given name exists in current dir
 			" check if there are usepackage commands, newcommand etc.
