@@ -345,7 +345,7 @@ function! UpdatePreviewWindow(filename)
 
 	if &previewwindow
 		6 wincmd _
-		wincmd k
+		wincmd p
 	endif
 endfunction " }}}
 " GotoErrorLocation: goes to the correct location of error in the tex file {{{
