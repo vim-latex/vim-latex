@@ -612,7 +612,12 @@ def handleSection(section, width):
 def handleUlink(ulink, width):
     url = ulink.getAttribute('url')
     text = handleElement(ulink)
-    return text + ' |%s|' % URL_HASH[url]
+    # URL_HASH is created at the very beginning
+    if url:
+        return text + ' |%s|' % URL_HASH[url]
+    else:
+        print >> STDERR, "Warning: url attribute empty for [%s]" % text
+        return text
 
 # }}}
 # handleIndexTerm(indexterm, width)  {{{
@@ -680,6 +685,10 @@ if __name__ == "__main__":
 
     TOC_PREFIX = option.get('--prefix', 'ls_')
     DEBUG = option.has_key('-d')
+
+    if len(args) != 1:
+        print >> STDERR, "Usage error: db2vim --help for usage"
+        sys.exit(1)
 
     fileName = args[0]
     FILENAME = re.sub(r'\.\w+$', r'.txt', fileName)
