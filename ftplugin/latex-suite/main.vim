@@ -3,7 +3,7 @@
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
 "		   URL: 
-"  Last Change: sob lis 23 10:00  2002 C
+"  Last Change: pon lis 25 12:00  2002 C
 "
 " Help: 
 " Changes: {{{
@@ -474,6 +474,9 @@ exe 'source '.s:path.'/diacritics.vim'
 " ==============================================================================
 " Finally set up the folding, options, mappings and quit.
 " ============================================================================== 
+" Save 'tw' 
+let textw = &textwidth 
+
 " SetTeXOptions: sets options/mappings for this file. {{{
 function! <SID>SetTeXOptions()
 	" ':' is included because  most labels are of the form,
@@ -531,8 +534,11 @@ call <SID>SetTeXOptions()
 
 " }}}
 
-" Mappings defined in package files will overwritten all other
+" Mappings defined in package files will overwrite all other
 exe 'source '.s:path.'/packages.vim'
+
+" Restore 'tw'
+let &textwidth = textw
 
 let &cpo = s:save_cpo
 
