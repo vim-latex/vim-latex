@@ -90,26 +90,18 @@ function! RunLaTeX()
 	" close any preview windows left open.
 	pclose!
 
-	" If a *.latexmain file is found, then use that file to
-	" construct a main file.
-	if Tex_GetMainFileName() != ''
-		let mainfname = Tex_GetMainFileName()
-	else
-		" otherwise just use this file.
-		let mainfname = expand("%:t:r")
-	endif
-
-	" if a makefile exists, just use the make utility
-	if glob('makefile') != '' || glob('Makefile') != ''
-		let _makeprg = &l:makeprg
-		let &l:makeprg = 'make $*'
-		if exists('s:target')
-			exec 'make '.s:target
-		else
-			exec 'make'
-		endif
-		let &l:makeprg = _makeprg
-	elseif exists("g:partcomp")
+    " Logic to choose how to compile:
+    " if g:partcomp is set
+    "   do partial compilation
+    " else if there is a makefile and no .latexmain
+    "   do make
+    " else
+    "   call the latex compiler on
+    "     the current file if there is not .latexmain
+    "     .latexmain if there is one
+    "
+    " if partial compilation is wanted
+	if exists("g:partcomp")
 		" Change directory to location of temporary file. In this way output 
 		" files will be in temporary directory (no garbage in real current 
 		" directory). System will take care about space.
@@ -118,9 +110,29 @@ function! RunLaTeX()
 		exe 'lcd '.pcomdir
 		exec 'make '.g:tfile
 		exe 'lcd '.curdir
-	else
-		exec 'make '.mainfname
-	endif
+    else 
+        let mainfname = Tex_GetMainFileName()
+        " if a makefile and no *.latexmain exists, just use the make utility
+        " this also sets mainfname for the rest of the function
+        if (glob('makefile') != '' || glob('Makefile') != '') && mainfname == ''
+            let mainfname = expand("%:t:r")
+            let _makeprg = &l:makeprg
+            let &l:makeprg = 'make $*'
+            if exists('s:target')
+                exec 'make '.s:target
+            else
+                exec 'make'
+            endif
+            let &l:makeprg = _makeprg
+        else
+            " otherwise, if a *.latexmain file is found, then use that file to
+            " construct a main file.
+            if mainfname == ''
+                let mainfname = expand("%:t:r")
+            endif
+            exec 'make '.mainfname
+        endif
+    endif
 
 	let winnum = winnr()
 
@@ -455,11 +467,13 @@ function! <SID>SetCompilerMaps()
 	if !hasmapto('RunLaTeX')
 		if has("gui")
 			nnoremap <buffer> <Leader>ll :silent! call RunLaTeX()<cr>
+			vnoremap <buffer> <Leader>lc :call Tex_PartCompilation("f","l","v")<cr>
 			nnoremap <buffer> <Leader>lv :silent! call ViewLaTeX("all")<cr>
 			nnoremap <buffer> <Leader>lp :silent! call ViewLaTeX("part")<cr>
 			nnoremap <buffer> <Leader>ls :silent! call ForwardSearchLaTeX()<cr>
 		else
 			nnoremap <buffer> <Leader>ll :call RunLaTeX()<cr>
+			vnoremap <buffer> <Leader>lc :call Tex_PartCompilation("f","l","v")<cr>
 			nnoremap <buffer> <Leader>lv :call ViewLaTeX("all")<cr>
 			nnoremap <buffer> <Leader>lp :call ViewLaTeX("part")<cr>
 			nnoremap <buffer> <Leader>ls :call ForwardSearchLaTeX()<cr>
