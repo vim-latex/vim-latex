@@ -1,0 +1,2 @@
+let g:TeX_package_cite = "bra:halo,sep:,env:ja"
+let g:TeX_package_option_cite = "to,ja,bede"

@@ -1,0 +1,15 @@
+#!/usr/bin/bash
+# remove a few problems with the output of the latex compiler.
+# 1. sometimes the compiler splits a single linenumber into multiple lines.
+#    therefore join lines when the first ends in '\d\+' and the second starts
+#    with the same
+# 2. sometimes there are more than 2 closing or opening brackets in the
+#    same line. vim's 'efm' cannot handle the case where multiple files
+#    have to be popped in the same line. therefore if a line has more than
+#    1 ( or), push them to the next line.
+latex $* | \
+sed -e '/[0-9]\+$/{N;s/\n\([0-9]\+\)/\1/;}' | \
+sed -e 's/(/\
+(/g' | \
+sed -e 's/)/)\
+/g' 

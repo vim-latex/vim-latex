@@ -1,0 +1,23 @@
+let g:TeX_package_option_polski = "OT1,OT4,T1,plmath,nomathsymbols,MeX"
+let g:TeX_package_polski = 
+\"sbr:Dywiz&Ska,".
+\"dywiz,".
+\"pauza,".
+\"ppauza,".
+\"prefixing,".
+\"nonprefixing,".
+\"PLdateending,".
+\"sbr:Matematyka,".
+\"arccos,".
+\"arcctan,".
+\"arcsin,".
+\"arctan,".
+\"ctan,".
+\"ctanh,".
+\"tan,".
+\"tanh,".
+\"bra:arc,".
+\"ctg,".
+\"ctgh,".
+\"tg,".
+\"tgh"

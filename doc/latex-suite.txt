@@ -1,0 +1,849 @@
+*latex-suite*   Tools for an enhanced LaTeX environment in Vim
+                        For Vim version 6.0 and above.
+                  Last Change: Mon Apr 29 01:00 PM 2002 PDT
+
+                 By Srinath Avadhanula <srinath@fastmail.fm>,
+                      Mikolaj Machowski <mikmach@wp.pl>
+                         et. al (|latex-suite-credits|)
+
+
+Latex-Suite attempts to provide a comprehensive set of tools to view, edit and
+compile LaTeX documents in Vim. Together, they provide tools starting from
+macros to speed up editing LaTeX documents to functions for forward searching
+.dvi documents. Latex-suite has been possible because of the contributions of
+many people. Please see |latex-suite-credits| for a list of people who have
+helped.
+
+{Vi of course does not have any of this}
+NOTE: If you are viewing this in vim 6.0+, then the sections should appear
+      folded (see |folding|). Use |za| to toggle back and forth between open
+      and closed views.
+NOTE: If the sections do not appear folded, press za in normal mode. This will
+      fold up everything and it will be much easier to navigate.
+
+===========================================================================
+OVERVIEW                               *latex-suite-overview* {{{
+
+                                             *latex-suite-optimal-settings*
+Latex-Suite works best if you have the following settings in your ~/.vimrc:
+>
+    " this line is responsible for loading latex-suite when a .tex file is
+    " opened.
+<   filetype plugin on >
+    " for automatic indentation specific to LaTeX.
+<   filetype indent on >
+
+In addition, the following settings could go in your ~/.vim/ftplugin/tex.vim
+file:  >
+
+    " this is mostly a matter of taste. but LaTeX looks good with just a bit
+    " of indentation.
+<   set sw=2 >
+    " TIP: if you write your \label's as \label{fig:something}, then if you
+    " type in \ref{fig: and press <C-n> you will automatically cycle through 
+    " all the figure labels.
+<   set iskeyword+=: >
+
+
+The tools which are included in LaTeX suite can be grouped together into the
+following. Almost every feature described here can be customized to some
+degree. Please see the included file latex-suite/texrc file for the complete
+list of variables which can be customized.
+
+TABLE OF CONTENTS                                         *latex-suite-toc*
+                                                          
+|latex-macros|      Insert and visual mode mappings and menu items for
+                    commonly used LaTeX typesetting elements 
+
+|latex-compiling|   This version of latex-suite ships with a version of the
+                    compiler specification which produces slightly less
+                    verbose output. It can also be dynamically re-configured
+                    to change the verbosity level.
+
+|latex-viewing|     This is a set of functions which open up the compiled .dvi
+                    document using the specified DVI viewer.
+
+|latex-searching|   Xdvi (for UNIX) and Yap (for Windows) both provide ways
+                    for "forward searching" LaTeX documents. This section
+                    describes how to use these features and how to set up your
+                    dvi viewer to best use this feature.
+
+|latex-folding|     manual folding based on LaTeX syntax elements. 
+
+|latex-packages|    This module provides a way to generate custom menus based
+                    on the packages used in the file being edited.
+
+|latex-templates|   Custom templates
+
+|latex-macros|      Custom macros
+
+|latex-help|        LaTeX's tex-info file translated into a vim help file.
+
+|latex-dictionary|  A dictionary of standard LaTeX terms.
+
+|latex-tools|       This version of latex-suite also ships with 2 external
+                    tools:
+                    1. |vimlatex| an external utility which filters the output
+                       of the LaTeX compiler in order to ensure a more robust
+                       error-parsing.
+                    2. |ltags| A script to generate a tags file. It recognizes
+                       files being \input'ed into a main file.
+                       (ltags is written by Dimitri Antoniou)
+}}}
+===========================================================================
+LATEX MACROS                                   *latex-macros* {{{
+
+Latex-Suite ships with a very comprehensive set of insert mode and visual mode
+mappings and menu items to typeset most of the LaTeX elements. 
+
+We use a "macro" to refer to the collection of 3 objects, an insert mode
+mapping, a visual mode mapping and a menu item. For example, a figure macro
+refers to the insert mode mapping 'EFI', the visual mode mapping ',fi' and the
+menu item Tex-Environments.figure.
+
+For environments, sections and fonts, the insert mode mappings are a sequence
+of 3 capital letters. The visual mode mapping follows from the insert mode
+mapping by replacing the first character by a comma (',') (for environments
+and sections) or back-tick ('`') (for fonts) and converting the rest to lower
+case. >
+              | Insert Mode   |  Visual Mode
+ -------------+---------------+-------------
+ environmnts  |    EFI        |    ,fi
+ fonts        |    FSF        |    `sf
+
+The menu item also specifies the insert and visual mode macros. The menus
+behave differently from the insert mode macros in that they ask questions on
+the command line in a "wizard" sort of manner and then generate a template
+which includes the information gathered.  By contrast, the insert mode macros
+do not ask any questions and generate a template with |placeholders| at each
+input location.
+
+                                              *placeholders* *placeholder*
+                                              *place-holder* *place-holders*
+NOTE: All these macros implement Stephen Riem's bracketing system and Gergely
+Kontra's JumpFunc() for handling place-holders. This consists of using
+"place-holders" to mark off locations where the next relevant editing has to
+be done. As an example, when the user types in "EFI" in insert mode, she will
+get the following: >
+
+    \begin{figure}[h]
+        \centerline{\psfig{figure=«eps file»}}
+        \caption{«caption text»}
+        \label{fig:«label»}
+    \end{figure}«»
+<
+The text «eps file» will be selected and she will be left in |select-mode| so
+that she can continue typing straight away. After having typed in the file
+name, she can press Control-J (while still in insert-mode). This will take her
+directly to the next "place-holder". i.e, the «caption text» will be visually
+selected with vim in select mode again for typing in the caption. This saves
+on a lot of key presses.
+
+NOTE: Furthermore these mappings are are not standard mappings in the sense
+that only the last character is mapped. See plugin/imaps.vim for further
+documentation. For example, in the example above, you can press the characters
+'E', 'F' and 'I' as slowly as you wish. The characters are visible as you type
+them and you can use the movement or backspace key to correct yourself unlike
+normal mappings.
+
+The macros can be divided into the following main categories:
+---------------------------------------------------------------------------
+Environment Mappings {{{
+
+These mappings insert LaTeX "environments" such as >
+      \begin{center}
+          «»
+      \end{center}«»
+with the cursor left at the first |placeholder|.
+(The environment above is generated by typing ECE in insert mode)
+
+Rule for remembering shortcuts:
+-------------------------------
+1. All environment mappings begin with 'E'
+
+2. If the environment can be broken up into 2 distinct words, such as
+   flushright (flush + right), then the next 2 letters are the first letters
+   of the 2 words.
+   Example: >
+        flushleft  (_f_lush + _l_eft)  ---> EFL
+        flushright (_f_lush + _r_ight) ---> EFR
+        eqnarray   (_e_qn + _a_rray)   ---> EEA
+
+<  If on the other hand, the environment name cannot be broken up into 2
+   distinct words, then the next 2 letters are the first 2 letters of the name
+   of the environment.
+   Example: >
+        equation (_eq_uation)          ---> EEQ
+
+Of course, not every last one of the environments can follow this rule because
+of ambiguities. In case of doubt, pull down the Tex-Environments menu. The
+menu item should give the hint for the map.
+
+Along with the insert mode mappings, a set of visual mode mappings is
+provided which encloses the visually selected region in an environment.
+These maps are related to the corresponding insert mode mappings by the
+following rule: >
+    ECE           --> ,ce
+and so on. i.e, the leading E becomes ',' and the next 2 letters are small
+case. Some of the visual mode mappings are sensetive to whether you choose
+line-wise or character wise. For example, if you choose a word and press
+,ce, then you get \centerline{word}, whereas if you press ,ce on a line-wise
+selection, you get: >
+      \begin{center}
+          line
+      \end{center}
+
+}}}
+---------------------------------------------------------------------------
+Font Mappings: {{{
+
+These mappings insert font descriptions such as: >
+      \textsf{«»}«»
+again with the cursor at the first place-holder.
+
+Mnemonic:
+
+1. first letter is always F (F for font)
+2. next 2 letters are the 2 letters describing the font.
+
+Example: the above mapping is triggered by FSF.
+
+Just like environment mappings, you can visually select an area and press
+`sf to have it enclosed in: >
+      \textsf{word}
+or >
+      {\sffamily
+      line
+      }
+depending on character-wise or line-wise selection.
+
+}}}
+---------------------------------------------------------------------------
+Section Mappings: {{{
+
+Inserts LaTeX sections: >
+      \section
+etc. Just as in the case of environments and fonts, can be enclosed with a
+visual selection. The enclosing is not sensetive to character or line-wise
+selection.
+
+Mnemonic: (make your own!) >
+      SPA for part
+      SCH for chapter
+      SSE for section
+      SSS for subsection
+      SS2 for subsubsection
+      SPG for paragraph
+      SSP for subparagraph
+
+Example:
+    SSE in insert mode inserts >
+        \section{«»}«»
+<   If you select a word or line and press `se, then you get >
+        \section{section name}
+<   The menu item in Tex-Environments.Sections have a sub-menu called
+    'Advanced'. Choosing an item from this sub-menu asks a couple of questions
+    (whether you want to include the section in the table of contents, whether
+    there is a shorter name for the table of contents) and then creates a more
+    intelligent template.
+
+}}}
+---------------------------------------------------------------------------
+AUC-TEX key bindings: {{{ 
+
+These are simple 2 key expansions for some very commonly used LaTeX elements.
+   Examples: >
+
+	`^   expands to   \hat{«»}«»
+	`_   expands to   \bar{«»}«»
+	`6   expands to   \partial
+	`8   expands to   \infty
+	`/   expands to   \frac{«»}{«»}«»
+	`%   expands to   \frac{«»}{«»}«»
+	`@   expands to   \circ
+	`0   expands to   ^\circ
+	`=   expands to   \equiv
+	`\   expands to   \setminus
+	`.   expands to   \cdot
+	`*   expands to   \times
+	`&   expands to   \wedge
+	`-   expands to   \bigcap
+	`+   expands to   \bigcup
+	`(   expands to   \subset
+	`)   expands to   \supset
+	`<   expands to   \le
+	`>   expands to   \ge
+	`,   expands to   \nonumber
+	`~   expands to   \tilde{«»}«»
+	`;   expands to   \dot{«»}«»
+	`:   expands to   \ddot{«»}«»
+	`2   expands to   \sqrt{«»}«»
+	`|   expands to   \Big|
+	`I   expands to   \int_{«»}^{«»}«»"
+<   
+    (again, notice the convenient place-holders)
+
+In addition the visual mode macros are provided:
+>
+    `(  encloses selection in \left( and \right)
+    `[  encloses selection in \left[ and \right]
+    `{  encloses selection in \left\{ and \right\}
+    `$  encloses selection in $$ or \[ \] depending on characterwise or
+                                          linewise selection
+
+NOTE: There is no menu item for these mappings. (as of this writing).
+
+}}}
+---------------------------------------------------------------------------
+Diacritics: (by Lubomir Host) {{{
+
+Diacritics speed up typing European languages.
+
+>
+    +<l>     expands to \v{<l>}
+    =<l>     expands to \'{<l>}
+<   where <l> is a letter ('a' to 'z' and 'A' to 'Z')
+>
+    +}       expands to \"{a} 
+    +:       expands to \^{o} 
+<
+Latex-Suite also ships with a function SmartBS(), which offers another
+convinience, i.e diacritic characters are treated as a single character for
+backspacing.
+
+}}}
+---------------------------------------------------------------------------
+Greek Letters:  {{{
+>
+   Lower case:
+        `a   through `z expand to \alpha through \zeta.
+    Upper case:
+	    `D = \Delta
+	    `F = \Phi
+	    `G = \Gamma
+	    `Q = \Theta
+	    `L = \Lambda
+	    `X = \Xi
+	    `Y = \Psi
+	    `S = \Sigma
+	    `U = \Upsilon
+	    `W = \Omega
+
+NOTE: LaTeX does not support upper case for all greek alphabets.
+
+}}}
+---------------------------------------------------------------------------
+LaTeX Math Menu:  {{{
+                                                          *latex-math-menu*
+
+This menu contains over 600 commands for inserting math signs into LaTeX
+document. They are grouped into submenus as: Arrows, MathFonts, Greek
+(letters), BinaryRel(ations) and many others. At the top are basic signs
+leading into math mode. Some of symbols have hints for mappings in AUC-TeX
+style.
+
+}}}
+---------------------------------------------------------------------------
+
+}}}
+===========================================================================
+LATEX COMPILING                             *latex-compiling* {{{ 
+
+This functionality is available via the TeX-Suite menu.
+
+Latex-suite ships with a set of tools to compile LaTeX files into various
+formats and view them. 
+
+If you are using commonly used LaTeX tools, then you should be all set as soon
+as you download and install latex-suite.  In order to compile a LaTeX file,
+simply press \ll while editing the file.  This runs latex on the current file
+and displays the errors in a |quickfix-window|. You can then scroll through
+the errors and press <enter> to be taken to the location of the corresponding
+error.
+
+|latex-compiler-target|         : specifying a different target format for
+                                  compilation.
+|latex-suite-compiler|          : specifying a diffrent compiler.
+|latex-master-file|             : specifying a different file for compilation
+                                  instead of file being edited.
+|latex-compiler-customization|  : customizing the output of the
+                                  latex-compiler.
+
+                                                     *latex-compiler-target*
+In order to effectively use latex-suite to compile and view formats other than
+DVI, you will need to edit the |texrc| file and set the variables:
+>
+    g:Tex_CompileRule_<format>
+    g:Tex_ViewRule_<format>
+
+where <format> is a string like "pdf", "dvi" etc. These variables define
+``rules'' for compiling and viewing the corresponding target.
+
+Example: In texrc, the compilation rule for dvi is by default: >
+    g:Tex_CompileRule_dvi = 'latex --interaction=nonstopmode $*'
+
+Default values are also provided for ps and pdf formats. You might want to
+change these rules in texrc according to your local tex environment.
+
+Once a ``rule'' has been set up for a format, you can set the target format by
+using the {TeX-Suite.Target Format} menu item. Alternatively, you can use the
+|:TTarget| command. You can also set the viewer and compiler to different
+formats, by using the menu items or using the commands |:TCTarget| and
+|:TVTarget|. 
+
+NOTE: If you try choosing a format for which a rule is not defined, you
+will get a short warning message and no action will be taken.
+
+NOTE: Specifying a different format does not automatically account for
+dependencies. For example, if in your case you do:
+    .tex -> .dvi -> .ps -> .pdf
+then you will need to choose dvi first, compile, change format to ps, compile,
+change format and so on.
+
+                                                    *latex-suite-compiler*
+The simplest way to choose a different compiler is to edit the >
+    g:Tex_CompileRule_dvi
+variable.
+
+If however, you are only using the compiler/tex.vim module from latex-suite,
+there are a couple of other ways to change things.
+
+Just as in the case of the standard tex compiler, ``if b:tex_flavor or
+g:tex_flavor (in this precedence) variable exists, it defines TeX flavor for
+:make (actually, this is the name of executed command), and if both variables
+do not exist, it defaults to "latex"'' (from |compiler-tex|)
+
+NOTE: For win32 users user MikTeX, sometimes the latex compiler's output has a
+bug where a single number is split across different lines. In this case, put
+the included vimlatex utility somehwere in your $PATH, make it executable and
+point g:tex_flavor to it. This is not always necessary, and you might want to
+try it without vimlatex till you first notice any problem.
+
+                                                        *latex-master-file*
+Often times the file you are currently editing is only a fragment being
+\input'ed into a master tex file. In such cases you will need to do create a
+dummy file in the directory containing the current file. This dummy file is of
+the form:
+>
+    <mailfilename>.latexmain
+
+In other words, if the current file is ~/thesis/chapter.tex, where
+chapter.tex is being \input'ed into ~/thesis/main.tex, then create a file
+called >
+    main.tex.latexmain 
+< 
+in the ~/thesis directory. This will then run "latex main.tex"
+NOTE: Here main.tex.latexmain is a different file from main.tex itself.
+main.tex need not be renamed. The contents of main.tex.latexmain are not used.
+This ofcourse restricts each directory to have a single master file.
+
+                                               *latex-compiler-customization*
+Latex-suite ships with a modified (enhanced ?) version of the standard tex
+compiler plugin maintained by Artem Chuprina. The modifications allow this
+version to be customizable. i.e the user can set a verbosity level for the
+compiler. 
+
+By default it is set up in a "non-verbose", "ignore-common-warnings" mode,
+which means that irrelevant lines from the compilers output will be
+ignored and also some very common warnings are ignored.
+
+Depending on the "ignore-level", (which can be set with the command TCLevel as
+described below) the following kinds of messages are ignored.  An ignore level
+of 3 for instance means that messages of type 1-3 will be ignored. By default,
+the ignore level is set to 4. (You can change this by setting
+g:Tex_IgnoreLevel in your .vimrc). 
+
+1. LaTeX Warning: Underfull box ...
+2. LaTeX Warning: Overfull box ...
+   both these warnings (very common) are due to \hbox settings not being
+   satisfied nicely.
+3. LaTeX Warning: Specifier 'h' changed to 't'. 
+   This errors occurs when TeX is not able to correctly place a floating
+   object at a specified location, because of which it defaulted to the
+   top of the page.
+4. LaTeX Warning: You have requested ..., 
+   This warning occurs in slitex when using the xypic package.
+5. Missing number error:
+   Usually, when the name of an included eps file is spelled incorrectly,
+   then the \bb-error message is accompanied by a bunch of "missing
+   number, treated as zero" error messages. This level ignores these
+   warnings.
+   NOTE: number 5 is actually a LaTeX error, not a warning!
+
+Use >
+
+    TCLevel <level>
+
+where level is a number to set the ignore level dynamically. This will re-do
+the 'efm' so that next time you do \ll, you will not be shown those kinds of
+warnings. Use "TCLevel 0" to ignore no warnings at all, but still remain in a
+"non-verbose", i.e ignore unmatched lines mode.
+
+When TCLevel is called with the unquoted string strict as >
+
+    TClevel strict
+
+then the 'efm' switches to a "verbose", "no-lines-ignored" mode which is
+useful when you want to make final checks of your document and want to be
+careful not to let things slip by.
+
+You can also choose to ignore other kinds of patterns by setting
+g:IgnoreWarnings in your ~/.vimrc. This is a '¡' seperated list of commands.
+Its default value is: >
+	let g:Tex_IgnoredWarnings =
+		\'Underfull¡'.
+		\'Overfull¡'.
+		\'specifier changed to¡'.
+		\'You have requested¡'.
+		\'Missing number, treated as zero.'
+
+}}}
+===========================================================================
+LATEX VIEWING AND SEARCHING                   *latex-viewing* {{{
+
+Latex-suite ships with a set of functios for viewing .dvi files generated by
+LaTeX. Press \lv while viewing a tex file. This will start the dvi viewer on
+your system and display the current file in it. If the variable g:DviViewer
+exists, then it is used as the program for viewing DVI files, otherwise it
+defaults to yap for windows or xdvi for unix.
+NOTE: These programs are called with some additional arguments. If you DVI
+viewer doesnt accept these, then you will need to change the code itself. This
+will be configurable by a variable in the future.
+
+Like in the case of the compiler, you can specify the master file for the
+current file (see |latex-master-file|)
+
+                                                       *latex-searching*
+Yap for windows and some versions of xdvi for windows provide the ability to
+do "forward searching" on the .dvi file. This means that you can have the DVI
+viewer jump to a specified location. 
+
+Pressing \ls while viewing a LaTeX file will perform this function, i.e the
+viewer will jump to the location under the cursor.
+
+NOTE: MikTeX requires that the dvi file be generated using the --src-specials
+flag in order to enable forward/reverse searching. By default, latex-suite
+will call LaTeX with this argument on windows (where yap is assumed).
+
+These functions were added after a tip from Dimitri Antoniou on vim.sf.net.
+See >
+   http://vim.sourceforge.net/tips/tip.php?tip_id=225
+for a description on how to get xdvik/yap to play along with Vim.
+
+}}}
+===========================================================================
+LATEX FOLDING                                 *latex-folding* {{{
+
+Latex-suite ships with the plugin SyntaxFolds.vim which is a plugin for
+creating "fake" syntax folds on the fly. The fold method is actually manual
+but the folding is based on LaTeX syntax. This offers a speed increase over
+regular syntax folding. Ofcourse it has the disadvantage that the folds are
+not dynamic, i.e newly created syntax items are not automatically folded up.
+(This is a compromise between speed and convinience).
+
+When you open up a LaTeX file, all the portions will be automatically folded
+up. However, no new folds will be created until you press <F6> or \rf. (rf
+stands for "refresh folds").
+
+The fold-text is set to the first line of the folded text unless the fold is a
+table, figure etc. (an environment). In this case, if a \caption and/or a
+label is found in the folded region, then those are used to make a more
+meaningful fold-tex, otherwise the second line of the environment is displayed
+along with the name of the environment. In other words, the following >
+
+    \begin{figure}[h]
+      \centerline{\psfig{figure=slidercrank.eps,height=6cm}}
+      \caption{The Slider Crank Mechanism.}
+      \label{fig:slidercrank}
+    \end{figure}
+    % a LaTeX comment.
+    \begin{eqnarray}
+      \sin(\pi) = 0
+    \end{eqnarray}
+<
+will be shown as: >
+
+  +---  5 lines: figure (fig:slidercrank) : The Slider Crank Mechanism. -----
+  % a LaTeX comment.
+  +---  3 lines: eqnarray () : \sin(\pi) = 0 --------------------------------
+<
+}}}
+===========================================================================
+PACKAGE HANDLING                             *latex-packages* {{{
+                                        *latex-menu-packages*
+
+This functionality is avaiable via the Tex-Packages menu.
+
+This module provides ways of customizing the menus based on which packages
+are being used in the current LaTeX file. When latex-suite first starts up, it
+scans the |latex-master-file| for >
+    \usepackage{name}
+lines and if the corresponding package is found in the latex-suite/packages/
+directory, then creates a sub-menu based on the specification found in that
+file.
+
+                                                  *latex-package-dictionary*
+Furthermore, if a file with the same name is found in the
+latex-suite/dictionaries/ directory, then that file will be added to vim's
+'dictionary' setting for use with the |i_CTRL-X_CTRL-K| command.  Package
+dictionary file should follow outlines specified in 'dictionary'.
+
+
+                                                        *latex-package-file*
+A latex-package-file is a simple vim script which defines some global
+variables. These global variables are used by latex-suite to create the custom
+menu. See the latex-suite/packages/exmpl file for a simple example of how to
+define a customized package file.
+
+If you do make a package file for latex-suite, please consider contacting the
+|latex-suite-maintainer|.
+
+Example: 
+
+From the packages menu, choose the >
+    Tex-Packages.Supported1.SIunits 
+option. This will insert a line of form: >
+    \usepackage[«»]«»{SIunits}«»
+at the beginning of the file (with the cursor placed at the first
+|placeholder|. You will also notice that the packages menu now contains a
+sub-menu called SIunits, which contains the commands and options for the
+SIunits package.You can use this sub-menu to insert commands from the package,
+add options to the package etc.
+    
+NOTE: Since the package file is a vim-script, you could define custom
+functions there, add mappings etc.
+
+You can perform the following actions via the packages menu:
+
+{Update}           This command is to be invoked with the cursor placed on the
+                   package name. If the corresponding package is found, then a
+                   sub-menu with the supported commands, options is created.
+                   A |latex-package-dictionary| might also be created.
+
+{UpdateAll}        This function reads the preamble of the document for
+                   \usepackage lines and if latexSuite supports the detected
+                   packages, then sub-menus containing the package options and
+                   commands is created. 
+                   A |latex-package-dictionary| might also be created.
+
+{Supported}        This sub-menu contains a list of all the package files stored in
+                   latex-suite/packages directory. When you choose one of
+                   these, a \usepackage{package_name} line will inserted in
+                   the preamble of the |latex-master-file| and a sub-menu for
+                   the package will be created.
+                   If options are detected, then the inserted line is of the
+                   form:
+                        \usepackage[«»]{package_name}
+                   A |latex-package-dictionary| might also be created.
+
+}}}
+===========================================================================
+CUSTOM TEMPLATES                            *latex-templates* {{{
+
+This functionality is available via the TeX-Suite.Templates menu.
+
+This module provides a way to insert custom templates at the beginning of the
+current file.
+
+When latex-suite first starts up, it scans the latex-suite/templates/ directory
+and creates menu items based on the files found there. When you select a
+template from this menu, the file will be read in above the first line of the
+current file. 
+
+A template file can use |placeholders| for easy cursor movement. In addition,
+you can use lines such as the following for inserting dates, names
+dynamically: >
+    %        File: ¡expand("%")¡
+
+This will create a line of the form: >
+    %       File: name.tex
+
+if the current file name is name.tex.
+
+NOTE: Templates are also accessible for non-gui users with the command
+|:TexTemplate|. The argument should be name of the corresponding template
+file.  If the command is called without arguments (preferred usage), then a
+list of avaiable templates is displayed and the user is asked to choose one of
+them.
+
+You can ofcourse place your own templates in this directory.
+
+}}}
+===========================================================================
+CUSTOM MACROS                           *latex-custom-macros* {{{
+
+This functionality is available via the TeX-Suite.Macros menu.
+
+This module provides a way of inserting customized macros into the current
+file.
+
+When latex-suite starts up, it scans the latex-suite/macros/ directory and
+creates a menu from the files found there. Each file is considered as a single
+macro. You can place your own macros in this directory, using |placeholders|
+if wanted.
+
+When you choose a macro from the menu, the corresponding file is read into the
+current buffer after the current cursor position. In non-gui mode, you can
+use the |TexMacro| command instead of choosing from the menu. This command
+takes the macro file name as an argument. When called without arguments
+(preferred usage), then a list of avaiable macro files is displayed and the
+user is prompted to choose one of them).
+
+There are some other tools provided in this menu, namely:
+
+{New}            Creates a new (unnamed) buffer in the latex-suite/macros/
+                 directory. 
+                 Use the command :TexMacroNew in non-gui mode.
+
+{Edit}           Opens up the corresponding macro file for editing.
+                 Use :TexMacroEdit in non-gui mode.
+
+{Delete}         Deletes the corresponding macro. 
+                 Use the prefixed numbers for fast navigation of menus.
+                 Use :TexMacroDelete in non-gui mode.
+
+{Redraw}         Rescans the macros/ directory and refreshes the macros list.
+
+}}}
+===========================================================================
+LATEX MENU CONFIGURATION           *latex-menu-configuration* {{{
+
+                                                    *latex-menu-configure*
+
+Generally latex-suite's menus should be configured by setting options in the
+|texrc| file. But if you feel the need to change after startup, then use the
+'TeX-Suite.Configure Menu' menu option to turn some of the menus off and on,
+control the nested-ness of some of the menus etc.
+
+}}}
+===========================================================================
+LATEX HELP                                       *latex-help*  {{{
+
+latexhelp.txt is a collection of latex.info files `translated' into vim help
+format. Now you can seek for help for specific LaTeX item without exiting vim.
+
+Example: >
+    :help \kill
+gives help for the LaTeX \kill command.
+
+In order to use this help file, you will need to run |:helptags| once after
+you download and unzip latex-suite.
+
+}}}
+===========================================================================
+LATEX DICTIONARY                           *latex-dictionary* {{{
+
+Latex-suite ships with a dictionary of over 600 commands from LaTeX and
+popular packages. When latex-suite starts up, it automatically adds this
+dictionary to vim's 'dictionary' option for use with vim's |i_CTRL-X_CTRL-K|
+command. 
+
+It is also possible to load custom dictionaries automatically when packages
+load. This will happen if a package definition file >
+    latex-suite/packages/package.vim
+has a corrresponding dictionary >
+    latex-suite/dictionaries/package
+
+
+}}}
+===========================================================================
+LATEX SUITE COMMANDS                   *latex-suite-commands* {{{
+
+LatexSuite defines set of commands for non-GUI and power users. They are
+taking care about Macros, Templates and Packages.
+
+:TexMacro [{macro}]                       *TexMacro*
+                When used without any arguments lists all available macros
+                defined in latex-suite/macros/ directory and prompt you to
+                choose one of them.
+                With one argument |:read| this macro under cursor position.
+                With more than one argument it will not work :)
+
+:TexMacroEdit [{macro}]                   *TexMacroEdit*
+                Splits window for editing {macro}.
+                When used without any arguments lists all available macros
+                defined in latex-suite/macros/ directory and prompt you to
+                choose one of them.
+
+:TexMacroNew                              *TexMacroNew*
+                Splits window to write new macro. Directory in new buffer is
+                locally changed to latex-suite/macros/.
+
+:TexMacroDelete [{macro}]                 *TexMacroDelete*
+                Delets {macro} from latex-suite/macros/ directory.
+                When used without any arguments lists all available macros
+                defined in latex-suite/macros/ directory and prompt you to
+                choose one of them.
+
+:TexPackage [{package} [{package} ...]]   *TexPackage*
+                When used without any arguments lists name of the packages for
+                which support is available. Report depends if you are using
+                GUI version and/or g:Tex_Menus is set to 1 or not. When you
+                are not using menus command lists files from
+                latex-suite/dictionaries/ (this is main support for non-menus
+                version of latexSuite) if menus are on |TexPackage| lists
+                files from latex-suite/packages/ directory.
+
+                When {package} is given command turns on all possible support
+                for this {package} (|latex-menu-packages|,
+                |latex-packages-dictionary|). Number of arguments separated
+                with spaces is limited only with common sense.
+
+:TexPackageUpdate                        *TexPackageUpdate*
+                This command `reads' name of package under cursor and turns on
+                possible support.
+
+:TexPackageUpdateAll                     *TexPackageUpdateAll*
+                After issuing this command latexSuite scans the file in
+                looking for not declared packages, removing not needed entries
+                from Packages menu and turning off not necessary packages'
+                dictionaries.
+
+:TexTemplate [{template}]                *TexTemplate*
+                When used without any arguments lists all available templates
+                from latex-suite/templates/ directory and prompts to choose
+                one of them.
+                With one argument :0|read| {template} file.
+                With more than one argument it will not work :)
+
+}}}
+===========================================================================
+CREDITS                                 *latex-suite-credits* {{{
+
+And finally, the credits:
+
+Benji Fisher      : a large number of functions, environments and valuable
+                    guidance. (You'll see the name often if you browse the
+                    files).
+Lubomir Host      : provided the diacritics and also helped in development.
+Alexander Wagner  : valuable suggestions during development.
+Luc Hermitte      : his variation of Stephen Riehm's bracketing system is used
+                    in latex-suite.
+Gergely Kontra    : the clever little JumpFunc() in imaps.vim is due to him.
+                    The implementation of the templates also borrows from
+                    mu-template.vim by him.
+Dimitri Antoniou  : author of ltags and also provided the nice tip about
+                    forward / reverse search on DVI documents.
+Stephen Riehm     : the extremely helpful bracketing system is from him.
+Alan Schmitt      : provided some macros/folding elements.
+Hari Krishna Dara : for ExecMap(), the clever little function which makes
+                    typing visual mode mappings so much easier and error-free.
+Alan G Isac       : for the comprehensive BibT() function for entering bibtex
+                    entries.
+Gontran Baerts    : for libList.vim
+
+A large number of functions in latex-suite come from various other people.
+Some of those people might have been missed here. Each function should however
+have the author's name/e-mail above it. Thats the more authoritative place to
+check out who has done what.
+
+                                                *latex-suite-maintainer*
+The current maintainer(s) of latex-suite is(are)
+
+Srinath Avadhanula <srinath@fastmail.fm>
+Mikolaj Machowski <mikmach@wp.pl>
+
+}}}
+===========================================================================
+
+vim:tw=78:et:ts=4:ft=help:norl:fo+=2:fdm=marker
