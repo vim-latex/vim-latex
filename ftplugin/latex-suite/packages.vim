@@ -138,8 +138,14 @@ function! Tex_pack_updateall(force)
 	let g:Tex_PromptedEnvironments = g:Tex_PromptedEnvironmentsDefault
 	let g:Tex_PromptedCommands = g:Tex_PromptedCommandsDefault
 
-	call Tex_Debug(':Tex_pack_updateall: split '.Tex_EscapeSpaces(fname), 'pack')
-	exe 'split '.Tex_EscapeSpaces(fname)
+	if expand('%:p') != fname
+		call Tex_Debug(':Tex_pack_updateall: split '.Tex_EscapeSpaces(fname), 'pack')
+		exe 'split '.Tex_EscapeSpaces(fname)
+	else
+		call Tex_Debug(':Tex_pack_updateall: split')
+		split
+	endif
+		
 	call Tex_ScanForPackages()
 	q
 
