@@ -56,7 +56,7 @@ if has('gui_running') && g:Tex_Menus
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.30 '.s:mainmenuname.'&Compile<tab>'.s:mapleader.'ll'.
 		\'   :silent! call RunLaTeX()<CR>'
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.40 '.s:mainmenuname.'&View<tab>'.s:mapleader.'lv'.
-		\'   :silent! call ViewLaTeX("all")<CR>'
+		\'   :silent! call ViewLaTeX()<CR>'
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.50 '.s:mainmenuname.'&Search<tab>'.s:mapleader.'ls'.
 		\'   :silent! call ForwardSearchLaTeX()<CR>'
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.60 '.s:mainmenuname.'&Target\ Format<tab>:TTarget'.
@@ -66,9 +66,9 @@ if has('gui_running') && g:Tex_Menus
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.80 '.s:mainmenuname.'&Viewer\ Target<tab>:TVTarget'.
 		\'   :call SetTeXCompilerTarget("View", "")<CR>'
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.90 '.s:mainmenuname.'Set\ &Ignore\ Level<tab>:TCLevel'.
-		\'   :TCLevel NONE<CR>'
-	exec 'inoremenu '.g:Tex_MainMenuLocation.'.100 '.s:mainmenuname.'C&omplete\ Ref/Cite'.
-		\'   <Esc>:call Tex_viewer("default","text")<CR>'
+		\'   :TCLevel<CR>'
+	exec 'imenu '.g:Tex_MainMenuLocation.'.100 '.s:mainmenuname.'C&omplete\ Ref/Cite'.
+		\'   <Plug>Tex_Completion'
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.110 '.s:mainmenuname.'-sepsuite1- :'
 	" refreshing folds
 	if g:Tex_Folding
