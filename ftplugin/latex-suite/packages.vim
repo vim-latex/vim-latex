@@ -32,7 +32,7 @@ if v:version >= 602
 	"
 	function! Tex_CompletePackageName(A,P,L)
 		" Get name of packages from all runtimepath directories
-		let packnames = Tex_FileInRtp('', 'packages')
+		let packnames = Tex_FindInRtp('', 'packages')
 		let packnames = substitute(packnames, '^,', '', 'e')
 		" Separate names with \n not ,
 		let packnames = substitute(packnames,',','\n','g')
@@ -60,10 +60,10 @@ let g:Tex_PromptedCommandsDefault = g:Tex_PromptedCommands
 " Tex_pack_check: creates the package menu and adds to 'dict' setting. {{{
 "
 function! Tex_pack_check(package)
-	" Use Tex_FileInRtp() function to get first name from packages list in all
+	" Use Tex_FindInRtp() function to get first name from packages list in all
 	" rtp directories conforming with latex-suite directories hierarchy
 	" Store names in variables to process functions only once.
-	let packname = Tex_FileInRtp(a:package, 'packages')
+	let packname = Tex_FindInRtp(a:package, 'packages')
 	if packname != ''
 		exe 'runtime! ftplugin/latex-suite/packages/' . a:package
 		if has("gui_running")
@@ -74,7 +74,7 @@ function! Tex_pack_check(package)
 		endif
 	endif
 	" Return full list of dictionaries (separated with ,) for package in &rtp
-	let dictname = Tex_FileInRtp(a:package, 'dictionaries')
+	let dictname = Tex_FindInRtp(a:package, 'dictionaries')
 	if dictname != ''
 		exe 'setlocal dict+=' . dictname
 		if g:Tex_package_supported !~ a:package
@@ -91,13 +91,13 @@ endfunction
 " }}}
 " Tex_pack_uncheck: removes package from menu and 'dict' settings. {{{
 function! Tex_pack_uncheck(package)
-	if has("gui_running") && Tex_FileInRtp(a:package, 'packages') != ''
+	if has("gui_running") && Tex_FindInRtp(a:package, 'packages') != ''
 		exe 'silent! aunmenu '.g:Tex_PackagesMenuLocation.'-sep'.a:package.'-'
 		exe 'silent! aunmenu '.g:Tex_PackagesMenuLocation.a:package.'\ Options'
 		exe 'silent! aunmenu '.g:Tex_PackagesMenuLocation.a:package.'\ Commands'
 	endif
-	if Tex_FileInRtp(a:package, 'dictionaries') != ''
-		exe 'setlocal dict-='.Tex_FileInRtp(a:package, 'dictionaries')
+	if Tex_FindInRtp(a:package, 'dictionaries') != ''
+		exe 'setlocal dict-='.Tex_FindInRtp(a:package, 'dictionaries')
 	endif
 endfunction
 
@@ -257,11 +257,12 @@ endfunction
 "   packages found in the packages/ directory
 function! Tex_pack_one(...)
 	if a:0 == 0 || (a:0 > 0 && a:1 == '')
+		let packlist = Tex_FindInRtp('', 'packages')
 		let packname = Tex_ChooseFromPrompt(
 					\ "Choose a package: \n" . 
-					\ Tex_CreatePrompt(Tex_FileInRtp('','packages'), "3", ",") .
+					\ Tex_CreatePrompt(packlist, '3', ',') .
 					\ "\nEnter number or filename :", 
-					\ Tex_FileInRtp('','packages'), "\n")
+					\ packlist, ',')
 		if packname != ''
 			return Tex_pack_one(packname)
 		else
@@ -274,7 +275,7 @@ function! Tex_pack_one(...)
 		let omega = 1
 		while omega <= a:0
 			let packname = a:{omega}
-			if Tex_FileInRtp(packname, 'packages') != ''
+			if Tex_FindInRtp(packname, 'packages') != ''
 				call Tex_pack_check(packname)
 				if exists('g:TeX_package_option_'.packname)
 						\ && g:TeX_package_option_{packname} != ''

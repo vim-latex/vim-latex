@@ -15,7 +15,7 @@ let s:path = expand("<sfile>:p:h")
 
 " SetTemplateMenu: sets up the menu for templates {{{
 function! <SID>SetTemplateMenu()
-	let flist = Tex_FileInRtp('', 'templates')
+	let flist = Tex_FindInRtp('', 'templates')
 	let i = 1
 	while 1
 		let fname = Tex_Strntok(flist, ',', i)
@@ -40,14 +40,15 @@ function! <SID>ReadTemplate(...)
 	if a:0 > 0
 		let filename = a:1.'.*'
 	else
+		let filelist = Tex_FindInRtp('', 'templates')
 		let filename = 
 					\ Tex_ChooseFromPrompt("Choose a template file:\n" . 
-					\ Tex_CreatePrompt(Tex_FileInRtp('', 'templates'), 2, ",") . 
+					\ Tex_CreatePrompt(filelist, 2, ',') . 
 					\ "\nEnter number or name of file :", 
-					\ Tex_FileInRtp('', 'templates'), ",")
+					\ filelist, ',')
 	endif
 
-	let fname = Tex_FileInRtp(filename, 'templates')
+	let fname = Tex_FindInRtp(filename, 'templates')
 	silent! exe "0read ".fname
 	" The first line of the file contains the specifications of what the
 	" placeholder characters and the other special characters are.
@@ -103,7 +104,7 @@ function! <SID>Compute(what)
 endfunction
 
 " }}}
-
+" Command definitions {{{
 if v:version >= 602
 	com! -complete=custom,Tex_CompleteTemplateName -nargs=? TTemplate :call <SID>ReadTemplate(<f-args>)
 		\| :call <SID>ProcessTemplate()
@@ -112,12 +113,12 @@ if v:version >= 602
 		\| :startinsert
 
 	" Tex_CompleteTemplateName: for completing names in TTemplate command {{{
-	"	Description: get list of template names with Tex_FileInRtp(), remove full path
+	"	Description: get list of template names with Tex_FindInRtp(), remove full path
 	"	and return list of names separated with newlines.
 	"
 	function! Tex_CompleteTemplateName(A,P,L)
 		" Get name of macros from all runtimepath directories
-		let tmplnames = Tex_FileInRtp('', 'templates')
+		let tmplnames = Tex_FindInRtp('', 'templates')
 		" Separate names with \n not ,
 		let tmplnames = substitute(tmplnames,',','\n','g')
 		return tmplnames
@@ -132,5 +133,7 @@ else
 		\| :startinsert
 
 endif
+
+" }}}
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4

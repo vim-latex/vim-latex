@@ -583,12 +583,12 @@ function! Tex_ClearDebug(...)
 	endif
 endfunction " }}}
 " }}}
-" Tex_FileInRtp: check if file exists in &rtp {{{
+" Tex_FindInRtp: check if file exists in &rtp {{{
 " Description:	Checks if file exists in globpath(&rtp, ...) and cuts off the
 " 				rest of returned names. This guarantees that sourced file is
 " 				from $HOME. Drawback: doesn't respect special after directory.
 " 				If first argument == '' return list of files separated with \n	
-function! Tex_FileInRtp(filename, directory)
+function! Tex_FindInRtp(filename, directory)
 	" We need different behavior for each special subdirectory:
 	if a:directory == 'packages'
 		if a:filename != ''

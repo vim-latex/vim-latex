@@ -25,7 +25,7 @@ endif
 " }}}
 " SetCustomMacrosMenu: sets up the menu for Macros {{{
 function! <SID>SetCustomMacrosMenu()
-	let flist = Tex_FileInRtp('', 'macros')
+	let flist = Tex_FindInRtp('', 'macros')
 	exe 'amenu '.g:Tex_MacrosMenuLocation.'&New :call <SID>NewMacro("FFFromMMMenu")<CR>'
 	exe 'amenu '.g:Tex_MacrosMenuLocation.'&Redraw :call RedrawMacro()<CR>'
 
@@ -68,7 +68,7 @@ function! <SID>NewMacro(...)
 		if newmacroname == ''
 			return
 		endif
-	elseif Tex_FileInRtp(newmacroname, 'macros') != ''
+	elseif Tex_FindInRtp(newmacroname, 'macros') != ''
 		" If macro with this name already exists, prompt for another name.
 		exe "echomsg 'Macro ".newmacroname." already exists. Try another name.'"
 		let newmacroname = input("Name of new macro: ")
@@ -91,7 +91,7 @@ endfunction
 " ChooseMacro: choose a macro file {{{
 " " Description: 
 function! s:ChooseMacro(ask)
-	let filelist = Tex_FileInRtp('', 'macros')
+	let filelist = Tex_FindInRtp('', 'macros')
 	let filename = Tex_ChooseFromPrompt(
 				\ a:ask."\n" . 
 				\ Tex_CreatePrompt(filelist, 2, ',') .
@@ -141,7 +141,7 @@ function! <SID>EditMacro(...)
 					\ "Do you agree?", "&Yes\n&No", 1)
 		if ch == 1
 			new
-			exe '0read '.Tex_FileInRtp(filename, 'macros')
+			exe '0read '.Tex_FindInRtp(filename, 'macros')
 			exe 'write '.s:macrodirpath.filename.'-local'
 		endif
 		
@@ -157,7 +157,7 @@ function! <SID>ReadMacro(...)
 	if a:0 > 0
 		let filename = a:1
 	else
-		let filelist = Tex_FileInRtp('', 'macros')
+		let filelist = Tex_FindInRtp('', 'macros')
 		let filename = 
 					\ Tex_ChooseFromPrompt("Choose a macro file:\n" . 
 					\ Tex_CreatePrompt(filelist, 2, ',') . 
@@ -165,7 +165,7 @@ function! <SID>ReadMacro(...)
 					\ filelist, ',')
 	endif
 
-	let fname = Tex_FileInRtp(filename, 'macros')
+	let fname = Tex_FindInRtp(filename, 'macros')
 
 	let markerString = '<---- Latex Suite End Macro ---->'
 	let _a = @a
@@ -204,12 +204,12 @@ if v:version >= 602
 				\ :call <SID>DeleteMacro(<f-args>)
 
 	" Tex_CompleteMacroName: for completing names in TMacro... commands {{{
-	"	Description: get list of macro names with Tex_FileInRtp(), remove full path
+	"	Description: get list of macro names with Tex_FindInRtp(), remove full path
 	"	and return list of names separated with newlines.
 	"
 	function! Tex_CompleteMacroName(A,P,L)
 		" Get name of macros from all runtimepath directories
-		let macronames = Tex_FileInRtp('', 'macros')
+		let macronames = Tex_FindInRtp('', 'macros')
 		" Separate names with \n not ,
 		let macronames = substitute(macronames,',','\n','g')
 		return macronames

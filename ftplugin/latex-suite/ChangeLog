@@ -12,7 +12,7 @@
     * compiler.vim, texrc:
         Make jumping to warning/error configurable. (Preben Randhol, MM)
     * packages.vim, templates.vim, custommacros.vim, main.vim:
-        New function, Tex_FileInRtp makes possible to use files from
+        New function, Tex_FindInRtp makes possible to use files from
         system-wide directories and local. Appropriate changes in pluginable
         features - packages, directories, templates, macros. (MM)
     * packages directory:
