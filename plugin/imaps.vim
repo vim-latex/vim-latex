@@ -211,6 +211,9 @@ endfunction
 " corresponding rhs saved in s:Map_{ft}_{lhs} .
 " The place-holder variables are passed to IMAP_PutTextWithMovement() .
 function! s:LookupCharacter(char)
+	if IMAP_GetVal('Imap_FreezeImap', 0) == 1
+		return a:char
+	endif
 	let charHash = s:Hash(a:char)
 
 	" The line so far, including the character that triggered this function:
@@ -755,6 +758,24 @@ function! IMAP_Mark(action)
 		execute "call cursor" s:Mark
 	endif
 endfunction	"" }}}
+" IMAP_GetVal: gets the value of a variable {{{
+" Description: first checks window local, then buffer local etc.
+function! IMAP_GetVal(name, ...)
+	if a:0 > 0
+		let default = a:1
+	else
+		let default = ''
+	endif
+	if exists('w:'.a:name)
+		return w:{a:name}
+	elseif exists('b:'.a:name)
+		return b:{a:name}
+	elseif exists('g:'.a:name)
+		return g:{a:name}
+	else
+		return default
+	endif
+endfunction " }}}
 
 " ============================================================================== 
 " A bonus function: Snip()
