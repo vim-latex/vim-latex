@@ -408,6 +408,49 @@ Smart Dots
 
 }}}
 ===========================================================================
+LATEX VIEWER                                *latex-viewer* {{{
+
+Latex suite provides easy way of looking through BibTeX keys and completing 
+them.  The same for completion of \ref-like entries.
+
+After you insert \cite{, you can press <F9> key (still in Insert mode). Two 
+small windows will open.  Just below your main window will be list of 
+bibliography keys completed from all .bib files in directory of .tex file. 
+Name this window as cwindow.  Third window is context window to show next few 
+lines of current entry (usually the most important info like author, title 
+etc.).
+
+In cwindow you can move with j and k keys. Contex window will be automatically 
+updated. If information visible in context window is not enough you can use 
+J and K keys to move content of context window (without leaving cwindow). 
+After you choose correct bibentry press <cr>. Additional windows will close 
+and \cite{ will be completed to \cite{bibentry}. q returns to main window and 
+closes additional windows.
+
+If you remember beginning of desired key enter \cite{be. In cwindow will be 
+shown only bibkeys beginning with "be".
+
+Very similar thing you can do with \ref{, after <F9> in cwindow will be 
+visible all lines containing \label{...}. Also here use of prefix is possible.
+
+This works with all commads with "ref" or "cite" in them. Thus you will get 
+bib completion with \citen, \citenum or \pageref. If you want to create your 
+own command which use cite or ref mechanism make sure proper word is inside 
+it. Example: >
+
+        \newcommand{\pref}[1]{~(p.~\pageref{#1})}
+<
+<F9> works also with normal words. You can use it here: "Its name is 
+tetr<F9>". Now Latex-suite will look in all .tex files in directory of edited 
+file word which is beginning with "tetr". Note: <cr> has here different 
+behavior. It does not try to complete word but moves you to location chosen in 
+cwindow.
+
+Viewer module provides also three command-line utilities: |TLook|, |TLookBib| 
+and |TLookAll|.
+
+}}}
+===========================================================================
 CUSTOM TEMPLATES                            *latex-templates* {{{
 
 This functionality is available via the TeX-Suite.Templates menu.
@@ -973,6 +1016,31 @@ taking care about Macros, Templates and Packages.
                 table of contents, whether there is a shorter name for the
                 table of contents) and then creates a more intelligent
                 template.
+
+:TLook                                 *TLook*
+                Accepts one argument. Will look through .tex files in 
+                directory of edited file for argument. It can be regexp. You 
+                don't have to enclose argument in "". <cr> takes you to 
+                location. Other keys work as described in |latex-viewer|.
+                Note: TLook uses :grep command and is using 'grepprg'. Its 
+                regular expressions can be different from those of Vim.
+
+:TLookBib                              *TLookBib*
+                Accepts one argument. Will look through .bib files in 
+                directory of edited file for argument. It can be regexp. You 
+                don't have to enclose argument in "". <cr> takes you to 
+                location. Other keys work as described in |latex-viewer|.
+                Note: TLookBib uses :grep command and is using 'grepprg'.  Its 
+                regular expressions can be different from those of Vim.
+
+:TLookAll                              *TLookAll*
+                Accepts one argument. Will look through all files in directory 
+                of edited file for argument. It can be regexp. You don't have 
+                to enclose argument in "". <cr> takes you to location. Other 
+                keys work as described in |latex-viewer|.
+                Note: TLookuses :grep command and is using 'grepprg'.  Its 
+                regular expressions can be different from those of Vim.
+
 }}}
 ===========================================================================
 CREDITS                                 *latex-suite-credits* {{{
