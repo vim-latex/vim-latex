@@ -61,7 +61,11 @@ com! -nargs=+ TexLet :call <SID>SafeLet(<q-args>)
 " generating a .dvi file. Change this line if you want to set another default.
 " NOTE: Make sure that a target for this format exists in the 'Compiler rules'
 "       section below and is set up properly for your system.
-TexLet g:Tex_DefaultTargetFormat = 'dvi'
+if has('macunix')
+	TexLet g:Tex_DefaultTargetFormat = 'pdf'
+else
+	TexLet g:Tex_DefaultTargetFormat = 'dvi'
+endif
 
 " ------------------------------------------------------------------------------
 " Compiler rules {{{
@@ -101,6 +105,12 @@ if has('win32')
 	TexLet g:Tex_ViewRule_ps = 'gsview32'
 	TexLet g:Tex_ViewRule_pdf = 'AcroRd32'
 	TexLet g:Tex_ViewRule_dvi = 'yap -1'
+elseif has('macunix')
+	" Let the system pick.  If you want, you can override the choice here.
+	TexLet g:Tex_ViewRule_ps = ''
+	TexLet g:Tex_ViewRule_pdf = ''
+	" TexLet g:Tex_ViewRule_pdf = 'Acrobat\ Reader\ 5.1'
+	TexLet g:Tex_ViewRule_dvi = ''
 else
 	TexLet g:Tex_ViewRule_ps = 'ghostview'
 	TexLet g:Tex_ViewRule_pdf = 'acroread'

@@ -142,7 +142,10 @@ function! ViewLaTeX()
 		" that this particular vim and yap are connected.
 		exec '!start' s:viewer mainfname . '.' . s:target
 	elseif has('macunix')
-		execute '!open -a' s:viewer mainfname . '.' . s:target
+		if strlen(s:viewer)
+			let s:viewer = '-a ' . s:viewer
+		endif
+		execute '!open' s:viewer mainfname . '.' . s:target
 	else
 		" taken from Dimitri Antoniou's tip on vim.sf.net (tip #225).
 		" slight change to actually use the current servername instead of
