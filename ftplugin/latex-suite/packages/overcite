@@ -1,0 +1,24 @@
+let g:TeX_package_option_cite = 
+\ "verbose,"
+\."ref,"
+\."nospace,"
+\."space,"
+\."nosort,"
+\."sort,"
+\."nomove,"
+\."noadjust"
+
+let g:TeX_package_cite = 
+\ "bra:cite,"
+\."bra:citen,"
+\."bra:citenum,"
+\."bra:citeonline,"
+\."bra:nocite,"
+\."sep:redefine,"
+\."bra:citeform,"
+\."bra:citepunct,"
+\."bra:citeleft,"
+\."bra:citeright,"
+\."bra:citemid,"
+\."bra:citedash"
+
