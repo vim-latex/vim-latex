@@ -2706,6 +2706,49 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
    default values. The settings are broken up into sections according to the
    behavior which they influence. 
   </para>
+  <section id="ls-general-purpose-settings">
+   <title>General Settings</title>
+   <section id="Tex_Debug">
+    <title>Tex_Debug</title>
+    <para>
+     <informaltable frame="all">
+      <tgroup cols="2">
+       <tbody>
+        <row><entry>Type</entry><entry>boolean</entry></row>
+        <row><entry>Default Value</entry>
+         <entry><literal>0</literal></entry></row>
+       </tbody>
+      </tgroup>
+     </informaltable>
+     <para>
+      If set to 1, then latex-suite will create certain global debug
+      statements which can be printed by doing
+      <programlisting>:call Tex_PrintDebug()</programlisting>
+     </para>
+    </para>
+   </section>
+   <section id="Tex_UsePython">
+    <title>Tex_UsePython</title>
+    <para>
+     <informaltable frame="all">
+      <tgroup cols="2">
+       <tbody>
+        <row><entry>Type</entry><entry>boolean</entry></row>
+        <row><entry>Default Value</entry>
+         <entry><literal>1</literal></entry></row>
+       </tbody>
+      </tgroup>
+     </informaltable>
+     <para>
+      If &ls; detects that your vim is python enabled (using
+      <literal>has('python')</literal>), then it tries to use python in
+      certain places to speed things up. If this misbehaves, you can set
+      this to zero, in which case, &ls; will use vimscript to accomplish
+      the same.
+     </para>
+    </para>
+   </section>
+  </section>
   <section id="customizing-place-holders">
    <title>Place-Holder Customization</title>
    <para>
@@ -3340,6 +3383,35 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
      output.
     </para>
    </section>
+   <section id="Tex_UseMakefile">
+    <title>Tex_UseMakefile</title>
+    <para>
+     <informaltable frame="all">
+      <tgroup cols="2">
+       <tbody>
+        <row><entry>Type</entry><entry>boolean</entry></row>
+        <row><entry>Default Value</entry>
+         <entry><literal>1</literal></entry></row>
+       </tbody>
+      </tgroup>
+     </informaltable>
+     <para>
+      When set to 1, then if a <literal>makefile</literal> or
+      <literal>Makefile</literal> is present in the current directory, then
+      &ls; sets the <literal>makeprg</literal> option to just
+      <literal>"make &lt;target&gt;"</literal>, where
+      <literal>&lt;target&gt;</literal> is the target format chosen using
+      the <literal>TCTarget</literal> or <literal>TTarget</literal>
+      commands.
+     </para>
+     <para>
+      When set to 0, then &ls; will set the <literal>makeprg</literal>
+      setting to whatever is defined by the <link
+       linkend="Tex_CompileRule_format">g:Tex_CompileRule_target</link>
+      setting.
+     </para>
+    </para>
+   </section>
   </section>
   <section id="viewer-customization">
    <title>Viewer Customization</title>
@@ -3623,12 +3695,17 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
    <tgroup cols="2">
     <tbody>
      <row>
+      <entry>Artur R. Czechowski</entry>
+      <entry>maintains the BSD package of latex-suite. Lots of valuable
+       feedback.</entry>
+     </row>
+     <row>
       <entry>
        Lubomir Host      
       </entry>
       <entry>
        provided the diacritics and also helped in development.
-       <para></para>
+       
       </entry>
      </row>
      <row>
@@ -3637,7 +3714,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
       </entry>
       <entry>
        valuable suggestions during development.
-       <para></para>
+       
       </entry>
      </row>
      <row>
@@ -3647,7 +3724,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
       <entry>
        his variation of Stephen Riehm's bracketing system is used
        in latex-suite.
-       <para></para>
+       
       </entry>
      </row>
      <row>
@@ -3658,7 +3735,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
        the clever little JumpFunc() in imaps.vim is due to him.
        The implementation of the templates also borrows from
        mu-template.vim by him.
-       <para></para>
+       
       </entry>
      </row>
      <row>
@@ -3668,7 +3745,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
       <entry>
        author of ltags and also provided the nice tip about
        forward / reverse search on DVI documents.
-       <para></para>
+       
       </entry>
      </row>
      <row>
@@ -3677,7 +3754,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
       </entry>
       <entry>
        the extremely helpful bracketing system is from him.
-       <para></para>
+       
       </entry>
      </row>
      <row>
@@ -3685,8 +3762,9 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
        Alan Schmitt      
       </entry>
       <entry>
-       provided some macros/folding elements.
-       <para></para>
+       provided macros/folding elements. Continued feedback,
+       bug-reports/fixes.
+       
       </entry>
      </row>
      <row>
@@ -3696,7 +3774,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
       <entry>
        for ExecMap(), the clever little function which makes
        typing visual mode mappings so much easier and error-free.
-       <para></para>
+       
       </entry>
      </row>
      <row>
@@ -3706,7 +3784,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
       <entry>
        for the comprehensive BibT() function for entering bibtex
        entries.
-       <para></para>
+       
       </entry>
      </row>
      <row>
@@ -3715,7 +3793,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
       </entry>
       <entry>
        for libList.vim
-       <para></para>
+       
       </entry>
      </row>
      <row>
@@ -3725,7 +3803,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
       <entry>
        useful discussion and also a lot of bug fixes.
        the %%fakesection in folding.vim.
-       <para></para>
+       
       </entry>
      </row>
     </tbody>
