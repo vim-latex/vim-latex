@@ -1,0 +1,534 @@
+#!/usr/bin/python
+"""
+    docbk2vim file.xml
+"""
+
+import xml.dom.minidom
+import string
+import re
+import sys
+
+# Okay. so I import *. Shoot me.
+from textutils import *
+from domutils import *
+
+# define a bunch of constants for use later on.
+PAR_SPACE = 3
+OPTION_WIDTH = 50
+OPTION_OFFSET = 20
+TEXT_WIDTH = 80
+ELEMENT_SPACE = "\n"
+BLOCK_QUOTE = 4
+COL_SPACE = 2
+
+################################################################################
+# Generalized function for handling dom elements.
+################################################################################
+# IsInlineTag(self): {{{
+def IsInlineTag(self):
+    if self.nodeType == self.TEXT_NODE \
+    or ( \
+        self.nodeType == self.ELEMENT_NODE and \
+        inlineTags.get(self.tagName, 0) \
+       ) \
+    or ( \
+        self.nodeType == self.ELEMENT_NODE \
+        and not handlerMaps.has_key(self.tagName) \
+       ):
+        return 1
+    else:
+        return 0
+
+
+# }}}
+# getChildrenByTagName(self, name): {{{
+# Description: extension to the xml.dom.minidom.Element class.
+#              returns all direct descendants of this Element.
+def getChildrenByTagName(self, name):
+    nodeList = []
+
+    child = self.firstChild
+    while not child is None:
+        if child.nodeType == child.ELEMENT_NODE and child.nodeName == name:
+            nodeList.append(child)
+
+        child = child.nextSibling
+
+    return nodeList
+
+xml.dom.minidom.Element.getChildrenByTagName = getChildrenByTagName
+
+
+# }}}
+# handleElement(rootElement, width=TEXT_WIDTH): {{{
+def handleElement(rootElement, width=TEXT_WIDTH, strict=0):
+    """
+    handleElement(rootElement, width=TEXT_WIDTH):
+
+    Generalized function to handle an Element node in a DOM tree.
+    """
+
+    retText = ""
+    child = rootElement.firstChild
+    while not child is None:
+
+        # if the child is an Element and if a handler exists, then call it.
+        if not IsInlineTag(child) \
+        and child.nodeType == child.ELEMENT_NODE \
+        and handlerMaps.has_key(child.tagName):
+            # offset the child text by the current indentation value
+            retText += handlerMaps[child.tagName](child, width)
+            child = child.nextSibling
+
+        elif not IsInlineTag(child) \
+        and child.nodeType == child.PROCESSING_INSTRUCTION_NODE \
+        and child.target == 'vimhelp':
+
+            if handlerMaps.has_key(child.data):
+                retText += handlerMaps[child.data](child, width)
+
+            child = child.nextSibling
+
+        # if its a text node or an inline element node, collect consecutive
+        # text nodes into a single paragraph and indent it.
+        elif IsInlineTag(child):
+
+            text = ""
+            while not child is None and IsInlineTag(child):
+                if child.nodeType == child.TEXT_NODE:
+                    text += child.data
+                elif child.nodeType == child.ELEMENT_NODE:
+                    if handlerMaps.has_key(child.tagName):
+                        text += handlerMaps[child.tagName](child, width)
+                    else:
+                        text += GetText(child.childNodes)
+                child = child.nextSibling
+
+            retText += IndentParagraphs(text, width)
+
+        else:
+            retText += handleElement(child, width)
+            child = child.nextSibling
+
+    return retText
+
+# }}}
+
+################################################################################
+# Functions for handling various xml tags
+################################################################################
+# handleArticleInfo(articleinfo, width): {{{
+def handleArticleInfo(articleinfo, width):
+    title = articleinfo.getChildrenByTagName('title')
+    if title is None:
+        print "Article should have a title!"
+        sys.exit(1)
+
+    name = GetText(title[0].childNodes)
+    authors = articleinfo.getChildrenByTagName('author')
+
+    authorText = ''
+    for author in authors:
+        firstname = ''
+        surname = ''
+        if author.getElementsByTagName('firstname'):
+            firstname = GetTextFromElementNode(author, 'firstname')[0]
+        if author.getChildrenByTagName('surname'):
+            surname = GetTextFromElementNode(author, 'surname')[0]
+        if author.getElementsByTagName('email'):
+            email = GetTextFromElementNode(author, 'email')[0]
+        authorText = authorText + firstname + ' ' + surname + ' <' + email + '>\n'
+        
+
+    abstract = articleinfo.getChildrenByTagName('abstract')[0]
+    abstractText = handleElement(abstract, width)
+
+    filename = 'latex-suite.txt' 
+
+    retText = CenterText(name + '\n*' + filename + '*\n' + authorText, width)
+    retText += '\n\n' + CenterText('Abstract\n========', width)
+    retText += abstractText
+
+    toc = makeTOC(articleinfo.parentNode, width)
+
+    return retText + '\n' + RightJustify('*' + filename + '-toc*', width) + '\n' + toc
+
+# }}}
+# handleOption(option, width): {{{
+def handleOption(option, width):
+    retText = ""
+    names = GetTextFromElementNode(option, "name")
+
+    for name in names:
+        retText += string.rjust("*"+name+"*", width) + "\n"
+
+    nameTexts = ""
+    maxNameLen = -1
+    for name in names:
+        maxNameLen = max(maxNameLen, len(name + "    "))
+        nameTexts += name + "    \n"
+
+    desc = option.getChildrenByTagName("desc")[0]
+    descText = handleElement(desc, width=width-maxNameLen)
+
+    retText += VertCatString(nameTexts + "    ", None, descText)
+
+    return retText + "\n"
+
+# }}}
+# handleOptionDefault(default, width): {{{
+def handleOptionDefault(default, width):
+    type = string.join(GetTextFromElementNode(default, "type"), "\n")
+    extra = string.join(GetTextFromElementNode(default, "extra"), "\n")
+    return type + "\t(" + extra + ")"
+
+# }}}
+# handleTableRoot(root, width): {{{
+def handleTableRoot(root, width):
+    tgroup = root.getChildrenByTagName('tgroup')[0]
+    if tgroup is None:
+        return ''
+
+    rows = []
+    numHeadRows = 0
+    if tgroup.getChildrenByTagName('thead'):
+        thead = tgroup.getChildrenByTagName('thead')[0]
+        rows = thead.getChildrenByTagName('row')
+        numHeadRows = len(rows)
+    else:
+        headTable = ''
+
+    tbody = tgroup.getChildrenByTagName('tbody')[0]
+    rows += tbody.getChildrenByTagName('row')
+
+    widths, text = calculateColumnWidthsDoublePass(rows, width)
+    headText = text[0:numHeadRows]
+    bodyText = text[numHeadRows:]
+
+    headTable = FormatTable(headText, ROW_SPACE = 1, COL_SPACE =
+                    COL_SPACE, justify = 0, widths = widths)
+    if headTable:
+        headTable = re.sub(r'\n|$', '\g<0>~', headTable)
+    bodyTable = FormatTable(bodyText, ROW_SPACE = 1, COL_SPACE =
+                    COL_SPACE, justify = 0, widths = widths)
+
+    return headTable + '\n'+ re.sub(r'\n+$', '', bodyTable) + '\n\n'
+
+# }}}
+# calculateColumnWidths(rows, width): {{{
+def calculateColumnWidths(rows, width):
+    widths = {}
+    text = []
+    for row in rows:
+        cols = row.getChildrenByTagName("entry")
+
+        colwidths = []
+        rowtext = []
+        for col in cols:
+            coltext = handleElement(col, width)
+
+            rowtext.append(coltext)
+            # This is the 'width' of the current cell including the
+            # whitespace padding.
+            colwidths.append(max(map(len, coltext.split("\n"))) \
+                                + COL_SPACE)
+
+        text.append(rowtext)
+
+        # update the widths of the columns by finding the maximum
+        # width of all cells in this column.
+        for i in range(len(colwidths)):
+            widths[i] = max(colwidths[i], widths.get(i, -1))
+
+    return widths, text
+
+# }}}
+# calculateColumnWidthsDoublePass(rows, width): {{{
+def calculateColumnWidthsDoublePass(rows, width):
+    maxwidths, text = calculateColumnWidths(rows, width)
+
+    # now find out how many columns exceed the maximum permitted width.
+    # nlarge: number of columns which are too wide.
+    # remainingWidth: width which these large columns can share.
+    nlarge = 0
+    remainingWidth = width
+    for colwidth in maxwidths.values():
+        if colwidth > width/len(maxwidths):
+            nlarge += 1
+        else:
+            remainingWidth += -colwidth
+
+    # newmaxwidth: width which each of the large columns is allowed.
+    newmaxwidth = remainingWidth/max(nlarge, 1)
+
+    # make another run and this time ask each cell to restrict itself to
+    # newmaxwidth as calculated above.
+    newmaxwidth, newtext = calculateColumnWidths(rows, newmaxwidth)
+
+    return newmaxwidth, newtext
+
+# }}}
+# handleCode(code, width): {{{
+def handleCode(code, width):
+    retText =  GetText(code.childNodes)
+    return " >\n" + VertCatString("    ", 4, retText) + "&codeend;"
+
+
+# }}}
+# handleList(list, width, marker=0): {{{
+def handleList(list, width, marker=0):
+    if list.tagName == 'simplelist':
+        child = 'member'
+        decoration = ''
+    elif list.tagName == 'orderedlist':
+        child = 'listitem'
+    else:
+        child = 'member'
+        decoration = '- '
+
+    retText = ""
+    items = list.getChildrenByTagName(child)
+    i = 1
+
+    for item in items:
+        if list.tagName == 'orderedlist':
+            decoration = str(i) + '. '
+            i = i + 1
+        itemText = handleElement(item, width - len(decoration))
+        itemText = VertCatString(decoration, None, itemText)
+
+        retText += '\n' + re.sub(r'\n+$', '', itemText) + "\n"
+
+    return retText
+
+# }}}
+# handleNote(note, width): {{{
+def handleNote(note, width):
+    title = None
+    if note.getChildrenByTagName('title'):
+        title = note.getChildrenByTagName('title')[0]
+        name = GetText(title.childNodes)
+        note.removeChild(title)
+
+    noteText = handleElement(note, width-len("NOTE: "))
+    if title is not None:
+        noteText = name + '\n' +('-' * len(name)) + '\n' + noteText
+
+    noteText = VertCatString("NOTE: ", None, noteText)
+
+    return noteText + "\n"
+
+# }}}
+# handleParagraph(paragraph, width): {{{
+def handleParagraph(paragraph, width):
+    partext = handleElement(paragraph, width, strict=0)
+
+    partext = re.sub(r'\n+$', '', partext)
+    partext = re.sub(r'^\n+', '', partext)
+
+    return partext + "\n\n"
+
+# }}}
+# handleFormalParagraph(paragraph, width): {{{
+def handleFormalParagraph(formalparagraph, width):
+    title = None
+    if formalparagraph.getChildrenByTagName('title'):
+        title = formalparagraph.getChildrenByTagName('title')[0]
+        name = GetText(title.childNodes)
+        formalparagraph.removeChild(title)
+
+    partext = handleElement(formalparagraph, width, strict=0)
+
+    partext = re.sub(r'\n+$', '', partext)
+    partext = re.sub(r'^\n+', '', partext)
+    if title is not None:
+        partext = name + '\n' + ('-' * len(name)) + '\n' + partext
+
+    return partext + "\n\n"
+
+# }}}
+# handleBlockQuote(block, width): {{{
+def handleBlockQuote(block, width):
+    text = handleElement(block, width - BLOCK_QUOTE)
+    text = VertCatString(" "*BLOCK_QUOTE,  \
+                         BLOCK_QUOTE, text)
+
+    return text + "\n"
+
+# }}}
+# handleLink(link, width): {{{
+def handleLink(link, width):
+    linkend = link.getAttribute('linkend')
+    text = handleElement(link, width)
+
+    return text + ' [|' + linkend + '|]'
+
+# }}}
+# handleAnchor(anchor, width): {{{
+def handleAnchor(anchor, width):
+    if anchor.getAttribute('processed') == '1':
+        return ''
+
+    anchor.setAttribute('processed', '1')
+    return RightJustify('*'+anchor.getAttribute('id')+'*', width) \
+        + "\n"
+
+# }}}
+# handleSection(section, width): {{{
+def handleSection(section, width):
+    title = section.getChildrenByTagName('title')[0]
+    name = handleElement(title, width)
+
+    sectionid = section.getAttribute('id')
+    tagsformatted = ''
+    if tocHash.has_key(sectionid):
+        tagsformatted = '*%s* ' % tocHash[sectionid]
+
+    if sectionid and sectionid != tocHash[sectionid]:
+        tagsformatted += '*%s*' % sectionid
+
+    # try to indent to a width of 20
+    tagsformatted = IndentParagraphs(tagsformatted, 20)
+    tagswidth = TextWidth(tagsformatted)
+
+    # width(name) + nspaces + width(tags) = 80
+    if len(tagsformatted) > 2:
+        header = VertCatString(name, 80-tagswidth, tagsformatted)
+    else:
+        header = name
+
+    section.removeChild(title)
+    text = handleElement(section, width)
+
+    if levelHash[sectionid] == 0:
+        delim = '='
+        newlines = '\n\n'
+    elif levelHash[sectionid] == 1:
+        delim = '-'
+        newlines = '\n'
+    else:
+        delim = ''
+        newlines = '\n'
+
+    thisTOC = ''
+    if levelHash[sectionid] <= 1:
+        thisTOC = makeTOC(section, width, maxlevel=0)
+
+    return "\n" + (delim * TEXT_WIDTH) + \
+        "\n" + header + newlines + thisTOC + newlines + re.sub(r'\n+$', '', text) + "\n"
+
+# }}}
+# makeTOC(node, width): {{{
+
+tocHash = {}
+levelHash = {}
+titleHash = {}
+lastLabelUsed = 99
+
+def makeTOC(parent, width, prefix='', level=0, maxlevel=1):
+    retText = ""
+    sectionsTable = []
+    lastLabelUsed = 0
+
+    for section in parent.getChildrenByTagName('section'):
+
+        sectionid = section.getAttribute('id')
+        if sectionid and tocHash.has_key(sectionid):
+            thisLabel = tocHash[sectionid]
+            titleText = titleHash[sectionid]
+
+        else:
+            title = section.getChildrenByTagName('title')[0]
+            titleText = handleElement(title, width)
+            lastLabelUsed += 1
+            thisLabel = 'ls_' + prefix + str(lastLabelUsed)
+
+            sectionid = section.getAttribute('id')
+            if not sectionid:
+                section.setAttribute('id', thisLabel)
+                sectionid = thisLabel
+
+            tocHash[sectionid] = thisLabel
+            levelHash[sectionid] = level
+            titleHash[sectionid] = titleText
+
+        if level <= maxlevel:
+            retText += '|' + thisLabel + '| ' +  titleText + "\n"
+
+        if section.getChildrenByTagName('section'):
+            childText = makeTOC(section, width-5, 
+                prefix = (prefix + str(lastLabelUsed) + '_'),
+                level = level + 1)
+            childText = re.sub(r'\n+$', '', childText)
+            if level < maxlevel:
+                retText += VertCatString("    ", 4, childText) + '\n'
+
+    return retText
+# }}}
+
+################################################################################
+# A dictionary for mapping xml tags to functions.
+#
+# TODO: Ideally, each function would be responsible for registering itself
+################################################################################
+# {{{
+handlerMaps = {
+    'articleinfo': handleArticleInfo,
+    'table': handleTableRoot,
+    'informaltable': handleTableRoot,
+    'code': handleCode,
+    'programlisting': handleCode,
+    'list': handleList,
+    'simplelist': handleList,
+    'orderedlist': handleList,
+    'para': handleParagraph,
+    'formalpara': handleFormalParagraph,
+    'note': handleNote,
+    'link': handleLink,
+    'anchor': handleAnchor,
+    'section': handleSection,
+    'blockquote': handleBlockQuote,
+}
+inlineTags = {'tag':1, 'literal':1, 'link':1}
+# }}}
+
+def usage():
+    print __doc__
+
+# main function {{{
+if __name__ == "__main__":
+    args = sys.argv[1:]
+
+    if len(args) != 1:
+        usage()
+        sys.exit(1)
+
+    fileName = args[0]
+    try:
+        fp = open(fileName)
+    except:
+        print "Error opening xml file"
+
+    dom = xml.dom.minidom.parse(fp) 
+
+    modeline = r'''
+================================================================================
+Vim folding
+
+The following modelines should nicely fold up the help manual.
+
+vim:ft=help:fdm=expr
+vim:foldexpr=getline(v\:lnum-1)=~"=\\\\{80,}"?"a1"\:(getline(v\:lnum+1)=~"=\\\\{80,}"?"s1"\:"=")
+vim:foldtext=v\:folddashes.substitute(getline(v\:foldstart),"\\\\s*\\\\*.*","","")
+================================================================================
+'''
+
+    processedDoc = handleElement(dom.documentElement)
+    processedDoc = re.sub(r'&codeend;([^\n]*)\n\s([ ]+)', '\n<\g<2>\g<1>\n \g<2>', processedDoc)
+    processedDoc = re.sub(r'&codeend;([^\n]*)\n(?=[^ ]|\n)', '\n\g<1>\n', processedDoc)
+    processedDoc = processedDoc + modeline
+    print processedDoc
+
+# }}}
+
+# vim:et:sts=4:fdm=marker
