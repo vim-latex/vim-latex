@@ -2257,7 +2257,7 @@ keywords,abstract,titlepage</programlisting>
      <programlisting>item,preamble,&lt;&lt;&lt;</programlisting>
      <note>
       <para>
-       Unlike the other Tex_FoldXXXX variables, the words in this setting
+       Unlike the other Tex_FoldedXXXX variables, the words in this setting
        are limited to take values from the following list:
       </para>
       <para>
@@ -2325,26 +2325,26 @@ keywords,abstract,titlepage</programlisting>
     <para>
      Each of the fold setting variables
      <literal>Tex_FoldedSections</literal>,
-     <literal>Tex_FoldEnvironments</literal> etc., as explained previously
+     <literal>Tex_FoldedEnvironments</literal> etc., as explained previously
      is a comma seperated string of variables. However, to make it easier
      to <emphasis>add</emphasis> to the default settings without having to
      repeat the whole default setting again, &ls; uses the following logic
      in forming the complete setting string from the
-     <literal>Tex_FoldXXXX</literal> variables. If the variable starts with
-     a comma, then <literal>Tex_FoldXXXX</literal> is added to the end of
+     <literal>Tex_FoldedXXXX</literal> variables. If the variable starts with
+     a comma, then <literal>Tex_FoldedXXXX</literal> is added to the end of
      the default string rather than replacing it. Similarly, if it ends
      with a comma, then it will be prepended to the beginning of the
      default setting rather than replacing it.
     </para>
     <para>
-     For example, if <literal>Tex_FoldEnvironments</literal> is set to the
+     For example, if <literal>Tex_FoldedEnvironments</literal> is set to the
      string <literal>"myenv"</literal>, then only an environment of the
      form <literal>\begin{myenv}</literal> will be folded. However, if the
-     <literal>Tex_FoldEnvironments</literal> setting is
+     <literal>Tex_FoldedEnvironments</literal> setting is
      <literal>",myenv"</literal>, then the <literal>\begin{myenv}</literal>
      environment will be folded after all other environments in the default
      setting have been folded. On the other hand if
-     <literal>Tex_FoldEnvironments</literal> is of the form
+     <literal>Tex_FoldedEnvironments</literal> is of the form
      <literal>"myenv,"</literal>, the <literal>\begin{myenv}</literal>
      environment will be folded before the rest of the environments in the
      default setting.

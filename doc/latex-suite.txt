@@ -779,7 +779,7 @@ choose one of them).
 There are some other tools provided in this menu, namely:
 
 
-{New}       Creates a new (unnamed) buffer in the Latex-Suite/macros/ directory.
+{New}       Creates a new (unnamed) buffer in the latex-suite/macros/ directory.
             Use the command :TexMacroNew in non-gui mode.
 {Edit}      Opens up the corresponding macro file for editing. Use |:TexMacroEdit|
             in non-gui mode. When you try to edit {macro} not from local directory
@@ -1102,7 +1102,7 @@ g:Tex_package_<package>                                     *ls_4_4_2* *ls_a_bM*
   >
     
         g:TeX_package_<package> = "pre:Command,pre:Command1"
-    More detailed example is in Latex-Suite/packages/exmpl file (slightly
+    More detailed example is in latex-suite/packages/exmpl file (slightly
     outdated).
     Here is short summary of prefixes which can be used in package files:
     (x - place with cursor, <++> - |placeholder|)
@@ -1850,7 +1850,7 @@ This entry defines fold syntax for certain items which do not naturally fit into
 the section, environment of command lists. It is a comma seperated list of
 words. The default value is:  >
     item,preamble,<<<
-NOTE: Unlike the other Tex_FoldXXXX variables, the words in this setting are
+NOTE: Unlike the other Tex_FoldedXXXX variables, the words in this setting are
       limited to take values from the following list:
       
       Value       Meaning~
@@ -1882,20 +1882,21 @@ interior is not examined further. The correct value should have been
 "section,subsection"
 
                                                  *fold-setting-adding* *ls_a_dU*
-Each of the fold setting variables Tex_FoldedSections, Tex_FoldEnvironments
+Each of the fold setting variables Tex_FoldedSections, Tex_FoldedEnvironments
 etc., as explained previously is a comma seperated string of variables. However,
 to make it easier to _add_ to the default settings without having to repeat the
 whole default setting again, Latex-Suite uses the following logic in forming the
-complete setting string from the Tex_FoldXXXX variables. If the variable starts
-with a comma, then Tex_FoldXXXX is added to the end of the default string rather
-than replacing it. Similarly, if it ends with a comma, then it will be prepended
-to the beginning of the default setting rather than replacing it.
+complete setting string from the Tex_FoldedXXXX variables. If the variable
+starts with a comma, then Tex_FoldedXXXX is added to the end of the default
+string rather than replacing it. Similarly, if it ends with a comma, then it
+will be prepended to the beginning of the default setting rather than replacing
+it.
 
-For example, if Tex_FoldEnvironments is set to the string "myenv", then only an
-environment of the form \begin{myenv} will be folded. However, if the
-Tex_FoldEnvironments setting is ",myenv", then the \begin{myenv} environment
+For example, if Tex_FoldedEnvironments is set to the string "myenv", then only
+an environment of the form \begin{myenv} will be folded. However, if the
+Tex_FoldedEnvironments setting is ",myenv", then the \begin{myenv} environment
 will be folded after all other environments in the default setting have been
-folded. On the other hand if Tex_FoldEnvironments is of the form "myenv,", the
+folded. On the other hand if Tex_FoldedEnvironments is of the form "myenv,", the
 \begin{myenv} environment will be folded before the rest of the environments in
 the default setting.
 
@@ -2163,7 +2164,7 @@ necessary packages' dictionaries.
                                                                      *TTemplate*
 
 When used without any arguments lists all available templates from
-Latex-Suite/templates/ directory and prompts to choose one of them. With one
+latex-suite/templates/ directory and prompts to choose one of them. With one
 argument :0|read| {template} file. With more than one argument it will not work
 :) In Vim >= 6.2 works completion of names of macros (see 'wildmenu', 'wildmode'
 for more about command-line completion)
