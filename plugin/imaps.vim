@@ -7,7 +7,7 @@
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
 "
-" Last Change: Sun Dec 22 05:00 PM 2002 PST
+" Last Change: Tue Dec 24 04:00 AM 2002 PST
 " 
 " Documentation: {{{
 "
@@ -178,7 +178,7 @@ function! IMAP(lhs, rhs, ft, ...)
 	if lastLHSChar == ' '
 		let lastLHSChar = '<space>'
 	end
-	exe 'inoremap <silent>' (a:ft== '' ? '' : '<buffer>')
+	exe 'inoremap <silent>'
 				\ escape(lastLHSChar, '|')
 				\ '<C-r>=<SID>LookupCharacter("' .
 				\ escape(lastLHSChar, '\|') .
