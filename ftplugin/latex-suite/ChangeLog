@@ -19,15 +19,27 @@ After 8 May 2003
 	* ChangeLog:
 		Add ChangeLog file in ftplugin/latex-suite directory (MM)
 	* wizardfuncs.vim, latex-suite.txt:
-		Tshortcuts - new command show various shortcuts (MM)
+		Tshortcuts - new command show various shortcuts (MM, SA)
 	* latex-suite.txt:
 		More cross-references with main Vim help, corrected mispells (MM)
 	* texmenuconf.vim:
 		Show value of <mapleader> in General menu instead of hardcoded \ (it
-		caused confusion) (MM)
+		caused confusion) (MM, SA)
+	* texmenuconf.vim, mathmacros.vim:
+		Add accels for for Suite, Elements end Environments menus.
+		Changed accel in Math (Animesh Nerurkar)
 
 	Bugfixes
 	* compiler.vim:
-		Compile file with current file expansion, not always .tex file (MM)
+		Problem: Compile file with current file expansion, not always .tex
+			file (Animesh N Nerurkar)
+		Solution: When looking for file to compile don't remove extension (if
+			*.latexmain doesn't exist) (MM)
 	* texviewer.vim:
-		Check if s:type exists in UpdateViewerWindow (MM)
+		Problem: :TLook doesn't work (Animesh N Nerurkar)
+		Solution: Check if s:type exists in UpdateViewerWindow (MM)
+	* compiler.vim:
+		Problem: Text is messed after calling external command in terminal
+			version of Vim (Jess Thrysoee)
+		Solution: Add redraw! after calling compilers and viewers (partial
+			implementation of JT patch, MM)
