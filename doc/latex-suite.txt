@@ -424,7 +424,11 @@ lines of current entry (usually the most important info like author, title
 etc.).
 
 In cwindow you can move with j and k keys. Contex window will be automatically
-updated. If information visible in context window is not enough you can use
+updated. Current line will be highlighted. Note: first line is still
+highlighted. This is normal line of |quickfix|. You can use instead j and k
+|:cnext| and |:cprev| commands.
+
+If information visible in context window is not enough you can use
 J and K keys to move content of context window (without leaving cwindow).
 After you choose correct bibentry press <cr>. Additional windows will close
 and \cite{ will be completed to \cite{bibentry}. q returns to main window and
