@@ -3,7 +3,7 @@
 "      Author: Mikolaj Machowski
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Sat May 04 04:00 PM 2002 EST
+" Last Change: Sat May 04 03:00 PM 2002 PDT
 " 
 "  Description: functions for processing custom macros in the
 "               latex-suite/macros directory
@@ -24,10 +24,6 @@ function! <SID>SetCustomMacrosMenu()
 			break
 		endif
 		let fnameshort = fnamemodify(fname, ':p:t:r')
-		if fnameshort == ''
-			let i = i + 1
-			continue
-		endif
 		exe "amenu ".g:Tex_MacrosMenuLocation."&Delete.&".i.":<tab>".fnameshort." :call <SID>DeleteMacro('".fnameshort."')<CR>"
 		exe "amenu ".g:Tex_MacrosMenuLocation."&Edit.&".i.":<tab>".fnameshort."   :call <SID>EditMacro('".fnameshort."')<CR>"
 		exe "amenu ".g:Tex_MacrosMenuLocation."&".i.":<tab>".fnameshort." :call <SID>ReadMacro('".fnameshort."')<CR>"
