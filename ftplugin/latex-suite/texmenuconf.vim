@@ -55,12 +55,8 @@ if has('gui_running') && g:Tex_Menus
 	" menus for compiling / viewing etc.
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.30 '.s:mainmenuname.'&Compile<tab>'.s:mapleader.'ll'.
 		\'   :silent! call RunLaTeX()<CR>'
-	exec 'vnoremenu '.g:Tex_MainMenuLocation.'.35 '.s:mainmenuname.'Compile&Part<tab>'.s:mapleader.'lc'.
-		\'   :call Tex_PartCompilation("f","l","v")<CR>'
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.40 '.s:mainmenuname.'&View<tab>'.s:mapleader.'lv'.
 		\'   :silent! call ViewLaTeX("all")<CR>'
-	exec 'anoremenu '.g:Tex_MainMenuLocation.'.45 '.s:mainmenuname.'Vi&ewPart<tab>'.s:mapleader.'lp'.
-		\'   :silent! call ViewLaTeX("part")<CR>'
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.50 '.s:mainmenuname.'&Search<tab>'.s:mapleader.'ls'.
 		\'   :silent! call ForwardSearchLaTeX()<CR>'
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.60 '.s:mainmenuname.'&Target\ Format<tab>:TTarget'.
@@ -73,13 +69,6 @@ if has('gui_running') && g:Tex_Menus
 		\'   :TCLevel NONE<CR>'
 	exec 'inoremenu '.g:Tex_MainMenuLocation.'.100 '.s:mainmenuname.'C&omplete\ Ref/Cite'.
 		\'   <Esc>:call Tex_viewer("default","text")<CR>'
-	" project
-	exec 'anoremenu '.g:Tex_MainMenuLocation.'.105 '.s:mainmenuname.'Project.&Project<tab>:TProject'.
-		\'   :TProject<CR>'
-	exec 'anoremenu '.g:Tex_MainMenuLocation.'.106 '.s:mainmenuname.'Project.Project&Edit<tab>:TProjectEdit'.
-		\'   :TProjectEdit<CR>'
-	exec 'anoremenu '.g:Tex_MainMenuLocation.'.107 '.s:mainmenuname.'Project.Project&Write<tab>:TProjectWrite'.
-		\'   :TProjectWrite<CR>'
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.110 '.s:mainmenuname.'-sepsuite1- :'
 	" refreshing folds
 	if g:Tex_Folding
@@ -87,27 +76,9 @@ if has('gui_running') && g:Tex_Menus
 			\'   :call MakeTexFolds(1)<CR>'
 		exec 'anoremenu '.g:Tex_MainMenuLocation.'.130 '.s:mainmenuname.'-sepsuite2- :'
 	endif
-	" editing private texrc
-	exec 'anoremenu '.g:Tex_MainMenuLocation.'.140 '.s:mainmenuname.'Edit\ &texrc<tab>:Ttexrc'.
-			\' :Ttexrc<CR>'
-
 endif
 
 " }}}
-
-" ==============================================================================
-" Edittexrc: split window and show texrc
-" ============================================================================== 
-command! -nargs=0 Ttexrc :call Tex_texrc()
-function! Tex_texrc()
-	if filereadable(s:up_path.'/tex/texrc')
-		exec 'split '.s:up_path.'/tex/texrc'
-		lcd
-	else
-		echomsg "Please, create your own texrc by copying system texrc"
-					\ ." into ftplugin/tex directory"
-	endif
-endfunction
 
 " ==============================================================================
 " MenuConf: configure the menus as compact/extended, with/without math
