@@ -15,7 +15,7 @@ let g:TeX_package_longtable =
 \.'bra:LTcapwidth,'
 \.'bra:LTcapwidth,'
 \.'sbr:Longtable,'
-\.'enb:longtable,'
+\.'env:longtable,'
 \.'sep:lt,'
 \.'nor:endhead,'
 \.'nor:endfirsthead,'
@@ -26,3 +26,5 @@ let g:TeX_package_longtable =
 \.'nob:caption,'
 \.'bra:caption*,'
 \.'nor:newpage'
+
+" vim:ft=vim:ts=4:sw=4:noet
