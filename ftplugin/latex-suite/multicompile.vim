@@ -61,7 +61,7 @@ function! Tex_CompileMultipleTimes()
 
 		" If .idx file changed, then run makeindex to generate the new .ind
 		" file and remember to rerun latex.
-		if runCount == 0 && glob(idxFileName) != '' && idxlinesAfter != idxlinesAfter
+		if runCount == 0 && glob(idxFileName) != '' && idxlinesBefore != idxlinesAfter
 			echomsg "Running makeindex..."
 			let temp_mp = &mp | let &mp='makeindex $*.idx'
 			exec 'silent! make '.mainFileName_root
@@ -76,7 +76,6 @@ function! Tex_CompileMultipleTimes()
 			let bibFileName = mainFileName_root . '.bbl'
 
 			let biblinesBefore = Tex_CatFile(bibFileName)
-			call Tex_Debug('bibbefore = ['.biblinesBefore.']', 'comp')
 
 			echomsg "Running bibtex..."
 			let temp_mp = &mp | let &mp='bibtex'
@@ -84,7 +83,6 @@ function! Tex_CompileMultipleTimes()
 			let &mp = temp_mp
 
 			let biblinesAfter = Tex_CatFile(bibFileName)
-			call Tex_Debug('bibafter = ['.biblinesAfter.']', 'comp')
 
 			" If the .bbl file changed after running bibtex, we need to
 			" latex again.
