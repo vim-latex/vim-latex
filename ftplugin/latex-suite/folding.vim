@@ -3,7 +3,7 @@
 "      Author: Srinath Avadhanula
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Sun Oct 06 08:00 AM 2002 PDT
+" Last Change: Sun Oct 27 01:00 AM 2002 PST
 " 
 "  Description: functions to interact with Syntaxfolds.vim
 "=============================================================================
@@ -28,6 +28,95 @@ function! MakeTexFolds(force)
 
 	let b:numFoldItems = 0
 
+	" ========================================================================
+	" How to add new folding items {{{
+	" ========================================================================
+	"
+	" Each of the following function calls defines a syntax fold region. Each
+	" definition consists of a call to the AddSyntaxFoldItem() function.
+	" 
+	" The order in which the folds are defined is important. Juggling the
+	" order of the function calls will create havoc with folding. The
+	" "deepest" folding item needs to be called first. For example, if
+	" the \begin{table} environment is a subset (or lies within) the \section
+	" environment, then add the definition for the \table first.
+	"
+	" The AddSyntaxFoldItem() function takes either 4 or 6 arguments. When it
+	" is called with 4 arguments, it is equivalent to calling it with 6
+	" arguments with the last two left blank (i.e as empty strings)
+	"
+	" The explanation for each argument is as follows:
+	"    startpat: a line matching this pattern defines the beginning of a fold.
+	"    endpat  : a line matching this pattern defines the end of a fold.
+	"    startoff: this is the offset from the starting line at which folding will
+	"              actually start
+	"    endoff  : like startoff, but gives the offset of the actual fold end from
+	"              the line satisfying endpat.
+	"              startoff and endoff are necessary when the folding region does
+	"              not have a specific end pattern corresponding to a start
+	"              pattern. for example in latex,
+	"              \begin{section}
+	"              defines the beginning of a section, but its not necessary to
+	"              have a corresponding
+	"              \end{section}
+	"              the section is assumed to end 1 line _before_ another section
+	"              starts.
+	"    startskip: a pattern which defines the beginning of a "skipped" region.
+	"
+	"               For example, suppose we define a \itemize fold as follows:
+	"               startpat =  '^\s*\\item',
+	"               endpat = '^\s*\\item\|^\s*\\end{\(enumerate\|itemize\|description\)}',
+	"               startoff = 0,
+	"               endoff = -1
+	"
+	"               This defines a fold which starts with a line beginning with an
+	"               \item and ending one line before a line beginning with an
+	"               \item or \end{enumerate} etc.
+	"
+	"               Then, as long as \item's are not nested things are fine.
+	"               However, once items begin to nest, the fold started by one
+	"               \item can end because of an \item in an \itemize
+	"               environment within this \item. i.e, the following can happen:
+	"
+	"               \begin{itemize}
+	"               \item Some text <------- fold will start here
+	"                     This item will contain a nested item
+	"                     \begin{itemize} <----- fold will end here because next line contains \item...
+	"                     \item Hello
+	"                     \end{itemize} <----- ... instead of here.
+	"               \item Next item of the parent itemize
+	"               \end{itemize}
+	"
+	"               Therefore, in order to completely define a folding item which
+	"               allows nesting, we need to also define a "skip" pattern.
+	"               startskip and end skip do that.
+	"               Leave '' when there is no nesting.
+	"    endskip: the pattern which defines the end of the "skip" pattern for
+	"             nested folds.
+	"
+	"    Example: 
+	"    1. A syntax fold region for a latex section is
+	"           startpat = "\\section{"
+	"           endpat   = "\\section{"
+	"           startoff = 0
+	"           endoff   = -1
+	"           startskip = ''
+	"           endskip = ''
+	"    Note that the start and end patterns are thus the same and endoff has a
+	"    negative value to capture the effect of a section ending one line before
+	"    the next starts.
+	"    2. A syntax fold region for the \itemize environment is:
+	"           startpat = '^\s*\\item',
+	"           endpat = '^\s*\\item\|^\s*\\end{\(enumerate\|itemize\|description\)}',
+	"           startoff = 0,
+	"           endoff = -1,
+	"           startskip = '^\s*\\begin{\(enumerate\|itemize\|description\)}',
+	"           endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'
+	"     Note the use of startskip and endskip to allow nesting.
+	"
+	"
+	" }}}
+	" ========================================================================
 	" {{{ footnote
 	call AddSyntaxFoldItem (
 		\ '^\s*\\footnote{',
