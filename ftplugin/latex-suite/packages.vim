@@ -427,6 +427,13 @@ function! Tex_pack_all(fname)
 	endif
 	
 	exe pos
+	" first make a random search so that we push at least one item onto the
+	" search history. Since vim puts only one item in the history per function
+	" call, this way we make sure that one and only item is put into the
+	" search history.
+	normal! /^<CR>
+	" now delete it...
+	call histdel('/', -1)
 endfunction
    
 " }}}
