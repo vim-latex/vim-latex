@@ -2023,17 +2023,15 @@ endif</programlisting>
       <row>
        <entry><literal>endoff</literal></entry>
        <entry>
-        like <literal>startoff</literal>, but gives the offset of the actual fold end from
-        the line satisfying <literal>endpat</literal>.
-        <literal>startoff</literal> and <literal>endoff</literal> are necessary when the folding region does
-        not have a specific end pattern corresponding to a start
-        pattern. for example in latex,
-        <literal>\begin{section}</literal>
-        defines the beginning of a section, but its not necessary to
-        have a corresponding
-        <literal>\end{section}</literal>
-        the section is assumed to end 1 line <emphasis>before</emphasis> another section
-        starts.
+        like <literal>startoff</literal>, but gives the offset of the
+        actual fold end from the line satisfying <literal>endpat</literal>.
+        <literal>startoff</literal> and <literal>endoff</literal> are
+        necessary when the folding region does not have a specific end
+        pattern corresponding to a start pattern. for example in &latex;,
+        <literal>\section{Section Name}</literal> defines the beginning of
+        a section, but there is no command which specifically ends a
+        section. Thus a <literal>\section</literal>  is assumed to end 1
+        line <emphasis>before</emphasis> another section starts.
        </entry>
       </row>
       <row>
