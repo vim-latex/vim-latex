@@ -571,6 +571,11 @@ endfunction " }}}
 "   Based on input argument, it calls various specialized functions.
 function! Tex_PutEnvironment(env)
 	if s:isvisual == "yes"
+		if a:env == '\['
+			return VEnclose('', '', '\[', '\]')
+		elseif a:env == '$$'
+			return VEnclose('', '', '$$', '$$')
+		endif
 		return VEnclose('\begin{'.a:env.'}', '\end{'.a:env.'}', '\begin{'.a:env.'}', '\end{'.a:env.'}')
 	else
 		if a:env =~ "equation*\\|eqnarray*\\|align*\\|theorem\\|lemma\\|equation\\|eqnarray\\|align\\|multline"
@@ -585,7 +590,7 @@ function! Tex_PutEnvironment(env)
 			exe 'return Tex_'.a:env.'(a:env)'
 		elseif a:env == '$$'
 			return IMAP_PutTextWithMovement('$$<++>$$')
-		elseif a:env == '['
+		elseif a:env == '\['
 			return IMAP_PutTextWithMovement("\\[\<CR><++>\<CR>\\]<++>")
 		else
 			return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr><++>\<cr>\\end{".a:env."}<++>")
