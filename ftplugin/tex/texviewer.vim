@@ -467,7 +467,7 @@ function! s:PromptForCompletion(texcommand,ask)
 
 	let common_completion_prompt = 
 				\ Tex_CreatePrompt(g:Tex_completion_{a:texcommand}, 2, ',') . "\n" .
-				\ 'Enter number or completion : '
+				\ 'Enter number or completion: '
 
 	let inp = input(a:ask."\n".common_completion_prompt)
 	if inp =~ '^[0-9]\+$'
@@ -482,7 +482,7 @@ endfunction " }}}
 " Description:
 "
 function! s:Tex_DoCompletion(texcommand)
-	let completion = PromptForCompletion(a:texcommand,'Choose a completion to insert: ')
+	let completion = <SID>PromptForCompletion(a:texcommand,'Choose a completion to insert: ')
 	if completion != ''
 		return completion
 	else
