@@ -568,6 +568,7 @@ endfunction " }}}
 "   Based on input argument, it calls various specialized functions.
 function! Tex_PutEnvironment(env)
 	if exists("s:isvisual") && s:isvisual == "yes"
+		let s:isvisual = 'no'
 		if a:env == '\['
 			return VEnclose('', '', '\[', '\]')
 		elseif a:env == '$$'
