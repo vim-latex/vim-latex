@@ -453,8 +453,16 @@ file word which is beginning with "tetr". Note: <cr> has here different
 behavior. It does not try to complete word but moves you to location chosen in
 cwindow.
 
+Under MS-Windows you may need to make additional configuration of 'grepgrg'
+option. If you have grep program default value "grep -n" doesn't show file
+names if there is only one matching file. Place 'set grepprg=grep\ -Hn' in
+your _vimrc.
+
 Viewer module provides also three command-line utilities: |TLook|, |TLookBib|
 and |TLookAll|.
+
+Through g:Tex_ViewerCwindowHeight and g:Tex_ViewerPreviewHeight options in 
+texrc you can configure height of these windows.
 
 }}}
 ===========================================================================
