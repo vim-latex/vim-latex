@@ -137,8 +137,8 @@ function! Tex_pack_updateall(force)
 	let g:Tex_PromptedCommands = g:Tex_PromptedCommandsDefault
 
 	if expand('%:p') != fname
-		call Tex_Debug(':Tex_pack_updateall: split '.Tex_EscapeSpaces(fname), 'pack')
-		exe 'split '.Tex_EscapeSpaces(fname)
+		call Tex_Debug(':Tex_pack_updateall: sview '.Tex_EscapeSpaces(fname), 'pack')
+		exe 'sview '.Tex_EscapeSpaces(fname)
 	else
 		call Tex_Debug(':Tex_pack_updateall: split', 'pack')
 		split
