@@ -60,14 +60,22 @@ function! Tex_completion(what, where)
 			call <SID>Tex_c_window_setup()
 
 		elseif exists("s:type") && s:type =~ 'cite'
-			exe 'silent! grep! "@.*{'.s:prefix.'" '.s:search_directory.'*.bib'
-			exe 'silent! grepadd! "bibitem{'.s:prefix.'" '.s:search_directory.'*.bbl'
-			exe 'silent! grepadd! "bibitem{'.s:prefix.'" %'
+			silent! grep! nothing %
+			let bibfiles = Tex_FindBibFiles()
+			let bblfiles = Tex_FindBblFiles()
+			let g:bib = bibfiles
+			let g:bbl = bblfiles
+			if bibfiles != ''
+				exe 'silent! grepadd! "@.*{'.s:prefix.'" '.bibfiles
+			endif
+			if bblfiles != ''
+				exe 'silent! grepadd! "bibitem{'.s:prefix.'" '.bblfiles
+			endif
 			call <SID>Tex_c_window_setup()
 
 		elseif exists("s:type") && s:type =~ 'includegraphics'
 			let s:storehidefiles = g:explHideFiles
-			let g:explHideFiles = '^\.,\.tex$,\.bib$,\.bbl$,\.zip$,\.gz$$'
+			let g:explHideFiles = '^\.,\.tex$,\.bib$,\.bbl$,\.zip$,\.gz$'
 			let s:curfile = expand("%:p")
 			exe 'silent! Sexplore '.s:search_directory.g:Tex_ImageDir
 			call <SID>Tex_explore_window("includegraphics")
@@ -311,6 +319,74 @@ function! s:GoToLocation()
 	cclose
 
 endfunction " }}}
+" Tex_FindBibFiles: find *.bib files {{{
+" Description: scan files looking for \bibliography entries 
+"
+function! Tex_FindBibFiles()
+
+	let bibfiles = ''
+	let bibfiles2 = ''
+	let curdir = expand("%:p:h")
+
+	if search('\\bibliography{', 'w')
+		let bibfiles = matchstr(getline('.'), '\\bibliography{\zs.\{-}\ze}')
+		let g:b1 = bibfiles
+		let bibfiles = substitute(bibfiles, '\(,\|$\)', '.bib ', 'ge')
+		let g:b2 = bibfiles
+		let bibfiles = substitute(bibfiles, '\(^\| \)', ' '.curdir.'/', 'ge')
+		let g:b3 = bibfiles
+	else
+		let bibfiles = glob(curdir.'/*.bib')
+		let g:b4 = bibfiles
+		let bibfiles = substitute(bibfiles, '\n', ' ', 'ge')
+		let g:b5 = bibfiles
+	endif
+
+	if Tex_GetMainFileName() != ''
+		let mainfname = Tex_GetMainFileName()
+		let mainfdir = fnamemodify(mainfname, ":p:h")
+		exe 'bot 1 split '.mainfname
+		if search('\\bibliography{', 'w')
+			let bibfiles2 = matchstr(getline('.'), '\\bibliography{\zs.\{-}\ze}')
+			let bibfiles2 = substitute(bibfiles2, '\(,\|$\)', '.bib ', 'ge')
+			let bibfiles2 = substitute(bibfiles2, '\(^\| \)', ' '.curdir.'/', 'ge')
+		elseif mainfdir != curdir
+			let bibfiles2 = glob(mainfdir.'/*.bib')
+			let bibfiles2 = substitute(bibfiles2, '\n', ' ', 'ge')
+		endif
+		wincmd q
+	endif
+
+	return bibfiles.bibfiles2
+
+endfunction " }}}
+" Tex_FindBblFiles: find bibitem entries in tex files {{{
+" Description: scan files looking for \bibitem entries 
+"
+function! Tex_FindBblFiles()
+
+	let bblfiles = ''
+	let bblfiles2 = ''
+	let curdir = expand("%:p:h")
+
+	let bblfiles = glob(curdir.'/*.tex')
+	let bblfiles = substitute(bblfiles, '\n', ' ', 'ge')
+
+	if Tex_GetMainFileName() != ''
+		let mainfname = Tex_GetMainFileName()
+		let mainfdir = fnamemodify(mainfname, ":p:h")
+
+		if mainfdir != curdir
+			let bblfiles = glob(mainfdir.'/*.tex')
+			let bblfiles = substitute(bblfiles, '\n', ' ', 'ge')
+		endif
+
+	endif
+
+	return bblfiles.bblfiles2
+
+endfunction " }}}
+
 
 " Tex_Common: common part of strings {{{
 function! s:Tex_Common(path1, path2)
