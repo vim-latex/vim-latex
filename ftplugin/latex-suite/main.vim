@@ -484,6 +484,9 @@ function! <SID>SetTeXOptions()
 	if g:Tex_PromptedEnvironments != '' || g:Tex_HotKeyMappings != ''
 		call Tex_SetFastEnvironmentMaps()
 	endif
+	if g:Tex_PromptedCommands != ''
+		call Tex_SetFastCommandMaps()
+	endif
 
 	" viewing/searching
 	if !hasmapto('RunLaTeX')
