@@ -331,7 +331,7 @@ endfunction
 " General shortcuts {{{
 let g:generalshortcuts = ''
 \."\n General shortcuts"
-\."\n <mapleader> is a value of g:Tex_Leader"
+\."\n <mapleader> is a value of <Leader>"
 \."\n ".s:mapleader.'ll	compile whole document'
 \."\n ".s:mapleader.'lv	view compiled document'
 \."\n ".s:mapleader.'lp	view last compiled part of document'
