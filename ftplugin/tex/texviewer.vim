@@ -262,7 +262,7 @@ function! s:UpdateViewerWindow()
 	exe g:Tex_ViewerPreviewHeight.' wincmd _'
 	setlocal foldlevel=10
 
-	if s:type =~ 'cite'
+	if exists('s:type') && s:type =~ 'cite'
 		" In cite context place bibkey at the top of preview window.
 		setlocal scrolloff=0
 		normal! zt
