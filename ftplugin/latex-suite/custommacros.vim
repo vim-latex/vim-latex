@@ -3,7 +3,7 @@
 "      Author: Mikolaj Machowski
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Thu Dec 19 03:00 AM 2002 PST
+" Last Change: Thu Dec 26 05:00 PM 2002 PST
 " 
 "  Description: functions for processing custom macros in the
 "               latex-suite/macros directory
@@ -26,7 +26,8 @@ function! <SID>SetCustomMacrosMenu()
 		let fnameshort = fnamemodify(fname, ':p:t:r')
 		exe "amenu ".g:Tex_MacrosMenuLocation."&Delete.&".i.":<tab>".fnameshort." :call <SID>DeleteMacro('".fnameshort."')<CR>"
 		exe "amenu ".g:Tex_MacrosMenuLocation."&Edit.&".i.":<tab>".fnameshort."   :call <SID>EditMacro('".fnameshort."')<CR>"
-		exe "amenu ".g:Tex_MacrosMenuLocation."&".i.":<tab>".fnameshort." :call <SID>ReadMacro('".fnameshort."')<CR>"
+		exe "imenu ".g:Tex_MacrosMenuLocation."&".i.":<tab>".fnameshort." <C-r>=<SID>ReadMacro('".fnameshort."')<CR>"
+		exe "nmenu ".g:Tex_MacrosMenuLocation."&".i.":<tab>".fnameshort." i<C-r>=<SID>ReadMacro('".fnameshort."')<CR>"
 		let i = i + 1
 	endwhile
 endfunction 
@@ -101,28 +102,29 @@ function! <SID>ReadMacro(...)
 		exe 'cd '.pwd
 	endif
 
+	let fname = s:path.'/macros/'.filename
+
+	let markerString = '<---- Latex Suite End Macro ---->'
 	let _a = @a
-	let fname = glob(s:path."/macros/".filename)
-	silent! exec "normal! o¡!¡Temp Line¡!¡\<ESC>k"
+	let position = line('.').' | normal! '.virtcol('.').'|'
+	silent! call append(line('.'), markerString)
 	silent! exec "read ".fname
-	silent! exec "normal! V/^¡!¡Temp Line¡!¡$/-1\<CR>\"ax"
+	silent! exec "normal! V/^".markerString."$/-1\<CR>\"ax"
+	" This is kind of tricky: At this stage, we are one line after the one we
+	" started from with the marker text on it. We need to
+	" 1. remove the marker and the line.
+	" 2. get focus to the previous line.
+	" 3. not remove anything from the previous line.
+	silent! exec "normal! $v0k$\"_x"
+
 	call Tex_CleanSearchHistory()
-	
-	silent! exec "normal! i\<C-r>='¡!¡Start here¡!¡'.IMAP_PutTextWithMovement(@a)\<CR>"
-	let pos = line('.').'| normal! '.virtcol('.').'|'
 
-	call search('^¡!¡Temp Line¡!¡$')
-	. d _
-	call search('¡!¡Start here¡!¡')
-	silent! normal! v15l"_x
+	let @a = substitute(@a, '['."\n\r\t ".']*$', '', '')
+	let textWithMovement = IMAP_PutTextWithMovement(@a)
+	let @a = _a
 
-	call Tex_pack_all()
+	return textWithMovement
 
-	silent! exe pos
-	if col('.') < strlen(getline('.'))
-		silent! normal! l
-	endif
-	silent! startinsert
 endfunction
 
 " }}}
