@@ -4,7 +4,7 @@
 "              (minor modifications by Srinath Avadhanula)
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Sat May 04 04:00 PM 2002 EST
+" Last Change: ¶ro maj 08 12:00  2002 U
 " 
 "  Description: functions for handling templates in latex-suite/templates
 "               directory.
@@ -83,7 +83,7 @@ endfunction
 
 " }}}
 
-com! -nargs=? TexTemplate :call <SID>ReadTemplate(<f-args>)
+com! -nargs=? TTemplate :call <SID>ReadTemplate(<f-args>)
 					   \| :call <SID>ProcessTemplate()
 					   \| :0
 					   \| :exec "normal! i\<C-r>=IMAP_Jumpfunc()\<CR>"
