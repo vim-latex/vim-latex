@@ -2,7 +2,7 @@
 " 	     File: envmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
-" Last Change: Mon Apr 29 12:00 PM 2002 PDT
+" Last Change: czw maj 09 11:00  2002 U
 " 
 "  Description: mappings/menus for environments. 
 "=============================================================================
@@ -64,7 +64,7 @@ function! <SID>Tex_EnvMacros(lhs, submenu, name)
 
 	endif
 
-	if g:Tex_Menus && g:Tex_EnvironmentMenus
+	if g:Tex_Menus && g:Tex_EnvironmentMenus && has("gui_running")
 		exe 'amenu '.location.' <plug><C-r>=Tex_MenuWizard("'.a:submenu.'", "'.a:name.'")<CR>'
 		exe 'vmenu '.location.' '.vrhs
 	endif

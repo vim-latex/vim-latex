@@ -3,7 +3,7 @@
 "      Author: Mikolaj Machowski
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: ¶ro maj 08 07:00  2002 U
+" Last Change: czw maj 09 11:00  2002 U
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -30,13 +30,13 @@ let g:Tex_package_detected = ""
 " Tex_pack_check: creates the package menu and adds to 'dict' setting. {{{
 "
 function! Tex_pack_check(package)
-	if has("gui") && filereadable(s:path."/packages/".a:package)
+	if has("gui_running") && filereadable(s:path."/packages/".a:package)
 		call TeX_pack(a:package)
 		let g:Tex_package_supported = g:Tex_package_supported.",".a:package
 	endif
 	if filereadable(s:path.'/dictionaries/'.a:package)
 		exe 'setlocal dict+='.s:path.'/dictionaries/'.a:package
-		if !has("gui") && filereadable(s:path."/dictionaries/".a:package)
+		if !has("gui_running") && filereadable(s:path."/dictionaries/".a:package)
 			let g:Tex_package_supported = g:Tex_package_supported.",".a:package
 		endif
 	endif
