@@ -281,7 +281,7 @@ exe s:pA5.'bowtie                   <plug>\bowtie '
 exe s:pA5.'Join                     <plug>\Join '
 exe s:pA5.'pitchfork                <plug>\pitchfork '
 " }}}
-" {{{ BinaryRel2
+" {{{ nBinaryRel2
 let s:pA5a = s:pA."n&BinaryRel2."  "TODO: dorobiæ logarytmy
 exe s:pA5a.'ngtr                    <plug>\ngtr '
 exe s:pA5a.'ngeqslant               <plug>\ngeqslant '
@@ -315,7 +315,7 @@ exe s:pA6.'risingdotseq             <plug>\risingdotseq '
 exe s:pA6.'doteqdot                 <plug>\doteqdot '
 exe s:pA6.'Doteq                    <plug>\Doteq '
 exe s:pA6.'fallingdotseq            <plug>\fallingdotseq '
-exe s:pA6.'triangleeq               <plug>\triangleeq '
+exe s:pA6.'triangleq                <plug>\triangleq '
 exe s:pA6.'bumpeq                   <plug>\bumpeq '
 exe s:pA6.'Bumpeq                   <plug>\Bumpeq '
 exe s:pA6.'equiv<Tab>`=             <plug>\equiv '
@@ -614,7 +614,6 @@ let s:pA15 = s:pA."&Logic."
 exe s:pA15.'lnot                    <plug>\lnot '
 exe s:pA15.'lor                     <plug>\lor '
 exe s:pA15.'land                    <plug>\land '
-exe s:pA15.'implies                 <plug>\implies '
 " }}}
 " {{{ Limits1
 let s:pA16 = s:pA."&Limits1."
