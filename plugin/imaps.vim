@@ -7,7 +7,7 @@
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
 "
-" Last Change: Sat Dec 21 10:00 PM 2002 EST
+" Last Change: Sun Dec 22 08:00 AM 2002 EST
 " 
 " Documentation: {{{
 "
@@ -357,7 +357,7 @@ function! IMAP_Jumpfunc(direction, inclusive)
 	" If this is not an inclusive search or if it is inclusive, but the
 	" current cursor position does not contain a placeholder character, then
 	" search for the placeholder characters.
-	if !a:inclusive || strpart(getline('.'), col('.')-1) !~ '\V^'.phsUser
+	if !a:inclusive || strpart(getline('.'), col('.')-1) !~ '\V\^'.phsUser
 		let searchString = '\V'.phsUser.'\.\{-}'.pheUser
 	endif
 
