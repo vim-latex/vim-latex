@@ -34,6 +34,10 @@ endif
 " set up global defaults.
 exe "so ".s:path.'/texrc'
 
+augroup LatexSuite User LatexSuiteInit
+	au!
+augroup END
+
 " }}}
 
 nmap <silent> <script> <plug> i
@@ -578,6 +582,8 @@ function! <SID>SetTeXOptions()
 	" The docs are unclear why this needs to be done even though this file is
 	" the first compiler plugin in 'runtimepath'.
 	runtime compiler/tex.vim
+
+	silent! do LatexSuite User LatexSuiteInit
 endfunction
 
 call <SID>SetTeXOptions()
