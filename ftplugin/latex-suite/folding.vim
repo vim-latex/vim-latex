@@ -3,7 +3,7 @@
 "      Author: Srinath Avadhanula
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Sun Oct 27 10:00 PM 2002 PST
+" Last Change: Sat Nov 16 02:00 AM 2002 PST
 " 
 "  Description: functions to interact with Syntaxfolds.vim
 "=============================================================================
@@ -162,7 +162,7 @@ function! MakeTexFolds(force)
 	" {{{ subsubsection
 	call AddSyntaxFoldItem (
 		\ '^\s*\\subsubsection\W',
-		\ '^\s*%%fakesection\|^\s*\\section\|^\s*\\subsection\|^\s*\\subsubsection\|^\s*\\end{document}',
+		\ '^\s*\\subsubsection\W\|^\s*\\subsection\W\|^\s*\\section\W\|^\s*%%fakesection\|^\s*\\chapter\W\|^\s*\\begin{slide',
 		\ 0,
 		\ -1,
 		\ )
@@ -170,7 +170,7 @@ function! MakeTexFolds(force)
 	" {{{ subsection
 	call AddSyntaxFoldItem (
 		\ '^\s*\\subsection\W',
-		\ '^\s*%%fakesection\|^\s*\\section\|^\s*\\subsection\|^\s*\\end{document}',
+		\ '^\s*\\subsection\W\|^\s*\\section\W\|^\s*%%fakesection\|^\s*\\chapter\W\|^\s*\\begin{slide',
 		\ 0,
 		\ -1,
 		\ )
@@ -178,23 +178,23 @@ function! MakeTexFolds(force)
 	" {{{ section
 	call AddSyntaxFoldItem (
 		\ '^\s*\\section\W',
-		\ '^\s*%%fakesection\|^\s*\\section\|^\s*\\end{document}',
+		\ '^\s*\\section\W\|^\s*%%fakesection\|^\s*\\chapter\W\|^\s*\\begin{slide',
 		\ 0,
 		\ -1,
 		\ )
 	" }}}
-	" {{{ fakesection (for forcing a fold item manually)
+	" {{{ fakesection (for forcinga fold item manually)
 	call AddSyntaxFoldItem (
 		\ '^\s*%%fakesection',
-		\ '^\s*%%fakesection\|^\s*\\section\|^\s*\\subsection\|^\s*\\subsubsection\|^\s*\\end{document}',
+		\ '^\s\\section\W\|^\s*%%fakesection\|^\s*\\chapter\W\|^\s*\\begin{slide',
 		\ 0,
 		\ -1,
 		\ )
 	" }}}
 	" {{{ chapter
-	call AddSyntaxFoldItem (
-		\ '^\s*\\chapter\*\={',
-		\ '^\s*\\section',
+	call AddSyntaxFoldItem(
+		\ '^\s*\\chapter\W',
+		\ '^\s*\\chapter\W\|^\s*\\begin{slide',
 		\ 0,
 		\ -1
 		\ )
@@ -202,7 +202,7 @@ function! MakeTexFolds(force)
 	" {{{ slide
 	call AddSyntaxFoldItem (
 		\ '^\s*\\begin{slide',
-		\ '^\s*\\end{slide',
+		\ '^\s*\\chapter\W\|^\s*\\begin{slide',
 		\ 0,
 		\ 0
 		\ )
