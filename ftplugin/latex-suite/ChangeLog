@@ -23,3 +23,5 @@ After 8 May 2003
 	Bugfixes
 	* compiler.vim:
 		Compile file with current file expansion, not always .tex file (MM)
+	* texviewer.vim:
+		Check if s:type exists in UpdateViewerWindow (MM)
