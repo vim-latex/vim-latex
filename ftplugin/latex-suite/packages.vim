@@ -415,9 +415,10 @@ function! Tex_pack_all(fname)
 
 					let id = id + 1
 
-				endif
+				endwhile
 
-			endwhile
+			endif
+
 
 			let fn = fn + 1
 
