@@ -405,5 +405,30 @@ function! GotoErrorLocation(filename)
 	exec 'silent! '.linenum.' | normal! '.normcmd
 
 endfunction " }}}
+" SetCompilerMaps: sets maps for compiling/viewing/searching {{{
+" " Description: 
+function! <SID>SetCompilerMaps()
+	if exists('b:Tex_doneCompilerMaps')
+		return
+	endif
+	let b:Tex_doneCompilerMaps = 1
+	" viewing/searching
+	if !hasmapto('RunLaTeX')
+		if has("gui")
+			nnoremap <buffer> <Leader>ll :silent! call RunLaTeX()<cr>
+			nnoremap <buffer> <Leader>lv :silent! call ViewLaTeX()<cr>
+			nnoremap <buffer> <Leader>ls :silent! call ForwardSearchLaTeX()<cr>
+		else
+			nnoremap <buffer> <Leader>ll :call RunLaTeX()<cr>
+			nnoremap <buffer> <Leader>lv :call ViewLaTeX()<cr>
+			nnoremap <buffer> <Leader>ls :call ForwardSearchLaTeX()<cr>
+		end
+	end
+endfunction 
+" }}}
+
+augroup LatexSuite
+	au LatexSuite User LatexSuiteFileType call <SID>SetCompilerMaps()
+augroup END
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4

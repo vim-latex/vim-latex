@@ -7,6 +7,33 @@
 "  Description: functions to interact with Syntaxfolds.vim
 "=============================================================================
 
+nnoremap <unique> <Plug>Tex_RefreshFolds :call MakeTexFolds(1)<cr>
+
+augroup LatexSuite
+	au LatexSuite User LatexSuiteFileType 
+		\ call Tex_Debug('folding.vim: catching LatexSuiteFileType') | 
+		\ call s:SetFoldOptions()
+augroup END
+
+" SetFoldOptions: sets maps for every buffer {{{
+" Description: 
+function! <SID>SetFoldOptions()
+	if exists('b:doneSetFoldOptions')
+		return
+	endif
+	let b:doneSetFoldOptions = 1
+
+	setlocal foldtext=TexFoldTextFunction()
+
+	if g:Tex_Folding && g:Tex_AutoFolding
+		call MakeTexFolds(0)
+	endif
+
+	if g:Tex_Folding && !hasmapto('<Plug>Tex_RefreshFolds')
+		nmap <silent> <buffer> <Leader>rf  <Plug>Tex_RefreshFolds
+	endif
+
+endfunction " }}}
 " MakeTexFolds: function to create fold items for latex. {{{
 "
 " used in conjunction with MakeSyntaxFolds().
