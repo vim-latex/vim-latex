@@ -436,7 +436,7 @@ TexLet g:Tex_ExplorerHeight = 10
 TexLet g:Tex_ImageDir = ''
 
 " whether or not searches for \cite's are cached.
-TexLet g:Tex_RememberCiteSearch = 1
+TexLet g:Tex_RememberCiteSearch = 0
 " Paths to the bibliography files and custom packages.
 TexLet g:Tex_BIBINPUTS = ''
 TexLet g:Tex_TEXINPUTS = ''
