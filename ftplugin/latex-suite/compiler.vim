@@ -39,14 +39,14 @@ function! SetTeXCompilerTarget(type, target)
 				call confirm(
 					\'No '.a:type.' rule defined for target '.target."\n".
 					\'Please specify a rule in texrc.vim'."\n".
-					\'     :help latex-compiler-target'."\n".
+					\'     :help Tex_CompileRule_format'."\n".
 					\'for more information',
 					\"&ok", 1, 'Warning')
 			else
 				call input( 
 					\'No '.a:type.' rule defined for target '.target."\n".
 					\'Please specify a rule in texrc.vim'."\n".
-					\'     :help latex-compiler-target'."\n".
+					\'     :help Tex_ViewRule_format'."\n".
 					\'for more information'
 					\)
 			endif
@@ -84,26 +84,13 @@ com! -nargs=1 TVTarget :call SetTeXCompilerTarget('View', <f-args>)
 com! -nargs=? TTarget :call SetTeXTarget(<f-args>)
 
 " }}}
-" RunLaTeX: compilation function {{{
-" this function runs the latex command on the currently open file. often times
-" the file being currently edited is only a fragment being \input'ed into some
-" master tex file. in this case, make a file called mainfile.latexmain in the
-" directory containig the file. in other words, if the current file is
-" ~/thesis/chapter.tex
-" so that doing "latex chapter.tex" doesnt make sense, then make a file called 
-" main.tex.latexmain 
-" in the ~/thesis directory. this will then run "latex main.tex" when
-" RunLaTeX() is called.
-function! RunLaTeX()
-
-	call Tex_Debug('getting to RunLaTeX, b:fragmentFile = '.exists('b:fragmentFile'))
+" Tex_CompileLatex: compiles the present file. {{{
+" Description: 
+function! Tex_CompileLatex()
 	if &ft != 'tex'
 		echo "calling RunLaTeX from a non-tex file"
 		return
 	end
-	let dir = expand("%:p:h").'/'
-	let curd = getcwd()
-	exec 'cd '.expand("%:p:h")
 
 	" close any preview windows left open.
 	pclose!
@@ -145,6 +132,14 @@ function! RunLaTeX()
 		exec 'make '.mainfname
 	endif
 	redraw!
+endfunction " }}}
+" Tex_SetupErrorWindow: sets up the cwindow and preview of the .log file {{{
+" Description: 
+function! Tex_SetupErrorWindow()
+	let mainfname = Tex_GetMainFileName(':r')
+	if exists('b:fragmentFile') || mainfname == ''
+		let mainfname = expand('%:t')
+	endif
 
 	let winnum = winnr()
 
@@ -171,6 +166,54 @@ function! RunLaTeX()
 		exec ( line('$') < 4 ? line('$') : 4 ).' wincmd _'
 		call GotoErrorLocation(mfnlog)
 	endif
+
+endfunction " }}}
+" RunLaTeX: compilation function {{{
+" this function runs the latex command on the currently open file. often times
+" the file being currently edited is only a fragment being \input'ed into some
+" master tex file. in this case, make a file called mainfile.latexmain in the
+" directory containig the file. in other words, if the current file is
+" ~/thesis/chapter.tex
+" so that doing "latex chapter.tex" doesnt make sense, then make a file called 
+" main.tex.latexmain 
+" in the ~/thesis directory. this will then run "latex main.tex" when
+" RunLaTeX() is called.
+function! RunLaTeX()
+	call Tex_Debug('getting to RunLaTeX, b:fragmentFile = '.exists('b:fragmentFile'), 'comp')
+
+	let dir = expand("%:p:h").'/'
+	let curd = getcwd()
+	exec 'cd '.expand("%:p:h")
+
+	" first get the dependency chain of this format.
+	let dependency = s:target
+	if exists('g:Tex_FormatDependency_'.s:target)
+		if g:Tex_FormatDependency_{s:target} !~ ','.s:target.'$'
+			let dependency = g:Tex_FormatDependency_{s:target}.','.s:target
+		else
+			let dependency = g:Tex_FormatDependency_{s:target}
+		endif
+	endif
+
+	call Tex_Debug('getting dependency chain = ['.dependency.']', 'comp')
+
+	" now compile to the final target format via each dependency.
+	let i = 1
+	while Tex_Strntok(dependency, ',', i) != ''
+		let s:target = Tex_Strntok(dependency, ',', i)
+		call SetTeXCompilerTarget('Compile', s:target)
+		call Tex_Debug('setting target to '.s:target, 'comp')
+
+		if g:Tex_MultipleCompileFormats =~ '\<'.s:target.'\>'
+			call Tex_CompileMultipleTimes()
+		else
+			call Tex_CompileLatex()
+		endif
+
+		let i = i + 1
+	endwhile
+	
+	call Tex_SetupErrorWindow()
 
 	exec 'cd '.curd
 endfunction
@@ -242,7 +285,7 @@ function! ViewLaTeX()
 endfunction
 
 " }}}
-" ForwardSearchLaTeX: searches for current location in dvi file. {{{
+" Tex_ForwardSearchLaTeX: searches for current location in dvi file. {{{
 " Description: if the DVI viewr is compatible, then take the viewer to that
 "              position in the dvi file. see docs for RunLaTeX() to set a
 "              master file if this is an \input'ed file. 
@@ -253,7 +296,7 @@ endfunction
 "           gvim --servername LATEX --remote-silent +%l "%f"
 "      For inverse search, if you are reading this, then just pressing \ls
 "      will work.
-function! ForwardSearchLaTeX()
+function! Tex_ForwardSearchLaTeX()
 	if &ft != 'tex'
 		echo "calling ViewLaTeX from a non-tex file"
 		return
@@ -524,12 +567,12 @@ function! <SID>SetCompilerMaps()
 			nnoremap <buffer> <Leader>ll :silent! call RunLaTeX()<cr>
 			vnoremap <buffer> <Leader>ll :call Tex_PartCompile()<cr>
 			nnoremap <buffer> <Leader>lv :silent! call ViewLaTeX()<cr>
-			nnoremap <buffer> <Leader>ls :silent! call ForwardSearchLaTeX()<cr>
+			nnoremap <buffer> <Leader>ls :silent! call Tex_ForwardSearchLaTeX()<cr>
 		else
 			nnoremap <buffer> <Leader>ll :call RunLaTeX()<cr>
 			vnoremap <buffer> <Leader>ll :call Tex_PartCompile()<cr>
 			nnoremap <buffer> <Leader>lv :call ViewLaTeX()<cr>
-			nnoremap <buffer> <Leader>ls :call ForwardSearchLaTeX()<cr>
+			nnoremap <buffer> <Leader>ls :call Tex_ForwardSearchLaTeX()<cr>
 		end
 	end
 	vnoremap <buffer> <silent> <Plug>Tex_PartCompile :call Tex_PartCompile()<CR>

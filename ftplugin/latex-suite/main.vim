@@ -594,6 +594,7 @@ else
 	exe 'source '.s:path.'/mathmacros.vim'
 endif
 
+exe 'source '.s:path.'/multicompile.vim'
 exe 'source '.s:path.'/compiler.vim'
 exe 'source '.s:path.'/folding.vim'
 exe 'source '.s:path.'/templates.vim'
