@@ -1,24 +1,575 @@
-2003-11-30 10:52  srinathava
+2004-05-16 11:42  srinathava
+
+	* doc/latex-suite.xml:
+
+	New: documentation for the new functionality of completing \ref's.
+
+2004-05-16 10:41  srinathava
+
+	* ftplugin/latex-suite/compiler.vim:
+
+	Bug: Part compilation doesn't work because the temporary file created does
+	     not include the preamble of the original main file.
+	Why: We used Tex_GetMainFileName(':p:r') from before the time
+	     Tex_GetMainFileName was changed.
+	Fix: Use Tex_GetMainFileName(':p') instead.
+
+2004-05-16 10:38  srinathava
+
+	* ftplugin/latex-suite/texviewer.vim:
+
+	New: Instead of searching for \\label's in all the .tex files in the
+	     present directory, only search in the mainfile and all the included
+	     files.
+
+2004-05-14 10:37  srinathava
+
+	* ftplugin/latex-suite/compiler.vim:
+
+	Bug: Sometimes, even if there are errors in compiling the .tex file,
+	     Tex_RunLaTeX proceeds to convert to ps, etc.
+	Why: The pattern used to check whether there is an error lin the :clist is
+	     very restrictive. If there are errors which do not have an associated
+	     line number, then the pattern doesn't match and we fail to detect that
+	     there is an error.
+	Fix: Just use very simple patterns.
+
+2004-05-14 10:33  srinathava
+
+	* compiler/tex.vim:
+
+	Bug: If an error is of the form
+	     >> ! Missing $ inserted.
+	     >> <inserted text>
+	     >>                 $
+	     >> l.9
+	     >>
+	     >> I've inserted a begin-math/end-math symbol since I think
+	     >> you left one out. Proceed, with fingers crossed.
+	     (there's a single <space> after l.9), then the line number is not
+	     recognized.
+	Why: The 'efm' setting contains only '%+Cl.%l\ %m', which means that the
+	     line number is recognized only when the "l.<number><space>" is
+	     followed by a message.
+	Fix: Append '%+Cl.%l\ ' to the 'efm'.
+
+2004-05-09 15:43  srinathava
+
+	* ftplugin/latex-suite/texviewer.vim:
+
+	Bug: The <F9> mapping only works on the first .tex file which triggers
+	     latex-suite. (Julien)
+	Why: When we were moving texviewer.vim from ../tex/texviewer.vim to here,
+	     we didn't bother to catch the LatexSuiteFileTypeEvent which is the
+	     mechanism to ensure the maps get set for every .tex file opened.
+	Fix: Catch the LatexSuiteFileTypeEvent event (SA)
+
+2004-05-09 15:11  srinathava
+
+	* doc/: latex-suite.xml, latex-suite.txt:
+
+	New: Description of the <M-i> mapping to insert \item commands.
+
+2004-05-04 13:50  srinathava
+
+	* plugin/imaps.vim:
+
+	Bug: when 'ignorecase' is set, then typing 'etB' triggers an error.
+	Why: With 'ignorecase' set, 'etB' matches 'ETB', therefore, LookupCharacter
+	     assumes that a map exists for 'etB' and tries to find the value of
+	     s:Map_Tex_etB which doesn't exist.
+	Fix: Force matching case with the \C pattern.
+
+2004-03-15 11:40  srinathava
+
+	* ftplugin/latex-suite/envmacros.vim:
+
+	New: A more precise behavior of the Tex_InsertItem function to account for
+	     the fact that the previous \\begin might not be the environment in
+	     which the cursor is enclosed. (Alan Schmitt)
+
+2004-03-14 11:39  srinathava
+
+	* plugin/remoteOpen.vim:
+
+	Bug: RemoteOpen does not work with file names with spaces.
+	Why: The following vim command
+	        :drop File Name with spaces
+	     opens up multiple files.
+	Fix: escape() the file name before issuing the drop command.
+	     NOTE: There is a vim bug where
+	        exec "drop ".escape(filename, '\ ')
+	     hangs GVIM.
+
+2004-03-13 22:25  srinathava
+
+	* ftplugin/latex-suite/envmacros.vim:
+
+	Bug: <M-i> is mapped to <Plug>Tex_InsertItemOnThisLine even when there is
+	     some other key sequence which is mapped to
+	     <Plug>Tex_InsertItemOnThisLine.
+	Why: hasmapto() uses "nvo" as the default. Therefore, checking for the
+	     existence of an insert mode mapping without supplying the mode
+	     argument is faulty.
+	Fix: Supply "i" as the mode argument.
+
+2004-03-10 22:41  srinathava
+
+	* ftplugin/tex/brackets.vim:
+
+	placeholder brackets.vim file
+
+2004-03-10 22:38  srinathava
+
+	* ftplugin/tex/texviewer.vim:
+
+	placeholder texviewer.vim file
+
+2004-03-03 22:15  srinathava
+
+	* ftplugin/latex-suite/compiler.vim:
+
+	Fix: removing outdated comments.
+
+2004-03-02 16:32  srinathava
+
+	* ftplugin/latex-suite/compiler.vim:
+
+	Bug: Viewing .dvi files with spaces in names doesn't work.
+	     (Panagiotis Louridas)
+	Why: We don't enclose the file name in double-quotes.
+	Fix: Enclose file-name in double-quotes. As of now, only bother with spaces
+	     in win32.
+
+2004-03-02 16:19  srinathava
+
+	* ftplugin/latex-suite/texviewer.vim:
+
+	Bug: <F9> completion for \cite does not work
+	Why: Tex_GrepForBibItems uses the mainfile name without extension.
+	Fix: get the whole file name including extension.
+
+2004-02-29 09:19  srinathava
+
+	* ftplugin/latex-suite/envmacros.vim:
+
+	New: Some additions to the thebibliography environment and item
+	     descriptions and the description item.  (Dave Murray-Rust)
+
+2004-02-28 23:26  srinathava
+
+	* plugin/remoteOpen.vim:
+
+	Bug: Opening a file via the :RemoteOpen command does not work (Xin Yin)
+	Why: Vim eats up all but the last remote_send call when multiple
+	     invokations to this function are made (Vim bug)
+	Fix: Collapse the entire set of keys into a single string and make a single
+	     remote_send call.
+
+2004-02-11 02:04  mikmach
+
+	* ftplugin/latex-suite/: main.vim, packages.vim:
+
+	Give LaTeX dictionaries priority by adding them to the dict option with ^ not +
+
+2004-02-01 13:54  mikmach
+
+	* ftplugin/latex-suite/compiler.vim:
+
+	Bug: when using a latex masterfile with included files (also in
+	     subdirectories), forward searches in dvi files do not work
+	     correctly because the name of the masterfile is used in the
+	     source-specials-call instead of the current file. (Volker
+	     Gaibler)
+	Fix: Use expand('%') instead of mainfname (Volker Gaibler)
+
+2004-01-26 04:58  mikmach
+
+	* ftplugin/latex-suite/main.vim:
+
+	Add sourcing of texviewer.vim
+
+2004-01-26 04:56  mikmach
+
+	* ftplugin/: tex/texviewer.vim, latex-suite/texviewer.vim:
+
+	Move texviewer.vim into latex-suite directory. It will end cleaning of tex dir
+
+2004-01-25 13:50  mikmach
+
+	* ftplugin/latex-suite/packages/moreverbatim:
+
+	Misnamed package file, remove moreverbatim
+
+2004-01-25 13:49  mikmach
+
+	* ftplugin/latex-suite/: main.vim, texrc:
+
+	Sourcing and configuration of brackets.vim and smartspace.vim
+
+2004-01-25 13:48  mikmach
+
+	* ftplugin/: tex/smartspace.vim, tex/brackets.vim,
+	  latex-suite/smartspace.vim, latex-suite/brackets.vim:
+
+	Move smartspace.vim and brackets.vim to ftplugin/latex-suite. I will make easier to switch them off through texrc and to disable <M-> mappings which conflicts with some European encodings
+
+2003-12-23 13:26  srinathava
+
+	* ftplugin/latex-suite/envmacros.vim:
+
+	Bug: EEA inserted something different than "eqnarray<F5>".
+	Why: Tex_EnvMacros() used its own logic for forming the environment string.
+	Fix: make Tex_EnvMacros() call Tex_PutEnvironment() instead.
+
+2003-12-23 13:08  srinathava
+
+	* ftplugin/latex-suite/envmacros.vim:
+
+	Bug: When some text is visually selected, then <F7> surrounds the selection
+	     in an environment created from the last word of the selection instead
+	     of prompting for an environment.
+	Why: Tex_DoCommand ignores the value of s:isvisual.
+	Fix: Make Tex_DoCommand honor s:isvisual.
+
+2003-12-18 19:06  srinathava
+
+	* ftplugin/latex-suite/templates.vim:
+
+	Bug: When the user's 'fo' setting had 'ro' included in it, then inserting
+	     templates would result in strange leading indentation (it would be
+	     doubled etc).
+	Why: IMAP_PutTextWithMovement simulates key-presses. Therefore if 2
+	     successive lines in the template begin with ``%`` and ``'fo'`` has
+	     ``ro``, then the second line will have an extra ``%`` character.
+	Fix: Set ``'fo'`` temporarily to an empty string.
+
+2003-12-16 22:24  srinathava
+
+	* ftplugin/tex/texviewer.vim:
+
+	Bug: A very restrictive RE sometimes did not match the bib-key which was
+	     being completed.
+
+2003-12-16 19:12  srinathava
+
+	* ftplugin/latex-suite/packages.vim:
+
+	Bug: loading templates no longer works.
+	Why: Apparently if one is editing a file, say file.tex which is modified,
+	     then one cannot do ":split file.tex"
+	Fix: Only split a window if the main file name is not the current file.
+	     TODO: What happens if the main file is being opened in a seperate
+	           window and is modified?
+
+2003-12-16 15:41  srinathava
+
+	* ftplugin/tex/texviewer.vim:
+
+	Bug: \cite completion did not work. The prefix was not honored and
+	     therefore all the matches would be shown and moreover the text would
+	     not be inserted properly.
+	Cause: We had used the pattern::
+				let s:prefix = matchstr(s:prefix, '\([^,]\+,\)\+\zs\([^,]\+\)\ze$')
+	       to modify the prefix. However, this only succeeds when there are
+	       more than 1 items in the \cite. i.e, \cite{key1,pre. s:prefix
+	       becomes empty if we do try to complete just \cite{pre
+	Fix: Change the prefix to::
+				let s:prefix = matchstr(s:prefix, '\([^,]\+,\)*\zs\([^,]\+\)\ze$')
+
+2003-12-16 13:27  srinathava
+
+	* ftplugin/latex-suite/templates/IEEEtran.tex:
+
+	Bug: IEEEtran.tex template inserted needless indentation. There was also an
+	     extra ``\begin{document}`` and some mismatched curly braces.
+
+	Please follow the following guidelines henceforth in creating templates:
+
+	1. The first placeholder in the template should be an empty placeholder
+	   As of now, vim does not provide the equivalent of a "startinsert"
+	   command for leaving in visual mode.
+
+	2. There should not be any indentation in the file. For example, if the
+	   template contains a ``\begin{eqnarray}``, it should be written as::
+
+	        \begin{eqnarray}
+	        <+write equation here+>
+	        \end{eqnarray}
+
+	   instead of::
+
+	        \begin{eqnarray}
+	            <+write equation here+>
+	        \end{eqnarray}
+
+	   ``IMAP_PutTextWithMovement`` automatically inserts the correct
+	   indentation according to the user's ``'sw'`` and other indent settings.
+
+	3. No trailing empty lines after the ``\end{document}``.
+
+2003-12-16 12:29  srinathava
+
+	* ftplugin/latex-suite/templates.vim:
+
+	Bug: When g:Imap_PlaceHolderStart and/or g:Imap_PlaceHolderEnd settings
+	     were not ascii and encoding=utf8, then reading in a template did not
+	     work as advertised (placeholders are shown as <ab><bb> etc)
+	Why: templates.vim still used simple pattern substitution to replace the
+	     placeholder characters, which does not work in the above setting.
+	Fix: Use IMAP_PutTextWithMovement which handles the above situation.
+
+2003-12-16 11:43  srinathava
+
+	* ftplugin/latex-suite/main.vim:
+
+	Recently, I had to fix a bug in packages.vim which made vim quit as soon as
+	it was open. Since I couldn't use the Tex_PrintDebug() function, I made a
+	little change which created a log file in the /tmp directory. This might be
+	a useful thing to have in the future, but ofcourse, it should definitely be
+	off by default.
+
+2003-12-15 20:04  srinathava
+
+	* doc/: latex-suite-quickstart.txt, latex-suite-quickstart.xml:
+
+	adding quick-start tutorial files
+
+2003-12-14 19:33  srinathava
+
+	* ftplugin/latex-suite/: custommacros.vim, main.vim, packages.vim,
+	  texproject.vim:
+
+	Yet more changes in the effort to make latex-suite support file names with
+	spaces. A new function ``Tex_EscapeSpaces`` which escapes spaces *only if
+	necessary*. This function should henceforth be used whenever we want to
+	split a new file, save a file etc etc. Example::
+
+	    exec 'split '.Tex_EscapeSpaces(filename)
+
+2003-12-14 16:55  srinathava
+
+	* ftplugin/tex/texviewer.vim:
+
+	modifications to account for the changes in Tex_EscapeForGrep().
+
+2003-12-14 16:53  srinathava
+
+	* ftplugin/latex-suite/main.vim:
+
+	Change: Initially, Tex_EscapeForGrep would always double backslashes at
+	        least once to account for the fact that the user means the external
+	        grep command to see the string ``\\label`` when he passes
+	        ``\label`` to this function. But making such guesses is bad for
+	        cases when we want to pass a single ``\`` to the external grep
+	        command (for instance when we want to pass ``\<word\>`` to the
+	        external grep command). Therefore, stop this function from making
+	        any guesses about what the user might have wanted the external
+	        command to see.  This function now expects the user to pass the
+	        exact string which he wants the external grep command to see.
+
+2003-12-14 15:31  srinathava
+
+	* ftplugin/: latex-suite/main.vim, tex/texviewer.vim:
+
+	Change: Making Tex_EscapeForGrep more cross-platform. Use this henceforth
+	        whenever a :grep command needs to be issued.
+
+2003-12-13 23:23  srinathava
+
+	* ftplugin/latex-suite/texproject.vim:
+
+	Changes to account for the changes in Tex_GetMainFileName()
+
+2003-12-13 23:22  srinathava
+
+	* ftplugin/latex-suite/packages.vim:
+
+	A few small updates to account for the change in Tex_GetMainFileName()
+
+2003-12-13 23:20  srinathava
+
+	* ftplugin/latex-suite/folding.vim:
+
+	New: The fold text is now also "indented". in other words, the fold text is
+	     now prepended with the whitespace of the current line so that
+	     nested-ness is more apparent.
+
+2003-12-13 23:17  srinathava
+
+	* ftplugin/latex-suite/compiler.vim:
+
+	Attempting to fix the filenames with spaces problem. Also since
+	Tex_GetMainFileName() _always_ returns a file name now, (even if a
+	.latexmain file does not exist), lots of redundant logic is now removed.
+
+2003-12-13 23:13  srinathava
+
+	* ftplugin/latex-suite/main.vim:
+
+	A serious attempt at fixing the file names with spaces problems across
+	various platforms.
+
+	Change: Tex_GetMainFileName now applies the file name modifier to the
+	        filename after removing the trailing .latexmain part if it exists.
+
+	Bug: Tex_FindInRtp would return a non-empty string even if a filename is
+	     not found in the &rtp.
+
+	New: A trivial function Tex_CD() which just escapes spaces in the directory
+	     name before cd'ing to it.
+	     Use this function henceforth whenever you want to cd to another
+	     directory instead of the
+	        exec 'cd '.dirname
+	     routine.
+
+	     TODO: Maybe make this robust to detect previous attempts at escaping
+	           spaces and if so, /not/ escape it again.
+
+2003-12-13 23:05  srinathava
+
+	* doc/latexhelp.txt:
+
+	typo in latexhelp.txt caused some broken links (Alex Jakushev)
+
+2003-12-05 18:45  srinathava
+
+	* doc/latex-suite.xml:
+
+	Bug: Tex_FoldedSections no longer contains slide (Zhang Linbo)
+
+2003-12-03 16:10  srinathava
+
+	* ftplugin/latex-suite/folding.vim:
+
+	Fix: Patch to restrict runaway folding with commands... (Zhang Linbo)
+
+2003-12-03 16:06  srinathava
+
+	* plugin/imaps.vim:
+
+	Meta-bug! A bug in the debugging function.
+
+2003-12-02 03:38  srinathava
+
+	* ftplugin/latex-suite/compiler.vim:
+
+	Bug: Yet another place where string concatentation was not using dots.
+
+2003-12-02 03:36  srinathava
+
+	* ftplugin/latex-suite/compiler.vim:
+
+	Bug: Viewing did not work on certain platforms because string
+	     concatenation wthout using a dot does not work on all platforms.
+	     (Alex Jakushev)
+
+2003-12-02 03:16  srinathava
+
+	* ftplugin/latex-suite/folding.vim:
+
+	Change: By default do not fold any commands at all. This is because the
+	        start pattern for a command requires a regexp which will match
+	        unbalanced parentheses of arbitrary depth. Apparently it can be
+	        proved that this cannot be done with regexps.
+
+	        Just to be on the safe side, change the start pattern for a command
+	        to '^\s*\\'.name.'{[^{}]*$'. This will at least ensure that no
+	        illegal folds are created. The limitation is that some legal folds
+	        might also not be created.
+
+2003-12-02 03:04  srinathava
+
+	* ftplugin/latex-suite/compiler.vim:
+
+	Bug: \ls does not trigger search
+	Why: tried to create the \ls mapping for the 'ls' mode. It should ofcourse
+	     be the normal ('n') mode. (Alex Jakushev)
+
+2003-12-02 02:56  srinathava
+
+	* ftplugin/latex-suite/folding.vim:
+
+	Change: remove slide from the section setting. (Zhang Lin-bo)
+
+	Change: add the \\begin{slide} pattern to the end pattern of the section
+	        environments. (Zhang Lin-bo)
+
+2003-12-02 02:50  srinathava
+
+	* ftplugin/latex-suite/folding.vim:
+
+	Change: rename FoldSections to Tex_FoldSections
+
+	Fix: Tex_FoldSections creates a pattern like '^\s*\\'.name
+	     as the start fold pattern for a section. This is wrong when
+	     name == '%%fakesection'
+
+2003-12-01 00:36  srinathava
+
+	* doc/: latex-suite.txt, latex-suite.xml:
+
+	New: Describe the various new settings for customizing the folding scheme.
+
+2003-11-30 21:17  srinathava
+
+	* ftplugin/latex-suite/folding.vim:
+
+	Bug: a small bug in initializing g:Tex_FoldedCommands, and adds a few lines
+	     to setup g:Tex_FoldedMisc (Zhang Linbo)
+
+2003-11-30 04:05  srinathava
+
+	* ftplugin/latex-suite/folding.vim:
+
+	Change: Fold \item's first. They are usually nested within environments.
+	        (Zhang Linbo)
+
+2003-11-30 02:36  srinathava
+
+	* ftplugin/latex-suite/folding.vim:
+
+	Change: Remove the comment folding from the default folding scheme.
+
+	Change: The TexFoldTextFunction had a few problems with creating fold text
+	        for comments with the : character in them. The best way seems to be
+	        to just substitute the first : character with ': %'.
+
+2003-11-30 02:05  srinathava
+
+	* makefile:
+
+	The new changelog: target which utilizes cvs2cl to automatically generate
+	the Changelog.
+
+2003-11-30 02:02  srinathava
+
+	* ftplugin/latex-suite/ChangeLog:
+
+	The first Changelog generated automatically via cvs2cl. Simply use the
+	changelog target in the makefile to generate it again.
+
+2003-11-30 01:52  srinathava
 
 	* ftplugin/latex-suite/folding.vim:
 
 	Use the new Tex_MakeMap function in main.vim
 
-2003-11-30 10:51  srinathava
+2003-11-30 01:51  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
 	Change: Use the new Tex_MakeMap function from main.vim to simplify the code
 	        a little.
 
-2003-11-30 10:49  srinathava
+2003-11-30 01:49  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	New: Provide <Plug> mappings for the various compiler maps so the user can
 	     remap to other keys if they feel like it.
 
-2003-11-30 10:48  srinathava
+2003-11-30 01:48  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -30,13 +581,13 @@
 	         endif
 	     stuff over and over again.
 
-2003-11-30 04:41  srinathava
+2003-11-29 19:41  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	Change: A little more debugging statements thrown in.
 
-2003-11-30 03:43  srinathava
+2003-11-29 18:43  srinathava
 
 	* ftplugin/latex-suite/folding.vim:
 
@@ -48,7 +599,7 @@
 	        by the 'titlepage' environment
 	        (Zhang Linbo)
 
-2003-11-29 10:53  srinathava
+2003-11-29 01:53  srinathava
 
 	* ftplugin/latex-suite/folding.vim:
 
@@ -63,20 +614,20 @@
 	        g:Tex_FoldedSections
 	        g:Tex_FoldedMisc
 
-2003-11-26 12:19  mikmach
+2003-11-26 03:19  mikmach
 
 	* ftplugin/tex/texviewer.vim:
 
 	Bug: Folds in preview window are closed (Alan Schmitt)
 	Solution: Use nofoldenable, foldlevel=10 wasn't enough (MM)
 
-2003-11-26 06:54  srinathava
+2003-11-25 21:54  srinathava
 
 	* plugin/imaps.vim:
 
 	backport from main trunk.
 
-2003-11-26 06:45  srinathava
+2003-11-25 21:45  srinathava
 
 	* plugin/imaps.vim:
 
@@ -84,26 +635,26 @@
 	     then we would get an error when we used any of the IMAP functions!
 	Why: A silly little bug. An extra quote
 
-2003-11-26 04:57  srinathava
+2003-11-25 19:57  srinathava
 
 	* makefile:
 
 	Use the upload1.5 for the 1.5 release branch.
 
-2003-11-25 21:34  srinathava
+2003-11-25 12:34  srinathava
 
 	* ftplugin/latex-suite/folding.vim:
 
 	backporting changes made from main trunk.
 
-2003-11-25 07:56  srinathava
+2003-11-24 22:56  srinathava
 
 	* ftplugin/latex-suite/folding.vim:
 
 	Bug fix in termination condition for %fakesection was buggy
 	(Zhang Lin-bo)
 
-2003-11-21 04:34  srinathava
+2003-11-20 19:34  srinathava
 
 	* doc/: latex-suite-chunk.xsl, latex-suite.xml, latex-suite.xsl:
 
@@ -112,20 +663,20 @@
 	reflect this. See the updated README on the small changes you might need to
 	make.
 
-2003-11-21 04:27  srinathava
+2003-11-20 19:27  srinathava
 
 	* doc/README:
 
 	Oops. There was a mistake in doc about the location of the xsl directory.
 
-2003-11-21 04:25  srinathava
+2003-11-20 19:25  srinathava
 
 	* doc/README:
 
 	Rewrote this README in restructuredtext (fun!). Also made some changes to
 	reflect the new directory structure of the various xsl, xml files.
 
-2003-11-16 16:12  mikmach
+2003-11-16 07:12  mikmach
 
 	* ftplugin/latex-suite/templates.vim:
 
@@ -135,19 +686,19 @@
 	Solution: Don't add anything to name passed to file
 		let filename = a:1
 
-2003-11-16 10:28  srinathava
+2003-11-16 01:28  srinathava
 
 	* ftplugin/latex-suite/ChangeLog:
 
 	A couple of new things.
 
-2003-11-16 04:37  srinathava
+2003-11-15 19:37  srinathava
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
 	Readding Mikolaj's correction to latex-suite.xml
 
-2003-11-16 04:19  srinathava
+2003-11-15 19:19  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -157,63 +708,63 @@
 	Fix: Look for the presence of strings like ":13 error:" in :clist, not just
 	     whether it is empty or not.
 
-2003-11-14 11:37  srinathava
+2003-11-14 02:37  srinathava
 
 	* plugin/imaps.vim:
 
 	New: the g:Imap_FreezeImap function temporarily pauses any macro expansion.
 
-2003-11-14 11:36  srinathava
+2003-11-14 02:36  srinathava
 
 	* doc/latex-suite.txt:
 
 	update from latest latex-suite.xml (forgot to commit at the same time)
 
-2003-11-14 11:29  srinathava
+2003-11-14 02:29  srinathava
 
 	* doc/latex-suite.xml:
 
 	New: A description of the g:Imap_FreezeImap setting
 
-2003-11-14 10:31  srinathava
+2003-11-14 01:31  srinathava
 
 	* ftplugin/latex-suite/packages/german:
 
 	Bug: Fix <F5> insertion of environments in the presence of
 	     \usepackage{german} (Artur Czechowski)
 
-2003-11-14 10:11  mikmach
+2003-11-14 01:11  mikmach
 
 	* ftplugin/latex-suite/packages/german:
 
 	Add package and option variables to german package file (Artur R. Czechowicki)
 
-2003-11-13 10:35  srinathava
+2003-11-13 01:35  srinathava
 
 	* plugin/imaps.vim:
 
 	merged bug fix from main branch 1.33 and 1.34
 
-2003-11-13 09:53  srinathava
+2003-11-13 00:53  srinathava
 
 	* plugin/imaps.vim:
 
 	Bug: Sometimes a Tex_LastSearchPattern not found error is generated (Eugene
 	Minkovskii)
 
-2003-11-13 09:31  srinathava
+2003-11-13 00:31  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
 	- merged bug-fix from main branch between 1.38 and 1.39
 
-2003-11-11 16:37  mikmach
+2003-11-11 07:37  mikmach
 
 	* ftplugin/latex-suite/envmacros.vim:
 
 	Tex_DoEnvironment: If in current line is more than one word or in visual mode ignore contents of line and prompt for environment
 
-2003-11-07 07:37  srinathava
+2003-11-06 22:37  srinathava
 
 	* ftplugin/latex-suite/custommacros.vim:
 
@@ -223,7 +774,7 @@
 	Fix: TMacro without arguments did not insert contents of the macro into the
 	     file.
 
-2003-11-07 03:11  srinathava
+2003-11-06 18:11  srinathava
 
 	* ftplugin/latex-suite/: compiler.vim, main.vim, multicompile.vim,
 	  packages.vim, pytools.py, templates.vim, texmenuconf.vim, texrc:
@@ -267,43 +818,43 @@
 	        make things more consistent. There are still some functions without
 	        the prefix. I will make those changes gradually.
 
-2003-11-03 02:45  srinathava
+2003-11-02 17:45  srinathava
 
 	* doc/Makefile.in:
 
 	- make lsq-txt over-writes latex-suite.txt.
 
-2003-10-30 23:49  mikmach
+2003-10-30 14:49  mikmach
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
 	Correct conflicting statements about texrc file (thanks to Ari Pollak)
 
-2003-10-30 23:49  mikmach
+2003-10-30 14:49  mikmach
 
 	* ftplugin/latex-suite/main.vim:
 
 	Fixed problem with Tex_FindInRtp not properly returning first name of template/macro name - whole path, not only core name (reported by Lin-bo Zhang)
 
-2003-10-23 03:52  srinathava
+2003-10-22 18:52  srinathava
 
 	* ftplugin/latex-suite/wizardfuncs.vim:
 
 	\lp is no longer used.
 
-2003-10-23 03:51  srinathava
+2003-10-22 18:51  srinathava
 
 	* ftplugin/latex-suite/folding.vim:
 
 	New: suggestions and fixes from Aditya Mahajan
 
-2003-10-23 03:47  srinathava
+2003-10-22 18:47  srinathava
 
 	* ftplugin/tex/brackets.vim:
 
 	Removed Tex_InsertItem from this file to be put into envmacros.vim
 
-2003-10-23 03:45  srinathava
+2003-10-22 18:45  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -319,26 +870,26 @@
 	        item style can be arbitrarily complex instead of being limited to
 	        one of four styles.
 
-2003-10-10 09:16  mikmach
+2003-10-10 00:16  mikmach
 
 	* ftplugin/latex-suite/: ChangeLog, envmacros.vim:
 
 	Johannes Tanzlers InsertItem function - insert item depending on environment
 
-2003-10-10 02:14  srinathava
+2003-10-09 17:14  srinathava
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
 	New: Description of Johannes Tanzler's Tex_InsertItem functionality.
 
-2003-10-10 01:58  srinathava
+2003-10-09 16:58  srinathava
 
 	* ftplugin/tex/brackets.vim:
 
 	New: Johannes Tanzler's Tex_InsertItem function to insert an \item command
 	     with extra options depending on the surrounding environment.
 
-2003-10-09 23:53  srinathava
+2003-10-09 14:53  srinathava
 
 	* ftplugin/latex-suite/: compiler.vim, multicompile.vim:
 
@@ -347,20 +898,20 @@
 	     are errors in the latex compilation step, we stop the process and show
 	     the errors.
 
-2003-10-09 23:52  srinathava
+2003-10-09 14:52  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
 	New: A function Tex_GetErrorList which extracts the errors from vim's
 	     :clist
 
-2003-10-09 23:21  srinathava
+2003-10-09 14:21  srinathava
 
 	* doc/latex-suite.xml:
 
 	New: brief description of Tex_GotoError
 
-2003-10-09 22:59  srinathava
+2003-10-09 13:59  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -374,38 +925,38 @@
 	     well as "l.20".
 	Fix: Use 'l\.'.linenum as the regexp.
 
-2003-10-03 12:35  mikmach
+2003-10-03 03:35  mikmach
 
 	* ftplugin/latex-suite/: multicompile.vim, texrc:
 
 	Big BibTeX databases and some packages supporting BibTeX need bibtex8 or switches. Use new g:Tex_BibtexFlavor variable, default of course just bibtex
 
-2003-10-03 09:43  mikmach
+2003-10-03 00:43  mikmach
 
 	* ftplugin/latex-suite/texrc:
 
 	Fix bug with TexLet g:Tex_GotoError ==
 
-2003-10-03 09:43  mikmach
+2003-10-03 00:43  mikmach
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
 	update docs
 
-2003-09-29 05:55  mikmach
+2003-09-28 20:55  mikmach
 
 	* ftplugin/latex-suite/custommacros.vim:
 
 	More polishing and catching bugs with combination of opening, writing, overwriting, etc. of local and system macros.
 
-2003-09-29 04:23  mikmach
+2003-09-28 19:23  mikmach
 
 	* ftplugin/latex-suite/: ChangeLog, custommacros.vim, main.vim,
 	  packages.vim, templates.vim:
 
 	s/FileInRtp/FindInRtp/ and small optimizations in templates.vim and custommacros.vim
 
-2003-09-29 02:43  mikmach
+2003-09-28 17:43  mikmach
 
 	* ftplugin/latex-suite/custommacros.vim:
 
@@ -414,20 +965,20 @@
 	Handling of menu call (fake argument FFFromMMMenu).
 	Better handling of possible error situations - prompt for name.
 
-2003-09-29 00:54  mikmach
+2003-09-28 15:54  mikmach
 
 	* ftplugin/latex-suite/ChangeLog:
 
 	update
 
-2003-09-29 00:54  mikmach
+2003-09-28 15:54  mikmach
 
 	* ftplugin/latex-suite/: compiler.vim, texrc:
 
 	Make configurable going to error/message after compilation.
 	Default is going.
 
-2003-09-29 00:53  mikmach
+2003-09-28 15:53  mikmach
 
 	* ftplugin/latex-suite/: custommacros.vim, main.vim, packages.vim,
 	  templates.vim:
@@ -453,7 +1004,7 @@
 	Completion of : commands relating for packages, templates, macros. Looks
 	in all &rtp directories.
 
-2003-09-29 00:52  mikmach
+2003-09-28 15:52  mikmach
 
 	* ftplugin/latex-suite/: main.vim, texrc:
 
@@ -462,7 +1013,7 @@
 	Tags like TABLE OF CONTENTS, FRONTMATTER etc. allows for seeing
 	structure of file. But I will not cry for it if somebody removes it :)
 
-2003-09-29 00:52  mikmach
+2003-09-28 15:52  mikmach
 
 	* ftplugin/latex-suite/packages/: SIunits, accents, acromake,
 	  afterpage, alltt, amsmath, amsthm, amsxtra, arabic, array, babel,
@@ -479,19 +1030,19 @@
 
 	Add plugin header (|write-plugin|) to package files.
 
-2003-09-17 00:50  mikmach
+2003-09-16 15:50  mikmach
 
 	* ftplugin/latex-suite/folding.vim:
 
 	add new environments to folding (gather, align, abstract
 
-2003-09-13 09:54  srinathava
+2003-09-13 00:54  srinathava
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
 	Description of Tex_Com_name
 
-2003-09-13 09:06  srinathava
+2003-09-13 00:06  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -501,14 +1052,14 @@
 	New: Utilize a new setting g:Tex_Com_{name} where name is a command name to
 	     enable user customizable command completion.
 
-2003-09-13 09:03  srinathava
+2003-09-13 00:03  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
 	- make s:SmartDots() insert \dots instead of \cdots or \ldots if the
 	  amsmath package is detected.
 
-2003-09-12 12:29  srinathava
+2003-09-12 03:29  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -520,20 +1071,20 @@
 	     because there is a lot of different ways in which the 3 letter macros
 	     are setup. Most of them do not use Tex_DoEnvironment.
 
-2003-09-12 12:25  srinathava
+2003-09-12 03:25  srinathava
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
 	- documentation about the new Tex_Env_name settings to customize
 	  environment expansions.
 
-2003-09-07 19:23  srinathava
+2003-09-07 10:23  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
 	Comment on Tex_UseMakefile usage (Alan Schmitt)
 
-2003-09-07 19:22  srinathava
+2003-09-07 10:22  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -541,7 +1092,7 @@
 	Fix: Test for Tex_UseMakefile before checking for makefile etc. (Alan
 	     Schmitt)
 
-2003-09-06 22:07  srinathava
+2003-09-06 13:07  srinathava
 
 	* plugin/imaps.vim:
 
@@ -552,7 +1103,7 @@
 	     history.
 	Fix: Remember @/ in Tex_LastSearchPattern and then restore it.
 
-2003-09-06 08:34  srinathava
+2003-09-05 23:34  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -560,38 +1111,38 @@
 	     elseif after else (Bart Kastermans)
 	Fix: guess.
 
-2003-09-03 22:51  mikmach
+2003-09-03 13:51  mikmach
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
 	update about Tshortcuts - math
 
-2003-09-03 22:50  mikmach
+2003-09-03 13:50  mikmach
 
 	* ftplugin/latex-suite/wizardfuncs.vim:
 
 	add m argument to Tshortcuts - show mathc shortcuts
 
-2003-09-03 09:19  srinathava
+2003-09-03 00:19  srinathava
 
 	* ftplugin/latex-suite/multicompile.vim:
 
 	Fixed typo which caused makeindex not be run
 
-2003-09-03 09:00  srinathava
+2003-09-03 00:00  srinathava
 
 	* makefile:
 
 	removing explorer.vim and adding filebrowser.vim in the archives
 
-2003-09-03 08:49  srinathava
+2003-09-02 23:49  srinathava
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
 	- descriptions of the new g:Tex_UseMakefile and also g:Tex_UsePython and
 	  g:Tex_Debug options.
 
-2003-09-03 07:56  srinathava
+2003-09-02 22:56  srinathava
 
 	* ftplugin/latex-suite/: compiler.vim, texrc:
 
@@ -599,44 +1150,44 @@
 	  to zero means that latex-suite will completeley ignore the presence of a
 	  makefile in the current directory.
 
-2003-09-02 09:15  srinathava
+2003-09-02 00:15  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
 	- merge from the file-browser branch. restructuring to get the correct
 	  style and also to use filebrowser.vim instead of explorer.vim
 
-2003-09-02 09:13  srinathava
+2003-09-02 00:13  srinathava
 
 	* plugin/filebrowser.vim:
 
 	- new lightweight replacement for explorer.vim
 
-2003-09-02 09:13  srinathava
+2003-09-02 00:13  srinathava
 
 	* plugin/explorer.vim:
 
 	no longer need explorer.vim in latex-suite
 
-2003-09-02 09:12  srinathava
+2003-09-02 00:12  srinathava
 
 	* plugin/explorer.vim:
 
 	- no longer need explorer.vim in latex-suite.
 
-2003-09-02 09:08  srinathava
+2003-09-02 00:08  srinathava
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
 	- Some minore outstanding changes.
 
-2003-09-02 09:07  srinathava
+2003-09-02 00:07  srinathava
 
 	* ftplugin/latex-suite/multicompile.vim:
 
 	- A little rearrangement to make some functions faster.
 
-2003-09-02 09:05  srinathava
+2003-09-02 00:05  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -648,20 +1199,20 @@
 	  I will go back to the original way if I receive comments otherwise.
 	- remove the <F10> map because latex-suite doesn't use it anymore.
 
-2003-09-02 03:56  srinathava
+2003-09-01 18:56  srinathava
 
 	* ftplugin/latex-suite/multicompile.vim:
 
 	- Improved behavior: If there is an error in any of the compilation steps,
 	  return without rerunning anything else.
 
-2003-08-31 11:20  srinathava
+2003-08-31 02:20  srinathava
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
 	- resync the multiple compilation documentation with the current algorithm.
 
-2003-08-31 11:04  srinathava
+2003-08-31 02:04  srinathava
 
 	* ftplugin/latex-suite/multicompile.vim:
 
@@ -672,7 +1223,7 @@
 	     ensure that we will always be able to find problems with the latex
 	     compilation.
 
-2003-08-31 10:25  srinathava
+2003-08-31 01:25  srinathava
 
 	* ftplugin/latex-suite/multicompile.vim:
 
@@ -683,76 +1234,76 @@
 	- Also removed a bug in the original version where a change in the index
 	  terms was not causing latex to be rerun.
 
-2003-08-29 05:44  srinathava
+2003-08-28 20:44  srinathava
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
 	added description of <F9> for commands such as \bibliographystyle
 
-2003-08-29 04:55  srinathava
+2003-08-28 19:55  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
 	commit from the latex-multi-compile branch.
 
-2003-08-29 04:32  srinathava
+2003-08-28 19:32  srinathava
 
 	* ftplugin/latex-suite/multicompile.vim:
 
 	New file from the latex-multi-compile branch.
 
-2003-08-29 04:29  srinathava
+2003-08-28 19:29  srinathava
 
 	* ftplugin/latex-suite/: compiler.vim, main.vim:
 
 	merging from the latex-multi-compile branch.
 
-2003-08-29 03:37  srinathava
+2003-08-28 18:37  srinathava
 
 	* doc/Makefile.in, ftplugin/latex-suite/texmenuconf.vim:
 
 	- Some minor outstanding diffs committed so I can release the next version
 	  today.
 
-2003-08-29 03:18  srinathava
+2003-08-28 18:18  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
 	removed a required setting in the last commit.
 
-2003-08-29 03:12  srinathava
+2003-08-28 18:12  srinathava
 
 	* ftplugin/latex-suite/: main.vim, multicompile.vim, texrc:
 
 	- a couple of small bugfixes and some rearrangement.
 
-2003-08-29 01:21  srinathava
+2003-08-28 16:21  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
 	settings for the 2 new features in compilation (multiple compiling and
 	format dependency)
 
-2003-08-29 01:20  srinathava
+2003-08-28 16:20  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	support for compiling multiple times and handling format dependency
 
-2003-08-29 01:18  srinathava
+2003-08-28 16:18  srinathava
 
 	* ftplugin/latex-suite/multicompile.vim:
 
 	Functionality for compiling multiple times. (originally in the ../tex/
 	directory).
 
-2003-08-29 01:14  srinathava
+2003-08-28 16:14  srinathava
 
 	* ftplugin/tex/latexm.vim:
 
 	moving latexm.vim to ../latex-suite/
 
-2003-08-29 01:12  srinathava
+2003-08-28 16:12  srinathava
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
@@ -760,13 +1311,13 @@
 	1. automatically compiling multiple times.
 	2. handling format dependencies.
 
-2003-08-28 21:35  srinathava
+2003-08-28 12:35  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
 	Very minor bug fix.
 
-2003-08-28 21:22  srinathava
+2003-08-28 12:22  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
@@ -774,21 +1325,21 @@
 	1. Make it style-wise consistent with the rest of latex-suite
 	2. make it use filebrowser.vim instead of the standard explorer.vim
 
-2003-08-28 21:19  srinathava
+2003-08-28 12:19  srinathava
 
 	* plugin/filebrowser.vim:
 
 	A lightwieght replacement for explorer.vim so we need not interefere with
 	the vim distro.
 
-2003-08-28 21:17  srinathava
+2003-08-28 12:17  srinathava
 
 	* plugin/filebrowser.vim:
 
 	Botch up with the previous addition. It got added in the main branch. I am
 	removing it from there and adding it into the branch as promised.
 
-2003-08-28 21:16  srinathava
+2003-08-28 12:16  srinathava
 
 	* plugin/filebrowser.vim:
 
@@ -797,39 +1348,33 @@
 	NOTE: This is a commit on a branch. Do not use this for any production
 	purposes.
 
-2003-08-23 00:09  srinathava
+2003-08-22 15:09  srinathava
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
 	- added the bit about how to over-ride macros set by latex-suite.
 	- the latest version of db2vim also folds up subsections within sections.
 
-2003-08-11 03:08  srinathava
-
-	* ftplugin/latex-suite/ChangeLog:
-
-	[no log message]
-
-2003-08-04 22:18  mikmach
+2003-08-04 13:18  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
 	Removing variant of Tex_CompletePackageName. It doesn't work because of
 	bug in Vim and this bug won't be fixed soon.
 
-2003-07-27 02:46  srinathava
+2003-07-26 17:46  srinathava
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
 	Bug in description of folding...
 
-2003-07-26 21:52  srinathava
+2003-07-26 12:52  srinathava
 
 	* ftplugin/latex-suite/texmenuconf.vim:
 
 	Bug-fix: Some menu items did not work
 
-2003-07-26 21:15  srinathava
+2003-07-26 12:15  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -842,19 +1387,19 @@
 	     ~/.vim/ftplugin/tex/texrc
 	Fix: Just use :runtimepath instead of using s:up_path etc.
 
-2003-07-26 21:10  srinathava
+2003-07-26 12:10  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
 	- documentation bug fix about location of local texrc.
 
-2003-07-25 03:22  srinathava
+2003-07-24 18:22  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
 	make Tex_GetMainFileName return filename with ' ' escaped.
 
-2003-07-25 03:21  srinathava
+2003-07-24 18:21  srinathava
 
 	* ftplugin/latex-suite/texproject.vim:
 
@@ -865,14 +1410,14 @@
 	expand('%:p') when a .latexmain does not exist. In this case, we do not
 	want to source the .tex file...
 
-2003-07-25 03:13  srinathava
+2003-07-24 18:13  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	Change: Escape ' ' in file names when passing the filename to an external
 	        command (Diego Carafini).
 
-2003-07-24 05:03  srinathava
+2003-07-23 20:03  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
@@ -881,7 +1426,7 @@
 	        Also a slight improvement in the infile documentation about
 	        installation.
 
-2003-07-24 04:52  srinathava
+2003-07-23 19:52  srinathava
 
 	* compiler/tex.vim:
 
@@ -893,19 +1438,19 @@
 	Fix: Replace the inverted '!' with "\n". This might cause some backwards
 	     compatibility problems.
 
-2003-07-19 09:12  srinathava
+2003-07-19 00:12  srinathava
 
 	* ftplugin/latex-suite/mathmacros.vim:
 
 	- utilize the g:Tex_MainMenuLocation in mathmacros.vim
 
-2003-07-19 09:05  srinathava
+2003-07-19 00:05  srinathava
 
 	* ftplugin/latex-suite/custommacros.vim:
 
 	- the new macro menu did not work because we did not use <SID>
 
-2003-07-19 09:03  srinathava
+2003-07-19 00:03  srinathava
 
 	* ftplugin/latex-suite/texmenuconf.vim:
 
@@ -917,7 +1462,7 @@
 	- also removing the menus for project stuff because they are not used right
 	  now.
 
-2003-07-18 04:21  srinathava
+2003-07-17 19:21  srinathava
 
 	* makefile:
 
@@ -936,13 +1481,13 @@
 	  user manual, do "make updoc". If you wish to make a dated release to fix
 	  a temporary bug-fix etc, do "make release".
 
-2003-07-17 13:19  mikmach
+2003-07-17 04:19  mikmach
 
 	* ftplugin/latex-suite/ChangeLog:
 
 	ChangeLog
 
-2003-07-17 09:30  srinathava
+2003-07-17 00:30  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -950,13 +1495,13 @@
 
 	Change: support g:Tex_MainFileExpression. (Luc Hermitte)
 
-2003-07-17 09:25  srinathava
+2003-07-17 00:25  srinathava
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
 	including documentation about Tex_MainFileExpression.
 
-2003-07-16 18:44  srinathava
+2003-07-16 09:44  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -968,7 +1513,7 @@
 	Change: make Tex_GetMainFile() recursively search upwards for a *.latexmain
 	        file.
 
-2003-07-16 18:42  srinathava
+2003-07-16 09:42  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -976,13 +1521,13 @@
 	     error.
 	Fix: properly escape backslashes in the regexp.
 
-2003-07-16 07:27  srinathava
+2003-07-15 22:27  srinathava
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
 	A couple of additions/grammatical corrections.
 
-2003-07-16 07:17  srinathava
+2003-07-15 22:17  srinathava
 
 	* ftplugin/latex-suite/: texmenuconf.vim, texrc:
 
@@ -991,31 +1536,31 @@
 	        latex-suite menus). A new variable g:Tex_MainMenuLocation is used
 	        to find the location of the latex-suite menus.
 
-2003-07-15 23:33  mikmach
+2003-07-15 14:33  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
 	Make Tcommand completion working on all systems and only in version 6.2 and above
 
-2003-07-15 23:33  mikmach
+2003-07-15 14:33  mikmach
 
 	* doc/latex-suite.xml:
 
 	Add info about completion of TPackage command
 
-2003-07-12 00:47  mikmach
+2003-07-11 15:47  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
 	completion of TPackage command
 
-2003-07-12 00:47  mikmach
+2003-07-11 15:47  mikmach
 
 	* ftplugin/latex-suite/packages/polski:
 
 	Lack of . - concatenation char in g:TeX_package_polski
 
-2003-07-10 11:52  srinathava
+2003-07-10 02:52  srinathava
 
 	* ftplugin/: tex/texviewer.vim, latex-suite/main.vim:
 
@@ -1023,31 +1568,31 @@
 	etc using a new function Tex_EscapeForGrep. Use this henceforth whenever we
 	:grep for something from within vim.
 
-2003-07-10 00:36  mikmach
+2003-07-09 15:36  mikmach
 
 	* ftplugin/latex-suite/packages/polski:
 
 	update for platex 1.3
 
-2003-07-07 10:06  mikmach
+2003-07-07 01:06  mikmach
 
 	* ftplugin/latex-suite/wizardfuncs.vim:
 
 	mispell in Tshortcuts tables - EPI for figure
 
-2003-07-06 21:17  srinathava
+2003-07-06 12:17  srinathava
 
 	* plugin/explorer.vim:
 
 	need the autocommands otherwise <F9> completion for files does not work.
 
-2003-07-06 20:50  srinathava
+2003-07-06 11:50  srinathava
 
 	* ftplugin/tex/latexm.vim:
 
 	better handling of whether the vim has +python or not.
 
-2003-07-06 08:59  srinathava
+2003-07-05 23:59  srinathava
 
 	* ftplugin/tex/latexm.vim:
 
@@ -1055,7 +1600,7 @@
 	TODO: What is the technically _correct_ way to compile a latex file?
 	      Is the method given in Luc Hermitte's tex-tools.vim correct?
 
-2003-07-02 11:49  srinathava
+2003-07-02 02:49  srinathava
 
 	* ftplugin/tex/latexm.vim:
 
@@ -1064,20 +1609,20 @@
 	  NOTE: This commit is on a branch. I will confer with the group before
 	  making any main trunk commits.
 
-2003-06-30 03:33  srinathava
+2003-06-29 18:33  srinathava
 
 	* indent/tex.vim:
 
 	do not change indentation of commented lines
 
-2003-06-30 03:28  srinathava
+2003-06-29 18:28  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
 	default g:Tex_RememberCiteSearch to zero. This means that the \cite list is
 	renewed every time as documented in the manual.
 
-2003-06-30 03:27  srinathava
+2003-06-29 18:27  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
@@ -1089,20 +1634,14 @@
 	better documentation is a must! There is no mention anywhere what this
 	"plugintype" thing is supposed to be.
 
-2003-06-30 03:21  srinathava
+2003-06-29 18:21  srinathava
 
 	* doc/Makefile.in:
 
 	include targets for quickstart guide. Also use the --prefix argument for
 	the latest db2vim to avoid conflics between tags in various help files.
 
-2003-06-30 03:20  srinathava
-
-	* doc/imaps.txt:
-
-	[no log message]
-
-2003-06-30 03:18  srinathava
+2003-06-29 18:18  srinathava
 
 	* plugin/explorer.vim:
 
@@ -1111,7 +1650,7 @@
 	first discussed the implementation of this feature so I could have avoided
 	this problem beforehand. :(
 
-2003-06-29 10:31  srinathava
+2003-06-29 01:31  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
@@ -1120,7 +1659,7 @@
 	Fix: change the s:prefix variable when we have a \cite command to support
 	     multiple citations seperated by commas (SA)
 
-2003-06-29 08:15  srinathava
+2003-06-28 23:15  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
@@ -1128,32 +1667,14 @@
 	Why: Used grepadd \\bibitem{ instead of just grepadd \bibitem{
 	Fix: Use 'grep \bibitem{'
 
-2003-06-29 04:18  srinathava
-
-	* ftplugin/latex-suite/ChangeLog:
-
-	[no log message]
-
-2003-06-28 03:46  srinathava
-
-	* doc/: latex-suite.txt, latex-suite.xml:
-
-	[no log message]
-
-2003-06-28 00:20  srinathava
+2003-06-27 15:20  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
 	- changed ETR to insert a more complete template using Tex_SpecialMacros
 	  (Mathieu CLABAUT)
 
-2003-06-23 11:13  srinathava
-
-	* doc/: latex-suite.txt, latex-suite.xml:
-
-	[no log message]
-
-2003-06-22 19:57  srinathava
+2003-06-22 10:57  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
@@ -1165,21 +1686,21 @@
 	Fix: Always lcd to the current directory of the bib file being searched.
 	     This avoids any path issues.
 
-2003-06-22 00:16  srinathava
+2003-06-21 15:16  srinathava
 
 	* doc/latex-suite.txt:
 
 	Oops! Some debugging statements got into latex-suite.txt. Have modified
 	db2vim so it doesn't happen again.
 
-2003-06-22 00:13  srinathava
+2003-06-21 15:13  srinathava
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
 	More documentation. more fixed typos...
 	Still a lot more to go...
 
-2003-06-20 08:11  srinathava
+2003-06-19 23:11  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
@@ -1191,13 +1712,13 @@
 	Change: Use redraw! for helping terminal users. and also do not use
 	        <silent> unless we have gui running.
 
-2003-06-20 08:02  srinathava
+2003-06-19 23:02  srinathava
 
 	* doc/: latex-suite.txt, latex-suite.xml:
 
 	A bit more explanation about how to change the maps from default settings.
 
-2003-06-19 03:21  srinathava
+2003-06-18 18:21  srinathava
 
 	* plugin/imaps.vim:
 
@@ -1206,33 +1727,33 @@
 	Fix: Select one more character in 'exclusive' mode. (suggested by Pierre
 	     Antoine Champin).
 
-2003-06-18 20:58  srinathava
+2003-06-18 11:58  srinathava
 
 	* doc/README:
 
 	Instructions on how to build the various output formats from the XML
 	source.
 
-2003-06-18 20:54  srinathava
+2003-06-18 11:54  srinathava
 
 	* doc/: latex-suite-chunk.xsl, latex-suite.txt, latex-suite.xml,
 	  latex-suite.xsl:
 
 	Oops. snipped Tex_TEXINPUTS section from wrong place.
 
-2003-06-18 19:28  srinathava
+2003-06-18 10:28  srinathava
 
 	* doc/latex-suite.xml:
 
 	Remove duplicate section on g:Tex_TEXINPUTS.
 
-2003-06-18 08:17  srinathava
+2003-06-17 23:17  srinathava
 
 	* makefile:
 
 	Also include the remoteOpen and bib_latexSuite files for the release.
 
-2003-06-18 07:12  srinathava
+2003-06-17 22:12  srinathava
 
 	* doc/: Makefile.in, latex-suite-chunk.xsl, latex-suite-common.xsl,
 	  latex-suite.css, latex-suite.txt, latex-suite.xml,
@@ -1255,13 +1776,7 @@
 	These three steps will be gathered into a single :make release target for
 	the future.
 
-2003-06-18 06:49  srinathava
-
-	* doc/newlatex-suite.txt:
-
-	[no log message]
-
-2003-06-18 03:09  srinathava
+2003-06-17 18:09  srinathava
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -1276,7 +1791,7 @@
 	Change: Use silent! while opening and closing folds, otherwise we get
 	        errors on terminal.
 
-2003-06-18 03:03  srinathava
+2003-06-17 18:03  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
@@ -1287,7 +1802,7 @@
 	Set default value for g:Tex_RememberCiteSearch, Tex_BIBINPUTS and
 	Tex_TEXINPUTS
 
-2003-06-18 02:57  srinathava
+2003-06-17 17:57  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -1302,7 +1817,7 @@
 	     if it matches '\$\*\.\w\+'. If so, use file-name w/o extension.
 	     Otherwise, retain extension in 'make '.fname
 
-2003-06-17 19:26  srinathava
+2003-06-17 10:26  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
@@ -1326,13 +1841,13 @@
 	     the preview window, after which pclose closes it up!
 	Fix: Do 'pclose! cc <num> | cclose' instead...
 
-2003-06-17 18:22  srinathava
+2003-06-17 09:22  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
 	New: Also support '\psfig{figure=' for completion.
 
-2003-06-17 11:35  srinathava
+2003-06-17 02:35  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
@@ -1346,13 +1861,13 @@
 	     seldom and we might want add a lot of \cite's between changes to the
 	     bibliography file.
 
-2003-06-17 04:12  srinathava
+2003-06-16 19:12  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
 	A small change to include every debug statement in the default string.
 
-2003-06-17 04:07  srinathava
+2003-06-16 19:07  srinathava
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -1364,7 +1879,7 @@
 	        that seems a very acceptable thing to do.
 	        Why was globpath() and all that used previously?
 
-2003-06-17 04:00  srinathava
+2003-06-16 19:00  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -1376,7 +1891,7 @@
 	Solution: if all else fails remember to at least insert a bare-bones
 	          environment.
 
-2003-06-16 08:40  srinathava
+2003-06-15 23:40  srinathava
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -1389,27 +1904,27 @@
 	          and then closing them. This needs to be robustified in the future
 	          using mkview.vim
 
-2003-06-15 10:44  srinathava
+2003-06-15 01:44  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	Change: ViewLaTeX() no longer uses a:size input argument. instead using the
 	        b:fragmentFile buffer variable.
 
-2003-06-15 10:43  srinathava
+2003-06-15 01:43  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
 	issue a debug call when catching the latexSuite autocommand.
 
-2003-06-15 10:42  srinathava
+2003-06-15 01:42  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
 	Use the more standard TexLet way to set default options instead of exists()
 	and stuff.
 
-2003-06-15 10:23  srinathava
+2003-06-15 01:23  srinathava
 
 	* ftplugin/latex-suite/bibtex.vim:
 
@@ -1419,7 +1934,7 @@
 	Feature: added way to customize the fields which are applied via the
 	         mappings.
 
-2003-06-15 10:09  srinathava
+2003-06-15 01:09  srinathava
 
 	* ftplugin/bib_latexSuite.vim:
 
@@ -1427,7 +1942,7 @@
 	file basically sources bibtex.vim, which contains maps to insert
 	bibliographic entries easily.
 
-2003-06-15 07:23  srinathava
+2003-06-14 22:23  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
@@ -1453,13 +1968,7 @@
 	Solution: Use "\n" as a path seperator on windows.
 	          TODO: Should we be using "\n" for other OSs too?
 
-2003-06-14 07:09  srinathava
-
-	* ftplugin/latex-suite/ChangeLog:
-
-	[no log message]
-
-2003-06-14 06:43  srinathava
+2003-06-13 21:43  srinathava
 
 	* plugin/remoteOpen.vim:
 
@@ -1469,7 +1978,7 @@
 	        new sessions each time, open files in the same session we used the
 	        first time we had to create a session.
 
-2003-06-13 23:41  srinathava
+2003-06-13 14:41  srinathava
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -1478,7 +1987,7 @@
 	Cause: a "normal! /{\<CR>" command is executed.
 	Solution: call histdel at the end of the function.
 
-2003-06-12 10:16  srinathava
+2003-06-12 01:16  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
@@ -1488,7 +1997,7 @@
 	Solution: Preserve the value of &scrolloff and reset it just before
 	          quitting any of the windows.
 
-2003-06-09 05:34  srinathava
+2003-06-08 20:34  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
@@ -1500,7 +2009,7 @@
 	Solution:
 	    s:searchdirectory = expand('%:p:h') instead of expand('%:h')
 
-2003-06-09 01:42  srinathava
+2003-06-08 16:42  srinathava
 
 	* plugin/remoteOpen.vim:
 
@@ -1520,13 +2029,13 @@
 	so you can specify the program for "inverse search" as specified above.
 	This ensures that the inverse search uses the correct gvim each time.
 
-2003-06-09 00:30  srinathava
+2003-06-08 15:30  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
 	Bug: <F9> only worked the first time.
 
-2003-06-09 00:14  srinathava
+2003-06-08 15:14  srinathava
 
 	* ftplugin/latex-suite/: compiler.vim, wizardfuncs.vim:
 
@@ -1537,14 +2046,14 @@
 	A lot of restructuring in compiler.vim and wizardfuncs.vim. See the
 	accompanying e-mail to vim-latex-devel. Will also note this in Changelog.
 
-2003-06-08 22:25  srinathava
+2003-06-08 13:25  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
 	Bug: syntax error made the maps in envmacros.vim get triggered only for the
 	     first buffer which latex-suite triggered on.
 
-2003-06-07 23:02  srinathava
+2003-06-07 14:02  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
@@ -1557,7 +2066,7 @@
 	Bug: "wincmd q" does not always seem to work from within the script (this
 	    is a vim bug). replace with q which seems more reliable.
 
-2003-06-07 12:39  srinathava
+2003-06-07 03:39  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
@@ -1580,32 +2089,32 @@
 	    NOTE: the backslash escaping still needs to be done due to the outer
 	    double quotes in the exec statement.
 
-2003-06-07 00:53  mikmach
+2003-06-06 15:53  mikmach
 
 	* ftplugin/latex-suite/envmacros.vim:
 
 	omitted g: before one test for g:Tex_UseMenuWizard in inserting of environments
 
-2003-06-05 20:16  srinathava
+2003-06-05 11:16  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	Bug: The recent change with "escaping" the special characters in
 	     PositionPreviewWindow messes up movement in the Error list window.
 
-2003-06-04 11:52  mikmach
+2003-06-04 02:52  mikmach
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	add slashes te escape special characters in UpdateWindow
 
-2003-06-03 13:17  mikmach
+2003-06-03 04:17  mikmach
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	endif was missed
 
-2003-06-03 11:45  mikmach
+2003-06-03 02:45  mikmach
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -1623,7 +2132,7 @@
 	Line 62:
 	E486: Pattern not found: ((f|[|])*myfile.tex
 
-2003-06-03 07:58  srinathava
+2003-06-02 22:58  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -1632,43 +2141,43 @@
 	Cause: We used to depend on the file's suffix being removed for a lot of
 	       processing. A recent change seems to have reversed this.
 
-2003-06-02 15:39  mikmach
+2003-06-02 06:39  mikmach
 
 	* ftplugin/latex-suite/texrc:
 
 	Remove hardcoded .tex extension in CompilerRule_pdf - after removing :r in RunLatex it was doubling extension to myfile.tex.tex. NOTE: update of personal texrc is required! (Animesh N Nerurkar)
 
-2003-06-02 15:39  mikmach
+2003-06-02 06:39  mikmach
 
 	* ftplugin/latex-suite/ChangeLog:
 
 	update
 
-2003-06-02 01:23  mikmach
+2003-06-01 16:23  mikmach
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	refresh screen after View and Compile -redraw! - suggestion from Jess Thrysoee
 
-2003-06-02 01:23  mikmach
+2003-06-01 16:23  mikmach
 
 	* ftplugin/latex-suite/ChangeLog:
 
 	updates
 
-2003-05-31 19:51  mikmach
+2003-05-31 10:51  mikmach
 
 	* ftplugin/latex-suite/wizardfuncs.vim:
 
 	Replace g:Tex_Leader with <Leader>
 
-2003-05-31 19:47  mikmach
+2003-05-31 10:47  mikmach
 
 	* makefile:
 
 	remove temporary catalog for creating tar.gz - there can be garbage which can be inserted in next latexSuite*
 
-2003-05-30 06:30  srinathava
+2003-05-29 21:30  srinathava
 
 	* ftplugin/latex-suite/: texmenuconf.vim, wizardfuncs.vim:
 
@@ -1676,73 +2185,73 @@
 	Solution: Instead use s:mapleader which defaults to '\' if mapleader does
 	          not exist.
 
-2003-05-29 14:48  mikmach
+2003-05-29 05:48  mikmach
 
 	* ftplugin/latex-suite/ChangeLog:
 
 	update
 
-2003-05-29 14:48  mikmach
+2003-05-29 05:48  mikmach
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	allow TTarget accept no arguments and show possible choices with default enclosed in []
 
-2003-05-29 12:43  mikmach
+2003-05-29 03:43  mikmach
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	show value of g:Tex_DefaultTargetFormat if not one of: dvi,ps,pdf
 
-2003-05-29 10:19  mikmach
+2003-05-29 01:19  mikmach
 
 	* ftplugin/latex-suite/texmenuconf.vim:
 
 	correct mispell which caused bug: s/mapleaer/mapleader/
 
-2003-05-29 10:19  mikmach
+2003-05-29 01:19  mikmach
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	TCTarget from menu show now correct value of DefaultTarget enclosed in []
 
-2003-05-29 10:19  mikmach
+2003-05-29 01:19  mikmach
 
 	* ftplugin/latex-suite/ChangeLog:
 
 	update
 
-2003-05-28 13:11  mikmach
+2003-05-28 04:11  mikmach
 
 	* ftplugin/tex/texviewer.vim:
 
 	check if s:type exists in UpdateViewerWindow
 
-2003-05-28 13:11  mikmach
+2003-05-28 04:11  mikmach
 
 	* ftplugin/latex-suite/texmenuconf.vim:
 
 	replace \\ in TeX-Suite menu with mapleader value - it often cause problems if someone change it in other places
 
-2003-05-28 13:11  mikmach
+2003-05-28 04:11  mikmach
 
 	* ftplugin/latex-suite/ChangeLog:
 
 	update
 
-2003-05-28 13:11  mikmach
+2003-05-28 04:11  mikmach
 
 	* ftplugin/latex-suite/wizardfuncs.vim:
 
 	replace g:Tex_Leader with mapleader in General shortcuts section
 
-2003-05-28 11:15  mikmach
+2003-05-28 02:15  mikmach
 
 	* ftplugin/latex-suite/envmacros.vim:
 
 	check in package variables for templates for environments inserted in line with <F5>
 
-2003-05-28 11:15  mikmach
+2003-05-28 02:15  mikmach
 
 	* ftplugin/latex-suite/ChangeLog:
 
@@ -1772,124 +2281,124 @@
 		* file1.vim:
 			fixed bugs (SA)
 
-2003-05-28 11:13  mikmach
+2003-05-28 02:13  mikmach
 
 	* ftplugin/latex-suite/packages/amsmath:
 
 	add templates for alignat envs
 
-2003-05-26 10:56  mikmach
+2003-05-26 01:56  mikmach
 
 	* makefile:
 
 	make clean was removing latexSuite.* files, change to latexSuite200* - it will be valid 6 years :)
 
-2003-05-25 00:21  mikmach
+2003-05-24 15:21  mikmach
 
 	* ftplugin/latex-suite/mathmacros-utf.vim:
 
 	File with utf-8 menus, edit it in GUI or terminal which support Unicode
 
-2003-05-25 00:20  mikmach
+2003-05-24 15:20  mikmach
 
 	* ftplugin/latex-suite/: main.vim, texrc:
 
 	Add support for utf-8 menus
 
-2003-05-25 00:20  mikmach
+2003-05-24 15:20  mikmach
 
 	* doc/latex-suite.txt:
 
 	Explanation how to enable utf menus
 
-2003-05-24 19:40  mikmach
+2003-05-24 10:40  mikmach
 
 	* doc/latex-suite.txt:
 
 	explanation of :Tshortcuts command
 
-2003-05-24 19:40  mikmach
+2003-05-24 10:40  mikmach
 
 	* ftplugin/latex-suite/wizardfuncs.vim:
 
 	Add Tshortcuts command, detailed description in latex-suite.txt - annoying trailing characters E488 :/
 
-2003-05-24 16:37  mikmach
+2003-05-24 07:37  mikmach
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	Add support for kdvi for regular viewing and forward searching; fixed problem with always compiling .tex files (at least partially)
 
-2003-05-22 20:40  mikmach
+2003-05-22 11:40  mikmach
 
 	* makefile:
 
 	add timestamp to name of new created archives in format 20032205
 
-2003-05-22 20:40  mikmach
+2003-05-22 11:40  mikmach
 
 	* doc/latex-suite.txt:
 
 	replace <<>> with <++> in description of package file
 
-2003-05-19 16:51  mikmach
+2003-05-19 07:51  mikmach
 
 	* ftplugin/latex-suite/: mathmacros.vim, texmenuconf.vim:
 
 	Added accels for Suite, Elements and Environments menus.
 	Changed accel in Math (from t to M). (Animesh Nerurkar)
 
-2003-05-19 16:51  mikmach
+2003-05-19 07:51  mikmach
 
 	* doc/latex-suite.txt:
 
 	Added reference to modes in doc, one mispell.
 
-2003-05-19 16:50  mikmach
+2003-05-19 07:50  mikmach
 
 	* ftplugin/tex/texviewer.vim:
 
 	Include $BIBINPUTS variable while looking for bib files.
 	(Soren Debois)
 
-2003-05-08 22:50  mikmach
+2003-05-08 13:50  mikmach
 
 	* ftplugin/latex-suite/mathmacros.vim:
 
 	mispell in triangleq command; remove \implies - this command does not exist
 
-2003-05-08 10:17  mikmach
+2003-05-08 01:17  mikmach
 
 	* ftplugin/tex/texviewer.vim:
 
 	lack of <SID> before PromptForCompletion call
 
-2003-05-07 21:42  mikmach
+2003-05-07 12:42  mikmach
 
 	* ftplugin/latex-suite/mathmacros.vim:
 
 	fixed mispells; moved brackets and dollars section to IMAP; more arrows
 
-2003-05-04 21:21  mikmach
+2003-05-04 12:21  mikmach
 
 	* makefile:
 
 	add imaps.txt and explorer.vim to tarballs
 
-2003-05-03 20:05  mikmach
+2003-05-03 11:05  mikmach
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	cnp
 	fault: && at the end of if condition make Forward Searching impossible
 
-2003-05-02 22:00  mikmach
+2003-05-02 13:00  mikmach
 
 	* plugin/explorer.vim:
 
 	Merging x action from main explorer.vim
 
-2003-04-25 22:41  srinathava
+2003-04-25 13:41  srinathava
 
 	* ftplugin/tex/texviewer.vim:
 
@@ -1897,7 +2406,7 @@
 	Cause: s:prefix in s:Tex_complete() was improperly calculated.
 	Fix: improve regexp for calculating s:prefix. Still a bit of a hack.
 
-2003-04-23 19:28  mikmach
+2003-04-23 10:28  mikmach
 
 	* doc/latex-suite.txt, ftplugin/latex-suite/main.vim,
 	  ftplugin/latex-suite/projecttemplate.vim,
@@ -1907,13 +2416,13 @@
 
 	Included project features
 
-2003-04-21 21:35  mikmach
+2003-04-21 12:35  mikmach
 
 	* doc/latex-suite.txt:
 
 	short help for project commands
 
-2003-04-18 21:32  mikmach
+2003-04-18 12:32  mikmach
 
 	* ftplugin/latex-suite/main.vim,
 	  ftplugin/latex-suite/texmenuconf.vim,
@@ -1935,113 +2444,113 @@
 	6. projecttemplate.vim
 	Template of project file.
 
-2003-04-15 12:26  mikmach
+2003-04-15 03:26  mikmach
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	- use makefile always if exists, .latexmain only if makefile
 	  doesn't exist.
 
-2003-04-14 19:14  mikmach
+2003-04-14 10:14  mikmach
 
 	* ftplugin/latex-suite/wizardfuncs.vim:
 
 	- proper handling of <Plug> thing, remove hard map to F10
 	- temporary file has .tex extension
 
-2003-04-14 19:14  mikmach
+2003-04-14 10:14  mikmach
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	- proper handling various compilation situations - partial, makefile (Alan Schmitt)
 	- mappings of partial compilation
 
-2003-04-14 19:14  mikmach
+2003-04-14 10:14  mikmach
 
 	* ftplugin/latex-suite/texmenuconf.vim:
 
 	Partial compilation menu element didn't work. Change element to visual
 	only.
 
-2003-04-14 13:23  mikmach
+2003-04-14 04:23  mikmach
 
 	* ftplugin/latex-suite/texmenuconf.vim:
 
 	proper calling partial compilation from menu, forgotten commit :/
 
-2003-04-13 04:03  srinathava
+2003-04-12 19:03  srinathava
 
 	* doc/latex-suite.txt:
 
 	improvements in the newly added "Latex Completion" section.
 
-2003-04-12 01:31  mikmach
+2003-04-11 16:31  mikmach
 
 	* ftplugin/tex/texviewer.vim:
 
 	bad use of matchstr() with s:type, use substitute() instead
 
-2003-04-11 23:21  mikmach
+2003-04-11 14:21  mikmach
 
 	* ftplugin/tex/texviewer.vim:
 
 	make explorer completion pluginable; small cleaning of the code
 
-2003-04-11 23:21  mikmach
+2003-04-11 14:21  mikmach
 
 	* ftplugin/latex-suite/main.vim:
 
 	add variable g:Tex_completion_explorer, necessary to whole thing work
 
-2003-04-11 23:21  mikmach
+2003-04-11 14:21  mikmach
 
 	* ftplugin/latex-suite/packages/moreverb:
 
 	first example of pluginable explorer completion - verbatimtabinput command
 
-2003-04-11 18:41  mikmach
+2003-04-11 09:41  mikmach
 
 	* ftplugin/tex/texviewer.vim:
 
 	completion is now pluginable through PromptFor mechanism, added completion for addcontentsline, addtocontents, bibliographystyle
 
-2003-04-11 13:27  mikmach
+2003-04-11 04:27  mikmach
 
 	* ftplugin/tex/texviewer.vim:
 
 	add completion for include, includeonly, input; remove unnecessary g:variables; localization of Tex_Find functions
 
-2003-04-11 13:27  mikmach
+2003-04-11 04:27  mikmach
 
 	* ftplugin/latex-suite/packages/polski:
 
 	SmartQuotes for polski (Jakub Turski)
 
-2003-04-11 00:03  mikmach
+2003-04-10 15:03  mikmach
 
 	* ftplugin/tex/texviewer.vim:
 
 	more robust bib finder - not only scans current directory for .bib files but uses \bibliography commands in current and, if exists main file
 
-2003-04-08 10:45  mikmach
+2003-04-08 01:45  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
 	replaced endwhile and endif. I dont know how it passed :(
 
-2003-04-07 22:53  mikmach
+2003-04-07 13:53  mikmach
 
 	* ftplugin/latex-suite/texrc:
 
 	new variable g:Tex_TEXINPUTS
 
-2003-04-07 22:53  mikmach
+2003-04-07 13:53  mikmach
 
 	* doc/latex-suite.txt:
 
 	info about improved scanning features
 
-2003-04-07 22:53  mikmach
+2003-04-07 13:53  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -2054,31 +2563,31 @@
 	This should be equal to real $TEXINPUTS. More info
 	in latex-suite.txt - |latex-package-scanning|
 
-2003-04-07 12:52  mikmach
+2003-04-07 03:52  mikmach
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	include fix by Soren Debois and make possible inverse searching with xdvi instation from forward searching
 
-2003-04-07 00:59  mikmach
+2003-04-06 15:59  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
 	check if in current directory exists user package and scan it for usepackage, newcommand etc. TODO - TEXINPUTS, use glob or globpath
 
-2003-04-07 00:59  mikmach
+2003-04-06 15:59  mikmach
 
 	* ftplugin/latex-suite/wizardfuncs.vim:
 
 	improved F1 wrapper: proper error message (thanks Benji), checks for environment names
 
-2003-04-05 23:35  mikmach
+2003-04-05 13:35  mikmach
 
 	* ftplugin/tex/texviewer.vim:
 
 	Relative path under Windows was given with wrong file delimiter
 
-2003-04-05 01:27  mikmach
+2003-04-04 15:27  mikmach
 
 	* plugin/explorer.vim:
 
@@ -2095,86 +2604,86 @@
 	(sorry for my english today, please correct my faults in latex-suite.txt
 	if you find few minutes)
 
-2003-04-05 01:25  mikmach
+2003-04-04 15:25  mikmach
 
 	* ftplugin/latex-suite/texrc:
 
 	new variables for latex completion description in file and latex-suite.txt
 
-2003-04-05 01:25  mikmach
+2003-04-04 15:25  mikmach
 
 	* ftplugin/latex-suite/wizardfuncs.vim:
 
 	comments, fixing bugs for partial compilation, using <Plug> for mapping
 
-2003-04-05 01:24  mikmach
+2003-04-04 15:24  mikmach
 
 	* ftplugin/tex/texviewer.vim:
 
 	handling of includegraphics, bibliography commands; introduction of explorer-completion; more info in latex-suite.txt - latex-completion
 
-2003-04-05 01:24  mikmach
+2003-04-04 15:24  mikmach
 
 	* doc/latex-suite.txt:
 
 	info about partial compilation and changed info from latex viewer to latex completion and updated. New term IMO better describes what is this for
 
-2003-04-04 02:55  mikmach
+2003-04-03 16:55  mikmach
 
 	* ftplugin/latex-suite/texmenuconf.vim:
 
 	menus for partial compiling and viewing
 
-2003-04-04 02:55  mikmach
+2003-04-03 16:55  mikmach
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	partial compilation, rules for compiling and viewing output of writing to temporary file created from wizardfuncs.vim
 
-2003-04-04 02:55  mikmach
+2003-04-03 16:55  mikmach
 
 	* ftplugin/latex-suite/wizardfuncs.vim:
 
 	main function of partial compiling
 
-2003-04-03 19:37  mikmach
+2003-04-03 09:37  mikmach
 
 	* ftplugin/tex/texviewer.vim:
 
 	support inserting cite/ref from menu. Is it robust enough? Without redesigning menu part no more can be done
 
-2003-04-03 16:29  mikmach
+2003-04-03 06:29  mikmach
 
 	* ftplugin/latex-suite/texrc:
 
 	configuration of windows heights in viewer
 
-2003-04-03 16:29  mikmach
+2003-04-03 06:29  mikmach
 
 	* doc/latex-suite.txt:
 
 	some info about grep and viewer on MS-Windows
 
-2003-04-03 16:28  mikmach
+2003-04-03 06:28  mikmach
 
 	* ftplugin/tex/texviewer.vim:
 
 	full customization of cwindow and preview window height, vanilla 6.1 has bug which resizes cwindow - fixed with additional wincmd _ command
 
-2003-04-03 13:54  mikmach
+2003-04-03 03:54  mikmach
 
 	* doc/latex-suite.txt:
 
 	info about first hightlighted line
 	in cwindow for cite/ref completion
 
-2003-04-03 13:54  mikmach
+2003-04-03 03:54  mikmach
 
 	* ftplugin/latex-suite/texrc:
 
 	customization of preview window
 
-2003-04-03 13:53  mikmach
+2003-04-03 03:53  mikmach
 
 	* ftplugin/tex/texviewer.vim:
 
@@ -2184,37 +2693,37 @@
 		support for \thebibliography environment
 		use grep! instead grep (no need for 'bot 1 split')
 
-2003-04-03 13:53  mikmach
+2003-04-03 03:53  mikmach
 
 	* ftplugin/latex-suite/texmenuconf.vim:
 
 	menu Complete Ref/Cite
 
-2003-04-02 22:59  mikmach
+2003-04-02 12:59  mikmach
 
 	* doc/latex-suite.txt:
 
 	add info abour F1 wrapper, few mispells, misformats and item in toc about texviewer.vim
 
-2003-04-02 22:58  mikmach
+2003-04-02 12:58  mikmach
 
 	* ftplugin/latex-suite/wizardfuncs.vim:
 
 	F1 help for LaTeX items, docs in latex-suite.txt commit
 
-2003-04-01 18:47  mikmach
+2003-04-01 08:47  mikmach
 
 	* ftplugin/tex/texviewer.vim:
 
 	completion of \ref and \cite commands, more in latex-suite.txt commit
 
-2003-04-01 18:47  mikmach
+2003-04-01 08:47  mikmach
 
 	* doc/latex-suite.txt:
 
 	description of texviewer.vim module
 
-2003-03-25 20:11  srinathava
+2003-03-25 11:11  srinathava
 
 	* plugin/imaps.vim:
 
@@ -2222,7 +2731,7 @@
 	     not expanded properly. (D. MacAlpine)
 	Fix: Those characters need to be escaped before the quoting.
 
-2003-03-25 09:20  srinathava
+2003-03-25 00:20  srinathava
 
 	* plugin/imaps.vim:
 
@@ -2233,21 +2742,21 @@
 	Solution: Check more thoroughly whether a word is an abbreviation LHS or
 	          not.
 
-2003-03-17 13:46  mikmach
+2003-03-17 04:46  mikmach
 
 	* ftplugin/latex-suite/packages/: flafter, floatflt, fn2end,
 	  graphpap, letterspace, lscape, multibox, plain:
 
 	new package files
 
-2003-03-16 19:16  mikmach
+2003-03-16 10:16  mikmach
 
 	* ftplugin/latex-suite/packages/: array, bm, bophook, cases,
 	  ccaption, comma, dropping, enumerate, everyshi, times:
 
 	new package files
 
-2003-03-04 23:58  srinathava
+2003-03-04 14:58  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -2258,7 +2767,7 @@
 	       sometimes causing focus to go to one of the edited tex files.
 	Fix: Goto previous window, not window above.
 
-2003-03-03 21:57  srinathava
+2003-03-03 12:57  srinathava
 
 	* ftplugin/latex-suite/folding.vim:
 
@@ -2266,7 +2775,7 @@
 	Cause/Fix: syntax fold description for slide used '\end{slide' to terminate fold
 	           beginning with '\begin{slide'
 
-2003-02-28 21:21  mikmach
+2003-02-28 12:21  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -2275,7 +2784,7 @@
 
 	Old version was cutting last char under Windows.
 
-2003-02-06 00:29  srinathava
+2003-02-05 15:29  srinathava
 
 	* plugin/imaps.vim:
 
@@ -2295,7 +2804,7 @@
 	    an abbreviation. Since vim does not have the equivalent of
 	    mapcheck() for abbreviations, this is complicated (maybe even hacky).
 
-2003-02-05 05:12  srinathava
+2003-02-04 20:12  srinathava
 
 	* plugin/imaps.vim:
 
@@ -2306,26 +2815,26 @@
 	       Imap_PlaceHolderEnd. (Sumit Bhardwaj)
 	  Solution: Temporarily set &selection = exclusive in IMAP_Jumpfunc().
 
-2003-01-29 04:17  srinathava
+2003-01-28 19:17  srinathava
 
 	* ftplugin/latex-suite/templates/IEEEtran.tex:
 
 	Sumit Bhardwaj <b.sumit@ieee.org> contributed an template file to be used
 	for IEEE transactions.
 
-2003-01-21 23:23  srinathava
+2003-01-21 14:23  srinathava
 
 	* ftplugin/latex-suite/packages/graphicx:
 
 	- change syntax for the \includegraphics command. (Diego Caraffini)
 
-2003-01-21 23:15  srinathava
+2003-01-21 14:15  srinathava
 
 	* ftplugin/latex-suite/templates.vim:
 
 	- use the updated syntax of Tex_pack_updateall
 
-2003-01-21 23:15  srinathava
+2003-01-21 14:15  srinathava
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -2335,14 +2844,14 @@
 	  it had scanned this file the last time... Sometimes we might want to
 	  force it to rescan the same file again.
 
-2003-01-21 23:10  srinathava
+2003-01-21 14:10  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
 	- If g:Tex_package_detected contains 'graphicx' then use \includegraphics
 	  instead of \psfig in the EFI mapping.
 
-2003-01-20 20:59  srinathava
+2003-01-20 11:59  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -2356,20 +2865,20 @@
 	  think... (I haven't thought about it enough to find out if a simpler
 	  workaround is possible).
 
-2003-01-18 19:36  mikmach
+2003-01-18 10:36  mikmach
 
 	* ftplugin/latex-suite/packages/babel:
 
 	added regular latex commands to babel package file
 
-2003-01-17 19:43  srinathava
+2003-01-17 10:43  srinathava
 
 	* makefile:
 
 	- make things silent... Otherwise cvs errors, shell errors etc scroll off
 	  the screen making things difficult to see.
 
-2003-01-17 19:41  srinathava
+2003-01-17 10:41  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -2380,7 +2889,7 @@
 	  TODO: Should we change 'silent!' to 'silent'? RunLaTeX() was actually
 	        throwing vim errors which were supressed.
 
-2003-01-17 11:05  srinathava
+2003-01-17 02:05  srinathava
 
 	* ftplugin/latex-suite/packages/babel:
 
@@ -2390,13 +2899,13 @@
 	  Tex_pack_updateall(). This enables it to set buffer local smart quote
 	  characters each time \usepackage{babel} is seen.
 
-2003-01-17 10:49  srinathava
+2003-01-17 01:49  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
 	Oops! Syntax error. Talking about commiting "tested" code!
 
-2003-01-17 10:24  srinathava
+2003-01-17 01:24  srinathava
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -2404,20 +2913,20 @@
 	  switch buffers. This will enable us to reliably use package files which
 	  set buffer variables.
 
-2003-01-17 10:20  srinathava
+2003-01-17 01:20  srinathava
 
 	* ftplugin/latex-suite/: compiler.vim, folding.vim:
 
 	- catch the LatexSuiteFileType event to set up buffer local maps.
 
-2003-01-17 10:18  srinathava
+2003-01-17 01:18  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
 	- catch the LatexSuiteFileType event thrown by tex_latexSuite.vim to set up
 	  buffer local maps for each tex file.
 
-2003-01-17 10:13  srinathava
+2003-01-17 01:13  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -2430,7 +2939,7 @@
 	  SetTeXOptions() is called by catching the LatexSuiteFileType event thrown
 	  by tex_latexSuite.vim.
 
-2003-01-17 10:09  srinathava
+2003-01-17 01:09  srinathava
 
 	* ftplugin/tex_latexSuite.vim:
 
@@ -2450,20 +2959,20 @@
 	  reinclusion avoiding logic... and so on and so forth...
 	  See the next few commits of main.vim, compiler.vim etc for details.
 
-2003-01-17 07:37  srinathava
+2003-01-16 22:37  srinathava
 
 	* ftplugin/latex-suite/custommacros.vim:
 
 	- Use Tex_ChooseFromPrompt instead of Tex_ChooseFile
 
-2003-01-17 07:37  srinathava
+2003-01-16 22:37  srinathava
 
 	* ftplugin/latex-suite/templates.vim:
 
 	- Use Tex_ChooseFromPrompt instead of Tex_ChooseFile
 	- Use Tex_pack_updateall instead of Tex_pack_all
 
-2003-01-17 07:36  srinathava
+2003-01-16 22:36  srinathava
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -2474,7 +2983,7 @@
 	- Also throw a LatexSuiteScannedPackages event at the end of
 	  Tex_pack_updateall... This will be caught by the babel package.
 
-2003-01-17 06:26  srinathava
+2003-01-16 21:26  srinathava
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -2483,7 +2992,7 @@
 	    g:Tex_{packname}_options
 	  which contains options corresponding to \usepackage{packname}.
 
-2003-01-16 18:49  srinathava
+2003-01-16 09:49  srinathava
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -2500,7 +3009,7 @@
 	        sense to "uncheck" all the menus and recreate them again. I'll
 	        optimize it later to use such information...
 
-2003-01-16 18:42  srinathava
+2003-01-16 09:42  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -2513,13 +3022,13 @@
 	  called LatexSuiteInit. This is caught by everyone who so wishes. This
 	  enables us to not have to modify main.vim everytime...
 
-2003-01-16 12:09  mikmach
+2003-01-16 03:09  mikmach
 
 	* ftplugin/latex-suite/packages/ngerman:
 
 	localized to buffer SmartQuotes
 
-2003-01-16 03:49  srinathava
+2003-01-15 18:49  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -2534,27 +3043,27 @@
 	- New function Tex_ChooseFromPrompt. This function will in the future
 	  replace the Tex_ChooseFile function...
 
-2003-01-16 00:14  mikmach
+2003-01-15 15:14  mikmach
 
 	* ftplugin/latex-suite/packages/ngerman:
 
 	new package file
 
-2003-01-15 17:24  macvimx
+2003-01-15 08:24  macvimx
 
 	* ftplugin/latex-suite/packages/german:
 
 	     Make the Tex_SmartQuote* variables buffer-local, and change the
 	close-quote string from '" to "' .
 
-2003-01-15 17:23  macvimx
+2003-01-15 08:23  macvimx
 
 	* ftplugin/latex-suite/texrc:
 
 	     I updated the comments above the Tex_SmartQuoteOpen and
 	Tex_SmartQuoteClose variables.
 
-2003-01-15 17:16  macvimx
+2003-01-15 08:16  macvimx
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -2568,7 +3077,7 @@
 	* Look for buffer-local versions of Tex_SmartQuoteOpen and Tex_SmartQuoteClose
 	before using the global versions.
 
-2003-01-15 03:54  srinathava
+2003-01-14 18:54  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -2587,14 +3096,14 @@
 	  "
 	  " This string can be used in the input() function.
 
-2003-01-15 03:53  srinathava
+2003-01-14 18:53  srinathava
 
 	* ftplugin/latex-suite/packages.vim:
 
 	- moved g:Tex_PromptedEnvironmentsDefault and g:Tex_PromptedCommandsDefault
 	  from envmacros.vim to here.
 
-2003-01-15 03:52  srinathava
+2003-01-14 18:52  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -2619,27 +3128,27 @@
 	  g:Tex_PromptedCommandsDefault moved from here to packages.vim, which is a
 	  more natural place for them.
 
-2003-01-15 00:56  mikmach
+2003-01-14 15:56  mikmach
 
 	* ftplugin/latex-suite/envmacros.vim:
 
 	- fixed bug ^[0-9][0-9]$ in ....
 	- Removed "loose ends" for handling $...$ and \(...\) commands
 
-2003-01-15 00:00  srinathava
+2003-01-14 15:00  srinathava
 
 	* ftplugin/latex-suite/packages/german:
 
 	- defining the german quotes here... This makes any file in which
 	  \usepackage{german} is detected use "` and '" as the quote characters...
 
-2003-01-14 23:51  srinathava
+2003-01-14 14:51  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
 	- Problem with last commit.
 
-2003-01-14 23:46  srinathava
+2003-01-14 14:46  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -2651,7 +3160,7 @@
 	  TODO: Is this getting too annoying to be left enabled by default? Benji
 	        suggests disabling this by default.
 
-2003-01-14 23:02  mikmach
+2003-01-14 14:02  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -2663,37 +3172,37 @@
 	- Don't create separator if command and option lists in package file are
 	  empty. Rare but possible.
 
-2003-01-14 23:01  mikmach
+2003-01-14 14:01  mikmach
 
 	* ftplugin/latex-suite/packages/textfit:
 
 	new package file
 
-2003-01-14 23:01  mikmach
+2003-01-14 14:01  mikmach
 
 	* ftplugin/latex-suite/packages/manyfoot:
 
 	change in layout of file to make it compatible with the rest of package files
 
-2003-01-14 23:00  mikmach
+2003-01-14 14:00  mikmach
 
 	* ftplugin/latex-suite/packages/: numprint, oldstyle, version:
 
 	critical bugs - missing dot contacenating (WTH is spelling of this word?) string
 
-2003-01-14 14:41  mikmach
+2003-01-14 05:41  mikmach
 
 	* ftplugin/latex-suite/main.vim:
 
 	- Added section in SetTeXOptions about TexPromptedCommands
 
-2003-01-14 14:40  mikmach
+2003-01-14 05:40  mikmach
 
 	* ftplugin/latex-suite/texrc:
 
 	- Added short description of g:Tex_PromptedCommands and basic TexLet value
 
-2003-01-14 14:40  mikmach
+2003-01-14 05:40  mikmach
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -2714,7 +3223,7 @@
 
 	- Now you can use two-digit values in SetUpPrompt menus '^[0-9][0-9]$'
 
-2003-01-14 14:40  mikmach
+2003-01-14 05:40  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -2724,7 +3233,7 @@
 	  nil, thus it should work for removing \new..., but it doesn't work :(
 	  It looks like SetUp...Prompt uses some cached values.
 
-2003-01-12 23:02  mikmach
+2003-01-12 14:02  mikmach
 
 	* ftplugin/latex-suite/: bibtex.vim, compiler.vim,
 	  custommacros.vim, diacritics.vim, elementmacros.vim, folding.vim,
@@ -2733,7 +3242,7 @@
 
 	unification of modelines (especially ff=unix) and removing Last Change lines
 
-2003-01-11 21:42  srinathava
+2003-01-11 12:42  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -2741,19 +3250,19 @@
 	      cased successive menu items to all regard s:isvisual = 'yes', causing
 	      stuff to break.
 
-2003-01-11 21:09  mikmach
+2003-01-11 12:09  mikmach
 
 	* ftplugin/latex-suite/envmacros.vim:
 
 	Fixed problem with undefined s:isvisual in Tex_PutEnvironment by testing with exists()
 
-2003-01-11 10:05  srinathava
+2003-01-11 01:05  srinathava
 
 	* doc/newlatex-suite.txt:
 
 	- temporary commit.
 
-2003-01-11 09:42  srinathava
+2003-01-11 00:42  srinathava
 
 	* doc/newlatex-suite.txt:
 
@@ -2776,7 +3285,7 @@
 	push this into the attic. I could have started a new branch for this, but
 	it felt like too much work...
 
-2003-01-11 09:25  srinathava
+2003-01-11 00:25  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -2785,7 +3294,7 @@
 	  for this when I realized that ``* and such were still trouble causers).
 	  Is this way too agressive?
 
-2003-01-10 06:33  srinathava
+2003-01-09 21:33  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -2794,7 +3303,7 @@
 	- adding 'description' to the Lists menu (macro in insert mode is EDE)
 	- changing paragraph macro from SPR to SPG as documented.
 
-2003-01-10 06:11  srinathava
+2003-01-09 21:11  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -2808,7 +3317,7 @@
 	  s:TEX_InsertGreekLetter() function... Just create fake maps like
 	  ``a -> ``a and \`a -> \`a.
 
-2003-01-10 02:56  srinathava
+2003-01-09 17:56  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -2816,7 +3325,7 @@
 	       instead of just \[.
 	- Support choosing $$ and \[ after <F5> in visual mode as well.
 
-2003-01-09 16:31  mikmach
+2003-01-09 07:31  mikmach
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -2824,13 +3333,13 @@
 	  Only for environments, in preamble <F5> is ignored.
 	- :g/Last Change/s/.*/" CVS Header: $Header$/
 
-2003-01-09 12:50  mikmach
+2003-01-09 03:50  mikmach
 
 	* ftplugin/latex-suite/packages/: deleq, histogram, plates:
 
 	new package files
 
-2003-01-09 02:43  srinathava
+2003-01-08 17:43  srinathava
 
 	* plugin/imaps.vim:
 
@@ -2838,7 +3347,7 @@
 	  happily at least for the time being.
 	  (It should be $Header$ not $Header$.)
 
-2003-01-09 01:57  srinathava
+2003-01-08 16:57  srinathava
 
 	* plugin/imaps.vim:
 
@@ -2846,32 +3355,32 @@
 	  revision tag is necessary in a file, imo.
 	  NOTE: This wont cause spurious revisions, problems in merging etc.
 
-2003-01-09 00:50  srinathava
+2003-01-08 15:50  srinathava
 
 	* plugin/imaps.vim:
 
 	- always use the blackhole register to do yanks/substitutions etc,
 	  otherwise the user's unnamed register gets eaten up.
 
-2003-01-07 23:36  mikmach
+2003-01-07 14:36  mikmach
 
 	* ftplugin/latex-suite/packages/: drftcite, cite, overcite:
 
 	Added syntax highlighting for new cite commands provided with this packages
 
-2003-01-07 23:36  mikmach
+2003-01-07 14:36  mikmach
 
 	* ftplugin/latex-suite/packages/psgo:
 
 	new package file
 
-2003-01-07 21:53  srinathava
+2003-01-07 12:53  srinathava
 
 	* plugin/imaps.vim:
 
 	- removing an unnecessary line from a previous version.
 
-2003-01-07 20:43  srinathava
+2003-01-07 11:43  srinathava
 
 	* plugin/imaps.vim:
 
@@ -2892,7 +3401,7 @@
 	            deselecting text. This strategy also leads to considerable
 				simplification at other places.
 
-2003-01-07 19:27  macvimx
+2003-01-07 10:27  macvimx
 
 	* plugin/imaps.vim:
 
@@ -2906,7 +3415,7 @@
 	functions would look at the last character, "o", see that there were local
 	maps ending in "o", and only look for local maps.
 
-2003-01-07 02:51  srinathava
+2003-01-06 17:51  srinathava
 
 	* ftplugin/tex/smartspace.vim:
 
@@ -2922,7 +3431,7 @@
 
 	    For the moment, I don't know what to do about \$
 
-2003-01-06 11:10  srinathava
+2003-01-06 02:10  srinathava
 
 	* makefile:
 
@@ -2936,7 +3445,7 @@
 	- uphtdocs is a way of synchronizing the latex-suite webpage with the
 	  latest CVS snapshot.
 
-2003-01-06 01:17  srinathava
+2003-01-05 16:17  srinathava
 
 	* ftplugin/tex/smartspace.vim:
 
@@ -2956,7 +3465,7 @@
 		  the end of the function.  I also have to modify the function TexFill,
 		  to define and pass on the new variables.
 
-2003-01-05 22:47  mikmach
+2003-01-05 13:47  mikmach
 
 	* ftplugin/latex-suite/packages/: SIunits, accents, acromake,
 	  afterpage, alltt, amsmath, amsthm, amsxtra, arabic, bar,
@@ -2969,7 +3478,7 @@
 
 	adding ff=unix and ft=vim modelines; removing redundant , at the end of variables; removed last <<>> signs; commiting new packages
 
-2003-01-05 15:01  macvimx
+2003-01-05 06:01  macvimx
 
 	* plugin/imaps.vim:
 
@@ -2980,7 +3489,7 @@
 	* Wrap the call to iconv, and the test for whether it is needed, in a new,
 	heavily commented, helper function, s:Iconv().
 
-2003-01-05 09:46  srinathava
+2003-01-05 00:46  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -2993,7 +3502,7 @@
 	          to set buffer local mappings for the <F5> and <S-F5> keys for
 	          every tex file opened.
 
-2003-01-05 09:36  srinathava
+2003-01-05 00:36  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -3005,7 +3514,7 @@
 	          main.vim for every buffer. Thus buffer local maps are made for
 	          every tex file opened.
 
-2003-01-05 05:50  srinathava
+2003-01-04 20:50  srinathava
 
 	* ftplugin/tex/smartspace.vim:
 
@@ -3022,7 +3531,7 @@
 	                                           ^
 	      shown makes new lines appear after this line.
 
-2003-01-05 05:39  srinathava
+2003-01-04 20:39  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
@@ -3032,7 +3541,7 @@
 	  setting 'tw' to zero by default. People who want this should read the
 	  docs, understand the implications and then activate this option.
 
-2003-01-05 03:19  srinathava
+2003-01-04 18:19  srinathava
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -3056,14 +3565,14 @@
 	          Just to be on the safe side, ensure that Tex_pack_one is never
 	          called with '' which causes the prompt.
 
-2003-01-04 01:56  srinathava
+2003-01-03 16:56  srinathava
 
 	* doc/latex-suite.txt:
 
 	Remove a bit of pedantic stuff from the docs. We seem to be explaining the
 	same thing too many times...
 
-2003-01-04 01:49  srinathava
+2003-01-03 16:49  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -3082,7 +3591,7 @@
 	and then please tell us what g:Tex_PrintDebug('compiler') says" (if for
 	instance the user has some compilation/viewing problems).
 
-2003-01-04 01:44  srinathava
+2003-01-03 16:44  srinathava
 
 	* plugin/imaps.vim:
 
@@ -3090,7 +3599,7 @@
 	a memory leak. Otherwise the debug string will get generally very huge on
 	long usage of latex-suite/imaps.
 
-2003-01-04 00:08  srinathava
+2003-01-03 15:08  srinathava
 
 	* ftplugin/tex/smartspace.vim:
 
@@ -3104,7 +3613,7 @@
 	     check if the first non blank character is a '$'. This seems a little
 	     like a temporary fix though..
 
-2003-01-03 09:42  srinathava
+2003-01-03 00:42  srinathava
 
 	* plugin/imaps.vim:
 
@@ -3112,7 +3621,7 @@
 	     In general, any mapping ending in double quote doesn't work.
 	Cause: Double quotes need to be escaped in the call to LookupCharacter().
 
-2003-01-03 09:22  srinathava
+2003-01-03 00:22  srinathava
 
 	* plugin/imaps.vim:
 
@@ -3120,7 +3629,7 @@
 	is used without latex-suite... Script bloat! Maybe when all of the imaps
 	bugs are removed (!) we can remove these functions...
 
-2002-12-31 20:20  srinathava
+2002-12-31 11:20  srinathava
 
 	* plugin/imaps.vim:
 
@@ -3128,7 +3637,7 @@
 	  functionality by uncommenting lines in the texrc (that modification coming
 	  soon).
 
-2002-12-31 20:15  srinathava
+2002-12-31 11:15  srinathava
 
 	* ftplugin/tex/brackets.vim:
 
@@ -3138,7 +3647,7 @@
 	  users. Only the <plugs> will be provided. A new section in texrc will
 	  contain the maps which the user can customize...
 
-2002-12-31 11:04  srinathava
+2002-12-31 02:04  srinathava
 
 	* doc/imaps.txt:
 
@@ -3148,14 +3657,14 @@
 	describe the various imaps options for placeholders and also how to
 	override the mappings for jumping back and forth...
 
-2002-12-31 10:36  srinathava
+2002-12-31 01:36  srinathava
 
 	* ftplugin/tex/brackets.vim:
 
 	Bug: <M-c> inserts '\label{<++>}<++>' literally without using
 	     IMAP_PutTextWithMovement('\label{<++>}<++>').
 
-2002-12-31 10:21  srinathava
+2002-12-31 01:21  srinathava
 
 	* plugin/imaps.vim:
 
@@ -3185,7 +3694,7 @@
 	   NOTE: This <plug> things were inspired by looking at the excellent
 	   cvscommand.vim plugin I've begun using...
 
-2002-12-30 20:11  srinathava
+2002-12-30 11:11  srinathava
 
 	* ftplugin/latex-suite/packages/longtable:
 
@@ -3193,7 +3702,7 @@
 	  TODO: Should we write code to make such typos get handled elegantly?
 	. adding modeline.
 
-2002-12-30 12:12  srinathava
+2002-12-30 03:12  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -3203,7 +3712,7 @@
 	       choose anything. Therefore, vim by default returns zero.
 	Solution: Make Tex_DoEnvironment return '' if the user hasn't chosen anything.
 
-2002-12-30 11:54  srinathava
+2002-12-30 02:54  srinathava
 
 	* plugin/imaps.vim:
 
@@ -3215,7 +3724,7 @@
 	       so that the marker text is broken across lines...  Havoc ensues.
 	Solution: remove spaces from marker text.
 
-2002-12-30 10:04  srinathava
+2002-12-30 01:04  srinathava
 
 	* ftplugin/latex-suite/folding.vim:
 
@@ -3223,7 +3732,7 @@
 	Solution: include '^\s*\end{document' in the endfoldpattern of the relevant
 	          things.
 
-2002-12-30 09:59  srinathava
+2002-12-30 00:59  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -3231,14 +3740,14 @@
 	Cause: used double quotes instead of single quotes in a search pattern.
 	Solution: well, duh!
 
-2002-12-30 01:48  srinathava
+2002-12-29 16:48  srinathava
 
 	* ftplugin/latex-suite/packages/amsmath:
 
 	\numberwithin takes 2 arguments, the environment whose numbering to affect
 	and the parent environment to number within.
 
-2002-12-30 01:23  srinathava
+2002-12-29 16:23  srinathava
 
 	* ftplugin/latex-suite/custommacros.vim:
 
@@ -3248,7 +3757,7 @@
 	. made the NewMacro() function script local, as demanded by the TMacroNew
 	  command.
 
-2002-12-30 01:16  srinathava
+2002-12-29 16:16  srinathava
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -3269,14 +3778,14 @@
 	    com! Foo normal! 0v$<C-g>
 	does take the user to select mode...
 
-2002-12-30 00:51  srinathava
+2002-12-29 15:51  srinathava
 
 	* doc/latex-suite.txt:
 
 	Typo in docs. Visual macros for sections start with comma (,) not backtick
 	(`).
 
-2002-12-30 00:42  srinathava
+2002-12-29 15:42  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
@@ -3285,25 +3794,25 @@
 	can't, these maps only save one keystroke, while causing a _lot_ of
 	headaches for people who do not use diacritics.
 
-2002-12-28 00:01  srinathava
+2002-12-27 15:01  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
 	. changes from the b-newpackages branch
 
-2002-12-27 23:59  srinathava
+2002-12-27 14:59  srinathava
 
 	* ftplugin/latex-suite/packages/: amsmath, eqparbox, ifthen:
 
 	. changes from the b-newpackages branch.
 
-2002-12-27 23:55  srinathava
+2002-12-27 14:55  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
 	. merging changes from the b-newpackages branch.
 
-2002-12-27 23:41  srinathava
+2002-12-27 14:41  srinathava
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -3312,19 +3821,19 @@
 	and the branch is screwing things up... Dont know why cvs gives me a lot of
 	'nonmergable' file errors.
 
-2002-12-27 22:54  srinathava
+2002-12-27 13:54  srinathava
 
 	* ftplugin/latex-suite/packages/amsmath:
 
 	removing the trailing <++> from the brs: definition.
 
-2002-12-27 22:53  srinathava
+2002-12-27 13:53  srinathava
 
 	* ftplugin/latex-suite/packages/eqparbox:
 
 	removing the trailing <++> from a brs: definition.
 
-2002-12-27 22:27  srinathava
+2002-12-27 13:27  srinathava
 
 	* ftplugin/latex-suite/templates.vim:
 
@@ -3333,7 +3842,7 @@
 	  want to be left in select mode. The latest version on the main branch should
 	  fix this. This commit might cause a conflict...
 
-2002-12-27 22:22  srinathava
+2002-12-27 13:22  srinathava
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -3355,7 +3864,7 @@
 	fully feature compatible with the original packages.vim with the additional
 	bug fixes for placeholder settings and such.
 
-2002-12-27 21:53  srinathava
+2002-12-27 12:53  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -3365,13 +3874,13 @@
 	'thesis.tex.latexmain', i.e the .tex extension is lost. Sometimes, we might
 	actually want the extension.
 
-2002-12-27 21:41  srinathava
+2002-12-27 12:41  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
 	Using the Tex_pack_one function instead of the Tex_Put function.
 
-2002-12-27 02:49  srinathava
+2002-12-26 17:49  srinathava
 
 	* ftplugin/latex-suite/custommacros.vim:
 
@@ -3379,14 +3888,14 @@
 	commands will be a problem... This has been a long standing problem for me.
 	Will write a better log message later using 'cvs admin -m'
 
-2002-12-27 00:51  srinathava
+2002-12-26 15:51  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
 	. removing "other miscellaneous stuff taken from imaps.vim". This stuff was
 	  a remenant of my personal ftplugin/tex.vim.
 
-2002-12-24 20:56  srinathava
+2002-12-24 11:56  srinathava
 
 	* ftplugin/latex-suite/packages/ifthen:
 
@@ -3396,7 +3905,7 @@
 
 	Developers: Henceforth please note the branch on which commits are made.
 
-2002-12-24 13:51  srinathava
+2002-12-24 04:51  srinathava
 
 	* plugin/imaps.vim:
 
@@ -3414,7 +3923,7 @@
 	So until a better solution presents itself, make all maps created by
 	IMAP() global (not buffer-local).
 
-2002-12-23 03:11  srinathava
+2002-12-22 18:11  srinathava
 
 	* ftplugin/latex-suite/templates/: report.tex,
 	  report_two_column.tex:
@@ -3423,7 +3932,7 @@
 	  changed and one of the Last Change: Sun Dec 22 06:00 PM 2002 P
 	  because of my lastchange.vim plugin !
 
-2002-12-23 03:07  srinathava
+2002-12-22 18:07  srinathava
 
 	* ftplugin/latex-suite/templates/: article.tex, report.tex,
 	  report_two_column.tex:
@@ -3432,7 +3941,7 @@
 	  placeholder characters and the other special characters used for dynamic
 	  content as a tab delimited list.
 
-2002-12-23 03:04  srinathava
+2002-12-22 18:04  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -3440,7 +3949,7 @@
 	  Tex_ClearDebug. echmosg cannot be used in certain places because it leads
 	  to hit enter prompts. Also the messages dissapear with time.
 
-2002-12-23 03:01  srinathava
+2002-12-22 18:01  srinathava
 
 	* plugin/imaps.vim:
 
@@ -3451,7 +3960,7 @@
 	. changed fun! and endfun to function! and endfunction
 	  (another one of those consistent coding thingies)
 
-2002-12-23 02:59  srinathava
+2002-12-22 17:59  srinathava
 
 	* ftplugin/latex-suite/templates.vim:
 
@@ -3466,7 +3975,7 @@
 	the template maker to not have to bother with the users placeholder
 	settings.
 
-2002-12-22 15:38  macvimx
+2002-12-22 06:38  macvimx
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -3475,7 +3984,7 @@
 	s:TexQuotes() with the various functions that get called.  This hack is not
 	too bad, and it seems to work.
 
-2002-12-22 15:12  macvimx
+2002-12-22 06:12  macvimx
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -3484,14 +3993,14 @@
 	in IMAP_Jumpfunc().  I fixed one error in this function; I am still working on
 	it.
 
-2002-12-22 15:12  macvimx
+2002-12-22 06:12  macvimx
 
 	* plugin/imaps.vim:
 
 	Bug fix in using the \V modifier in search.
 	In \V  mode, beginning of line is matched by \^
 
-2002-12-22 12:02  srinathava
+2002-12-22 03:02  srinathava
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -3512,7 +4021,7 @@
 	head of the main branch as of tonight, not the main branch. The main branch
 	packages.vim has not changed.
 
-2002-12-22 04:39  macvimx
+2002-12-21 19:39  macvimx
 
 	* plugin/imaps.vim:
 
@@ -3520,7 +4029,7 @@
 	successful, then IMAP() should work, regardless of the encoding, even when the
 	place holders are funky (i.e., outside the 7-bit ASCII range).
 
-2002-12-22 04:15  srinathava
+2002-12-21 19:15  srinathava
 
 	* ftplugin/tex/smartspace.vim:
 
@@ -3531,7 +4040,7 @@
 	TODO: there is still a "bug" where smartspace inserts items into the
 	history list whenever it has to break lines.
 
-2002-12-22 04:00  srinathava
+2002-12-21 19:00  srinathava
 
 	* makefile, doc/latex-suite.txt, ftplugin/latex-suite/bibtex.vim,
 	  ftplugin/latex-suite/custommacros.vim,
@@ -3585,7 +4094,7 @@
 	The b-newimaps tip at the time of this merge has been tagged as
 	b-newimaps-merge-sa-1
 
-2002-12-22 03:36  srinathava
+2002-12-21 18:36  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
@@ -3594,7 +4103,7 @@
 	  Previously, it would quote the value with single quotes, so g:Foo would
 	  get a value of '"foo"'.
 
-2002-12-20 10:04  srinathava
+2002-12-20 01:04  srinathava
 
 	* plugin/imaps.vim:
 
@@ -3604,7 +4113,7 @@
 	should have been:
 		if text !~ '\V'.phs.'\.\{-}'.phe
 
-2002-12-19 13:18  srinathava
+2002-12-19 04:18  srinathava
 
 	* ftplugin/: latex-suite/bibtex.vim, latex-suite/custommacros.vim,
 	  latex-suite/diacritics.vim, latex-suite/elementmacros.vim,
@@ -3617,7 +4126,7 @@
 	. Revert back Tex_IMAP() to IMAP() and
 	  Tex_PutTextWithMovement() to IMAP_PutTextWithMovement().
 
-2002-12-19 13:13  srinathava
+2002-12-19 04:13  srinathava
 
 	* plugin/imaps.vim:
 
@@ -3627,7 +4136,7 @@
 	  will be able to get away with iconv and the fact that the scripts
 	  themselves do not contain funkiness.
 
-2002-12-19 12:44  srinathava
+2002-12-19 03:44  srinathava
 
 	* plugin/imaps.vim:
 
@@ -3649,7 +4158,7 @@
 	into the main trunk and get working on a next release version and also
 	solving the encoding problem once and for all...
 
-2002-12-18 17:36  macvimx
+2002-12-18 08:36  macvimx
 
 	* plugin/imaps.vim:
 
@@ -3664,14 +4173,14 @@
 	these in script variables, which are then read by s:LookupCharacter() and
 	passed to IMAP_PutTextWithMovement().
 
-2002-12-14 15:22  macvimx
+2002-12-14 06:22  macvimx
 
 	* plugin/imaps.vim:
 
 	     I simplified the Tex_IMAP() wrapper for the new IMAP() function and made
 	some other minor improvements.
 
-2002-12-14 11:59  srinathava
+2002-12-14 02:59  srinathava
 
 	* doc/latex-suite.txt, ftplugin/latex-suite/bibtex.vim,
 	  ftplugin/latex-suite/elementmacros.vim,
@@ -3709,7 +4218,7 @@
 	I will not be posting the actual diff of this commit to the group. Just the
 	log. Check the web cvs if you want the diff.
 
-2002-12-14 11:48  srinathava
+2002-12-14 02:48  srinathava
 
 	* plugin/imaps.vim:
 
@@ -3736,27 +4245,27 @@
 	Better still, dont use any placeholders at all and use the new IMAP()
 	function.
 
-2002-12-14 07:49  srinathava
+2002-12-13 22:49  srinathava
 
 	* plugin/imaps.vim:
 
 	. adding in Benji's new version of imaps.vim
 	. changed the author from SA to SA + BF.
 
-2002-12-13 18:58  mikmach
+2002-12-13 09:58  mikmach
 
 	* ftplugin/latex-suite/packages/: newalg, schedule:
 
 	fixed package files
 
-2002-12-13 18:58  mikmach
+2002-12-13 09:58  mikmach
 
 	* ftplugin/latex-suite/packages/: accents, footmisc, caption2,
 	  graphicx, color, float, ifthen, moreverbatim:
 
 	new package files
 
-2002-12-13 18:23  macvimx
+2002-12-13 09:23  macvimx
 
 	* ftplugin/latex-suite/bibtex.vim,
 	  ftplugin/latex-suite/custommacros.vim,
@@ -3776,7 +4285,7 @@
 		IMAP_PutTextWithMovement() with Tex_PutTextWithMovement()
 	This is a preliminary step before rewriting these two functions.
 
-2002-12-13 15:47  macvimx
+2002-12-13 06:47  macvimx
 
 	* ftplugin/latex-suite/texrc:
 
@@ -3788,19 +4297,19 @@
 	My brand-new RH 8.0 system, with the current (non-beta!) version of teTeX does
 	not support --src-specials and this leads to a silent failure of \ll :-(
 
-2002-12-13 00:40  mikmach
+2002-12-12 15:40  mikmach
 
 	* ftplugin/latex-suite/packages/polski:
 
 	turning off magic space in verbatim type environments
 
-2002-12-10 22:13  mikmach
+2002-12-10 13:13  mikmach
 
 	* ftplugin/latex-suite/packages/polski:
 
 	Added switch between magic and normal space - F8
 
-2002-12-09 21:41  srinathava
+2002-12-09 12:41  srinathava
 
 	* ftplugin/tex/brackets.vim:
 
@@ -3822,7 +4331,7 @@
 	    inoremap <buffer> <silent> <C-c>c   <C-r>=Tex_MathCal()<CR>
 	    inoremap <buffer> <silent> <C-c>l   <C-r>=Tex_LeftRight()<CR>
 
-2002-12-09 21:17  srinathava
+2002-12-09 12:17  srinathava
 
 	* ftplugin/tex/smartspace.vim:
 
@@ -3836,7 +4345,7 @@
 	this ftplugin, unpredictable things might happen. If you really want &tw !=
 	0, disable this plugin by setting g:Tex_SmartKeySpace = 0.
 
-2002-12-08 17:52  mikmach
+2002-12-08 08:52  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -3854,7 +4363,7 @@
 
 	Also added some foolproofness to this command
 
-2002-12-07 12:06  srinathava
+2002-12-07 03:06  srinathava
 
 	* doc/latex-suite.txt:
 
@@ -3862,13 +4371,13 @@
 	. Added a latex-smart-keys section...
 	. moved some stuff around so as to be consistent with the TOC.
 
-2002-12-07 03:19  srinathava
+2002-12-06 18:19  srinathava
 
 	* ftplugin/tex/brackets.vim:
 
 	. code restructuring. gathered all functions towards the end of file.
 
-2002-12-07 02:09  srinathava
+2002-12-06 17:09  srinathava
 
 	* ftplugin/tex/brackets.vim:
 
@@ -3897,7 +4406,7 @@
 
 	This will never trigger the map.
 
-2002-12-07 01:43  srinathava
+2002-12-06 16:43  srinathava
 
 	* plugin/imaps.vim:
 
@@ -3919,7 +4428,7 @@
 	This will instantly remove all the internationalization and localization
 	problems.
 
-2002-12-07 00:55  mikmach
+2002-12-06 15:55  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -3927,7 +4436,7 @@
 	Tex_pack_one: now calling :TPackage returns
 	line \usepackage{choice}.
 
-2002-12-07 00:55  mikmach
+2002-12-06 15:55  mikmach
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -3944,7 +4453,7 @@
 	information "Choose a macro", "Choose a template", "Choose
 	a package".
 
-2002-12-06 17:20  macvimx
+2002-12-06 08:20  macvimx
 
 	* plugin/imaps.vim:
 
@@ -3955,7 +4464,7 @@
 	NOTE: This is a changed log message using the cvs admin command.
 	.
 
-2002-12-06 10:48  srinathava
+2002-12-06 01:48  srinathava
 
 	* compiler/tex.vim:
 
@@ -3970,7 +4479,7 @@
 
 	TODO: also get 'some stuff' into the error message...
 
-2002-12-06 10:44  srinathava
+2002-12-06 01:44  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -3986,13 +4495,13 @@
 	used anywhere, so I removed it. If someone knows where this was being used,
 	let me know.
 
-2002-12-06 10:37  srinathava
+2002-12-06 01:37  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
 	. enable the smart key mapping functions/maps only if the user wants to.
 
-2002-12-06 10:36  srinathava
+2002-12-06 01:36  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
@@ -4007,7 +4516,7 @@
 
 	. fixed a little documentation bug in the header of the file.
 
-2002-12-06 10:32  srinathava
+2002-12-06 01:32  srinathava
 
 	* doc/latex-suite.txt:
 
@@ -4016,7 +4525,7 @@
 
 	TODO: still have to add docs about the new additions in envmacros.vim
 
-2002-12-06 09:46  srinathava
+2002-12-06 00:46  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -4028,7 +4537,7 @@
 	  needs to be added. The ftplugin file mechanism provides a very robust way
 	  to letting each module take care of redefinition, reinclusion etc.
 
-2002-12-06 07:44  srinathava
+2002-12-05 22:44  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -4036,13 +4545,13 @@
 	  placed below the tabular environment and the \cation{} is no longer
 	  \caption{tab:«»}.
 
-2002-12-06 07:36  srinathava
+2002-12-05 22:36  srinathava
 
 	* ftplugin/latex-suite/custommacros.vim:
 
 	. s/TeX_pack_all/Tex_pack_all/
 
-2002-12-02 20:25  srinathava
+2002-12-02 11:25  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -4052,7 +4561,7 @@
 	  positioned at all.
 	. make going to the column a little more consistent.
 
-2002-12-02 14:09  srinathava
+2002-12-02 05:09  srinathava
 
 	* plugin/imaps.vim:
 
@@ -4078,20 +4587,20 @@
 	TODO: Document these changes asap otherwise I will completeley forget why I
 	      did what I did...
 
-2002-11-30 15:56  mikmach
+2002-11-30 06:56  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
 	bug fix release: something wrong is with inserting packages from line (O
 	in [])
 
-2002-11-29 23:03  mikmach
+2002-11-29 14:03  mikmach
 
 	* ftplugin/latex-suite/packages/polski:
 
 	improved version of package file
 
-2002-11-29 23:02  mikmach
+2002-11-29 14:02  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -4099,7 +4608,7 @@
 	  Vims
 	- removed Version flag
 
-2002-11-27 11:25  srinathava
+2002-11-27 02:25  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -4107,26 +4616,26 @@
 	. more than 2 files have errors on the same line.
 	. the file with the error is being \inputed into the main file.
 
-2002-11-27 10:12  mikmach
+2002-11-27 01:12  mikmach
 
 	* doc/latex-suite.txt:
 
 	update doc about --src-specials and added Benji as maintainer in last section
 
-2002-11-27 10:12  mikmach
+2002-11-27 01:12  mikmach
 
 	* ftplugin/latex-suite/texrc:
 
 	make changes necessary for dvi searching , s:CompileFlags and pdf viewer
 
-2002-11-27 09:18  srinathava
+2002-11-27 00:18  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	. goto the end of the current line before searching for the next error
 	  pattern.
 
-2002-11-27 07:40  srinathava
+2002-11-26 22:40  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -4149,7 +4658,7 @@
 	3. set nowrap in quickfix window otherwise calculation width of the
 	   quickfix window is faulty.
 
-2002-11-26 00:00  mikmach
+2002-11-25 15:00  mikmach
 
 	* ftplugin/latex-suite/packages/: amsmath, bar, changebar,
 	  chapterbib, cite, drftcite, geometry, harpoon, hhline, hyperref,
@@ -4157,7 +4666,7 @@
 
 	optimized versions of package files ("")
 
-2002-11-25 02:20  srinathava
+2002-11-24 17:20  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -4167,44 +4676,44 @@
 
 	bug report by Marc Finet.
 
-2002-11-25 01:01  mikmach
+2002-11-24 16:01  mikmach
 
 	* ftplugin/latex-suite/main.vim:
 
 	fixed: SetTeXOptions breaking textwidth settings
 
-2002-11-25 01:01  mikmach
+2002-11-24 16:01  mikmach
 
 	* ftplugin/latex-suite/packages/polski:
 
 	full version of support for polski package
 
-2002-11-23 22:39  mikmach
+2002-11-23 13:39  mikmach
 
 	* ftplugin/latex-suite/main.vim:
 
 	Moved sourcing of package.vim to the end of file. Now mappings and other goodies defined in package files will overwrite all other stuff.
 
-2002-11-23 22:36  mikmach
+2002-11-23 13:36  mikmach
 
 	* ftplugin/latex-suite/packages/polski:
 
 	much improved version of polski package file
 
-2002-11-23 18:18  mikmach
+2002-11-23 09:18  mikmach
 
 	* ftplugin/latex-suite/packages/: eqlist, eqparbox, newalg,
 	  outliner, parallel, schedule, tipa:
 
 	new package files
 
-2002-11-23 18:16  mikmach
+2002-11-23 09:16  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
 	optimization of quotes
 
-2002-11-21 10:58  srinathava
+2002-11-21 01:58  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -4222,7 +4731,7 @@
 	Which causes a faulty calculation of the column number. A patter search
 	approach might therefore be much more robust at column number calculations.
 
-2002-11-20 12:09  srinathava
+2002-11-20 03:09  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -4259,7 +4768,7 @@
 	   citations and errors are caught well. For all other kinds, we goto the
 	   first column of the correct line number.
 
-2002-11-20 11:04  mikmach
+2002-11-20 02:04  mikmach
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -4270,13 +4779,13 @@
 	  shortcut
 	- introduced g:Tex_UseMenuWizard in texrc
 
-2002-11-20 11:04  mikmach
+2002-11-20 02:04  mikmach
 
 	* ftplugin/latex-suite/texrc:
 
 	new setting g:Tex_UseMenuWizard
 
-2002-11-20 08:35  srinathava
+2002-11-19 23:35  srinathava
 
 	* ftplugin/latex-suite/folding.vim:
 
@@ -4286,21 +4795,21 @@
 	When will this all end? There could presumably be hundreds of other things
 	which can end a section? Is there a _correct_ way to do this?
 
-2002-11-20 07:27  srinathava
+2002-11-19 22:27  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
 	remove the TCTarget and TVTarget commands from main.vim. These commands are
 	now issued from compiler/tex.vim
 
-2002-11-20 07:11  srinathava
+2002-11-19 22:11  srinathava
 
 	* makefile:
 
 	. also add in .vim files from ftplugin/tex/ directory. That directory will
 	contain externally contributed packages from now on.
 
-2002-11-20 06:53  srinathava
+2002-11-19 21:53  srinathava
 
 	* compiler/tex.vim:
 
@@ -4315,7 +4824,7 @@
 	TCTarget and TVTarget commands are removed from SetTexOptions, because that
 	part is now being taken care of here.
 
-2002-11-17 04:45  srinathava
+2002-11-16 19:45  srinathava
 
 	* ftplugin/tex/brackets.vim:
 
@@ -4343,7 +4852,7 @@
 
 	Thanks to Carl Mueller for these.
 
-2002-11-17 04:40  srinathava
+2002-11-16 19:40  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -4353,14 +4862,14 @@
 	    word*
 	i.e, ignore lines which contain non word characters.
 
-2002-11-17 04:38  srinathava
+2002-11-16 19:38  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
 	. added the function TexFormatLine and TexFill from Carl Mueller. These
 	functions map the <space> key in a way that $'s are not split across lines.
 
-2002-11-17 02:01  srinathava
+2002-11-16 17:01  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
@@ -4371,7 +4880,7 @@
 	  The user sets TClevel to 4 when he does want to bother with citations.
 	  Document this!
 
-2002-11-17 01:43  srinathava
+2002-11-16 16:43  srinathava
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -4391,7 +4900,7 @@
 
 	Please check and report any bugs.
 
-2002-11-16 11:14  srinathava
+2002-11-16 02:14  srinathava
 
 	* ftplugin/latex-suite/folding.vim:
 
@@ -4400,20 +4909,20 @@
 	Redefined the end fold pattern for all section environments more
 	consistently and completely.
 
-2002-11-15 23:31  mikmach
+2002-11-15 14:31  mikmach
 
 	* ftplugin/latex-suite/packages/: amsthm, amsxtra:
 
 	new package files
 
-2002-11-15 23:30  mikmach
+2002-11-15 14:30  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
 	Added Tex_PutPackage() - inserting package from line
 	and updating menus if available
 
-2002-11-15 23:30  mikmach
+2002-11-15 14:30  mikmach
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -4431,14 +4940,14 @@
 	  with environment.
 	- removed function s:ChangeEnvironment and shortcuts as redundant
 
-2002-11-15 00:02  mikmach
+2002-11-14 15:02  mikmach
 
 	* ftplugin/latex-suite/envmacros.vim:
 
 	now changing of environments works for all of them
 	cursor stays at the position
 
-2002-11-14 18:30  srinathava
+2002-11-14 09:30  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -4452,7 +4961,7 @@
 			...
 	instead.
 
-2002-11-14 10:39  mikmach
+2002-11-14 01:39  mikmach
 
 	* ftplugin/latex-suite/envmacros.vim:
 
@@ -4472,13 +4981,13 @@
 
 	Mikolaj
 
-2002-11-14 10:39  mikmach
+2002-11-14 01:39  mikmach
 
 	* ftplugin/latex-suite/wizardfuncs.vim:
 
 	moving envs part to envmacros.vim
 
-2002-11-14 03:49  srinathava
+2002-11-13 18:49  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -4487,7 +4996,7 @@
 
 	Hint to myself: Do not do any mode coding today.
 
-2002-11-14 03:46  srinathava
+2002-11-13 18:46  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -4496,14 +5005,14 @@
 	PS: discard the last log message. I deleted that revision and replaced it
 	with the current one.
 
-2002-11-13 04:39  macvimx
+2002-11-12 19:39  macvimx
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	Fix it so that, after opening the error window, we return to the right window,
 	even if there is more than one other window.
 
-2002-11-12 19:54  srinathava
+2002-11-12 10:54  srinathava
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -4511,7 +5020,7 @@
 	user texrc could be from an older version where not all variables are
 	defined. All the other files depend on the variables existing.
 
-2002-11-12 19:24  macvimx
+2002-11-12 10:24  macvimx
 
 	* plugin/imaps.vim:
 
@@ -4521,14 +5030,14 @@
 	with vim any vim 6.0+.  Please test.  If this change is correct, it
 	should be possible to simplify the code a bit.
 
-2002-11-12 17:47  srinathava
+2002-11-12 08:47  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	. after opening the cwindow, jump back to the file being edited.
 	  (Carl Mueller's suggestion)
 
-2002-11-12 14:44  srinathava
+2002-11-12 05:44  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -4544,7 +5053,7 @@
 	  Note to self: If you are touching "if !has('win32')" blocks, then verify
 	  on cygwin/latex before commiting!
 
-2002-11-11 09:55  srinathava
+2002-11-11 00:55  srinathava
 
 	* ftplugin/latex-suite/texmenuconf.vim:
 
@@ -4554,39 +5063,39 @@
 	. also remove a echomsg statement which crept in after the last debugging
 	  attempt.
 
-2002-11-11 09:54  srinathava
+2002-11-11 00:54  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
 	. incorporating a patch submitted by Peter Wilson, with the small change
 	that g:Tex_MainMenuPrefix is not used. Instead use only g:Tex_MenuPrefix.
 
-2002-11-11 03:08  srinathava
+2002-11-10 18:08  srinathava
 
 	* ftplugin/tex/: ls_brackets.vim, ls_formatline.vim:
 
 	adding files from carl mueller
 
-2002-11-10 23:12  mikmach
+2002-11-10 14:12  mikmach
 
 	* ftplugin/latex-suite/packages/: chapterbib, drftcite, inputenc,
 	  overcite:
 
 	new package files
 
-2002-11-10 23:11  mikmach
+2002-11-10 14:11  mikmach
 
 	* ftplugin/latex-suite/packages/cite:
 
 	real cite package file
 
-2002-11-10 23:11  mikmach
+2002-11-10 14:11  mikmach
 
 	* ftplugin/latex-suite/elementmacros.vim:
 
 	added nocite element to Various menu
 
-2002-11-10 19:09  mikmach
+2002-11-10 10:09  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -4603,26 +5112,26 @@
 	\usepackage{ and menu will give information about file which noexists in
 	preamble (and with weird formatting whole function may go to hell).
 
-2002-11-10 19:09  mikmach
+2002-11-10 10:09  mikmach
 
 	* ftplugin/latex-suite/templates.vim:
 
 	modification of function name TeX_pack_all -> Tex_...
 
-2002-11-10 14:39  mikmach
+2002-11-10 05:39  mikmach
 
 	* ftplugin/latex-suite/mathmacros.vim:
 
 	added some dimensions defined in amsmath
 	added some arrows defined in amsmath
 
-2002-11-09 23:52  mikmach
+2002-11-09 14:52  mikmach
 
 	* ftplugin/latex-suite/packages/amsmath:
 
 	first version of amsmath package file
 
-2002-11-08 19:05  macvimx
+2002-11-08 10:05  macvimx
 
 	* compiler/tex.vim:
 
@@ -4630,13 +5139,13 @@
 	as SetTexCompilerTarget(), but is not as flexible (since the target format is
 	not used here).  This is a temporary fix.  Duplication is bad ...
 
-2002-11-08 19:02  macvimx
+2002-11-08 10:02  macvimx
 
 	* ftplugin/latex-suite/main.vim:
 
 	I uncommented the line "runtime compiler/tex.vim" in SetTexOptions(), reversing the change I made a few days ago.
 
-2002-11-08 19:00  macvimx
+2002-11-08 10:00  macvimx
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -4645,19 +5154,19 @@
 	otherwise, do escape them.  I believe the resulting value for 'makeprg' is
 	very robust.
 
-2002-11-08 18:37  macvimx
+2002-11-08 09:37  macvimx
 
 	* ftplugin/latex-suite/texrc:
 
 	I added g:Tex_EscapeChars, used in compiler.vim .
 
-2002-11-08 14:39  srinathava
+2002-11-08 05:39  srinathava
 
 	* compiler/tex.vim:
 
 	. missing space in &makeprg. (bug reported by Siegfried Bublitz).
 
-2002-11-08 04:02  srinathava
+2002-11-07 19:02  srinathava
 
 	* ftplugin/latex-suite/: main.vim, texmenuconf.vim:
 
@@ -4670,7 +5179,7 @@
 	    let s:up_path = expand("<sfile>:p:h:h")
 	is much more robust.
 
-2002-11-08 03:04  srinathava
+2002-11-07 18:04  srinathava
 
 	* ftplugin/latex-suite/templates.vim:
 
@@ -4679,7 +5188,7 @@
 		templates/report_twocolumn.tex.*
 	  which gives an error.
 
-2002-11-07 23:25  mikmach
+2002-11-07 14:25  mikmach
 
 	* ftplugin/latex-suite/texmenuconf.vim:
 
@@ -4688,7 +5197,7 @@
 	2. gives message if private texrc doesn't exist
 	3. command Ttexrc works in non-gui session
 
-2002-11-07 12:21  mikmach
+2002-11-07 03:21  mikmach
 
 	* ftplugin/latex-suite/main.vim:
 
@@ -4699,25 +5208,25 @@
 	Sometimes too much is just too much. Three letter system for sections
 	and auctex shortcuts for math symbols seems more logical for me.
 
-2002-11-07 12:20  mikmach
+2002-11-07 03:20  mikmach
 
 	* ftplugin/latex-suite/packages/polski:
 
 	polski: add support for ~
 
-2002-11-06 09:37  srinathava
+2002-11-06 00:37  srinathava
 
 	* doc/latex-suite.txt:
 
 	. moved benji from contributors list to maintainers list.
 
-2002-11-05 18:10  mikmach
+2002-11-05 09:10  mikmach
 
 	* ftplugin/latex-suite/elementmacros.vim:
 
 	elementmacros.vim: To Various menu added \pageref and \cite
 
-2002-11-04 23:22  srinathava
+2002-11-04 14:22  srinathava
 
 	* plugin/imaps.vim:
 
@@ -4732,33 +5241,33 @@
 	(because calling IMAP on the guienter event ensures that imaps.vim is
 	already sourced).
 
-2002-11-04 21:40  mikmach
+2002-11-04 12:40  mikmach
 
 	* ftplugin/latex-suite/dictionaries/dictionary:
 
 	dictionary: misspel emppty -> empty
 
-2002-11-04 21:39  mikmach
+2002-11-04 12:39  mikmach
 
 	* ftplugin/latex-suite/envmacros.vim:
 
 	envmacros.vim: 1. added environments quote i quotation
 	               2. fixed bug with enumeration lists (\\item)
 
-2002-11-04 21:39  mikmach
+2002-11-04 12:39  mikmach
 
 	* ftplugin/latex-suite/elementmacros.vim:
 
 	elementmacros.vim: I've added ref, label and footnotes elemets to menu
 	X-Elements.Various.
 
-2002-11-04 17:32  macvimx
+2002-11-04 08:32  macvimx
 
 	* ftplugin/latex-suite/: compiler.vim, texrc:
 
 	improved defaults for Mac OSX
 
-2002-11-04 16:39  macvimx
+2002-11-04 07:39  macvimx
 
 	* makefile, ftplugin/latex-suite/compiler.vim,
 	  ftplugin/latex-suite/main.vim, ftplugin/latex-suite/texrc:
@@ -4771,7 +5280,7 @@
 	as in compiler/tex.vim .  Not all versions of tex support the --interaction option, so this is more robust.  Then, the "\" and "{}" have to be escaped for
 	the shell.  I simplified "let &l:makeprg ..." with curly-brace variables.
 
-2002-11-04 15:15  macvimx
+2002-11-04 06:15  macvimx
 
 	* makefile:
 
@@ -4784,45 +5293,45 @@
 	If you have some changes in your local CVS directory and some in your
 	vimfiles directory, you can use "make sync".
 
-2002-11-02 10:41  srinathava
+2002-11-02 01:41  srinathava
 
 	* makefile:
 
 	. merged the zip2tar target into the main target. Dont see why the tar.gz
 	file should not be created every time the .zip file is.
 
-2002-11-02 04:45  srinathava
+2002-11-01 19:45  srinathava
 
 	* doc/latex-suite.txt:
 
 	adding Pter Heslins contribution
 
-2002-11-02 04:42  srinathava
+2002-11-01 19:42  srinathava
 
 	* makefile:
 
 	adding a zip2tar target for creating tar.gz files
 
-2002-11-02 03:56  srinathava
+2002-11-01 18:56  srinathava
 
 	* plugin/SyntaxFolds.vim:
 
 	. adding explanations of how to add a syntax fold item.
 
-2002-11-02 03:55  srinathava
+2002-11-01 18:55  srinathava
 
 	* plugin/imaps.vim:
 
 	. also checking for g:Imap_Place... when choosing the beginning and end
 	place holder characters.
 
-2002-10-28 07:53  srinathava
+2002-10-27 22:53  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
 	. rolled back a change which crept in during debugging.
 
-2002-10-28 07:41  srinathava
+2002-10-27 22:41  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
@@ -4830,7 +5339,7 @@
 	  to specify whether we want the command for the dvi viewer to also specify
 	  an external editor. defaults to 0 (i.e dont specify editor).
 
-2002-10-28 07:40  srinathava
+2002-10-27 22:40  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
@@ -4840,7 +5349,7 @@
 	  when an option is present, use the extended version which specifies the
 	  editor.
 
-2002-10-28 07:37  srinathava
+2002-10-27 22:37  srinathava
 
 	* ftplugin/latex-suite/folding.vim:
 
@@ -4853,7 +5362,7 @@
 	  More bug fixes by Peter Heslin.
 	. also allow %%fakesection to terminate \section.
 
-2002-10-27 11:28  srinathava
+2002-10-27 02:28  srinathava
 
 	* ftplugin/latex-suite/folding.vim:
 
@@ -4870,21 +5379,21 @@
 
 	Both suggestions by Peter Heslin.
 
-2002-10-27 11:16  srinathava
+2002-10-27 02:16  srinathava
 
 	* ftplugin/latex-suite/folding.vim:
 
 	. added some pretty extensive comments about how to add folding. hopefully,
 	some future revision will have a way of specifying folds using the texrc.
 
-2002-10-27 11:15  srinathava
+2002-10-27 02:15  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
 	. removed the ff=unix setting from the modeline since this causes a
 	  spurious modified flag for cvs.
 
-2002-10-27 10:18  srinathava
+2002-10-27 01:18  srinathava
 
 	* ftplugin/latex-suite/wizardfuncs.vim:
 
@@ -4895,32 +5404,26 @@
 
 	bug pointed out by Peter Heslin
 
-2002-10-07 02:35  srinathava
+2002-10-06 17:35  srinathava
 
 	* makefile:
 
 	. removing inclusion of vimlatex and adding ltags
 
-2002-10-07 00:35  srinathava
-
-	* ltags:
-
-	[no log message]
-
-2002-10-07 00:34  srinathava
+2002-10-06 15:34  srinathava
 
 	* vimlatex:
 
 	. removing vimlatex
 
-2002-10-06 17:29  srinathava
+2002-10-06 08:29  srinathava
 
 	* ftplugin/latex-suite/folding.vim:
 
 	added folding item for footnotes.
 	suggested by Peter Heslin <p.j.heslin@durham.ac.uk>
 
-2002-05-21 23:11  mikmach
+2002-05-21 14:11  mikmach
 
 	* ftplugin/latex-suite/: envmacros.vim, packages.vim:
 
@@ -4928,19 +5431,19 @@
 	Added has("gui_running") condition to the if clauses creating menus to prevent it
 	if running not gui version.
 
-2002-05-21 18:41  mikmach
+2002-05-21 09:41  mikmach
 
 	* ftplugin/latex-suite/custommacros.vim:
 
 	Removed cvs marker
 
-2002-05-19 20:47  mikmach
+2002-05-19 11:47  mikmach
 
 	* doc/latex-suite.txt:
 
 	Added section about package files
 
-2002-05-11 17:53  mikmach
+2002-05-11 08:53  mikmach
 
 	* doc/latex-suite.txt:
 
@@ -4948,7 +5451,7 @@
 
 	Added instructions how to use :TSection and :TSectionAdvanced commands.
 
-2002-05-11 17:51  mikmach
+2002-05-11 08:51  mikmach
 
 	* ftplugin/latex-suite/wizardfuncs.vim:
 
@@ -4956,7 +5459,7 @@
 	Added new commands: TSection, TSectionAdvanced.
 	More info in updated latex-suite.txt.
 
-2002-05-09 23:31  mikmach
+2002-05-09 14:31  mikmach
 
 	* doc/latex-suite.txt:
 
@@ -4964,7 +5467,7 @@
 	-- Changed names of commands:
 	 :Tex.... -> :T....
 
-2002-05-08 19:22  mikmach
+2002-05-08 10:22  mikmach
 
 	* ftplugin/latex-suite/texmenuconf.vim:
 
@@ -4974,7 +5477,7 @@
 	-- changed names of the commands
 		TexTexrc -> TTexrc
 
-2002-05-08 19:19  mikmach
+2002-05-08 10:19  mikmach
 
 	* ftplugin/latex-suite/custommacros.vim:
 
@@ -4985,7 +5488,7 @@
 		TexMacroNew -> TMacroNew
 		TexMacroDelete -> TMacroDelete
 
-2002-05-08 19:18  mikmach
+2002-05-08 10:18  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -4995,7 +5498,7 @@
 		TexPackageUpdate -> TPackageUpdate
 		TexPackageUpdateAll -> TPackageUpdateAll
 
-2002-05-08 00:10  mikmach
+2002-05-07 15:10  mikmach
 
 	* ftplugin/latex-suite/templates.vim:
 
@@ -5004,45 +5507,45 @@
 	TexPackageUpdate -> TPackageUpdate
 	TexPackageUpdateAll -> TPackageUpdateAll
 
-2002-05-07 01:12  srinathava
+2002-05-06 16:12  srinathava
 
 	* ftplugin/latex-suite/packages.vim:
 
 	. when <main>.latexmain was found, then the window would not be closed
 	  properly.
 
-2002-05-07 01:11  srinathava
+2002-05-06 16:11  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:
 
 	. bug fix: when <mainfile>.latexmain is found, then the viewing/compiling
 	  functions wouldnt work.
 
-2002-05-05 18:22  mikmach
+2002-05-05 09:22  mikmach
 
 	* ftplugin/latex-suite/texrc:
 
 	lost texrc found
 
-2002-05-05 00:01  srinathava
+2002-05-04 15:01  srinathava
 
 	* ftplugin/latex-suite/custommacros.vim:
 
 	. removed yet another peice of code which was specific to CVS/ directories.
 
-2002-05-04 23:08  mikmach
+2002-05-04 14:08  mikmach
 
 	* ftplugin/latex-suite/main.vim:
 
 	sourcing personal ftplugin/tex/texrc if found, if not only system texrc
 
-2002-05-04 23:07  mikmach
+2002-05-04 14:07  mikmach
 
 	* ftplugin/latex-suite/texmenuconf.vim:
 
 	menu and command for editing personal texrc -- in ftplugin/tex
 
-2002-05-04 16:01  mikmach
+2002-05-04 07:01  mikmach
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -5051,7 +5554,7 @@
 	removed blind spot for CVS
 	added new environment types: ens, eno
 
-2002-05-04 16:00  mikmach
+2002-05-04 07:00  mikmach
 
 	* ftplugin/latex-suite/: custommacros.vim, templates.vim:
 
@@ -5059,7 +5562,7 @@
 
 	removed blind spot for CVS
 
-2002-05-04 00:51  mikmach
+2002-05-03 15:51  mikmach
 
 	* ftplugin/latex-suite/packages/: bar, changebar, harpoon, hhline,
 	  longtable, multicol, ulem:
@@ -5069,7 +5572,7 @@
 	Some new package files:
 	bar hhline harpoon and others
 
-2002-05-03 21:49  mikmach
+2002-05-03 12:49  mikmach
 
 	* ftplugin/latex-suite/: custommacros.vim, packages.vim,
 	  templates.vim:
@@ -5083,21 +5586,21 @@
 
 	OK. I hope all works and this is first real commit to vim-latex.sf.net :)
 
-2002-05-02 08:47  srinathava
+2002-05-01 23:47  srinathava
 
 	* makefile:
 
 	. removed some stuff about winmanager which was not pertinent to
 	  latex-suite.
 
-2002-05-02 04:33  srinathava
+2002-05-01 19:33  srinathava
 
 	* ftplugin/latex-suite/texrc:
 
 	. typos in texrc.
 	. changed default prefix from Tex- to X-
 
-2002-05-02 04:33  srinathava
+2002-05-01 19:33  srinathava
 
 	* ftplugin/latex-suite/packages.vim:
 
@@ -5105,7 +5608,7 @@
 	- write pack of package files.
 	- make command types more flexible, implemented it.
 
-2002-05-02 04:26  srinathava
+2002-05-01 19:26  srinathava
 
 	* plugin/imaps.vim:
 
@@ -5120,13 +5623,13 @@
 	  for fonts!)
 	. some code beautification.
 
-2002-04-30 04:08  srinathava
+2002-04-29 19:08  srinathava
 
 	* makefile:
 
 	. makefile for generating .zip file.
 
-2002-04-30 02:03  srinathava
+2002-04-29 17:03  srinathava
 
 	* latextags, vimlatex, compiler/tex.vim, doc/latex-suite.txt,
 	  doc/latexhelp.txt, ftplugin/tex_latexSuite.vim,
@@ -5161,7 +5664,7 @@
 
 	. importing latex-suite to sf.net
 
-2002-04-30 02:03  srinathava
+2002-04-29 17:03  srinathava
 
 	* latextags, vimlatex, compiler/tex.vim, doc/latex-suite.txt,
 	  doc/latexhelp.txt, ftplugin/tex_latexSuite.vim,
