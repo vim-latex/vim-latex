@@ -517,7 +517,7 @@ function! Tex_ScanFileForCite(prefix)
 				if bufnr('%') != thisbufnum
 					call Tex_Debug('finding .bbl file ['.bufname('.').']', 'bib')
 					lcd %:p:h
-					exec 'silent! grepadd \\bibitem{'.a:prefix.' %'
+					exec 'silent! grepadd \bibitem{'.a:prefix.' %'
 				endif
 			endif
 			" close the newly opened window
@@ -541,7 +541,7 @@ function! Tex_ScanFileForCite(prefix)
 
 		split
 		lcd %:p:h
-		exec 'silent! grepadd \\bibitem{'.a:prefix.' %'
+		exec 'silent! grepadd \bibitem{'.a:prefix.' %'
 		q
 		
 		return 1
