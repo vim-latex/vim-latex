@@ -338,35 +338,38 @@ endfunction
 " }}}
 " IMAP_Jumpfunc: takes user to next <+place-holder+> {{{
 " Author: Luc Hermitte
-"
+" Arguments:
+" direction: flag for the search() function. If set to '', search forwards,
+"            if 'b', then search backwards. See the {flags} argument of the
+"            |search()| function for valid values.
+" inclusive: In vim, the search() function is 'exclusive', i.e we always goto
+"            next cursor match even if there is a match starting from the
+"            current cursor position. Setting this argument to 1 makes
+"            IMAP_Jumpfunc() also respect a match at the current cursor
+"            position. 'inclusive'ness is necessary for IMAP() because a
+"            placeholder string can occur at the very beginning of a map which
+"            we want to select.
+"            We use a non-zero value only in special conditions. Most mappings
+"            should use a zero value.
 function! IMAP_Jumpfunc(direction, inclusive)
 
 	" The user's placeholder settings.
 	let phsUser = IMAP_GetPlaceHolderStart()
 	let pheUser = IMAP_GetPlaceHolderEnd()
 
-	let searchOpts = a:direction
-	" If the user has nowrapscan set, then do not make the search wrap around
-	" the end (or beginning) of the file.
-	if ! &wrapscan 
-		let searchOpts = direction.'W'
-	endif
-
 	let searchString = ''
 	" If this is not an inclusive search or if it is inclusive, but the
 	" current cursor position does not contain a placeholder character, then
 	" search for the placeholder characters.
 	if !a:inclusive || strpart(getline('.'), col('.')-1) !~ '\V\^'.phsUser
-		let searchString = '\V'.phsUser.'\.\{-}'.pheUser
+		let searchString = '\V'.phsUser.'\_.\{-}'.pheUser
 	endif
 
 	" If we didn't find any placeholders return quietly.
-	if searchString != '' && !search(searchString, searchOpts)
+	if searchString != '' && !search(searchString, a:direction)
 		return ''
 	endif
 
-	" At this point, we are at the beginning of a placeholder. 
-	" Remember the position here.
 	let position = line('.') . "normal! ".virtcol('.').'|'
 	" Open any closed folds and make this part of the text visible.
 	silent! foldopen!
@@ -375,29 +378,18 @@ function! IMAP_Jumpfunc(direction, inclusive)
 	" description.
 	let template = 
 		\ matchstr(strpart(getline('.'), col('.')-1),
-		\          '\V\^'.phsUser.'\zs\.\{-}\ze'.pheUser)
+		\          '\V\^'.phsUser.'\zs\.\{-}\ze\('.pheUser.'\|\$\)')
 	let placeHolderEmpty = !strlen(template)
 
-	" This movement command selects the placeholder text. In the forward mode,
-	" we select left-right, otherwise right-left.
-	if a:direction =~ 'b'
-		" If we are going in the backward direction, make the selection from
-		" right to left so that a backward search for phsUser doesnt get us
-		" back to the same placeholder.
-		let movement = "\<C-\>\<C-N>:".position."\<CR>"
-			\ . "/\\V".pheUser."/e\<CR>"
-			\ . "v?\\V".phsUser."?b\<CR>"
-	else
-		let movement = "\<C-\>\<C-N>:".position."\<CR>v/\\V".pheUser."/e\<CR>"
-	endif
+	" Select till the end placeholder character.
+	let movement = "\<C-o>v/\\V".pheUser."/e\<CR>"
 
+	" Now either goto insert mode or select mode.
 	if placeHolderEmpty && g:Imap_DeleteEmptyPlaceHolders
 		" delete the empty placeholder into the blackhole.
 		return movement."\"_c\<C-o>:".s:RemoveLastHistoryItem."\<CR>"
-
 	else
 		return movement."\<C-\>\<C-N>:".s:RemoveLastHistoryItem."\<CR>gv\<C-g>"
-
 	endif
 	
 endfunction
@@ -425,7 +417,7 @@ vmap <silent> <Plug>IMAP_DeleteAndJumpBack          "_<Del>i<c-r>=IMAP_Jumpfunc(
 
 " jumping forward without deleting present selection.
 vmap <silent> <Plug>IMAP_JumpForward       <C-\><C-N>i<c-r>=IMAP_Jumpfunc('', 0)<CR>
-vmap <silent> <Plug>IMAP_JumpBack          <C-\><C-N>i<c-r>=IMAP_Jumpfunc('b', 0)<CR>
+vmap <silent> <Plug>IMAP_JumpBack          <C-\><C-N>`<i<c-r>=IMAP_Jumpfunc('b', 0)<CR>
 
 " }}}
 " Default maps for IMAP_Jumpfunc {{{
