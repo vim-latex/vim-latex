@@ -1,9 +1,8 @@
 "=============================================================================
 " 	     File: packages.vim
 "      Author: Mikolaj Machowski
-" 	  Version: 1.0 
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: sob lis 23 02:00  2002 C
+" Last Change: pi± lis 29 09:00  2002 C
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -30,8 +29,11 @@ let g:Tex_package_detected = ''
 " Tex_pack_check: creates the package menu and adds to 'dict' setting. {{{
 "
 function! Tex_pack_check(package)
-	if has("gui_running") && filereadable(s:path.'/packages/'.a:package)
-		call Tex_pack(a:package)
+	if filereadable(s:path.'/packages/'.a:package)
+		exe 'source ' . s:path . '/packages/' . a:package
+		if has("gui_running")
+			call Tex_pack(a:package)
+		endif
 		let g:Tex_package_supported = g:Tex_package_supported.','.a:package
 	endif
 	if filereadable(s:path.'/dictionaries/'.a:package)
@@ -46,7 +48,7 @@ endfunction
 " }}}
 " Tex_pack_uncheck: removes package from menu and 'dict' settings. {{{
 function! Tex_pack_uncheck(package)
-	if has("gui") && filereadable(s:path.'/packages/'.a:package)
+	if has("gui_running") && filereadable(s:path.'/packages/'.a:package)
 		exe 'aunmenu '.s:p_menu_lev.'&'.a:package
 	endif
 	if filereadable(s:path.'/dictionaries/'.a:package)
@@ -198,7 +200,7 @@ function! Tex_pack(pack)
 	let nu_p_list = '' 
 	let g:p_file = s:path . '/packages/' . a:pack
 	if filereadable(g:p_file)
-		exe 'source ' . g:p_file
+		"exe 'source ' . g:p_file
 		exe 'let g:p_list = g:TeX_package_' . a:pack 
 		exe 'let g:p_o_list = g:TeX_package_option_' . a:pack 
 
