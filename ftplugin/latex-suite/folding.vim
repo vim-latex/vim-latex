@@ -3,7 +3,7 @@
 "      Author: Srinath Avadhanula
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Tue Apr 23 05:00 PM 2002 PDT
+" Last Change: Sun Oct 06 08:00 AM 2002 PDT
 " 
 "  Description: functions to interact with Syntaxfolds.vim
 "=============================================================================
@@ -28,6 +28,14 @@ function! MakeTexFolds(force)
 
 	let b:numFoldItems = 0
 
+	" {{{ footnote
+	call AddSyntaxFoldItem (
+		\ '^\s*\\footnote{',
+		\ '^\s*}',
+		\ 0,
+		\ 0
+		\ )
+	" }}}
 	" {{{ table
 	call AddSyntaxFoldItem (
 		\ '^\s*\\begin{table}',
