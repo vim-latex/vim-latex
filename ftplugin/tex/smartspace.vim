@@ -2,7 +2,6 @@
 " 	     File: smartspace.vim
 "      Author: Carl Muller
 "     Created: Fri Dec 06 12:00 AM 2002 PST
-" Last Change: Sat Jan 04 12:00 AM 2003 PST
 " 
 " Description: 
 "     Maps the <space> key in insert mode so that mathematical formulaes are
@@ -38,18 +37,22 @@ endif
 " TexFormatLine: format line retaining $$'s on the same line.
 function! s:TexFill(width)  " {{{
 	if a:width != 0 && col(".") > a:width
+		" For future use, record the current line and the number of the current column
+		let current_line = getline(".")
+		let current_column = col(".")
 		exe "normal! a##\<Esc>"
-		call <SID>TexFormatLine(a:width)
-		exe "normal! ?##\<CR>2s\<Esc>"
+		call <SID>TexFormatLine(a:width,current_line,current_column)
+		" Remove ## from the search history.
+		exe "normal! ?##\<CR>2s\<Esc>".s:RemoveLastHistoryItem
 	endif
 endfunction
 
 " }}}
-function! s:TexFormatLine(width) " {{{
+function! s:TexFormatLine(width, current_line, current_column)    " {{{
 	" get the first non-blank character.
 	let first = matchstr(getline('.'), '\S')
 	normal! $
-	let length = col(".")
+	let length = col('.')
 	let go = 1
 	while length > a:width+2 && go
 		let between = 0
@@ -66,7 +69,7 @@ function! s:TexFormatLine(width) " {{{
 			let counter = counter + 1
 		endwhile
 		" Get ready to split the line.
-		exe "normal! " . (a:width + 1) . "|"
+		exe 'normal! ' . (a:width + 1) . '|'
 		if evendollars
 			" Then you are not between dollars.
 			exe "normal! ?\\$\\| \<CR>W"
@@ -86,10 +89,16 @@ function! s:TexFormatLine(width) " {{{
 		endif
 		let length = col(".")
 	endwhile
-	if go == 0 && match(getline("."), '.*\$.*\$.*') != -1
-		exe "normal $F$wi\<CR>\<Esc>"
+	if go == 0 && strpart(a:current_line, 0, a:current_column) =~ '.*\$.*\$.*'
+		exe "normal! ^f$a\<CR>\<Esc>"
+		call <SID>TexFormatLine(a:width, a:current_line, a:current_column)
 	endif
 endfunction
+
+" }}}
+" s:RemoveLastHistoryItem: removes last search item from search history {{{
+" Description: Execute this string to clean up the search history.
+let s:RemoveLastHistoryItem = ':call histdel("/", -1)|let @/=histget("/", -1)'
 
 " }}}
 
