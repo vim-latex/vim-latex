@@ -1,0 +1,31 @@
+" This package sets some language specific options.
+" Since it needs to find out which options the user used with the babel
+" package, it needs to wait till latex-suite is done scanning packages. It
+" then catches the LatexSuiteScannedPackages event which
+" Tex_pack_updateall() throws at which time g:Tex_pack_detected and
+" g:Tex_babel_options contain the necessary information.
+
+if exists('s:doneOnce')
+    finish
+endif
+let s:doneOnce = 1
+
+augroup LatexSuite
+    au LatexSuite User LatexSuiteScannedPackages 
+        \ call Tex_Debug('babel: catching LatexSuiteScannedPackages event') |
+        \ call s:SetQuotes()
+augroup END
+
+let s:path = expand('<sfile>:p:h')
+
+" SetQuotes: sets quotes for various languages {{{
+" Description: 
+function! <SID>SetQuotes()
+    if g:Tex_package_detected =~ '\<babel\>'
+        if g:Tex_babel_options =~ 'german'
+            exec 'so '.s:path.'/german'
+        endif
+    endif
+endfunction " }}}
+
+" vim:ft=vim:ff=unix:
