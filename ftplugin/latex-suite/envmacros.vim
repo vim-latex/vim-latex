@@ -903,10 +903,10 @@ inoremap <script> <silent> <Plug>Tex_InsertItemOnThisLine <Esc>a<C-r>=Tex_Insert
 inoremap <script> <silent> <Plug>Tex_InsertItemOnNextLine <ESC>o<C-R>=Tex_InsertItem()<CR>
 
 function! Tex_SetItemMaps()
-	if !hasmapto("<Plug>Tex_InsertItem")
+	if !hasmapto("<Plug>Tex_InsertItem", "i")
 		imap <buffer> <M-i> <Plug>Tex_InsertItemOnThisLine
 	endif
-	if !hasmapto("<Plug>Tex_InsertItemOnNextLine")
+	if !hasmapto("<Plug>Tex_InsertItemOnNextLine", "i")
 		imap <buffer> <C-CR> <Plug>Tex_InsertItemOnNextLine
 	endif
 endfunction " }}}
