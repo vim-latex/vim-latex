@@ -748,6 +748,12 @@ exe 'source '.s:path.'/templates.vim'
 exe 'source '.s:path.'/custommacros.vim'
 exe 'source '.s:path.'/bibtex.vim'
 
+" source advanced math functions
+if g:Tex_AdvancedMath == 1
+	exe 'source '.s:path.'/brackets.vim'
+	exe 'source '.s:path.'/smartspace.vim'
+endif
+
 if g:Tex_Diacritics != 0
 	exe 'source '.s:path.'/diacritics.vim'
 endif

@@ -447,6 +447,38 @@ TexLet g:Tex_SmartKeySpace = 0
 TexLet g:Tex_SmartKeyDot = 1
 
 " }}}
+" Advanced Math: {{{
+" These mappings allow for fast inserting of math constructions 
+" brackets, better handling of space in math mode, unfortunately
+" they use <M-> mappings which conflicts with some encodings. This is easy way
+" of turning them off. 
+"
+" <M-b> encloses the previous character in \mathbf{}
+" <M-c> is polymorphic as follows:
+"     Insert mode:
+"     1. If the previous character is a letter or number, then capitalize it and
+"        enclose it in \mathcal{}
+"     2. otherwise insert \cite{}
+"     Visual Mode:
+"     1. Enclose selection in \mathcal{}
+" <M-l> is also polymorphic as follows:
+"     If the character before typing <M-l> is one of '([{|<q', then do the
+"     following:
+"       1. (<M-l>       \left(\right
+"               similarly for [, |
+"          {<M-l>       \left\{\right\}
+"       2. <<M-l>       \langle\rangle
+"       3. q<M-l>       \lefteqn{}
+"     otherwise insert  \label{}
+" <M-i> inserts \item commands at the current cursor location depending on
+"       the surrounding environment. For example, inside itemize, it will
+"       insert a simple \item, but within a description, it will insert
+"       \item[<+label+>] etc.
+"
+" Default: 1 
+TexLet g:Tex_AdvancedMath = 1
+
+" }}}
 
 " }}}
 " ==============================================================================
