@@ -359,7 +359,7 @@ function! Tex_ForwardSearchLaTeX()
 					\ exists('v:servername') &&
 					\ (viewer == "xdvi" || viewer == "xdvik") 
 
-			let execString = '!'.viewer.' -name xdvi -sourceposition '.line('.').mainfname.
+			let execString = 'silent! !'.viewer.' -name xdvi -sourceposition '.line('.').expand("%").
 						\ ' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.
 						\ mainfnameRoot.'.dvi &'
 
@@ -367,11 +367,11 @@ function! Tex_ForwardSearchLaTeX()
 					\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
 					\ viewer == "kdvi"
 
-			let execString = 'silent! !kdvi --unique file:'.mainfnameRoot.'.dvi\#src:'.line('.').mainfname.' &'
+			let execString = 'silent! !kdvi --unique file:'.mainfnameRoot.'.dvi\#src:'.line('.').expand("%").' &'
 
 		else
 
-			let execString = 'silent! !'.viewer.' -name xdvi -sourceposition '.line('.').mainfname.' '.mainfnameRoot.'.dvi &'
+			let execString = 'silent! !'.viewer.' -name xdvi -sourceposition '.line('.').expand("%").' '.mainfnameRoot.'.dvi &'
 
 		endif
 	end
