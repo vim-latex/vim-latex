@@ -71,7 +71,8 @@ function! <SID>Tex_EnvMacros(lhs, submenu, name)
 		let location = location.a:lhs.'\ ('.vlhs.')'
 
 		if g:Tex_EnvironmentMaps && !exists('s:doneOnce')
-			call IMAP (a:lhs, '\begin{'.a:name."}\<CR>".extra."<++>\<CR>\\end{".a:name."}<++>", 'tex')
+			" call IMAP (a:lhs, '\begin{'.a:name."}\<CR>".extra."<++>\<CR>\\end{".a:name."}<++>", 'tex')
+			call IMAP(a:lhs, "\<C-r>=Tex_PutEnvironment('".a:name."')\<CR>", 'tex')
 			exec 'vnoremap <silent> '.vlhs.' '.vrhs
 		endif
 
@@ -416,22 +417,21 @@ function! Tex_eqnarray(env)
 		if a:env !~ '\*'
 			let label = input('Label?  ')
 			if label != ''
-				let arrlabel = '\label{'.label."}\<cr> "
+				let arrlabel = '\label{'.label."}\<cr>"
 			  else
 				let arrlabel = ''
 			endif
 		else
 			let arrlabel = ''
 		endif
-		return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr>".arrlabel."<++>\<cr>\\end{".a:env."}<++>")
 	else
 		if a:env !~ '\*'
-			let arrlabel = '\label{<++>}<++>'
+			let arrlabel = "\\label{<++>}\<cr>"
 		else
-			let arrlabel = '<++>'
+			let arrlabel = ""
 		endif
-		return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr>".arrlabel."\<cr>".'\end{'.a:env.'}<++>')
 	endif
+	return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr><++>\<cr>".arrlabel."\\end{".a:env."}<++>")
 endfunction
 " }}} 
 " Tex_list: {{{
