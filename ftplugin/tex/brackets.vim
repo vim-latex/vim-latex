@@ -1,7 +1,7 @@
 " ==============================================================================
 " Author: Carl Mueller
 " 		  (incorporated into latex-suite by Srinath Avadhanula)
-" Last Change: Thu Dec 19 03:00 AM 2002 PST
+" Last Change: Sun Dec 29 11:00 PM 2002 PST
 " Description:
 " 	This ftplugin provides the following maps:
 " . <M-b> encloses the previous character in \mathbf{}
@@ -126,7 +126,7 @@ function! Tex_LeftRight()
 	elseif char == 'q'
 		return "\<BS>".IMAP_PutTextWithMovement('\lefteqn{<++>}<++>')
 	else
-		return '\label{<++>}<++>'
+		return IMAP_PutTextWithMovement('\label{<++>}<++>')
 	endif
 endfunction " }}}
 " Tex_PutLeftRight: maps <M-l> in normal mode {{{
