@@ -270,7 +270,7 @@ function! Tex_ViewLaTeX()
 		" unfortunately, yap does not allow the specification of an external
 		" editor from the command line. that would have really helped ensure
 		" that this particular vim and yap are connected.
-		let execString = '!start '.s:viewer.' '.mainfname.'.'.s:target
+		let execString = '!start '.s:viewer.' "'.mainfname.'.'.s:target.'"'
 	elseif has('macunix')
 		if strlen(s:viewer)
 			let s:viewer = '-a '.s:viewer
