@@ -79,6 +79,10 @@ function GetTeXIndent()
   let line = getline(lnum)             " last line
   let cline = getline(v:lnum)          " current line
 
+  " Do not change indentation of commented lines.
+  if line =~ '^\s*%'
+    return ind
+  endif
 
   " Add a 'shiftwidth' after beginning of environments.
   " Don't add it for \begin{document} and \begin{verbatim}
