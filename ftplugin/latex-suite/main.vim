@@ -227,7 +227,7 @@ if g:Tex_SmartKeyQuote
 		let q = open
 		while 1	" Look for preceding quote (open or close), ignoring
 			" math mode and '\"' .
-			call search(open . boundary . close . '\|^$\|"', "bw")
+			call search(escape(open . boundary . close . '\|^$\|"', "~"), "bw")
 			if synIDattr(synID(line("."), col("."), 1), "name") !~ "^texMath"
 				\ && (col(".") == 1 || getline(".")[col(".")-2] != '\')
 				break
@@ -400,18 +400,34 @@ function! Tex_GetMainFileName(...)
 	else
 		let modifier = ':p:r:r'
 	endif
+
 	let curd = getcwd()
-	exe 'cd '.expand('%:p:h')
+
+	let dirmodifier = '%:p:h'
+	let dirLast = expand(dirmodifier)
+	" escape spaces whenever we use cd (diego Caraffini)
+	exe 'cd '.escape(dirLast, ' ')
+
+	" move up the directory tree until we find a .latexmain file.
+	" TODO: Should we be doing this recursion by default, or should there be a
+	"       setting?
+	while glob('*.latexmain') == ''
+		let dirmodifier = dirmodifier.':h'
+		" break from the loop if we cannot go up any further.
+		if expand(dirmodifier) == dirLast
+			break
+		endif
+		let dirLast = expand(dirmodifier)
+		exec 'cd '.escape(dirLast, ' ')
+	endwhile
+
 	let lheadfile = glob('*.latexmain')
-	" dirty hack to check in dir one level up. TODO: while with ":h" mod.
-	if lheadfile == ''
-		cd ..
-		let lheadfile = glob('*.latexmain')
-	endif
 	if lheadfile != ''
 		let lheadfile = fnamemodify(lheadfile, modifier)
 	endif
-	exe 'cd '.curd
+
+	exe 'cd '.escape(curd, ' ')
+
 	return lheadfile
 endfunction 
 
