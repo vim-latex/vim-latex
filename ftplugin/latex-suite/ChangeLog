@@ -11,6 +11,9 @@ After 8 May 2003
 	* compiler.vim:
 		Added support for regular viewing and forward searching for kdvi (KDE
 		viewer of .dvi files) (MM)
+	* compiler.vim:
+		Show default target enclosed in [] after calling :TTarget, :TCTarget
+		or :TVTarget. Allow no argument for :TTarget.
 	* mathmacros.vim, main.vim, texrc, latex-suite.txt:
 		Added utf-8 menus for math (MM)
 	* ChangeLog:
