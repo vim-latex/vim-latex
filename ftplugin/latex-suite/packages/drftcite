@@ -19,4 +19,6 @@ let g:TeX_package_drftcite =
 \.'bra:citemid,'
 \.'bra:citedash'
 
+syn region texRefZone         matchgroup=texStatement start="\\citen\([tp]\*\=\)\={"   keepend end="}\|%stopzone\>"  contains=texComment,texDelimiter
+
 " vim:ft=vim:ff=unix:
