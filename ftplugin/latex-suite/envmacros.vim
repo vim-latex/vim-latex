@@ -503,6 +503,7 @@ endfunction
 " SetUpEnvironmentsPrompt: sets up a prompt string using g:Tex_PromptedEnvironments {{{
 " Description: 
 " 
+let g:Tex_PromptedEnvironmentsDefault = g:Tex_PromptedEnvironments
 function! SetUpEnvironmentsPrompt()
 	let num_common = GetListCount(g:Tex_PromptedEnvironments)
 
@@ -529,7 +530,7 @@ function! PromptForEnvironment(ask)
 	endif
 
 	let inp = input(a:ask.s:common_env_prompt)
-	if inp =~ '^[0-9]$'
+	if inp =~ '^[0-9][0-9]$'
 		let env = Tex_Strntok(g:Tex_PromptedEnvironments, ',', inp)
 	else
 		let env = inp
@@ -861,7 +862,218 @@ function! Tex_SetFastEnvironmentMaps()
 	endif
 endfunction " }}}
 
+" ==============================================================================
+" Implementation of Fast Environment commands for LaTeX commands 
+" ==============================================================================
+" SetUpCommandPrompt: sets up a prompt string using g:Tex_PromptedCommands {{{
+" Description: 
+" 
+
+" This variable is default string for promting useful with updating new
+" commands
+let g:Tex_PromptedCommandsDefault = g:Tex_PromptedCommands
+
+function! SetUpCommandPrompt()
+	let num_common = GetListCount(g:Tex_PromptedCommands)
+
+	let i = 1
+	let s:common_com_prompt = "\n"
+
+	while i < num_common
+
+		let com1 = Tex_Strntok(g:Tex_PromptedCommands, ',', i)
+		let com2 = Tex_Strntok(g:Tex_PromptedCommands, ',', i + 1)
+
+		let s:common_com_prompt = s:common_com_prompt.'('.i.') '.com1."\t".( strlen(com1) < 4 ? "\t" : '' ).'('.(i+1).') '.com2."\n"
+
+		let i = i + 2
+	endwhile
+	let s:common_com_prompt = s:common_com_prompt.'Enter number or name of command: '
+endfunction " }}}
+" PromptForCommand: prompts for a command {{{
+" Description: 
+function! PromptForCommand(ask)
+
+	if !exists('s:common_com_prompt')
+		call SetUpCommandPrompt()
+	endif
+
+	let inp = input(a:ask.s:common_com_prompt)
+	if inp =~ '^[0-9][0-9]$'
+		let com = Tex_Strntok(g:Tex_PromptedCommands, ',', inp)
+	else
+		let com = inp
+	endif
+
+	return com
+endfunction " }}}
+" Tex_DoCommand: fast insertion of commands {{{
+" Description:
+"
+function! Tex_DoCommand(...)
+	if a:0 < 1
+		let com = PromptForCommand('Choose which command to insert: ')
+		if com != ''
+			return Tex_PutCommand(com)
+		else
+			return ''
+		endif
+	else
+		return Tex_PutCommand(a:1)
+	endif
+endfunction " }}}
+" Tex_PutCommand: calls various specialized functions {{{
+" Description: 
+"   Based on input argument, it calls various specialized functions.
+function! Tex_PutCommand(com)
+
+	if exists("s:isvisual") && s:isvisual == "yes"
+
+		let s:isvisual = 'no'
+
+		if a:com == '$'
+			return VEnclose('$', '$', '$', '$')
+		elseif a:com == '\\('
+			return VEnclose('\\(', '\\)', '\\(', '\\)')
+		else
+			return VEnclose("\\".a:com.'{', '}', "\\".a:com.'{', '}')
+		endif
+
+	else
+
+		if a:com == '$'
+			return IMAP_PutTextWithMovement('$<++>$')
+		else
+			return IMAP_PutTextWithMovement("\\".a:com.'{<++>}<++>')
+		endif
+
+	endif
+
+endfunction " }}}
+" Mapping the <F7> key to prompt/insert for command {{{
+" and <S-F7> to prompt/replace command
+"
+" g:Tex_PromptedCommands is a variable containing a comma seperated list
+" of commands. 
+"
+" Leaving this empty is equivalent to disabling the feature.
+if g:Tex_PromptedCommands != ''
+
+	let b:DoubleDollars = 0
+
+	" Provide only <plug>s here. main.vim will create the actual maps.
+	inoremap <silent> <Plug>Tex_FastCommandInsert  <C-r>=Tex_FastCommandInsert('no')<cr>
+	nnoremap <silent> <Plug>Tex_FastCommandInsert  i<C-r>=Tex_FastCommandInsert('no')<cr>
+	inoremap <silent> <Plug>Tex_FastCommandChange  <C-O>:call Tex_ChangeCommand('no')<CR>
+	nnoremap <silent> <Plug>Tex_FastCommandChange  :call Tex_ChangeCommand('no')<CR>
+	vnoremap <silent> <Plug>Tex_FastCommandInsert  <C-\><C-N>:call Tex_FastCommandInsert('yes')<CR>
+
+	" Tex_FastEnvironmentInsert: maps <F7> to prompt for command and insert it " {{{
+	" Description:
+	"	Here we are not solving if we are in preamble, behaviour is always the
+	"	same. 
+	"
+	function! Tex_FastCommandInsert(isvisual)
+
+		let start_line = line('.')
+		let pos = line('.').' | normal! '.virtcol('.').'|'
+		let s:isvisual = a:isvisual
+
+		return Tex_DoCommand()
+
+	endfunction 
+
+	" }}}
+	" Tex_ChangeEnvironments: calls ChangeCommand() to change the environment {{{
+	" Description:
+	"   Finds out which environment the cursor is positioned in and changes
+	"   that to the chosen new environment. This function knows the changes
+	"   which need to be made to change one env to another and calls
+	"   ChangeCommand() with the info.
+	"
+	function! Tex_ChangeCommand(isvisual) 
+
+		let s:pos_com = line('.').' | normal! '.virtcol('.').'|'
+
+		let com_line = searchpair('$\|\\(\|\\\k\{-}{', '', '$\|\\)\|}', 'b')
+
+		if com_line != 0
+			if getline(com_line) !~ '\\\k\{-}{'
+				let com_name = '$'
+			else
+				normal l
+				let com_name = expand('<cword>')
+			endif
+		endif
+		
+		if !exists('com_name')
+			echomsg "You are not inside command"
+			return 0
+		endif
+
+		exe 'echomsg "You are within a '.com_name.' command."'
+		let s:change_com = PromptForCommand('Do you want to change it to (number or name)? ')
+
+		if s:change_com == '$'
+			call <SID>ChangeCommand('$')
+		elseif s:change_com == '\\('
+			call <SID>ChangeCommand('\\(')
+		elseif s:change_com == ''
+			return 0
+		else
+			call <SID>ChangeCommand(s:change_com)
+			return 0
+		endif
+
+	endfunction 
+
+	" ChangeCommand: Changes current command according to prompt menu {{{
+	" Description:
+	"
+	function! s:ChangeCommand(newcom)
+
+		" For now no special treatment form math commands, left loose ends for
+		" future.
+		if a:newcom == '$'
+			return 0
+		elseif a:newcom == '\\('
+			return 0
+		else
+			exe 'normal ct{'.a:newcom."\<Esc>"
+			exe s:pos_com
+		endif
+		
+	endfunction
+	" }}}
+	" Tex_SetFastCommandMaps: function for setting up the <F7> keys {{{
+	" Description: This function is made public so it can be called by the
+	"              SetTeXOptions() function in main.vim
+	function! Tex_SetFastCommandMaps()
+		if g:Tex_PromptedCommands != ''
+			if !hasmapto('<Plug>Tex_FastCommandInsert', 'i')
+				imap <silent> <buffer> <F7> <Plug>Tex_FastCommandInsert
+			endif
+			if !hasmapto('<Plug>Tex_FastCommandInsert', 'n')
+				nmap <silent> <buffer> <F7> <Plug>Tex_FastCommandInsert
+			endif
+			if !hasmapto('<Plug>Tex_FastCommandChange', 'i')
+				imap <silent> <buffer> <S-F7> <Plug>Tex_FastCommandChange
+			endif
+			if !hasmapto('<Plug>Tex_FastCommandChange', 'n')
+				nmap <silent> <buffer> <S-F7> <Plug>Tex_FastCommandChange
+			endif
+			if !hasmapto('<Plug>Tex_FastCommandInsert', 'v')
+				vmap <silent> <buffer> <F7> <Plug>Tex_FastCommandInsert
+			endif
+		endif
+	endfunction " }}}
+
+endif
+
+" }}}
+
+" }}}
 " this statement has to be at the end.
 let s:doneOnce = 1
 
-" vim:fdm=marker:nowrap:noet
+" vim:fdm=marker:nowrap:noet:ff=unix
