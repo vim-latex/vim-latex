@@ -1,7 +1,7 @@
 " Author: Mikolaj Machowski <mikmach@wp.pl>
-" (c) Copyright by Mikolaj Machowski 2002
+" (c) Copyright by Mikolaj Machowski 2002-2003
 " License: Vim Charityware
-" Version: 1.5 
+" Version: 1.6 
 "
 " Plik jest w kodowaniu iso-8859-2. Je¶li chcesz go uzywac w MS-Windows musisz
 " go przekonwertowac na cp-1250. 
@@ -21,7 +21,8 @@
 
 " --------8<-------------
 " Czesc odpowiedzialna za menu
-let g:TeX_package_option_polski = 'OT1,OT4,T1,plmath,nomathsymbols,MeX'
+let g:TeX_package_option_polski =
+\'OT1,OT4,T1,QX,plmath,nomathsymbols,MeX,prefixingverb,noprefixingverb'
 let g:TeX_package_polski = 
 \'sbr:Dywiz&Ska,'.
 \'nor:dywiz,'.
@@ -35,7 +36,7 @@ let g:TeX_package_polski =
 \'nor:arcctan,'.
 \'nor:arcsin,'.
 \'nor:arctan,'.
-\'nor:ctan,'.
+\'nor:cot,'.
 \'nor:ctanh,'.
 \'nor:tan,'.
 \'nor:tanh,'.
@@ -43,7 +44,8 @@ let g:TeX_package_polski =
 \'nor:ctg,'.
 \'nor:ctgh,'.
 \'nor:tg,'.
-\'nor:tgh'
+\'nor:tgh,'
+\'nor:nwd'
 
 " To wymaga calego pakietu vim-latexSuite - zakomentuj lub wytnij je¶li nie
 " u¿ywasz (albo go ¶ci±gnij z http://vim-latex.sf.net)
