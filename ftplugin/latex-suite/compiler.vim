@@ -266,12 +266,12 @@ function! Tex_ViewLaTeX()
 		" unfortunately, yap does not allow the specification of an external
 		" editor from the command line. that would have really helped ensure
 		" that this particular vim and yap are connected.
-		let execString = '!start' s:viewer mainfname . '.' . s:target
+		let execString = '!start '.s:viewer.' '.mainfname.'.'.s:target
 	elseif has('macunix')
 		if strlen(s:viewer)
-			let s:viewer = '-a ' . s:viewer
+			let s:viewer = '-a '.s:viewer
 		endif
-		let execString = 'silent! !open' s:viewer mainfname . '.' . s:target
+		let execString = 'silent! !open' s:viewer mainfname.'.'.s:target
 	else
 		" taken from Dimitri Antoniou's tip on vim.sf.net (tip #225).
 		" slight change to actually use the current servername instead of
@@ -325,8 +325,11 @@ function! Tex_ForwardSearchLaTeX()
 		echo "calling Tex_ViewLaTeX from a non-tex file"
 		return
 	end
+
 	" only know how to do forward search for yap on windows and xdvik (and
-	" some newer versions of xdvi) on unices.
+	" some newer versions of xdvi) on unices. Therefore forward searching will
+	" automatically open the DVI viewer irrespective of what the user chose as
+	" the default view format.
 	if !exists('g:Tex_ViewRule_dvi')
 		return
 	endif
@@ -345,21 +348,29 @@ function! Tex_ForwardSearchLaTeX()
 	" inverse search tips taken from Dimitri Antoniou's tip and Benji Fisher's
 	" tips on vim.sf.net (vim.sf.net tip #225)
 	if has('win32')
-		let execString = 'silent! !start '.viewer.' -s '.line('.').expand('%:p:t').' '.mainfname
+
+		let execString = 'silent! !start '. viewer.' -s '.line('.').expand('%:p:t').' '.mainfname
+
 	else
 		if exists('g:Tex_UseEditorSettingInDVIViewer') &&
 					\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
 					\ exists('v:servername') &&
 					\ (viewer == "xdvi" || viewer == "xdvik") 
+
 			let execString = '!'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').
-						\ ' -editor "gvim --servername '.v:servername.
-						\ ' --remote-silent +\%l \%f" '.mainfname.'.dvi &'
+						\ ' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.
+						\ mainfname.'.dvi &'
+
 		elseif exists('g:Tex_UseEditorSettingInDVIViewer') &&
 					\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
 					\ viewer == "kdvi"
+
 			let execString = 'silent! !kdvi --unique file:'.mainfname.'.dvi\#src:'.line('.').Tex_GetMainFileName(":p:t:r").' &'
+
 		else
+
 			let execString = 'silent! !'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').' '.mainfname.'.dvi &'
+
 		endif
 	end
 
@@ -519,11 +530,11 @@ function! Tex_CompileMultipleTimes()
 		" The first time we see if we need to run bibtex and if the .bbl file
 		" changes, we will rerun latex.
 		if runCount == 0 && Tex_IsPresentInFile('\\bibdata', mainFileName_root.'.aux')
-			let bibFileName = mainFileName_root . '.bbl'
+			let bibFileName = mainFileName_root.'.bbl'
 
 			let biblinesBefore = Tex_CatFile(bibFileName)
 
-			echomsg "Running '" . g:Tex_BibtexFlavor . "' ..."
+			echomsg "Running '".g:Tex_BibtexFlavor."' ..."
 			let temp_mp = &mp | let &mp = g:Tex_BibtexFlavor
 			exec 'silent! make '.mainFileName_root
 			let &mp = temp_mp
@@ -576,7 +587,8 @@ function! PositionPreviewWindow(filename)
 
 	if getline('.') !~ '|\d\+ \(error\|warning\)|'
 		if !search('|\d\+ \(error\|warning\)|')
-			echomsg "not finding error pattern anywhere in quickfix window :".bufname(bufnr('%'))
+			call Tex_Debug("not finding error pattern anywhere in quickfix window :".bufname(bufnr('%')),
+						\ 'comp')
 			pclose!
 			return
 		endif
