@@ -4,7 +4,7 @@
 " Description: 
 " 
 " Installation:
-"  Last Change: ¶ro maj 08 12:00  2002 U
+"  Last Change: czw lis 07 11:00  2002 C
 "         TODO:
 "=============================================================================
 
@@ -57,20 +57,27 @@ if has('gui_running') && g:Tex_Menus
 			\'   :call MakeTexFolds(1)<CR>'
 		exec 'anoremenu 80.110 '.s:mainmenuname.'-sepsuite2- :'
 	endif
+	" editing private texrc
+	exec 'anoremenu 80.120 '.s:mainmenuname.'Edit\ &texrc<tab>:Ttexrc'.
+			\' :Ttexrc<CR>'
 
-	if filereadable(s:up_path.'tex/texrc')
-		function! Tex_texrc()
-			exec 'split '.s:up_path.'tex/texrc'
-			lcd
-		endfunction
-		com! -nargs=0 TTexrc :call Tex_texrc()
-		exec 'anoremenu 80.120 '.s:mainmenuname.'Edit\ &texrc<tab>:TexTexrc'.
-			\' :TexTexrc<CR>'
-	endif
 endif
 
 " }}}
 
+" ==============================================================================
+" Edittexrc: split window and show texrc
+" ============================================================================== 
+command! -nargs=0 Ttexrc :call Tex_texrc()
+function! Tex_texrc()
+	if filereadable(s:up_path.'tex/texrc')
+		exec 'split '.s:up_path.'tex/texrc'
+		lcd
+	else
+		echomsg "Please, create your own texrc by copying system texrc"
+					\ ." into ftplugin/tex directory"
+	endif
+endfunction
 
 " ==============================================================================
 " MenuConf: configure the menus as compact/extended, with/without math
