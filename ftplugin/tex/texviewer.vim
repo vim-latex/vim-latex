@@ -39,12 +39,13 @@ else
 	let s:search_directory = ''
 endif
 
-" CompletionVars: similar variables can be set in package files
+" CompletionVars: similar variables can be set in package files {{{
 let g:Tex_completion_bibliographystyle = 'abbr,alpha,plain,unsrt'
 let g:Tex_completion_addtocontents = 'lof}{,lot}{,toc}{'
 let g:Tex_completion_addcontentsline = 'lof}{figure}{,lot}{table}{,toc}{chapter}{,toc}{part}{,'.
 									\ 'toc}{section}{,toc}{subsection}{,toc}{paragraph}{,'.
 									\ 'toc}{subparagraph}{'
+" }}}
 
 " Tex_viewer: main function {{{
 " Description:
@@ -58,10 +59,12 @@ function! Tex_completion(what, where)
 
 	if a:where == "text"
 		" What to do after <F9> depending on context
+		let s:curfile = expand("%:p")
 		let s:curline = strpart(getline('.'), col('.') - 40, 40)
 		let s:prefix = matchstr(s:curline, '{\zs.\{-}$')
 		let s:type = matchstr(s:curline, '\\\zs.\{-}\ze{.\{-}$')
-			let g:type1 = s:type
+		let s:typeoption = matchstr(s:type, '\zs[.*]\ze')
+		let s:type = matchstr(s:type, '.\{-}\ze')
 
 		if exists("s:type") && s:type =~ 'ref'
 			exe 'silent! grep! "\\label{'.s:prefix.'" '.s:search_directory.'*.tex'
@@ -71,8 +74,6 @@ function! Tex_completion(what, where)
 			silent! grep! nothing %
 			let bibfiles = <SID>Tex_FindBibFiles()
 			let bblfiles = <SID>Tex_FindBblFiles()
-			let g:bib = bibfiles
-			let g:bbl = bblfiles
 			if bibfiles != ''
 				exe 'silent! grepadd! "@.*{'.s:prefix.'" '.bibfiles
 			endif
@@ -84,32 +85,31 @@ function! Tex_completion(what, where)
 		elseif exists("s:type") && s:type =~ 'includegraphics'
 			let s:storehidefiles = g:explHideFiles
 			let g:explHideFiles = '^\.,\.tex$,\.bib$,\.bbl$,\.zip$,\.gz$'
-			let s:curfile = expand("%:p")
 			exe 'silent! Sexplore '.s:search_directory.g:Tex_ImageDir
 			call <SID>Tex_explore_window("includegraphics")
 			
 		elseif exists("s:type") && s:type == 'bibliography'
 			let s:storehidefiles = g:explHideFiles
 			let g:explHideFiles = '^\.,\.[^b]..$'
-			let s:curfile = expand("%:p")
 			exe 'silent! Sexplore '.s:search_directory
 			call <SID>Tex_explore_window("bibliography")
 
 		elseif exists("s:type") && s:type =~ 'include\(only\)\='
 			let s:storehidefiles = g:explHideFiles
 			let g:explHideFiles = '^\.,\.[^t]..$'
-			let s:curfile = expand("%:p")
 			exe 'silent! Sexplore '.s:search_directory
 			call <SID>Tex_explore_window("includefile")
 
 		elseif exists("s:type") && s:type == 'input'
-			let s:curfile = expand("%:p")
 			exe 'silent! Sexplore '.s:search_directory
 			call <SID>Tex_explore_window("input")
 
 		elseif exists("g:Tex_completion_{s:type}")
-			let g:type = s:type
 			call <SID>CompleteName('plugin_'.s:type)
+
+		elseif exists("s:type") && g:Tex_completion_explorer =~ ','.s:type
+			exe 'silent! Sexplore '.s:search_directory
+			call <SID>Tex_explore_window("plugintype")
 
 		else
 			let s:word = matchstr(s:curline, '\zs\k\{-}$')
@@ -139,7 +139,7 @@ function! Tex_completion(what, where)
 		exe 'silent! grepadd! "'.a:what.'" '.s:search_directory.'*.bbl'
 		call <SID>Tex_c_window_setup()
 
-	elseif a:where == "all"
+	elseif a:where == 'all'
 		" Process :TLookAll command
 		exe 'silent! grep! "'.a:what.'" '.s:search_directory.'*'
 		call <SID>Tex_c_window_setup()
@@ -190,14 +190,12 @@ endfunction " }}}
 function! s:Tex_explore_window(type) 
 
 	exe g:Tex_ExplorerHeight.' wincmd _'
-	if a:type == 'includegraphics'
-		nnoremap <silent> <buffer> <cr> :silent! call <SID>CompleteName("includegraphics")<CR>
-	elseif a:type == 'bibliography'
-		nnoremap <silent> <buffer> <cr> :silent! call <SID>CompleteName("bibliography")<CR>
-	elseif a:type == 'includefile'
-		nnoremap <silent> <buffer> <cr> :silent! call <SID>CompleteName("includefile")<CR>
-	elseif a:type == 'input'
-		nnoremap <silent> <buffer> <cr> :silent! call <SID>CompleteName("input")<CR>
+	let g:type = a:type
+
+	if a:type =~ 'includegraphics\|bibliography\|includefile'
+		nnoremap <silent> <buffer> <cr> :silent! call <SID>CompleteName("expl_noext")<CR>
+	elseif a:type =~ 'input\|plugintype'
+		nnoremap <silent> <buffer> <cr> :silent! call <SID>CompleteName("expl_ext")<CR>
 	endif
 
 	nnoremap <silent> <buffer> q :wincmd q<cr>
@@ -286,7 +284,7 @@ function! s:CompleteName(type)
 		let label = matchstr(getline('.'), '\\label{\zs.\{-}\ze}')
 		let completeword = strpart(label, strlen(s:prefix))
 
-	elseif a:type =~ 'includegraphics\|\<bibliography\>\|includefile\|\<input\>'
+	elseif a:type =~ 'expl_ext\|expl_noext'
 		let line = substitute(strpart(getline('.'),0,b:maxFileLen),'\s\+$','','')
 		if isdirectory(b:completePath.line)
 			call EditEntry("", "edit")
@@ -295,14 +293,14 @@ function! s:CompleteName(type)
 			return
 
 		else
-			if a:type != 'input'
+			if a:type == 'expl_noext'
 				let ifile = substitute(line, '\..\{-}$', '', '')
 			else
 				let ifile = line
 			endif
 			let filename = b:completePath.ifile
 			
-			if g:Tex_ImageDir != '' && a:type =~ 'includegraphics'
+			if g:Tex_ImageDir != '' && s:type =~ 'includegraphics'
 				let imagedir = s:curfile . g:Tex_ImageDir
 				let completeword = <SID>Tex_RelPath(filename, imagedir)
 			else
@@ -314,8 +312,7 @@ function! s:CompleteName(type)
 
 	elseif a:type =~ '^plugin_'
 		let type = substitute(a:type, '^plugin_', '', '')
-		let completeword = Tex_DoCompletion(type)
-		let g:comp = completeword
+		let completeword = <SID>Tex_DoCompletion(type)
 		
 	endif
 
@@ -324,7 +321,7 @@ function! s:CompleteName(type)
 		exe s:winnum.' wincmd w'
 		pclose!
 		cclose
-	elseif s:type =~ '\<bibliography\>\|include\|input'
+	elseif a:type =~ 'expl_ext\|expl_noext'
 		wincmd q
 	endif
 
@@ -332,8 +329,6 @@ function! s:CompleteName(type)
 
 	" Complete word, check if add closing }
 	exe 'normal! a'.completeword."\<Esc>"
-	let g:cword = completeword
-	let g:cwlast = getline('.')[col('.')-1]
 
 	if getline('.')[col('.')-1] !~ '{' && getline('.')[col('.')] !~ '}'
 		exe "normal! a}\<Esc>"
@@ -368,6 +363,7 @@ function! s:Tex_FindBibFiles()
 	let bibfiles = ''
 	let bibfiles2 = ''
 	let curdir = expand("%:p:h")
+	let curdir = substitute(curdir, ' ', "\\", 'ge')
 
 	if search('\\bibliography{', 'w')
 		let bibfiles = matchstr(getline('.'), '\\bibliography{\zs.\{-}\ze}')
@@ -425,7 +421,7 @@ endfunction " }}}
 
 " PromptForCompletion: prompts for a completion {{{
 " Description: 
-function! PromptForCompletion(texcommand,ask)
+function! s:PromptForCompletion(texcommand,ask)
 
 	let common_completion_prompt = 
 				\ Tex_CreatePrompt(g:Tex_completion_{a:texcommand}, 2, ',') . "\n" .
@@ -443,7 +439,7 @@ endfunction " }}}
 " Tex_DoCompletion: fast insertion of completion {{{
 " Description:
 "
-function! Tex_DoCompletion(texcommand)
+function! s:Tex_DoCompletion(texcommand)
 	let completion = PromptForCompletion(a:texcommand,'Choose a completion to insert: ')
 	if completion != ''
 		return completion
