@@ -837,8 +837,51 @@ SSP for subparagraph</programlisting>
     <title><literal>&lt;Alt-I&gt;</literal></title>
     <para>
      This mapping inserts an <literal>\item</literal> command at the
-     current cursor location. Depending on the context, it might instead
-     insert <literal>\item[]</literal>, <literal>\item[]{}</literal> etc.
+     current cursor location depending on which environment the cursor is
+     enclosed in. The style of the <literal>\item</literal> command is
+     dependent on the enclosing environment. By default,
+     <literal>&lt;Alt-I&gt;</literal> has styles defined forthe following
+     environments:
+    </para>
+     <informaltable frame="all">
+      <tgroup cols="2">
+       <thead>
+        <row>
+         <entry>Environment</entry>
+         <entry>Style</entry>
+        </row>
+       </thead>
+       <tbody>
+        <row><entry>itemize</entry><entry>\item </entry></row>
+        <row><entry>enumerate</entry><entry>\item </entry></row>
+        <row><entry>theindex</entry><entry>\item </entry></row>
+        <row><entry>thebibliography</entry><entry>\item[&lt;+biblabel+&gt;]{&lt;+bibkey+&gt;} &lt;++&gt;</entry></row>
+        <row><entry>description</entry><entry>\item[&lt;+label+&gt;] &lt;++&gt;</entry></row>
+       </tbody>
+      </tgroup>
+     </informaltable>
+     <para>
+     <literal>&lt;Alt-I&gt;</literal> is intelligent enough to
+     account for nested environments. For example,
+     <programlisting>\begin{itemize}
+    \item first item
+    \item second item
+          \begin{description}
+              \item[label1] first desc
+              \item[label2] second
+              % &lt;Alt-I&gt; will insert "\item[&lt;+label+&gt;] &lt;++&gt;" if
+              % used here
+          \end{description}
+    \item third item
+    % &lt;Alt-I&gt; will insert "\item " when if used here.
+\end{itemize}
+% &lt;Alt-I&gt; will insert nothing ("") if used here</programlisting>
+     </para>
+    <para>
+     The style used by <literal>&lt;Alt-I&gt;</literal> can be customized
+     using the <link
+      linkend="Tex_ItemStyle_environment"><literal>g:Tex_ItemStyle_environment</literal></link>
+     variable.
     </para>
    </section>
   </section>
@@ -1048,23 +1091,23 @@ call IMAP('foobar', 'something else', 'tex')</programlisting>
 " Askvimfunc: Asks For Function Name And Sets Up Template 
 " Description: 
 function! AskVimFunc()
-	let name = input('Name of the function : ')
-	if name == ''
-		let name = "&lt;+Function Name+&gt;"
-	end
-	let islocal = input('Is this function scriptlocal ? [y]/n : ', 'y')
-	if islocal == 'y'
-		let sidstr = '&lt;SID&gt;'
-	else
-		let sidstr = ''
-	endif
-	return IMAP_PutTextWithMovement( 
-		\ "\" ".name.": &lt;+short description+&gt; \&lt;cr&gt;" .
-		\ "Description: &lt;+long description+&gt;\&lt;cr&gt;" . 
-		\ "\&lt;C-u&gt;function! ".name."(&lt;+arguments+&gt;)&ph;\&lt;cr&gt;" . 
-		\       "&lt;+function body+&gt;\&lt;cr&gt;" . 
-		\ "endfunction \" "
-		\ )
+    let name = input('Name of the function : ')
+    if name == ''
+        let name = "&lt;+Function Name+&gt;"
+    end
+    let islocal = input('Is this function scriptlocal ? [y]/n : ', 'y')
+    if islocal == 'y'
+        let sidstr = '&lt;SID&gt;'
+    else
+        let sidstr = ''
+    endif
+    return IMAP_PutTextWithMovement( 
+        \ "\" ".name.": &lt;+short description+&gt; \&lt;cr&gt;" .
+        \ "Description: &lt;+long description+&gt;\&lt;cr&gt;" . 
+        \ "\&lt;C-u&gt;function! ".name."(&lt;+arguments+&gt;)&ph;\&lt;cr&gt;" . 
+        \       "&lt;+function body+&gt;\&lt;cr&gt;" . 
+        \ "endfunction \" "
+        \ )
 endfunction</programlisting>
           <para>
           </para>
@@ -3377,7 +3420,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
        This will make pressing <literal>&lt;F5&gt;</literal> after
        <literal>eqnarray*</literal> expand to
        <programlisting>\begin{eqnarray*}
-	&ph; &amp;=&amp; &ph;
+    &ph; &amp;=&amp; &ph;
 \end{eqnarray*}&ph;</programlisting>
      </para>
    </section>
@@ -3398,6 +3441,42 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
      See <link linkend="Tex_Env_name">Tex_Env_name</link> for additional
      details on how to create this setting in various special
      circumstances.
+    </para>
+   </section>
+   <section id="Tex_ItemStyle_environment">
+    <title>Tex_ItemStyle_environment</title>
+    <para>
+     This setting affects the style which &ls; uses to insert an
+     <literal>\item</literal> when <literal>&lt;Alt-I&gt;</literal> is
+     pressed as described <link linkend="Alt-I">here</link>. By default
+     &ls; defines styles for the following environments:
+    </para>
+    <informaltable frame="all">
+     <tgroup cols="2">
+      <thead>
+       <row>
+        <entry>Environment</entry>
+        <entry>Style</entry>
+       </row>
+      </thead>
+      <tbody>
+       <row><entry>itemize</entry><entry>\item </entry></row>
+       <row><entry>enumerate</entry><entry>\item </entry></row>
+       <row><entry>theindex</entry><entry>\item </entry></row>
+       <row><entry>thebibliography</entry><entry>\item[&lt;+biblabel+&gt;]{&lt;+bibkey+&gt;} &lt;++&gt;</entry></row>
+       <row><entry>description</entry><entry>\item[&lt;+label+&gt;] &lt;++&gt;</entry></row>
+      </tbody>
+     </tgroup>
+    </informaltable>
+    <para>
+     Each style is defined by a variable of the form
+     <literal>g:Tex_ItemStyle_{envname}</literal> where
+     <literal>envname</literal> is the name of the environment for which
+     the style is defined. For example, by default
+     <programlisting>g:Tex_ItemStyle_description = '\item[&lt;+label+&gt;] &lt;++&gt;'</programlisting>
+     Redefining the style for a particular environment or defining a style
+     for an entirely new environment is simply a matter of setting the
+     value of a variable of the corresponding name.
     </para>
    </section>
   </section>
