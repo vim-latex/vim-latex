@@ -282,7 +282,7 @@ function! MakeTexFolds(force)
 					" 	\commandname{something \bf{text} and 
 					" will _not_ start a fold.
 					" In other words, the pattern is safe, but not exact.
-					call AddSyntaxFoldItem('^\s*\\'.s.'{[^{}]*$','^\s*}',0,0)
+					call AddSyntaxFoldItem('^\s*\\'.s.'{[^{}]*$','^[^}]*}',0,0)
 				else
 					call AddSyntaxFoldItem('^\s*\\begin{'.s,'^\s*\\end{'.s,0,0)
 				endif
