@@ -1046,6 +1046,35 @@ Generally latex-suite's menus should be configured by setting options in the
 'TeX-Suite.Configure Menu' menu option to turn some of the menus off and on,
 control the nested-ness of some of the menus etc.
 
+                                                          *latex-utf-menu*
+
+In Math menu is plenty of commands, everyone can be lost. If you can not
+remember them all use menu with utf symbols. Unfortunately this is not very
+userfriendly to set proper encoding. Use of Unicode in LaTeX is not very use,
+the same with converting in Vim. You have set >
+    let g:Tex_UseUtfMenus = 1
+
+In vimrc and then make sequence of commands: >
+    set encoding=utf-8
+    edit ++enc=iso-8859-2 file_name
+
+End write with: >
+    write ++enc=iso-8859-2
+
+Of course replace iso-8859-2 with your encoding.
+
+But easier will be cut'n'paste this to vimrc: >
+    let g:Tex_UseUtfMenus = 1
+    let tex_encoding = "iso-8859-2"
+    if exists("g:Tex_UseUtfMenus") && g:Tex_UseUtfMenus != 0 && has("gui_running")
+            au BufReadPre,BufNewFile *.tex set encoding=utf-8
+            exe "au BufReadCmd,FileReadCmd *.tex set filetype=tex|edit ++enc=".tex_encoding
+            exe "au BufWriteCmd,FileWriteCmd,FileAppendCmd *.tex write ++enc=".tex_encoding
+    endif
+
+Unfortunately after that you have manually turn on syntax highlighting.
+Check if your GUI supports menus in utf-8. It works for gtk2 port of Vim 6.2.
+
 }}}
 ===========================================================================
 LATEX SUITE COMMANDS                   *latex-suite-commands* {{{
