@@ -737,7 +737,7 @@ SSP for subparagraph</programlisting>
     <literal>\cdots</literal> in math mode.
    </formalpara>
   </section>
-  <section id="bracketing-macros">
+  <section id="altkey-mappings">
    <title>Alt Key Macros</title>
    <para>
     &ls; utilizes a set of macros originally created by Carl Mueller in
@@ -821,6 +821,14 @@ SSP for subparagraph</programlisting>
     <para>
      In visual mode, it will simply enclose the selection in
      <literal>\mathcal{}</literal>
+    </para>
+   </section>
+   <section id="Alt-I">
+    <title><literal>&lt;Alt-I&gt;</literal></title>
+    <para>
+     This mapping inserts an <literal>\item</literal> command at the
+     current cursor location. Depending on the context, it might instead
+     insert <literal>\item[]</literal>, <literal>\item[]{}</literal> etc.
     </para>
    </section>
   </section>
@@ -2411,13 +2419,14 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
     <title>Alt-Key mappings</title>
     <para>
      These mappings are are described in the section <link
-      linkend="bracketing-macros">Alt key macros</link>. See <link
+      linkend="altkey-mappings">Alt key macros</link>. See <link
       linkend="remapping-latex-suite-keys">the parent section</link> to see
      how to use the following information to remap keys.
     </para>
     <anchor id="Plug_Tex_MathBF" />
     <anchor id="Plug_Tex_MathCal" />
     <anchor id="Plug_Tex_LeftRight" />
+    <anchor id="Plug_Tex_InsertItem" />
     <informaltable frame="all">
      <tgroup cols="2">
       <thead>
@@ -2438,6 +2447,10 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
        <row>
         <entry><literal>&lt;Plug&gt;Tex_LeftRight</literal></entry>
         <entry><literal>&lt;Alt-L&gt;</literal></entry>
+       </row>
+       <row>
+        <entry><literal>&lt;Plug&gt;Tex_InsertItem</literal></entry>
+        <entry><literal>&lt;Alt-I&gt;</literal></entry>
        </row>
       </tbody>
      </tgroup>
