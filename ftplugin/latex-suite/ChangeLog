@@ -43,3 +43,9 @@ After 8 May 2003
 			version of Vim (Jess Thrysoee)
 		Solution: Add redraw! after calling compilers and viewers (partial
 			implementation of JT patch, MM)
+	* texrc:
+		Problem: Compiling pdf didn't succed because of double file extension,
+			eg. myfile.tex.tex (Animesh N Nerurkar)
+		Solution: Remove hardcoded .tex in CompilerRule_pdf. NOTE: Update of
+			personal texrc is required! (Animesh N Nerurkar)
+
