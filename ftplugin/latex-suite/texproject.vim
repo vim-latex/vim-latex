@@ -25,8 +25,8 @@ function! s:Tex_ProjectEdit()
 	if Tex_GetMainFileName() != ''
 		exe 'split '.Tex_GetMainFileName(":p")
 	else
-		exe 'split '.s:path.'/projecttemplate.vim'
-		exe 'saveas '.file.'.latexmain'
+		exe 'split '.escape(s:path.'/projecttemplate.vim', ' ')
+		exe 'saveas '.escape(file.'.latexmain', ' ')
 		let g:Tex_ProjectExists = 1
 	endif
 
@@ -63,7 +63,7 @@ function! s:Tex_Project()
 endfunction " }}}
 
 " Load project file if exists
-if Tex_GetMainFileName() != ''
+if Tex_GetMainFileName() != '' && Tex_GetMainFileName(':e') == 'latexmain'
 	exe 'source '.Tex_GetMainFileName(":p")
 	let g:Tex_ProjectExists = 1
 else
