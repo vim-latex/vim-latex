@@ -3,7 +3,7 @@
 "      Author: Mikolaj Machowski
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: czw maj 09 11:00  2002 U
+" Last Change: nie lis 10 06:00  2002 C
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -31,7 +31,7 @@ let g:Tex_package_detected = ""
 "
 function! Tex_pack_check(package)
 	if has("gui_running") && filereadable(s:path."/packages/".a:package)
-		call TeX_pack(a:package)
+		call Tex_pack(a:package)
 		let g:Tex_package_supported = g:Tex_package_supported.",".a:package
 	endif
 	if filereadable(s:path.'/dictionaries/'.a:package)
@@ -69,9 +69,9 @@ function! Tex_pack_updateall()
 		endwhile
 		let g:Tex_package_supported = ""
 		let g:Tex_package_detected = ""
-		call TeX_pack_all()
+		call Tex_pack_all()
 	else
-		call TeX_pack_all()
+		call Tex_pack_all()
 	endif
 endfunction
 
@@ -94,11 +94,12 @@ function! Tex_pack_one(...)
 	endif
 endfunction
 " }}}
-" TeX_pack_all: scans the current file for \\usepackage{ lines {{{
+" Tex_pack_all: scans the current file for \\usepackage{ lines {{{
 "               and loads the corresponding package options as menus.
-function! TeX_pack_all()
+function! Tex_pack_all()
 
 	let pos = line('.').' | normal! '.virtcol('.').'|'
+	let currfile = expand('%:p')
 
 	if Tex_GetMainFileName() != ''
 		let cwd = getcwd()
@@ -108,14 +109,14 @@ function! TeX_pack_all()
 		elseif glob(fname) != ''
 			let fname = ''
 		else
-			let fname = expand('%:p')
+			let fname = currfile
 		endif
 	else
-		let fname = expand('%:p')
+		let fname = currfile
 	endif
 
 	let toquit = 0
-	if fname != expand('%:p')
+	if fname != currfile
 		exe 'split '.fname
 		let toquit = 1
 	endif
@@ -161,9 +162,9 @@ function! TeX_pack_all()
 endfunction
    
 " }}}
-" TeX_pack_supp_menu: sets up a menu for packages found in packages/ {{{
+" Tex_pack_supp_menu: sets up a menu for packages found in packages/ {{{
 "                     groups the packages thus found into groups of 20...
-function! TeX_pack_supp_menu()
+function! Tex_pack_supp_menu()
 	let g:suplist = glob(s:path."/packages/*")
 	let g:suplist = substitute(g:suplist, "\n", ",", "g")
 	let nu_s_list = GetListCount(g:suplist)
@@ -185,14 +186,14 @@ function! TeX_pack_supp_menu()
 				let OptMenu = ".".s_index."\\ -" 
 			endif
 		endif
-		exe "amenu ".s:p_menu_lev."&Supported".OptMenu.".&".fptr." :call TeX_pack_supp('".fpt."')<CR>"
+		exe "amenu ".s:p_menu_lev."&Supported".OptMenu.".&".fptr." :call Tex_pack_supp('".fpt."')<CR>"
 		let basic_nu_s_list = basic_nu_s_list + 1
 	endwhile
 endfunction 
 
 " }}}
-" TeX_pack: loads the options (and commands) for the given package {{{
-function! TeX_pack(pack)
+" Tex_pack: loads the options (and commands) for the given package {{{
+function! Tex_pack(pack)
 	let basic_nu_p_list = ""
 	let nu_p_list = "" 
 	let g:p_file = s:path . "/packages/" . a:pack
@@ -333,7 +334,7 @@ function! TeX_pack(pack)
 				endif
 			endif
 			exe "amenu ".s:p_menu_lev."&".a:pack.ComMenu.".".l_m_item." ".r_m_item 
-			let basic_nu_p_list = basic_nu_p_list + 1
+			let basic_nu_p_list = basic_nu_p_list + 1 
 			let loop_nu = loop_nu + 1
 		endwhile " }}}
 
@@ -341,9 +342,9 @@ function! TeX_pack(pack)
 endfunction 
 
 " }}}
-" TeX_pack_supp: "supports" the package... {{{
-function! TeX_pack_supp(supp_pack)
-	call TeX_pack(a:supp_pack)
+" Tex_pack_supp: "supports" the package... {{{
+function! Tex_pack_supp(supp_pack)
+	call Tex_pack(a:supp_pack)
 	exe "let g:s_p_o = g:TeX_package_option_".a:supp_pack 
 	if exists("g:s_p_o") && g:s_p_o != ""
 		exe "normal i\\usepackage{".a:supp_pack."}«»"
@@ -351,18 +352,23 @@ function! TeX_pack_supp(supp_pack)
 	else
 		exe "normal i\\usepackage{".a:supp_pack."}\<cr>"
 	endif
+	if g:Tex_package_supported == ""
+		let g:Tex_package_supported = a:supp_pack
+	else
+		let g:Tex_package_supported = g:Tex_package_supported . ",". a:supp_pack
+	endif
 endfunction
 
 " }}}
 
 if g:Tex_Menus
-	exe "amenu ".s:p_menu_lev."&Update :call TeX_pack(expand('<cword>'))<cr>"
+	exe "amenu ".s:p_menu_lev."&UpdatePackage :call Tex_pack(expand('<cword>'))<cr>"
 	exe "amenu ".s:p_menu_lev."&UpdateAll :call Tex_pack_updateall()<cr>"
 endif
 
 if g:Tex_Menus
-	call TeX_pack_supp_menu()
-	call TeX_pack_all()
+	call Tex_pack_supp_menu()
+	call Tex_pack_all()
 endif
 
-" vim:fdm=marker:ts=4:sw=4:noet
+" vim:fdm=marker:ts=4:sw=4:noet:fo-=wa1
