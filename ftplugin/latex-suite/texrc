@@ -537,3 +537,18 @@ TexLet g:Tex_AutoFolding = 1
 
 " }}}
 " ============================================================================== 
+" Taglist: Support for taglist.vim {{{
+"
+" LaTeX-Suite offers now support for taglist.vim, the most popular Vim
+" interface for ctags. You should use ctags version >= 5.0 and taglist >= 3.0.
+TexLet g:Tex_TaglistSupport = 1 
+
+" This option turns on definition of tags for LaTeX.
+" NOTE: In taglist window you may see duplicate entries for the same tag. It
+"       means some definitions are repeated somewhere else. You can turn off
+"       internal definitions or remove external (read ctags description
+"       where).
+TexLet g:Tex_InternalTagsDefinitions = 1 
+
+" }}}
+" ============================================================================== 

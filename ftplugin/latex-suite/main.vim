@@ -650,10 +650,44 @@ augroup END
 
 " }}}
 
-" This variable has to be set before sourcing package files to add names of
+" ==============================================================================
+" Settings for taglist.vim plugin
+" ============================================================================== 
+if exists("g:Tex_TaglistSupport") && g:Tex_TaglistSupport == 1 
+	if !exists("g:tlist_tex_settings") 
+		let g:tlist_tex_settings = 'tex;s:section;c:chapter;l:label;r:ref'
+	endif
+
+	if exists("Tlist_Ctags_Cmd")
+		let s:tex_ctags = Tlist_Ctags_Cmd
+	else
+		let s:tex_ctags = 'ctags' " Configurable in texrc?
+	endif
+
+	if exists("g:Tex_InternalTagsDefinitions") && g:Tex_InternalTagsDefinitions == 1
+		let Tlist_Ctags_Cmd = s:tex_ctags ." --langdef=tex --langmap=tex:.tex.ltx.latex"
+		\.' --regex-tex="/\\\\begin{abstract}/Abstract/s,abstract/"'
+		\.' --regex-tex="/\\\\part[ \t]*\*?\{[ \t]*([^}]*)\}/\1/s,part/"'
+		\.' --regex-tex="/\\\\chapter[ \t]*\*?\{[ \t]*([^}]*)\}/\1/s,chapter/"'
+		\.' --regex-tex="/\\\\section[ \t]*\*?\{[ \t]*([^}]*)\}/\1/s,section/"'
+		\.' --regex-tex="/\\\\subsection[ \t]*\*?\{[ \t]*([^}]*)\}/+ \1/s,subsection/"'
+		\.' --regex-tex="/\\\\subsubsection[ \t]*\*?\{[ \t]*([^}]*)\}/+  \1/s,subsubsection/"'
+		\.' --regex-tex="/\\\\paragraph[ \t]*\*?\{[ \t]*([^}]*)\}/+   \1/s,paragraph/"'
+		\.' --regex-tex="/\\\\subparagraph[ \t]*\*?\{[ \t]*([^}]*)\}/+    \1/s,subparagraph/"'
+		\.' --regex-tex="/\\\\begin{thebibliography}/BIBLIOGRAPHY/s,thebibliography/"'
+		\.' --regex-tex="/\\\\tableofcontents/TABLE OF CONTENTS/s,tableofcontents/"'
+		\.' --regex-tex="/\\\\frontmatter/FRONTMATTER/s,frontmatter/"'
+		\.' --regex-tex="/\\\\mainmatter/MAINMATTER/s,mainmatter/"'
+		\.' --regex-tex="/\\\\backmatter/BACKMATTER/s,backmatter/"'
+		\.' --regex-tex="/\\\\appendix/APPENDIX/s,appendix/"'
+		\.' --regex-tex="/\\\\label[ \t]*\*?\{[ \t]*([^}]*)\}/\1/l,label/"'
+		\.' --regex-tex="/\\\\ref[ \t]*\*?\{[ \t]*([^}]*)\}/\1/r,ref/"'
+	endif
+endif
+
 " commands to completion
-let g:Tex_completion_explorer = ',' 
- 
+let g:Tex_completion_explorer = ','
+
 " Mappings defined in package files will overwrite all other
 
 exe 'source '.s:path.'/packages.vim'
