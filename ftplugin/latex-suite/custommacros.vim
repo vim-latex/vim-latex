@@ -192,7 +192,7 @@ function! <SID>ReadMacro(...)
 					\ filelist, ',')
 	endif
 
-	let fname = Tex_FindInRtp(filename, 'macros')
+	let fname = Tex_FindInRtp(filename, 'macros', ':p')
 
 	let markerString = '<---- Latex Suite End Macro ---->'
 	let _a = @a
