@@ -3,7 +3,7 @@
 "      Author: Mikolaj Machowski
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: Sat May 04 04:00 PM 2002 EST
+" Last Change: Sun May 05 05:00 PM 2002 PDT
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -114,8 +114,10 @@ function! TeX_pack_all()
 		let fname = expand('%:p')
 	endif
 
+	let toquit = 0
 	if fname != expand('%:p')
 		exe 'split '.fname
+		let toquit = 1
 	endif
 
 	exe 0
@@ -152,7 +154,7 @@ function! TeX_pack_all()
 		let oldpack = packname
 	endwhile
 
-	if fname != expand('%:p')
+	if toquit
 		q	
 	endif
 	exe pos
