@@ -121,7 +121,7 @@ function! RunLaTeX()
 	" Extract the complete file name including the extension.
 	let mainfname = Tex_GetMainFileName(':r')
 	if exists('b:fragmentFile') || mainfname == ''
-		let mainfname = expand('%:t')
+		let mainfname = escape(expand('%:t'), ' ')
 	endif
 
 	" if a makefile exists, then use that irrespective of whether *.latexmain
