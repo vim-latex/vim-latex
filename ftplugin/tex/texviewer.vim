@@ -86,22 +86,28 @@ function! Tex_completion(what, where)
 		if exists("s:type") && s:type =~ 'ref'
 			call Tex_Debug("silent! grep! '\\label{".s:prefix."' ".s:search_directory.'*.tex', 'view')
 			exe "silent! grep! '\\label{".s:prefix."' ".s:search_directory.'*.tex'
-			call <SID>Tex_c_window_setup()
+
 
 		elseif exists("s:type") && s:type =~ 'cite'
-			silent! grep! nothing %
-			let bibfiles = <SID>Tex_FindBibFiles()
-			let bblfiles = <SID>Tex_FindBblFiles()
-			if bibfiles != ''
-				call Tex_Debug("silent! grepadd! '@.*{".s:prefix."' ".bibfiles, 'view')
-				exec "silent! grepadd! '@.*{".s:prefix."' ".bibfiles
+			" grep! nothing % 
+			" does _not_ clear the search history contrary to what the
+			" help-docs say. This was expected. So use something improbable.
+			" TODO: Is there a way to clear the search-history w/o making a
+			"       useless, inefficient search?
+			silent! grep! ____HIGHLY_IMPROBABLE___ %
+			if g:Tex_RememberCiteSearch && exists('s:citeSearchHistory')
+				call <SID>Tex_c_window_setup(s:citeSearchHistory)
+			else
+				call Tex_Debug('calling Tex_GrepForBibItems', 'bib')
+				call Tex_GrepForBibItems(s:prefix)
+				call <SID>Tex_c_window_setup()
 			endif
-			if bblfiles != ''
-				call Tex_Debug("silent! grepadd! 'bibitem{".s:prefix."' ".bblfiles, 'view')
-				exec "silent! grepadd! 'bibitem{".s:prefix."' ".bblfiles
+			if g:Tex_RememberCiteSearch && &ft == 'qf'
+				let _a = @a
+				silent! normal! ggVG"ay
+				let s:citeSearchHistory = @a
+				let @a = _a
 			endif
-			call Tex_Debug('returning', 'view')
-			call <SID>Tex_c_window_setup()
 
 		elseif exists("s:type") && s:type =~ 'includegraphics'
 			let s:storehidefiles = g:explHideFiles
@@ -171,16 +177,18 @@ endfunction " }}}
 " Description: Set local maps jkJKq<cr> for cwindow. Also size and basic
 " settings
 "
-function! s:Tex_c_window_setup()
+function! s:Tex_c_window_setup(...)
 
 	cclose
 	exe 'copen '. g:Tex_ViewerCwindowHeight
-
-	setlocal nonumber
-	setlocal nowrap
-
-	let s:scrollOffVal = &scrolloff
-	call <SID>UpdateViewerWindow()
+	" If called with an argument, it means we want to re-use some search
+	" history from last time. Therefore, just paste it here and proceed.
+	if a:0 == 1
+		set modifiable
+		% d _
+		silent! 0put!=a:1
+		$ d _
+	endif
 	" If everything went well, then we should be situated in the quickfix
 	" window. If there were problems, (no matches etc), then we will not be.
 	" Therefore return.
@@ -189,6 +197,11 @@ function! s:Tex_c_window_setup()
 		return
 	endif
 
+	setlocal nonumber
+	setlocal nowrap
+
+	let s:scrollOffVal = &scrolloff
+	call <SID>UpdateViewerWindow()
 
     nnoremap <buffer> <silent> j j:call <SID>UpdateViewerWindow()<CR>
     nnoremap <buffer> <silent> k k:call <SID>UpdateViewerWindow()<CR>
@@ -396,136 +409,145 @@ function! s:GoToLocation()
 	cclose
 
 endfunction " }}}
-" Tex_FindBibFiles: find *.bib files {{{
-" Description: scan files looking for \bibliography entries 
-"
-function! s:Tex_FindBibFiles()
 
-	let position = line('.').' | normal! '.virtcol('.').'|'
-	if g:projFiles != ''
-		let bibfiles = ''
-		let i = 1
-		while Tex_Strntok(g:projFiles, ',', i) != ''
-			let curfile = Tex_Strntok(g:projFiles, ',', i)
-			if curfile =~ '\.bib'
-				let curfile = substitute(curfile, '.*', s:search_directory.'\0', '')
-				let bibfiles = bibfiles.'"'.curfile.'" '
-			endif
-			let i = i + 1
-		endwhile
+" Bibliography specific functions
+" Tex_GrepForBibItems: grep main filename for bib items {{{
+" Description: 
+function! Tex_GrepForBibItems(prefix)
+	let mainfname = Tex_GetMainFileName(':p:r')
 
-		let g:bibf = bibfiles
-		exec position
-		return bibfiles
-
-	else
-		let bibnames = ''
-		let bibfiles = ''
-		let bibfiles2 = ''
-
-		if search('\\bibliography{', 'w')
-			let bibnames = matchstr(getline('.'), '\\bibliography{\zs.\{-}\ze}')
-			let bibnames = substitute(bibnames, '\(,\|$\)', '.bib ', 'ge')
-		endif
-
-		if has('win32')
-			let sep = "\n"
-		else
-			let sep = ":"
-		endif
-
-		let dirs = expand("%:p:h") . sep . expand("$BIBINPUTS")
-		let dirs = substitute(dirs, sep.'\+', sep, 'g')
-
-		let i = 1
-		while Tex_Strntok(dirs, sep, i) != ''
-			let curdir = Tex_Strntok(dirs, sep, i) 
-			let curdir = substitute(curdir, ' ', "\\", 'ge')
-			let tmp = ''
-
-			if bibnames != ''
-				let j = 1
-				while Tex_Strntok(bibnames, ' ', j) != ''
-					let fname = curdir.'/'.Tex_Strntok(bibnames, ' ', j)
-					if filereadable(fname)
-						let tmp = tmp . ' ' . fname
-					endif
-					let j = j + 1
-				endwhile
-			else
-				let tmp = glob(curdir.'/*.bib')
-				let tmp = substitute(tmp, "\n", ' ', 'ge')
-			endif
-
-			let bibfiles = bibfiles . ' ' . tmp
-			let i = i + 1
-		endwhile
-
-		if Tex_GetMainFileName() != '' && expand('%:p') != Tex_GetMainFileName(':p:r')
-			let mainfname = Tex_GetMainFileName(':p:r')
-			let mainfdir = fnamemodify(mainfname, ":p:h")
-			let curdir = expand("%:p:h")
-			let curdir = substitute(curdir, ' ', "\\", 'ge')
-
-			exe 'bot 1 split '.mainfname
-			if search('\\bibliography{', 'w')
-				let bibfiles2 = matchstr(getline('.'), '\\bibliography{\zs.\{-}\ze}')
-				let bibfiles2 = substitute(bibfiles2, '\(,\|$\)', '.bib ', 'ge')
-				let bibfiles2 = substitute(bibfiles2, '\(^\| \)', ' '.curdir.'/', 'ge')
-			elseif mainfdir != curdir
-				let bibfiles2 = glob(mainfdir.'/*.bib')
-				let bibfiles2 = substitute(bibfiles2, "\n", ' ', 'ge')
-			endif
-			wincmd q
-		endif
-
-		exec position
-		return bibfiles.' '.bibfiles2
+	let toquit = 0
+	if bufnr('%') != bufnr(mainfname)
+		exec 'split '.mainfname
+		let toquit = 1
 	endif
 
+	let _path = &path
+	let _suffixesadd = &suffixesadd
+
+	let &path = '.,'.g:Tex_BIBINPUTS
+	let &suffixesadd = '.tex'
+
+	let pos = line('.').'| normal! '.virtcol('.').'|'
+	let foundCiteFile = Tex_ScanFileForCite(a:prefix)
+	exec pos
+
+	let &path = _path
+	let &suffixesadd = _suffixesadd
+
+	if foundCiteFile
+		if toquit
+			q
+		endif
+		return
+	endif
 endfunction " }}}
-" Tex_FindBblFiles: find bibitem entries in tex files {{{
-" Description: scan files looking for \bibitem entries 
+" Tex_ScanFileForCite: search for \bibitem's in .bib or .bbl or tex files {{{
+" Description: 
+" Search for bibliographic entries in the presently edited file in the
+" following manner:
+" 1. First see if the file has a \bibliography command.
+"    If YES:
+"    	1. If a .bib file corresponding to the \bibliography command can be
+"    	   found, then search for '@.*'.a:prefix inside it.
+"    	2. Otherwise, if a .bbl file corresponding to the \bibliography command
+"    	   can be found, then search for '\bibitem'.a:prefix inside it.
+" 2. Next see if the file has a \thebibliography environment
+"    If YES:
+"    	1. Search for '\bibitem'.a:prefix in this file.
 "
-function! s:Tex_FindBblFiles()
+" If neither a \bibliography or \begin{thebibliography} are found, then repeat
+" steps 1 and 2 for every file \input'ed into this file. Abort any searching
+" as soon as the first \bibliography or \begin{thebibliography} is found.
+function! Tex_ScanFileForCite(prefix)
+	call Tex_Debug('searching for bibkeys in '.bufname('%').' (buffer #'.bufnr('%').')', 'bib')
+	let presBufNum = bufnr('%')
 
-	if g:projFiles != ''
-		let bblfiles = ''
+	let foundCiteFile = 0
+	" First find out if this file has a \bibliography command in it. If so,
+	" assume that this is the only file in the project which defines a
+	" bibliography.
+	if search('\\bibliography{', 'w')
+		call Tex_Debug('found bibliography command in '.bufname('%'), 'bib')
+		" convey that we have found a bibliography command. we do not need to
+		" proceed any further.
+		let foundCiteFile = 1
+
+		" extract the bibliography filenames from the command.
+		let bibnames = matchstr(getline('.'), '\\bibliography{\zs.\{-}\ze}')
+		let bibnames = substitute(bibnames, '\s', '', 'g')
+
+		call Tex_Debug('trying to search through ['.bibnames.']', 'bib')
+		
 		let i = 1
-		while Tex_Strntok(g:projFiles, ',', i) != ''
-			let curfile = Tex_Strntok(g:projFiles, ',', i)
-			if curfile =~ '\.tex'
-				let curfile = substitute(curfile, '.*', s:search_directory.'\0', '')
-				let bblfiles = bblfiles.'"'.curfile.'" '
+		while Tex_Strntok(bibnames, ',', i) != ''
+			" first try to find if a .bib file exists. If so do not search in
+			" the corresponding .bbl file. (because the .bbl file will most
+			" probly be generated automatically from the .bib file with
+			" bibtex).
+			
+			" split a new window so we do not screw with the current buffer.
+			split
+			let thisbufnum = bufnr('%')
+			exec 'silent! find '.Tex_Strntok(bibnames, ',', i).'.bib'
+			if bufnr('%') != thisbufnum
+				" use the appropriate syntax for the .bib file.
+				exec 'silent! grepadd @.*{'.a:prefix.' %'
+			else
+				let thisbufnum = bufnr('%')
+				call Tex_Debug('silent! find '.Tex_Strntok(bibnames, ',', i).'.bbl from '.thisbufnum, 'bib')
+				exec 'silent! find '.Tex_Strntok(bibnames, ',', i).'.bbl'
+				call Tex_Debug('now in bufnum#'.bufnr('%'), 'bib')
+				if bufnr('%') != thisbufnum
+					exec 'silent! grepadd \\bibitem{'.a:prefix.' %'
+				endif
 			endif
+			" close the newly opened window
+			q
+
 			let i = i + 1
 		endwhile
 
-		return bblfiles
-
-	else
-		let bblfiles = ''
-		let bblfiles2 = ''
-		let curdir = expand("%:p:h")
-
-		let bblfiles = glob(curdir.'/*.tex')
-		let bblfiles = substitute(bblfiles, "\n", ' ', 'ge')
-		call Tex_Debug('getting bblfiles = '.bblfiles)
-
-		if Tex_GetMainFileName() != ''
-			let mainfname = Tex_GetMainFileName()
-			let mainfdir = fnamemodify(mainfname, ":p:h")
-
-			if mainfdir != curdir
-				let bblfiles = glob(mainfdir.'/*.tex')
-				let bblfiles = substitute(bblfiles, "\n", ' ', 'ge')
-			endif
-
+		if foundCiteFile
+			return 1
 		endif
-
-		return bblfiles.' '.bblfiles2
 	endif
 
+	" If we have a thebibliography environment, then again assume that this is
+	" the only file which defines the bib-keys. Aand convey this information
+	" upwards by returning 1.
+	if search('^\s*\\begin{thebibliography}', 'w')
+		call Tex_Debug('got a thebibliography environment in '.bufname('%'), 'bib')
+		
+		let foundCiteFile = 1
+		exec 'silent! grepadd \\bibitem{'.a:prefix.' %'
+		
+		return 1
+	endif
+
+	" If we have not found any \bibliography or \thebibliography environment
+	" in this file, search for these environments in all the files which this
+	" file includes.
+	exec 0
+	let wrap = 'w'
+	while search('^\s*\\input', wrap)
+		let wrap = 'W'
+
+		let filename = matchstr(getline('.'), '\\input{\zs.\{-}\ze}')
+		let v:errmsg = ''
+		exec 'silent! find '.filename
+		if v:errmsg == ''
+			" DANGER! recursive call.
+			let foundCiteFile = Tex_ScanFileForCite(a:prefix)
+			exec 'e #'.presBufNum
+		endif
+
+		if foundCiteFile
+			return 1
+		endif
+	endwhile
+
+	return 0
 endfunction " }}}
 
 " PromptForCompletion: prompts for a completion {{{
@@ -592,6 +614,8 @@ function! s:Tex_RelPath(explfilename,texfilename)
 	endif
 	return relpath
 endfunction " }}}
+
+com! -nargs=0 TClearCiteHist unlet! s:citeSearchHistory
 
 " this statement has to be at the end.
 let s:doneOnce = 1
