@@ -244,7 +244,7 @@ function! s:LookupCharacter(char)
 				endif
 
 				let @a = _a
-				let abbreviationRHS = escape(abbreviationRHS, '<')
+				let abbreviationRHS = escape(abbreviationRHS, '\<"')
 				exec 'let abbreviationRHS = "'.abbreviationRHS.'"'
 
 				let lhs = lastword.a:char
