@@ -2668,6 +2668,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
         <row><entry>e</entry><entry>Environment shortcuts</entry></row>
         <row><entry>f</entry><entry>Font shortcuts</entry></row>
         <row><entry>s</entry><entry>Section shortcuts</entry></row>
+        <row><entry>m</entry><entry>Math shortcuts</entry></row>
         <row><entry>a</entry><entry>All shortcuts</entry></row>
        </tbody>
       </tgroup>

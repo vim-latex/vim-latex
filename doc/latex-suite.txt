@@ -2100,6 +2100,7 @@ g    General shortcuts
 e    Environment shortcuts
 f    Font shortcuts
 s    Section shortcuts
+m    Math shortcuts
 a    All shortcuts
 
 ================================================================================
