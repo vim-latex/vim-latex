@@ -453,7 +453,7 @@ function! Tex_GetMainFileName(...)
 
 	exe 'cd '.escape(curd, ' ')
 
-	return lheadfile
+	return escape(lheadfile, ' ')
 endfunction 
 
 " }}}
