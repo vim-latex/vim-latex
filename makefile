@@ -28,6 +28,7 @@ latexs:
 	zip -q latexSuite.zip ltags
 
 	# Now to make a tar.gz file from the .zip file.
+	rm -rf $(TMP)/latexSuite0793
 	mkdir -p $(TMP)/latexSuite0793
 	cp latexSuite.zip $(TMP)/latexSuite0793/
 	( \
