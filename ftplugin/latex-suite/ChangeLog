@@ -1,3 +1,47 @@
+13 Jun 2003
+	Features
+	* remoteOpen.vim:
+		Add a command :RemoteOpen which is to be used in applications such as
+		YAP to make vim use the same session to open files. (SA)
+	
+	Bugfixes
+	* texviewer.vim:
+		Problem: <F9> did not work in standard vim + cygwin combination.
+		Solution: Use single quotes instead of double-quotes when issuing
+		          shell commands. (SA)
+	* texviewer.vim:
+		Problem: <F9> did not work for \includegraphics[0.8\columnwidth]{}
+		         because it would confuse \columnwidth for a command instead
+				 of an option.
+		Solution: improve regexp for extracting command from a line. (SA)
+	* envmacros.vim:
+		Problem: the maps in envmacros.vim got applied only to the first file
+		         which latex-suite sees.
+		Solution: fix a typo in the autocommand line. (SA)
+	* compiler.vim,wizardfuncs.vim:
+		Problem: the log preview window did not appear during part
+		         compilation.
+		Solution: rearranged code in the files so the main filename was
+		          defined even for part compilation. (SA)
+	* texviewer.vim:
+		Problem: <F9> only works for the first file.
+		Solution: call the function to set the maps every time. (SA)
+	* compiler.vim:
+		Problem: sometimes, <F9> would try to search for completions in /*.tex
+		         and would therefore fail.
+		Solution: use expand('%:p:h') instead of expand('%;h') to calculate
+		          directory because the latter can sometimes evaluate to ''. (SA)
+	* texviewer.vim:
+		Problem: 'scrolloff' remains at 1000 even after <F9> returns (Jakub
+		         Turski)
+		Solution: reset 'scrolloff' before quitting any of the windows created
+		          during searching.
+	* packages.vim:
+		Problem: A spurious '{' is sometimes inserted into the search history.
+				 ... (A. S. Budden, Mpiktas)
+		Solution: call histdel once at the end of Tex_pack_all.
+
+		
 After 8 May 2003
 
 	Features
