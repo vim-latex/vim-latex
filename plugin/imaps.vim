@@ -7,8 +7,6 @@
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
 "
-" Last Change: Sun Jan 05 08:00 AM 2003 EST
-" 
 " Documentation: {{{
 "
 " Motivation:
@@ -192,9 +190,9 @@ endfunction
 function! IMAP_list(lhs)
 	let char = a:lhs[strlen(a:lhs)-1]
 	let charHash = s:Hash(char)
-	if exists("s:LHS_" . &ft . "_" . charHash)
+	if exists("s:LHS_" . &ft ."_". charHash) && a:lhs =~ s:LHS_{&ft}_{charHash}
 		let ft = &ft
-	elseif exists("s:LHS__" . charHash)
+	elseif exists("s:LHS__" . charHash) && a:lhs =~ s:LHS__{charHash}
 		let ft = ""
 	else
 		return ""
@@ -213,17 +211,22 @@ endfunction
 function! s:LookupCharacter(char)
 	let charHash = s:Hash(a:char)
 
+	" The line so far, including the character that triggered this function:
+	let text = strpart(getline("."), 0, col(".")-1) . a:char
+	" Prefer a local map to a global one, even if the local map is shorter.
+	" Is this what we want?  Do we care?
+	" Use '\V' (very no-magic) so that only '\' is special, and it was already
+	" escaped when building up s:LHS_{&ft}_{charHash} .
 	if exists("s:LHS_" . &ft . "_" . charHash)
+				\ && text =~ '\V\(' . s:LHS_{&ft}_{charHash} . '\)\$'
 		let ft = &ft
 	elseif exists("s:LHS__" . charHash)
+				\ && text =~ '\V\(' . s:LHS__{charHash} . '\)\$'
 		let ft = ""
 	else
 		return a:char
 	endif
 	" Find the longest left-hand side that matches the line so far.
-	" Use '\V' (very no-magic) so that only '\' is special, and it was already
-	" escaped when building up s:LHS_{ft}_{charHash} .
-	let text = strpart(getline("."), 0, col(".")-1) . a:char
 	" matchstr() returns the match that starts first. This automatically
 	" ensures that the longest LHS is used for the mapping.
 	let lhs = matchstr(text, '\V\(' . s:LHS_{ft}_{charHash} . '\)\$')
@@ -266,17 +269,6 @@ function! IMAP_PutTextWithMovement(str, ...)
 	let phsUser = IMAP_GetPlaceHolderStart()
 	let pheUser = IMAP_GetPlaceHolderEnd()
 
-	" A very rare string: Do not use any special characters here. This is used
-	" for moving to the beginning of the inserted text.
-	" When phs != phe, we are guarenteed that unless the user has done bad
-	" things, phs.phs will never occur in the file.
-	if phsUser != pheUser
-		let marker = phsUser.phsUser
-	else
-		let marker = '<!---@#%_Start_Here_@#%----!>'
-	endif
-	let markerLength = strlen(marker)
-
 	" Problem:  depending on the setting of the 'encoding' option, a character
 	" such as "\xab" may not match itself.  We try to get around this by
 	" changing the encoding of all our strings.  At the end, we have to
@@ -292,62 +284,55 @@ function! IMAP_PutTextWithMovement(str, ...)
 		let textEncoded = 0
 	endif
 
-	" If there are no place holders, just return the text.
-	if textEnc !~ '\V'.phs.'\.\{-}'.phe
+	let pattern = '\V\(\.\{-}\)' .phs. '\(\.\{-}\)' .phe. '\(\.\*\)'
+	" If there are no placeholders, just return the text.
+	if textEnc !~ pattern
 		call IMAP_Debug('Not getting '.phs.' and '.phe.' in '.textEnc, 'imap')
 		return text
 	endif
+	" Break text up into "initial <+template+> final"; any piece may be empty.
+	let initialEnc  = substitute(textEnc, pattern, '\1', '')
+	let templateEnc = substitute(textEnc, pattern, '\2', '')
+	let finalEnc    = substitute(textEnc, pattern, '\3', '')
 
-	" If the user does not want to use place-holders, then remove all but the
+	" If the user does not want to use placeholders, then remove all but the
 	" first placeholder.
+	" Otherwise, replace all occurences of the placeholders here with the
+	" user's choice of placeholder settings.
 	if exists('g:Imap_UsePlaceHolders') && !g:Imap_UsePlaceHolders
-		" a heavy-handed way to just use the first placeholder and remove the
-		" rest.  Replace the first placeholder with phe ...
-		let textEnc = substitute(textEnc, '\V'.phs.'\.\{-}'.phe, pheEnc, '')
-		" ... delete all the others ...
-		let textEnc = substitute(textEnc, '\V'.phs.'\.\{-}'.phe, '', 'g')
-		" ... and replace the first phe with phsUser.pheUser .
-		let textEnc = substitute(textEnc, '\V'.phe, phsUserEnc.pheUserEnc, '')
+		let finalEnc = substitute(finalEnc, '\V'.phs.'\.\{-}'.phe, '', 'g')
+	else
+		let finalEnc = substitute(finalEnc, '\V'.phs.'\(\.\{-}\)'.phe,
+					\ phsUserEnc.'\1'.pheUserEnc, 'g')
 	endif
 
-	" now replace all occurences of the placeholders here with the users choice
-	" of placeholder settings.
-	" NOTE: There can be more than 1 placeholders here. Therefore use a global
-	"       search and replace.
-	let textEnc = substitute(textEnc, '\V'.phs.'\(\.\{-}\)'.phe,
-				\ phsUserEnc.'\1'.pheUserEnc, 'g')
 	" The substitutions are done, so convert back, if necessary.
 	if textEncoded
-		let text = s:Iconv(textEnc, "decode")
+		let initial = s:Iconv(initialEnc, "decode")
+		let template = s:Iconv(templateEnc, "decode")
+		let final = s:Iconv(finalEnc, "decode")
 	else
-		let text = textEnc
+		let initial = initialEnc
+		let template = templateEnc
+		let final = finalEnc
 	endif
-	" Now append the marker (the rare string) to the beginning of the text so
-	" we know where the expansion started from
-	let text = marker.text
 
-	" This search will move us to the very beginning of the text to be
-	" inserted.
-	" The steps are:
-	" 1. enter escape mode (using <C-\><C-n> so it works in insertmode as
-	"    well)
-	" 2. Search backward for marker text.
-	" 3. delete from the beginning to the end of marker into the blackhole
-	"    register.
-	let movement = "\<C-\>\<C-N>"
-				\ . "?\\V".marker."\<CR>"
-				\ . '"_d/\V'.marker."/e\<CR>"
+	" Build up the text to insert:
+	" 1. the initial text plus an extra character;
+	" 2. go to Normal mode with <C-\><C-N>, so it works even if 'insertmode'
+	" is set, and mark the position;
+	" 3. replace the extra character with tamplate and final;
+	" 4. back to Normal mode and restore the cursor position;
+	" 5. call IMAP_Jumpfunc().
+	let template = phsUser . template . pheUser
+	" Old trick:  insert and delete a character to get the same behavior at
+	" start, middle, or end of line and on empty lines.
+	let text = initial . "X\<C-\>\<C-N>:call IMAP_Mark('set')\<CR>s"
+	let text = text . template . final
+	let text = text . "\<C-\>\<C-N>:call IMAP_Mark('go')\<CR>"
+	let text = text . "i\<C-r>=IMAP_Jumpfunc('', 1)\<CR>"
 
-	" Now enter insert mode and call IMAP_Jumpfunc() to take us to the next
-	" placeholder and get us either into visual or insert mode. Since we do
-	" at least one search in this function, remove it from the search history
-	" first.
-	" NOTE: Even if we performed more than one search, vim will only put one
-	"       of them in the user's search list.
-	let movement = movement.':'.s:RemoveLastHistoryItem."\<CR>"
-			\ . "i\<C-r>=IMAP_Jumpfunc('', 1)\<CR>"
-
-	return text.movement
+	return text
 endfunction
 
 " }}}
@@ -661,7 +646,11 @@ function! s:Iconv(text, mode)
 	if a:text =~ '\V\^' . escape(a:text, '\') . '\$'
 		return a:text
 	endif
-	return iconv(a:text, "latin1", "utf8")
+	let textEnc = iconv(a:text, "latin1", "utf8")
+	if textEnc !~ '\V\^' . escape(a:text, '\') . '\$''
+		call IMAP_Debug('Encoding problems with text '.a:text.' ', 'imap')
+	endif
+	return textEnc
 endfun
 "" }}}
 " IMAP_Debug: interface to Tex_Debug if available, otherwise emulate it {{{
@@ -707,6 +696,16 @@ function! IMAP_DebugPrint(pattern)
 		endif
 	endif
 endfunction " }}}
+" IMAP_Mark:  Save the cursor position (if a:action == 'set') in a" {{{
+" script-local variable; restore this position if a:action == 'go'.
+let s:Mark = "(0,0)"
+function! IMAP_Mark(action)
+	if a:action == 'set'
+		let s:Mark = "(" . line(".") . "," . col(".") . ")"
+	elseif a:action == 'go'
+		execute "call cursor" s:Mark
+	endif
+endfunction	"" }}}
 
 " ============================================================================== 
 " A bonus function: Snip()
