@@ -1545,10 +1545,17 @@ newfile.tex [Preview]                                         11,3           21%
     <literal>&lt;F9&gt;</literal>. For example, you can press
     <literal>&lt;F9&gt;</literal> just after <literal>\ref{</literal> or
     after <literal>\ref{eqn:</literal>. &ls; will search for
-    <literal>\label</literal>'s in all tex files in the current directory
-    and display the results in two windows as desribed in section <link
+    <literal>\label</literal>'s in the main file corresponding to the file
+    being presently edited and display the results in two windows as
+    desribed in section <link
      linkend="ls-completion-usage"
      endterm="ls-completion-usage.title"></link>.
+    See <link linkend="latex-master-file">latex-master-file</link> for a
+    description of how &ls; finds out which file is the master file
+    corresponding to the current file. &ls; will also search recursively
+    for <literal>\label</literal>'s in all files
+    <literal>\include</literal>'d or <literal>\input</literal>'ed in the
+    master file.
    </para>
    <para>
     Any command which contains the pattern <literal>ref</literal> in it is
