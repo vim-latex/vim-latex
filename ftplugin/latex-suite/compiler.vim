@@ -229,24 +229,22 @@ function! Tex_ViewLaTeX()
 		call Tex_CD(expand("%:p:h"))
 	endif
 
-	let _mp = &mp
-
 	if Tex_GetVarValue('Tex_ViewRuleComplete_'.s:target) != ''
 
-		let &mp = Tex_GetVarValue('Tex_ViewRuleComplete_'.s:target)
-		let &mp = substitute(&mp, '{v:servername}', v:servername, 'g')
+		let execString = Tex_GetVarValue('Tex_ViewRuleComplete_'.s:target)
+		let execString = substitute(execString, '{v:servername}', v:servername, 'g')
 
 	elseif has('win32')
 		" unfortunately, yap does not allow the specification of an external
 		" editor from the command line. that would have really helped ensure
 		" that this particular vim and yap are connected.
-		let &mp = 'start '.s:viewer.' "$*"'
+		let execString = 'start '.s:viewer.' "$*"'
 
 	elseif has('macunix')
 		if strlen(s:viewer)
 			let s:viewer = '-a '.s:viewer
 		endif
-		let &mp = 'open '.s:viewer.' $*.'.s:target
+		let execString = 'open '.s:viewer.' $*.'.s:target
 
 	else
 		" taken from Dimitri Antoniou's tip on vim.sf.net (tip #225).
@@ -260,32 +258,31 @@ function! Tex_ViewLaTeX()
 						\ v:servername != '' &&
 						\ (s:viewer == "xdvi" || s:viewer == "xdvik")
 
-				let &mp = s:viewer.' -editor "gvim --servername '.v:servername.
+				let execString = s:viewer.' -editor "gvim --servername '.v:servername.
 							\ ' --remote-silent +\%l \%f" $*.dvi &'
 
 			elseif Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1 &&
 						\ s:viewer == "kdvi"
 
-				let &mp = 'kdvi --unique $*.dvi &'
+				let execString = 'kdvi --unique $*.dvi &'
 
 			else
 
-				let &mp = s:viewer.' $*.dvi &'
+				let execString = s:viewer.' $*.dvi &'
 
 			endif
 
 		else
 
-			let &mp = s:viewer.' $*.'.s:target.' &'
+			let execString = s:viewer.' $*.'.s:target.' &'
 
 		endif
 	end
 
-	call Tex_Debug("Tex_ViewLaTeX: makeprg = ".&mp, "comp")
+	let execString = substitute(execString, '\V$*', mainfname, 'g')
+	call Tex_Debug("Tex_ViewLaTeX: execString = ".execString, "comp")
 
-	exec 'silent! make! '.mainfname
-
-	let &mp = _mp
+	exec 'silent! !'.execString
 
 	if !has('gui_running')
 		redraw!
