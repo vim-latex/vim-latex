@@ -7,7 +7,7 @@
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
 "
-"     $Header$
+"     $Id$
 "
 " Documentation: {{{
 "
@@ -417,20 +417,22 @@ function! IMAP_Jumpfunc(direction, inclusive)
 		\          '\V\^'.phsUser.'\zs\.\{-}\ze\('.pheUser.'\|\$\)')
 	let placeHolderEmpty = !strlen(template)
 
-	" Jumping doesn't work with exclusive
-	let _selection = &selection
-	let &selection = 'inclusive'
-	let restoreselection = "let &selection = '"._selection."'"
+	" If we are selecting in exclusive mode, then we need to move one step to
+	" the right
+	let extramove = ''
+	if &selection == 'exclusive'
+		let extramove = 'l'
+	endif
 
 	" Select till the end placeholder character.
-	let movement = "\<C-o>v/\\V".pheUser."/e\<CR>"
+	let movement = "\<C-o>v/\\V".pheUser."/e\<CR>".extramove
 
 	" Now either goto insert mode or select mode.
 	if placeHolderEmpty && g:Imap_DeleteEmptyPlaceHolders
 		" delete the empty placeholder into the blackhole.
-		return movement."\"_c\<C-o>:".s:RemoveLastHistoryItem."|".restoreselection."\<CR>"
+		return movement."\"_c\<C-o>:".s:RemoveLastHistoryItem."\<CR>"
 	else
-		return movement."\<C-\>\<C-N>:".s:RemoveLastHistoryItem."|".restoreselection."\<CR>gv\<C-g>"
+		return movement."\<C-\>\<C-N>:".s:RemoveLastHistoryItem."\<CR>gv\<C-g>"
 	endif
 	
 endfunction
@@ -511,9 +513,15 @@ function! VEnclose(vstart, vend, VStart, VEnd)
 			let @r = substitute(@r, "\n$", '', '')
 		endif
 
+		" In exclusive selection, we need to select an extra character.
+		if &selection == 'exclusive'
+			let movement = 8
+		else
+			let movement = 7
+		endif
 		let normcmd = normcmd.
-			\a:vstart."!!mark!!".a:vend.newline.
-			\"\<C-\>\<C-N>?!!mark!!\<CR>v7l\"_s\<C-r>r\<C-\>\<C-n>"
+			\ a:vstart."!!mark!!".a:vend.newline.
+			\ "\<C-\>\<C-N>?!!mark!!\<CR>v".movement."l\"_s\<C-r>r\<C-\>\<C-n>"
 
 		" this little if statement is because till very recently, vim used to
 		" report col("'>") > length of selected line when `> is $. on some
