@@ -1,3 +1,37 @@
+Nov 16 2003
+    BugFixes:
+    * envmacros.vim:
+        Tex_thebibliography command did not respect the g:Tex_UseMenuWizard
+        setting. (SA)
+    * folding.vim:
+        New folding items (Aditya Mahajan, SA)
+    * main.vim,compiler.vim,multicompile.vim,pytools.vim:
+        Rearrangement of code within latex-suite to make it more consistent
+        with the rest of the project. multicompile.vim is no longer required.
+        (SA)
+    * envmacros.vim:
+        Visually selecting a single line with a single word and pressing <F5>
+        would create an environment with the word instead of prompting for a
+        new environment to surround line with (MM)
+    * imaps.vim:
+        Sometimes a "Tex_LastSearchPattern not found" error is generated (SA)
+    * packages/german:
+        Added package command and option variables to the german package file.
+        (Artur Czechowski, MM)
+    * compiler.vim:
+        Compiling when g:Tex_FormatDependency is 'dvi,ps,pdf' is interrupted
+        after compiling into dvi even when there are no errors (SA)
+
+    New:
+    * imaps.vim: 
+        A setting g:Imap_FreezeImap which temporarily suspends imap macro
+        expansion.
+    * compiler.vim:
+        Compiling into a target format via dependencies now interrupts
+        compilation after compiling into latex if there are errors/warnings
+        (SA).
+
+
 10 Oct 2003
     Features
     * envmacros.vim:
