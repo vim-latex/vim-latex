@@ -36,6 +36,7 @@ com -nargs=1 RemoteOpen :call RemoteOpen('<args>')
 " Description: checks all open vim windows to see if this file has been opened
 "              anywhere and if so, opens it there instead of in this session.
 function! RemoteOpen(arglist)
+
 	" First construct line number and filename from argument. a:arglist is of
 	" the form:
 	"    +10 c:\path\to\file
@@ -54,22 +55,42 @@ function! RemoteOpen(arglist)
 	if !has('clientserver')
 		exec "e ".filename
 		exec linenum
+		normal! zv
 		return
 	endif
 
 	" Otherwise, loop through all available servers
 	let servers = serverlist()
+	" If there are no servers, open file locally.
+	if servers == ''
+		exec "e ".filename
+		exec linenum
+		let g:Remote_Server = 1
+		normal! zv
+		return
+	endif
 
 	let i = 1
 	let server = s:Strntok(servers, "\n", i) 
+	let firstServer = v:servername
 
 	while server != ''
+		" Find out if there was any server which was used by remoteOpen before
+		" this. If a new gvim session was ever started via remoteOpen, then
+		" g:Remote_Server will be set.
+		if remote_expr(server, 'exists("g:Remote_Server")')
+			let firstServer = server
+		endif
+
 		" Ask each server if that file is being edited by them.
 		let bufnum = remote_expr(server, "bufnr('".filename."')")
-		" If it isnt...
+		" If it is...
 		if bufnum != -1
-			" ask the server to edit that file and come to the background.
-			call remote_send(server, "\<C-\>\<C-n>:drop ".filename."\<CR>:".linenum."\<CR>")
+			" ask the server to edit that file and come to the foreground.
+			" set a variable g:Remote_Server to indicate that this server
+			" session has at least one file opened via RemoteOpen
+			call remote_send(server, "\<C-\>\<C-n>:drop ".filename."\<CR>:".linenum."\<CR>:normal! zv\<CR>")
+			call remote_send(server, ":let g:Remote_Server = 1\<CR>")
 			call remote_foreground(server)
 			" quit this vim session
 			q
@@ -81,9 +102,17 @@ function! RemoteOpen(arglist)
 		let server = s:Strntok(servers, "\n", i) 
 	endwhile
 
-	" If there is no server which was editing this file, then open it up here.
-	exec "e ".filename
-	exec linenum
+	" If none of the servers have the file open, then open this file in the
+	" first server. This has the advantage if yap tries to make vim open
+	" multiple vims, then at least they will all be opened by the same gvim
+	" server.
+	call remote_send(firstServer, "\<C-\>\<C-n>:drop ".filename."\<CR>:".linenum."\<CR>:normal! zv\<CR>")
+	call remote_send(firstServer, ":let g:Remote_Server = 1\<CR>")
+	call remote_foreground(firstServer)
+	" quit this vim session
+	if v:servername != firstServer
+		q
+	endif
 endfunction " }}}
 " Strntok: extract the n^th token from a list {{{
 " example: Strntok('1,23,3', ',', 2) = 23
