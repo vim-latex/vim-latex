@@ -7,7 +7,7 @@
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
 "
-" Last Change: Fri Jan 03 04:00 PM 2003 PST
+" Last Change: Sun Jan 05 08:00 AM 2003 EST
 " 
 " Documentation: {{{
 "
@@ -280,12 +280,17 @@ function! IMAP_PutTextWithMovement(str, ...)
 	" Problem:  depending on the setting of the 'encoding' option, a character
 	" such as "\xab" may not match itself.  We try to get around this by
 	" changing the encoding of all our strings.  At the end, we have to
-	" convert back.
-	let textEnc = iconv(text, "latin1", &enc)
-	let phsEnc = iconv(phs, "latin1", &enc)
-	let pheEnc = iconv(phe, "latin1", &enc)
-	let phsUserEnc = iconv(phsUser, "latin1", &enc)
-	let pheUserEnc = iconv(pheUser, "latin1", &enc)
+	" convert text back.
+	let phsEnc     = s:Iconv(phs, "encode")
+	let pheEnc     = s:Iconv(phe, "encode")
+	let phsUserEnc = s:Iconv(phsUser, "encode")
+	let pheUserEnc = s:Iconv(pheUser, "encode")
+	let textEnc    = s:Iconv(text, "encode")
+	if textEnc != text
+		let textEncoded = 1
+	else
+		let textEncoded = 0
+	endif
 
 	" If there are no place holders, just return the text.
 	if textEnc !~ '\V'.phs.'\.\{-}'.phe
@@ -311,8 +316,12 @@ function! IMAP_PutTextWithMovement(str, ...)
 	"       search and replace.
 	let textEnc = substitute(textEnc, '\V'.phs.'\(\.\{-}\)'.phe,
 				\ phsUserEnc.'\1'.pheUserEnc, 'g')
-	" The substitutions are done, so convert back.
-	let text = iconv(textEnc, &enc, "latin1")
+	" The substitutions are done, so convert back, if necessary.
+	if textEncoded
+		let text = s:Iconv(textEnc, "decode")
+	else
+		let text = textEnc
+	endif
 	" Now append the marker (the rare string) to the beginning of the text so
 	" we know where the expansion started from
 	let text = marker.text
@@ -599,9 +608,9 @@ endfun
 let s:RemoveLastHistoryItem = ':call histdel("/", -1)|let @/=histget("/", -1)'
 
 " }}}
-" Hash: Return a version of a string that can be used as part of a variable" {{{
+" s:Hash: Return a version of a string that can be used as part of a variable" {{{
 " name.
-" 	Converts every non alphanumeric characteer into _{ascii}_ where {ascii} is
+" 	Converts every non alphanumeric character into _{ascii}_ where {ascii} is
 " 	the ASCII code for that character...
 fun! s:Hash(text)
 	return substitute(a:text, '\([^[:alnum:]]\)',
@@ -627,6 +636,34 @@ function! IMAP_GetPlaceHolderEnd()
 		return "+>"
 endfun
 " }}}
+" s:Iconv:  a wrapper for iconv()" {{{
+" Problem:  after
+" 	let text = "\xab"
+" (or using the raw 8-bit ASCII character in a file with 'fenc' set to
+" "latin1") if 'encoding' is set to utf-8, then text does not match itself:
+" 	echo text =~ text
+" returns 0.
+" Solution:  When this happens, a re-encoded version of text does match text:
+" 	echo iconv(text, "latin1", "utf8") =~ text
+" returns 1.  In this case, convert text to utf-8 with iconv().
+" TODO:  Is it better to use &encoding instead of "utf8"?  Internally, vim
+" uses utf-8, and can convert between latin1 and utf-8 even when compiled with
+" -iconv, so let's try using utf-8.
+" Arguments:
+" 	a:text = text to be encoded or decoded
+" 	a:mode = "encode" (latin1 to utf8) or "decode" (utf8 to latin1)
+" Caution:  do not encode and then decode without checking whether the text
+" has changed, becuase of the :if clause in encoding!
+function! s:Iconv(text, mode)
+	if a:mode == "decode"
+		return iconv(a:text, "utf8", "latin1")
+	endif
+	if a:text =~ '\V\^' . escape(a:text, '\') . '\$'
+		return a:text
+	endif
+	return iconv(a:text, "latin1", "utf8")
+endfun
+"" }}}
 " IMAP_Debug: interface to Tex_Debug if available, otherwise emulate it {{{
 " Description: 
 " Do not want a memory leak! Set this to zero so that imaps always
