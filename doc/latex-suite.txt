@@ -1,6 +1,6 @@
 *latex-suite*   Tools for an enhanced LaTeX environment in Vim
                         For Vim version 6.0 and above.
-                  Last Change: Sat Dec 28 09:00 PM 2002 PST
+                  Last Change: Tue Dec 31 01:00 AM 2002 PST
 
                  By Srinath Avadhanula <srinath@fastmail.fm>,
                       Mikolaj Machowski <mikmach@wp.pl>,
@@ -133,31 +133,9 @@ LATEX MACROS                                   *latex-macros* {{{
 Latex-Suite ships with a very comprehensive set of insert mode and visual mode
 mappings and menu items to typeset most of the LaTeX elements. 
 
-We use a "macro" to refer to the collection of 3 objects, an insert mode
-mapping, a visual mode mapping and a menu item. For example, a figure macro
-refers to the insert mode mapping 'EFI', the visual mode mapping ',fi' and the
-menu item Tex-Environments.figure.
-
-For environments, sections and fonts, the insert mode mappings are a sequence
-of 3 capital letters. The visual mode mapping follows from the insert mode
-mapping by replacing the first character by a comma (',') (for environments
-and sections) or back-tick ('`') (for fonts) and converting the rest to lower
-case. >
-              | Insert Mode   |  Visual Mode
- -------------+---------------+-------------
- environmnts  |    EFI        |    ,fi
- fonts        |    FSF        |    `sf
-
-The menu item also specifies the insert and visual mode macros. The menus
-behave differently from the insert mode macros in that they ask questions on
-the command line in a "wizard" sort of manner and then generate a template
-which includes the information gathered.  By contrast, the insert mode macros
-do not ask any questions and generate a template with |placeholders| at each
-input location.
-
                                               *placeholders* *placeholder*
                                               *place-holder* *place-holders*
-NOTE: All these macros implement Stephen Riem's bracketing system and Gergely
+All these macros implement Stephen Riem's bracketing system and Gergely
 Kontra's JumpFunc() for handling place-holders. This consists of using
 "place-holders" to mark off locations where the next relevant editing has to
 be done. As an example, when the user types in "EFI" in insert mode, she will
@@ -176,12 +154,11 @@ directly to the next "place-holder". i.e, the <+caption text+> will be visually
 selected with vim in select mode again for typing in the caption. This saves
 on a lot of key presses.
 
-NOTE: Furthermore these mappings are are not standard mappings in the sense
-that only the last character is mapped. See plugin/imaps.vim for further
-documentation. For example, in the example above, you can press the characters
-'E', 'F' and 'I' as slowly as you wish. The characters are visible as you type
-them and you can use the movement or backspace key to correct yourself unlike
-normal mappings.
+NOTE: These mappings are are not standard mappings in the sense that only the
+last character is mapped. See plugin/imaps.vim for further documentation. For
+example, in the example above, you can press the characters 'E', 'F' and 'I'
+as slowly as you wish. The characters are visible as you type them and you can
+use the movement or backspace key to correct yourself unlike normal mappings.
 
 The macros can be divided into the following main categories:
 ---------------------------------------------------------------------------
