@@ -95,7 +95,11 @@ function! Tex_pack_one(...)
 	if a:0 == 0 || (a:0 > 0 && a:1 == '')
 		let pwd = getcwd()
 		exe 'cd '.s:path.'/packages'
-		let packname = Tex_ChooseFile('Choose a package: ')
+		let packname = Tex_ChooseFromPrompt(
+					\ "Choose a package: \n" . 
+					\ Tex_CreatePrompt(glob('*'), 3, "\n") .
+					\ "\nEnter number or filename :", 
+					\ glob('*'), "\n")
 		exe 'cd '.pwd
 		if packname != ''
 			return Tex_pack_one(packname)
@@ -128,10 +132,9 @@ endfunction
 " }}}
 " Tex_pack_all: scans the current file for \usepackage{} lines {{{
 "   and if supported, loads the options and commands found in the
-"   corresponding package file.
-"  Now scans also for \newenvironment and \newcommand lines and adds names to
-"  g:Tex_Prompted variables, they can be easy available through <F5> and <F7>
-"  shortcuts 
+"   corresponding package file. Also scans for \newenvironment and
+"   \newcommand lines and adds names to g:Tex_Prompted variables, they can be
+"   easy available through <F5> and <F7> shortcuts 
 function! Tex_pack_all()
 
 	let pos = line('.').' | normal! '.virtcol('.').'|'
@@ -162,6 +165,18 @@ function! Tex_pack_all()
 
 		let saveA = @a
 
+		" If there are options, then find those.
+		if getline('.') =~ '\\usepackage\[.\{-}\]'
+			let options = matchstr(getline('.'), '\\usepackage\[\zs.\{-}\ze\]')
+		elseif getline('.') =~ '\\usepackage\['
+			" Entering here means that the user has split the \usepackage
+			" across newlines. Therefore, use yank.
+			exec "normal! /\[\<CR>lv/\]\<CR>h\"ay"
+			let options = @a
+		else
+			let options = ''
+		endif
+
 		" The following statement puts the stuff between the { }'s of a
 		" \usepackage{stuff,foo} into @a. Do not use matchstr() and the like
 		" because we can have things split across lines and such.
@@ -182,6 +197,15 @@ function! Tex_pack_all()
 		" TODO: This will contain duplicates if the user has duplicates.
 		"       Should we bother taking care of this?
 		let g:Tex_package_detected = g:Tex_package_detected.','.@a
+
+		" For each package found, form a global variable of the form
+		" g:Tex_{packagename}_options 
+		" which contains a list of the options.
+		let j = 1
+		while Tex_Strntok(@a, ',', j) != ''
+			let g:Tex_{Tex_Strntok(@a, ',', j)}_options = options
+			let j = j + 1
+		endwhile
 
 		" Finally convert @a into something like '"pack1","pack2"'
 		let @a = substitute(@a, '^\|$', '"', 'g')
