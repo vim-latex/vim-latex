@@ -18,8 +18,18 @@ function! Tex_CompileMultipleTimes()
 		let mainFileName_root = expand("%:p:t:r")
 	endif
 
-	let idxFileName = mainFileName_root.'.idx'
+	" First ignore undefined references and the 
+	" "rerun to get cross-references right" message from 
+	" the compiler output.
+	let origlevel = g:Tex_IgnoreLevel
+	let origpats = g:Tex_IgnoredWarnings
 
+	let g:Tex_IgnoredWarnings = g:Tex_IgnoredWarnings."\n"
+		\ . 'Reference %.%# undefined'."\n"
+		\ . 'Rerun to get cross-references right'
+	TCLevel 1000
+
+	let idxFileName = mainFileName_root.'.idx'
 
 	let runCount = 0
 	let needToRerun = 1
@@ -29,9 +39,23 @@ function! Tex_CompileMultipleTimes()
 
 		let idxlinesBefore = Tex_CatFile(idxFileName)
 
-		" first run latex once.
+		" first run latex.
 		echomsg "latex run number : ".(runCount+1)
 		silent! call Tex_CompileLatex()
+		
+		" If there are errors in any latex compilation step, immediately
+		" return.
+		let _a = @a
+		redir @a | silent! clist | redir END
+		let errlist = @a
+		let @a = _a
+
+		if errlist =~ '\d\+\s\f\+:\d\+\serror'
+			let g:Tex_IgnoredWarnings = origpats
+			exec 'TCLevel '.origlevel
+
+			return
+		endif
 
 		let idxlinesAfter = Tex_CatFile(idxFileName)
 
@@ -46,7 +70,8 @@ function! Tex_CompileMultipleTimes()
 			let needToRerun = 1
 		endif
 
-		" The first time we see if we need to run bibtex
+		" The first time we see if we need to run bibtex and if the .bbl file
+		" changes, we will rerun latex.
 		if runCount == 0 && Tex_IsPresentInFile('\\bibdata', mainFileName_root.'.aux')
 			let bibFileName = mainFileName_root . '.bbl'
 
@@ -80,6 +105,8 @@ function! Tex_CompileMultipleTimes()
 
 	echomsg "Ran latex ".runCount." time(s)"
 
+	let g:Tex_IgnoredWarnings = origpats
+	exec 'TCLevel '.origlevel
 	" After all compiler calls are done, reparse the .log file for
 	" errors/warnings to handle the situation where the clist might have been
 	" emptied because of bibtex/makeindex being run as the last step.
