@@ -1,0 +1,5 @@
+" For now just define the smart quotes.
+let g:Tex_SmartQuoteOpen = '"`'
+let g:Tex_SmartQuoteClose = "'\""
+
+" vim:ft=vim:ff=unix:
