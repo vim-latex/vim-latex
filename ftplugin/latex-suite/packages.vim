@@ -2,7 +2,7 @@
 " 	     File: packages.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: nie gru 08 05:00  2002 C
+" Last Change: Fri Dec 13 12:00 PM 2002 EST
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -250,9 +250,9 @@ function! Tex_pack(pack)
 				let l_m_p_o_item = '&'.substitute(p_o_item, 'ä', '', '')
 				let p_o_end = p_o_item[strlen(p_o_item) - 1]
 				if p_o_end !~ "[a-zA-Z}]"
-					let r_m_p_o_item = "<plug><C-r>=IMAP_PutTextWithMovement('".p_o_item.'ä'.p_o_delimiter."«»')<cr>"
+					let r_m_p_o_item = "<plug><C-r>=Tex_PutTextWithMovement('".p_o_item.'ä'.p_o_delimiter."«»')<cr>"
 				elseif p_o_end == '}'
-					let r_m_p_o_item = "<plug><C-r>=IMAP_PutTextWithMovement('".p_o_item.p_o_delimiter."«»')<cr>"
+					let r_m_p_o_item = "<plug><C-r>=Tex_PutTextWithMovement('".p_o_item.p_o_delimiter."«»')<cr>"
 				else
 					let r_m_p_o_item = '<plug>'.p_o_item.p_o_delimiter
 				endif
@@ -285,15 +285,15 @@ function! Tex_pack(pack)
 			if p_item_def == 'bra'
 				let com_type = '{}'
 				let l_m_item = '\\&'.p_item_name.'{}'
-				let r_m_item = "<plug><C-r>=IMAP_PutTextWithMovement('\\".p_item_name."{ä}«»')<cr>"
+				let r_m_item = "<plug><C-r>=Tex_PutTextWithMovement('\\".p_item_name."{ä}«»')<cr>"
 			elseif p_item_def == 'brs' 
 				let com_type = '{}'
 				let l_m_item = '\\&'.substitute(p_item_name, "[ä«»]", '', 'g')
-				let r_m_item = "<plug><C-r>=IMAP_PutTextWithMovement('\\".p_item_name."«»')<cr>"
+				let r_m_item = "<plug><C-r>=Tex_PutTextWithMovement('\\".p_item_name."«»')<cr>"
 			elseif p_item_def == 'brd'
 				let com_type = '{}{}'
 				let l_m_item = '\\&'.p_item_name.'{}{}'
-				let r_m_item = "<plug><C-r>=IMAP_PutTextWithMovement('\\".p_item_name."{ä}{«»}«»')<cr>"
+				let r_m_item = "<plug><C-r>=Tex_PutTextWithMovement('\\".p_item_name."{ä}{«»}«»')<cr>"
 			elseif p_item_def == 'sep'
 				let com_type = ''
 				let l_m_item = '-packsep'.basic_nu_p_list.'-'
@@ -319,11 +319,11 @@ function! Tex_pack(pack)
 			elseif p_item_def == 'noo'
 				let com_type = '\\[]'
 				let l_m_item = '\\&'.p_item_name.'[]'
-				let r_m_item = "<plug><C-r>=IMAP_PutTextWithMovement('\\".p_item_name."[ä]«»')<cr>"
+				let r_m_item = "<plug><C-r>=Tex_PutTextWithMovement('\\".p_item_name."[ä]«»')<cr>"
 			elseif p_item_def == 'nob'
 				let com_type = '[]{}'
 				let l_m_item = '\\&'.p_item_name.'[]{}'
-				let r_m_item = "<plug><C-r>=IMAP_PutTextWithMovement('\\".p_item_name."[ä]{«»}«»')<cr>"
+				let r_m_item = "<plug><C-r>=Tex_PutTextWithMovement('\\".p_item_name."[ä]{«»}«»')<cr>"
 			elseif p_item_def == 'pla'
 				let com_type = '(p)'
 				let l_m_item = '&'.p_item_name."'"

@@ -1,8 +1,8 @@
 " ==============================================================================
 " Author: Carl Mueller
 " 		  (incorporated into latex-suite by Srinath Avadhanula)
-" Last Change: Mon Dec 09 12:00 PM 2002 PST
-" Desciption:
+" Last Change: Fri Dec 13 12:00 PM 2002 EST
+" Description:
 " 	This ftplugin provides the following maps:
 " . <M-b> encloses the previous character in \mathbf{}
 " . <M-c> is polymorphic as follows:
@@ -83,7 +83,7 @@ function! Tex_MathBF()
 	return "\<Left>\\mathbf{\<Right>}\<Esc>hvUla"
 endfunction " }}}
 " Tex_MathCal: enclose the previous letter/number in \mathcal {{{
-" Desciption:
+" Description:
 " 	if the last character is not a letter/number, then insert \cite{}
 function! Tex_MathCal()
 	let line = getline(line("."))
@@ -92,7 +92,7 @@ function! Tex_MathCal()
 	if char =~ '[a-zA-Z0-9]'
 		return "\<BS>".'\mathcal{'.toupper(char).'}'
 	else
-		return IMAP_PutTextWithMovement('\cite{«»}«»')
+		return Tex_PutTextWithMovement('\cite{«»}«»')
 	endif
 endfunction
 " }}}
@@ -120,11 +120,11 @@ function! Tex_LeftRight()
 			let add = "\\"
 		endif
 		let rhs = matchstr(matchedbrackets, char.'\zs.\ze')
-		return "\<BS>".IMAP_PutTextWithMovement('\left'.add.char.'«»\right'.add.rhs.'«»')
+		return "\<BS>".Tex_PutTextWithMovement('\left'.add.char.'«»\right'.add.rhs.'«»')
 	elseif char == '<'
-		return "\<BS>".IMAP_PutTextWithMovement('langle«»\rangle«»')
+		return "\<BS>".Tex_PutTextWithMovement('langle«»\rangle«»')
 	elseif char == 'q'
-		return "\<BS>".IMAP_PutTextWithMovement('\lefteqn{«»}«»')
+		return "\<BS>".Tex_PutTextWithMovement('\lefteqn{«»}«»')
 	else
 		return '\label{«»}«»'
 	endif

@@ -2,7 +2,7 @@
 " 	     File: mathmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: sob lis 09 10:00  2002 C
+" Last Change: Fri Dec 13 12:00 PM 2002 EST
 " 
 "  Description: macros for everything mathematical in latex.
 "=============================================================================
@@ -78,15 +78,15 @@ exe s:pA1a.'nRightarrow             <plug>\nRightarrow '
 " }}}
 " MATH Fonts {{{
 let s:pA2a = s:pA."&MathFonts."
-exe s:pA2a.'mathbf{}                <plug><C-r>=IMAP_PutTextWithMovement("\\mathbf{ä}«»")<cr>'
-exe s:pA2a.'mathrm{}                <plug><C-r>=IMAP_PutTextWithMovement("\\mathrm{ä}«»")<cr>'
-exe s:pA2a.'mathsf{}                <plug><C-r>=IMAP_PutTextWithMovement("\\mathsf{ä}«»")<cr>'
-exe s:pA2a.'mathtt{}                <plug><C-r>=IMAP_PutTextWithMovement("\\mathtt{ä}«»")<cr>'
-exe s:pA2a.'mathit{}                <plug><C-r>=IMAP_PutTextWithMovement("\\mathit{ä}«»")<cr>'
-exe s:pA2a.'mathfrak{}              <plug><C-r>=IMAP_PutTextWithMovement("\\mathfrak{ä}«»")<cr>'
-exe s:pA2a.'mathcal{}               <plug><C-r>=IMAP_PutTextWithMovement("\\mathcal{ä}«»")<cr>'
-exe s:pA2a.'mathscr{}               <plug><C-r>=IMAP_PutTextWithMovement("\\mathscr{ä}«»")<cr>'
-exe s:pA2a.'mathbb{}                <plug><C-r>=IMAP_PutTextWithMovement("\\mathbb{ä}«»")<cr>'
+exe s:pA2a.'mathbf{}                <plug><C-r>=Tex_PutTextWithMovement("\\mathbf{ä}«»")<cr>'
+exe s:pA2a.'mathrm{}                <plug><C-r>=Tex_PutTextWithMovement("\\mathrm{ä}«»")<cr>'
+exe s:pA2a.'mathsf{}                <plug><C-r>=Tex_PutTextWithMovement("\\mathsf{ä}«»")<cr>'
+exe s:pA2a.'mathtt{}                <plug><C-r>=Tex_PutTextWithMovement("\\mathtt{ä}«»")<cr>'
+exe s:pA2a.'mathit{}                <plug><C-r>=Tex_PutTextWithMovement("\\mathit{ä}«»")<cr>'
+exe s:pA2a.'mathfrak{}              <plug><C-r>=Tex_PutTextWithMovement("\\mathfrak{ä}«»")<cr>'
+exe s:pA2a.'mathcal{}               <plug><C-r>=Tex_PutTextWithMovement("\\mathcal{ä}«»")<cr>'
+exe s:pA2a.'mathscr{}               <plug><C-r>=Tex_PutTextWithMovement("\\mathscr{ä}«»")<cr>'
+exe s:pA2a.'mathbb{}                <plug><C-r>=Tex_PutTextWithMovement("\\mathbb{ä}«»")<cr>'
 " }}}
 " Greek Letters small {{{
 let s:pA2 = s:pA."&Greek.&Small."
@@ -471,29 +471,29 @@ exe s:pA11.'scriptscriptstyle       <plug>\scriptscriptstyle'
 " }}}
 " {{{ MathDiacritics
 let s:pA12 = s:pA."&MathDiacritics."
-exe s:pA12.'acute{}                 <plug><C-r>=IMAP_PutTextWithMovement("\\acute{ä}«»")<cr>'
-exe s:pA12.'bar{}<Tab>`_            <plug><C-r>=IMAP_PutTextWithMovement("\\bar{ä}«»")<cr>'
-exe s:pA12.'breve{}                 <plug><C-r>=IMAP_PutTextWithMovement("\\breve{ä}«»")<cr>'
-exe s:pA12.'check{}                 <plug><C-r>=IMAP_PutTextWithMovement("\\check{ä}«»")<cr>'
-exe s:pA12.'ddot{}<Tab>`:           <plug><C-r>=IMAP_PutTextWithMovement("\\ddot{ä}«»")<cr>'
-exe s:pA12.'dot{}<Tab>`;            <plug><C-r>=IMAP_PutTextWithMovement("\\dot{ä}«»")<cr>'
-exe s:pA12.'grave{}                 <plug><C-r>=IMAP_PutTextWithMovement("\\grave{ä}«»")<cr>'
-exe s:pA12.'hat{}<Tab>`^            <plug><C-r>=IMAP_PutTextWithMovement("\\hat{ä}«»")<cr>'
-exe s:pA12.'tilde{}<tab>`~          <plug><C-r>=IMAP_PutTextWithMovement("\\tilde{ä}«»")<cr>'
-exe s:pA12.'vec{}                   <plug><C-r>=IMAP_PutTextWithMovement("\\vec{ä}«»")<cr>'
-exe s:pA12.'widehat{}               <plug><C-r>=IMAP_PutTextWithMovement("\\widehat{ä}«»")<cr>'
-exe s:pA12.'widetilde{}             <plug><C-r>=IMAP_PutTextWithMovement("\\widetilde{ä}«»")<cr>'
-exe s:pA12.'imath                   <plug><C-r>=IMAP_PutTextWithMovement("\\imath")<cr>'
-exe s:pA12.'jmath                   <plug><C-r>=IMAP_PutTextWithMovement("\\jmath")<cr>'
+exe s:pA12.'acute{}                 <plug><C-r>=Tex_PutTextWithMovement("\\acute{ä}«»")<cr>'
+exe s:pA12.'bar{}<Tab>`_            <plug><C-r>=Tex_PutTextWithMovement("\\bar{ä}«»")<cr>'
+exe s:pA12.'breve{}                 <plug><C-r>=Tex_PutTextWithMovement("\\breve{ä}«»")<cr>'
+exe s:pA12.'check{}                 <plug><C-r>=Tex_PutTextWithMovement("\\check{ä}«»")<cr>'
+exe s:pA12.'ddot{}<Tab>`:           <plug><C-r>=Tex_PutTextWithMovement("\\ddot{ä}«»")<cr>'
+exe s:pA12.'dot{}<Tab>`;            <plug><C-r>=Tex_PutTextWithMovement("\\dot{ä}«»")<cr>'
+exe s:pA12.'grave{}                 <plug><C-r>=Tex_PutTextWithMovement("\\grave{ä}«»")<cr>'
+exe s:pA12.'hat{}<Tab>`^            <plug><C-r>=Tex_PutTextWithMovement("\\hat{ä}«»")<cr>'
+exe s:pA12.'tilde{}<tab>`~          <plug><C-r>=Tex_PutTextWithMovement("\\tilde{ä}«»")<cr>'
+exe s:pA12.'vec{}                   <plug><C-r>=Tex_PutTextWithMovement("\\vec{ä}«»")<cr>'
+exe s:pA12.'widehat{}               <plug><C-r>=Tex_PutTextWithMovement("\\widehat{ä}«»")<cr>'
+exe s:pA12.'widetilde{}             <plug><C-r>=Tex_PutTextWithMovement("\\widetilde{ä}«»")<cr>'
+exe s:pA12.'imath                   <plug><C-r>=Tex_PutTextWithMovement("\\imath")<cr>'
+exe s:pA12.'jmath                   <plug><C-r>=Tex_PutTextWithMovement("\\jmath")<cr>'
 " }}}
 " {{{ OverlineAndCo
 let s:pA13 = s:pA."&OverlineAndCo."
-exe s:pA13.'overline{}              <plug><C-r>=IMAP_PutTextWithMovement("\\overline{}")<cr>'
-exe s:pA13.'underline{}             <plug><C-r>=IMAP_PutTextWithMovement("\\underline{}")<cr>'
-exe s:pA13.'overrightarrow{}        <plug><C-r>=IMAP_PutTextWithMovement("\\overrightarrow{}")<cr>'
-exe s:pA13.'overleftarrow{}         <plug><C-r>=IMAP_PutTextWithMovement("\\overleftarrow{}")<cr>'
-exe s:pA13.'overbrace{}             <plug><C-r>=IMAP_PutTextWithMovement("\\overbrace{}")<cr>'
-exe s:pA13.'underbrace{}            <plug><C-r>=IMAP_PutTextWithMovement("\\underbrace{}")<cr>'
+exe s:pA13.'overline{}              <plug><C-r>=Tex_PutTextWithMovement("\\overline{}")<cr>'
+exe s:pA13.'underline{}             <plug><C-r>=Tex_PutTextWithMovement("\\underline{}")<cr>'
+exe s:pA13.'overrightarrow{}        <plug><C-r>=Tex_PutTextWithMovement("\\overrightarrow{}")<cr>'
+exe s:pA13.'overleftarrow{}         <plug><C-r>=Tex_PutTextWithMovement("\\overleftarrow{}")<cr>'
+exe s:pA13.'overbrace{}             <plug><C-r>=Tex_PutTextWithMovement("\\overbrace{}")<cr>'
+exe s:pA13.'underbrace{}            <plug><C-r>=Tex_PutTextWithMovement("\\underbrace{}")<cr>'
 " }}}
 " {{{ Symbols1
 let s:pA14a = s:pA."&Symbols1."

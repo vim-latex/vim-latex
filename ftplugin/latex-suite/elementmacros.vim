@@ -2,7 +2,7 @@
 " 	     File: elementmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: nie lis 10 11:00  2002 C
+" Last Change: Fri Dec 13 12:00 PM 2002 EST
 " 
 "  Description: macros for dimensions/fonts/counters.
 "               and various common commands such ref/label/footnote.
@@ -54,14 +54,14 @@ if !exists('s:definedFuncs') " {{{
 		if !exists('s:doneOnce') && g:Tex_FontMaps
 			exe "vnoremap <silent> ".g:Tex_Leader.vislhs.
 				\" \<C-\\>\<C-N>:call VEnclose('\\text".vislhs."{', '}', '{\\".vislhs.a:fam." ', '}')<CR>"
-			exe 'call IMAP ("'.a:font.'", "\\text'.vislhs.'{ä}«»", "tex")'
+			exe 'call Tex_IMAP ("'.a:font.'", "\\text'.vislhs.'{ä}«»", "tex")'
 		endif
 
 		" menu entry.
 		if g:Tex_Menus && g:Tex_FontMenus
 			let location = s:fontMenuLoc.substitute(a:fam, '^.', '\u&', '').'.'.vislhs.a:fam.'<tab>'.a:font.'\ ('.g:Tex_Leader.vislhs.')'
 			exe "amenu ".location.
-				\" <plug><C-r>=IMAP_PutTextWithMovement('\\text".vislhs."{ä}«»')<CR>"
+				\" <plug><C-r>=Tex_PutTextWithMovement('\\text".vislhs."{ä}«»')<CR>"
 			exe "vmenu ".location.
 				\" \<C-\\>\<C-N>:call VEnclose('\\text".vislhs."{', '}', '{\\".vislhs.a:fam." ', '}')<CR>"
 		endif
@@ -74,7 +74,7 @@ if !exists('s:definedFuncs') " {{{
 	function! <SID>Tex_FontDiacritics(name, rhs)
 		let location = s:fontMenuLoc.'&Diacritics.'.a:name.'<tab>'
 		exe 'amenu '.location.
-			\" <plug><C-r>=IMAP_PutTextWithMovement('\\".a:rhs."{«»}«»')<CR>"
+			\" <plug><C-r>=Tex_PutTextWithMovement('\\".a:rhs."{«»}«»')<CR>"
 		exe 'vmenu '.location.
 			\" \<C-\\>\<C-n>:call VEnclose('\\".a:rhs."{', '}', '', '')<CR>" 
 	endfunction " }}}
@@ -89,7 +89,7 @@ if !exists('s:definedFuncs') " {{{
 	" 
 	function! <SID>Tex_Fontfont(desc, lhs)
 		let location = s:fontMenuLoc.'&font.'.a:desc.'<tab>'
-		exe "amenu ".location."  <plug><C-r>=IMAP_PutTextWithMovement('".a:lhs."')<CR>"
+		exe "amenu ".location."  <plug><C-r>=Tex_PutTextWithMovement('".a:lhs."')<CR>"
 		exe "vunmenu ".location
 	endfunction " }}}
 	" Tex_DimMenus: set up dimension menus {{{
@@ -107,7 +107,7 @@ if !exists('s:definedFuncs') " {{{
 	" Tex_VariousMenus: set up various menus {{{
 	function! <SID>Tex_VariousMenus(desc, lhs)
 		let location = s:variousMenuLoc.a:desc.'<tab>'
-		exe "amenu ".location." <plug><C-r>=IMAP_PutTextWithMovement('".a:lhs."')<CR>"
+		exe "amenu ".location." <plug><C-r>=Tex_PutTextWithMovement('".a:lhs."')<CR>"
 		exe "vunmenu ".location
 	endfunction " }}}
 endif
@@ -131,7 +131,7 @@ call <SID>Tex_FontFamily("FIT","shape")
 
 " the \emph is special.
 if g:Tex_FontMaps | exe "vnoremap <silent> ".g:Tex_Leader."em \<C-\\>\<C-N>:call VEnclose('\\emph{', '}', '{\\em', '\\/}')<CR>" | endif
-if g:Tex_FontMaps | exe 'call IMAP ("FEM", "\\emph{ä}«»", "tex")' | endif
+if g:Tex_FontMaps | exe 'call Tex_IMAP ("FEM", "\\emph{ä}«»", "tex")' | endif
 
 " }}}
 if g:Tex_Menus && g:Tex_FontMenus

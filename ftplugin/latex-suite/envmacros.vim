@@ -2,7 +2,7 @@
 " 	     File: envmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
-" Last Change: Fri Dec 06 12:00 AM 2002 PST
+" Last Change: Fri Dec 13 12:00 PM 2002 EST
 " 
 "  Description: mappings/menus for environments. 
 "=============================================================================
@@ -73,7 +73,7 @@ function! <SID>Tex_EnvMacros(lhs, submenu, name)
 		let location = location.a:lhs.'\ ('.vlhs.')'
 
 		if g:Tex_EnvironmentMaps && !exists('s:doneOnce')
-			call IMAP (a:lhs, '\begin{'.a:name."}\<CR>".extra."«»\<CR>\\end{".a:name."}«»", 'tex')
+			call Tex_IMAP (a:lhs, '\begin{'.a:name."}\<CR>".extra."«»\<CR>\\end{".a:name."}«»", 'tex')
 			exec 'vnoremap <silent> '.vlhs.' '.vrhs
 		endif
 
@@ -112,7 +112,7 @@ function! <SID>Tex_SpecialMacros(lhs, submenu, name, irhs, ...)
 		let location = location.'<tab>'.a:lhs.'\ ('.vlhs.')'
 
 		if g:Tex_EnvironmentMaps && !exists('s:doneOnce')
-			call IMAP(a:lhs, a:irhs, 'tex')
+			call Tex_IMAP(a:lhs, a:irhs, 'tex')
 			exec 'vnoremap '.vlhs.' '.vrhs
 		endif
 
@@ -122,7 +122,7 @@ function! <SID>Tex_SpecialMacros(lhs, submenu, name, irhs, ...)
 		if wiz
 			exe 'amenu '.location.' <plug><C-r>=Tex_DoEnvironment("'.a:name.'")<CR>'
 		else
-			exe 'amenu '.location." <plug><C-r>=IMAP_PutTextWithMovement('".a:irhs."')<CR>"
+			exe 'amenu '.location." <plug><C-r>=Tex_PutTextWithMovement('".a:irhs."')<CR>"
 		endif
 		exe 'vmenu '.location.' '.vrhs
 	endif
@@ -137,14 +137,14 @@ function! <SID>Tex_SectionMacros(lhs, name)
 
 	if g:Tex_SectionMaps && !exists('s:doneOnce')
 		exe 'vnoremap '.vlhs.' '.vrhs
-		call IMAP (a:lhs, "\\".a:name.'{«»}«»', 'tex')
+		call Tex_IMAP (a:lhs, "\\".a:name.'{«»}«»', 'tex')
 	endif
 
 	if g:Tex_Menus && g:Tex_SectionMenus
 		let location = g:Tex_EnvMenuLocation.'Sections.'.a:name.'<tab>'.a:lhs.'\ ('.vlhs.')'
 		let advlocation = g:Tex_EnvMenuLocation.'Sections.Advanced.'.a:name
 
-		let irhs = "\<C-r>=IMAP_PutTextWithMovement('\\".a:name."{«»}«»')\<CR>"
+		let irhs = "\<C-r>=Tex_PutTextWithMovement('\\".a:name."{«»}«»')\<CR>"
 
 		let advirhs = "\<C-r>=Tex_InsSecAdv('".a:name."')\<CR>"
 		let advvrhs = "\<C-\\>\<C-N>:call Tex_VisSecAdv('".a:name."')\<CR>"
@@ -285,7 +285,7 @@ endif
 " ============================================================================== 
 " Tex_itemize: {{{
 function! Tex_itemize(env)
-	return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr>\\item «»\<cr>\\end{".a:env."}«»")
+	return Tex_PutTextWithMovement('\begin{'.a:env."}\<cr>\\item «»\<cr>\\end{".a:env."}«»")
 endfunction
 " }}} 
 " Tex_description: {{{
@@ -295,9 +295,9 @@ function! Tex_description(env)
 		if itlabel != ''
 			let itlabel = '['.itlabel.']'
 		endif
-		return IMAP_PutTextWithMovement("\\begin{description}\<cr>\\item".itlabel." «»\<cr>\\end{description}«»")
+		return Tex_PutTextWithMovement("\\begin{description}\<cr>\\item".itlabel." «»\<cr>\\end{description}«»")
 	else
-		return IMAP_PutTextWithMovement(s:description)
+		return Tex_PutTextWithMovement(s:description)
 	endif
 endfunction
 " }}} 
@@ -340,9 +340,9 @@ function! Tex_figure(env)
 		let figure = '\begin{'.a:env.'}'.flto
 		let figure = figure . centr
 		let figure = figure . '\end{'.a:env.'}'
-		return IMAP_PutTextWithMovement(figure)
+		return Tex_PutTextWithMovement(figure)
 	else
-		return IMAP_PutTextWithMovement(s:figure)
+		return Tex_PutTextWithMovement(s:figure)
 	endif
 endfunction
 " }}} 
@@ -384,9 +384,9 @@ function! Tex_table(env)
 			let ret=ret.'\label{tab:'.label."}\<cr>"
 		endif
 		let ret=ret.'\end{table}«»'
-		return IMAP_PutTextWithMovement(ret)
+		return Tex_PutTextWithMovement(ret)
 	else
-		return IMAP_PutTextWithMovement(s:table)
+		return Tex_PutTextWithMovement(s:table)
 	endif
 endfunction
 " }}} 
@@ -401,9 +401,9 @@ function! Tex_tabular(env)
 		if format != ''
 		  let format = '{'.format.'}'
 		endif
-		return IMAP_PutTextWithMovement('\begin{'.a:env.'}'.pos.format."\<cr> \<cr>\\end{".a:env.'}«»')
+		return Tex_PutTextWithMovement('\begin{'.a:env.'}'.pos.format."\<cr> \<cr>\\end{".a:env.'}«»')
 	else
-		return IMAP_PutTextWithMovement('\begin{'.a:env.'}[«position»]{«format»}'."\<cr>«»\<cr>\\end{".a:env.'}«»')
+		return Tex_PutTextWithMovement('\begin{'.a:env.'}[«position»]{«format»}'."\<cr>«»\<cr>\\end{".a:env.'}«»')
 	endif
 endfunction
 " }}} 
@@ -420,14 +420,14 @@ function! Tex_eqnarray(env)
 		else
 			let arrlabel = ''
 		endif
-		return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr>".arrlabel."«»\<cr>\\end{".a:env."}«»")
+		return Tex_PutTextWithMovement('\begin{'.a:env."}\<cr>".arrlabel."«»\<cr>\\end{".a:env."}«»")
 	else
 		if a:env !~ '\*'
 			let arrlabel = '\label{«»}«»'
 		else
 			let arrlabel = '«»'
 		endif
-		return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr>".arrlabel."\<cr>".'\end{'.a:env.'}«»')
+		return Tex_PutTextWithMovement('\begin{'.a:env."}\<cr>".arrlabel."\<cr>".'\end{'.a:env.'}«»')
 	endif
 endfunction
 " }}} 
@@ -444,9 +444,9 @@ function! Tex_list(env)
 		else
 			let label = ''
 		endif
-		return IMAP_PutTextWithMovement('\begin{list}'.label."\<cr>\\item \<cr>\\end{list}«»")
+		return Tex_PutTextWithMovement('\begin{list}'.label."\<cr>\\item \<cr>\\end{list}«»")
 	else
-		return IMAP_PutTextWithMovement(s:list)
+		return Tex_PutTextWithMovement(s:list)
 	endif
 endfunction
 " }}} 
@@ -461,9 +461,9 @@ function! Tex_document(env)
 		else
 			let foo = foo.'['.opts.']'.'{'.dstyle.'}'
 		endif
-		return IMAP_PutTextWithMovement(foo."\<cr>\<cr>\\begin{document}\<cr>«»\<cr>\\end{document}")
+		return Tex_PutTextWithMovement(foo."\<cr>\<cr>\\begin{document}\<cr>«»\<cr>\\end{document}")
 	else
-		return IMAP_PutTextWithMovement(s:document)
+		return Tex_PutTextWithMovement(s:document)
 	endif
 endfunction
 " }}} 
@@ -478,9 +478,9 @@ function! Tex_minipage(env)
 		else
 			let  foo = foo.'['.pos.']{'.width.'}'
 		endif
-		return IMAP_PutTextWithMovement(foo."\<cr>«»\<cr>\\end{minipage}«»")
+		return Tex_PutTextWithMovement(foo."\<cr>«»\<cr>\\end{minipage}«»")
 	else
-		return IMAP_PutTextWithMovement(s:minipage)
+		return Tex_PutTextWithMovement(s:minipage)
 	endif
 endfunction
 " }}} 
@@ -496,7 +496,7 @@ function! Tex_thebibliography(env)
         let bar = bar.'['.biblabel.']'
     endif
     let bar = bar.'{'.key.'}'
-    return IMAP_PutTextWithMovement('\begin{thebibliography}'.foo."\<cr>".bar." \<cr>\\end{thebibliography}«»\<Up>")
+    return Tex_PutTextWithMovement('\begin{thebibliography}'.foo."\<cr>".bar." \<cr>\\end{thebibliography}«»\<Up>")
 endfunction
 " }}} 
 
@@ -579,11 +579,11 @@ function! Tex_PutEnvironment(env)
 	elseif exists('*Tex_'.a:env)
 		exe 'return Tex_'.a:env.'(a:env)'
 	elseif a:env == '$$'
-		return IMAP_PutTextWithMovement('$$«»$$')
+		return Tex_PutTextWithMovement('$$«»$$')
 	elseif a:env == '['
-		return IMAP_PutTextWithMovement("\\[\<CR>«»\<CR>\\]«»")
+		return Tex_PutTextWithMovement("\\[\<CR>«»\<CR>\\]«»")
 	else
-        return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr>«»\<cr>\\end{".a:env."}«»")
+        return Tex_PutTextWithMovement('\begin{'.a:env."}\<cr>«»\<cr>\\end{".a:env."}«»")
 	endif
 endfunction " }}}
 " Mapping the <F5> key to insert/prompt for an environment/package {{{

@@ -4,7 +4,7 @@
 "         WWW: http://robotics.eecs.berkeley.edu/~srinath/vim/.vim/imaps.vim
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
-" Last Change: Fri Dec 06 04:00 PM 2002 PST
+" Last Change: Fri Dec 13 12:00 PM 2002 EST
 " 
 " Documentation: {{{
 "
@@ -45,14 +45,14 @@
 " The script already provides some default mappings. each "mapping" is of the
 " form:
 "
-" call IMAP (lhs, rhs, ft)
+" call Tex_IMAP (lhs, rhs, ft)
 " 
 " Some characters in the RHS have special meaning which help in cursor
 " placement.
 "
 " Example One:
 "
-" 	call IMAP ("bit`", "\\begin{itemize}\<cr>\\item «»\<cr>\\end{itemize}«»", "tex")
+" 	call Tex_IMAP ("bit`", "\\begin{itemize}\<cr>\\item «»\<cr>\\end{itemize}«»", "tex")
 " 
 " This effectively sets up the map for "bit`" whenever you edit a latex file.
 " When you type in this sequence of letters, the following text is inserted:
@@ -79,7 +79,7 @@
 " 
 " Example Two:
 " You can use the <C-r> command to insert dynamic elements such as dates.
-"	call IMAP ('date`', "\<c-r>=strftime('%b %d %Y')\<cr>", '')
+"	call Tex_IMAP ('date`', "\<c-r>=strftime('%b %d %Y')\<cr>", '')
 "
 " sets up the map for date` to insert the current date.
 "
@@ -101,7 +101,7 @@ let s:doneImaps = 1
 " ==============================================================================
 " IMAP: Adds a "fake" insert mode mapping. {{{
 "       For example, doing
-"           IMAP('abc', 'def' ft) 
+"           Tex_IMAP('abc', 'def' ft) 
 "       will mean that if the letters abc are pressed in insert mode, then
 "       they will be replaced by def. If ft != '', then the "mapping" will be
 "       specific to the files of type ft. 
@@ -121,7 +121,7 @@ let s:doneImaps = 1
 "       the previous characters consititute the left hand side of the mapping,
 "       the previously typed characters and erased and the right hand side is
 "       inserted
-function! IMAP(lhs, rhs, ft)
+function! Tex_IMAP(lhs, rhs, ft)
 	let lastLHSChar = a:lhs[strlen(a:lhs)-1]
 	" s:charLens_<ft>_<char> contains the lengths of the left hand sides of
 	" the various mappings for filetype <ft> which end in <char>. its a comma
@@ -255,7 +255,7 @@ function! <SID>LookupCharacter(char)
 			" get the corresponding RHS
 			exe "let ret = ".lhsHash
 			
-			return bkspc.IMAP_PutTextWithMovement(ret)
+			return bkspc.Tex_PutTextWithMovement(ret)
 
 		endwhile
 
@@ -268,7 +268,7 @@ endfunction
 " }}}
 " IMAP_PutTextWithMovement: appends movement commands to a text  {{{
 " 		This enables which cursor placement.
-function! IMAP_PutTextWithMovement(text)
+function! Tex_PutTextWithMovement(text)
 	
 	let s:oldenc = &encoding
 	if &encoding != 'latin1'

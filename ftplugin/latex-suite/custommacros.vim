@@ -3,7 +3,7 @@
 "      Author: Mikolaj Machowski
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Thu Dec 05 10:00 PM 2002 PST
+" Last Change: Fri Dec 13 12:00 PM 2002 EST
 " 
 "  Description: functions for processing custom macros in the
 "               latex-suite/macros directory
@@ -108,7 +108,7 @@ function! <SID>ReadMacro(...)
 	silent! exec "normal! V/^¡!¡Temp Line¡!¡$/-1\<CR>\"ax"
 	call Tex_CleanSearchHistory()
 	
-	silent! exec "normal! i\<C-r>='¡!¡Start here¡!¡'.IMAP_PutTextWithMovement(@a)\<CR>"
+	silent! exec "normal! i\<C-r>='¡!¡Start here¡!¡'.Tex_PutTextWithMovement(@a)\<CR>"
 	let pos = line('.').'| normal! '.virtcol('.').'|'
 
 	call search('^¡!¡Temp Line¡!¡$')

@@ -2,7 +2,7 @@
 " 	       File: bibtex.vim
 "      Function: BibT
 "        Author: Alan G Isaac <aisaac@american.edu>
-"   Last Change: Fri Apr 26 10:00 PM 2002 PDT
+"   Last Change: Fri Dec 13 12:00 PM 2002 EST
 "=============================================================================
 
 if exists('s:done')
@@ -10,9 +10,9 @@ if exists('s:done')
 endif
 let s:done = 1
 
-call IMAP ('BBA', "\<C-r>=BibT('article', '', 0)\<CR>", 'bib')
-call IMAP ('BBB', "\<C-r>=BibT('inproceedings', '', 0)\<CR>", 'bib')
-call IMAP ('BAS', "\<C-r>=BibT('', '', 0)\<CR>", 'bib')
+call Tex_IMAP ('BBA', "\<C-r>=BibT('article', '', 0)\<CR>", 'bib')
+call Tex_IMAP ('BBB', "\<C-r>=BibT('inproceedings', '', 0)\<CR>", 'bib')
+call Tex_IMAP ('BAS', "\<C-r>=BibT('', '', 0)\<CR>", 'bib')
 
 " BibT: function to generate a formatted bibtex entry {{{
 " three sample usages:
@@ -250,7 +250,7 @@ function BibT(type, options, prompt)
 	let retval = retval.'otherinfo = {«»}'."\n"
 	let retval = retval."}«»"."\n"
 
-	return IMAP_PutTextWithMovement(retval)
+	return Tex_PutTextWithMovement(retval)
 endfunction
 
 " }}}
