@@ -1,7 +1,7 @@
 let g:TeX_package_option_schedule = ''
 
 let g:TeX_package_schedule = 
-\ 'ens:schedule[«title»],'
+\ 'ens:schedule:[«title»],'
 \.'bra:CellHeight,'
 \.'bra:CellWidth,'
 \.'bra:TimeRange,'
@@ -11,3 +11,5 @@ let g:TeX_package_schedule =
 \.'nor:FiveDay,'
 \.'nor:SevenDay,'
 \.'brs:NewAppointment{«name»}{«bg»}{«fg»}'
+
+" vim:ft=vim:ff=unix
