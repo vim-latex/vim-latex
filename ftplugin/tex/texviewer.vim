@@ -42,7 +42,7 @@ function! s:Tex_look(what)
 endfunction
 
 if getcwd() != expand("%:p:h")
-	let s:search_directory = expand("%:h") . '/'
+	let s:search_directory = expand("%:p:h") . '/'
 else
 	let s:search_directory = ''
 endif
@@ -81,8 +81,10 @@ function! Tex_completion(what, where)
 		let pattern = '.*\\\(\w\{-}\)\(\[.\{-}\]\)\?{$'
 		let s:type = substitute(s:curline, pattern, '\1', 'e')
 		let s:typeoption = substitute(s:curline, pattern, '\2', 'e')
+		call Tex_Debug('s:type = '.s:type.', typeoption = '.s:typeoption)
 
 		if exists("s:type") && s:type =~ 'ref'
+			call Tex_Debug("silent! grep! '\\label{".s:prefix."' ".s:search_directory.'*.tex', 'view')
 			exe "silent! grep! '\\label{".s:prefix."' ".s:search_directory.'*.tex'
 			call <SID>Tex_c_window_setup()
 
