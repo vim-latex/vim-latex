@@ -3,7 +3,7 @@
 "      Author: Mikolaj Machowski
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: Mon Apr 29 01:00 PM 2002 PDT
+" Last Change: Wed May 01 07:00 PM 2002 PDT
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -216,7 +216,6 @@ function! TeX_pack(pack)
 			while basic_nu_p_o_list < nu_p_o_list
 				let p_o_item = GetListItem(g:p_o_list, basic_nu_p_o_list)
 				let p_o_item_def = strpart(p_o_item, 0, 3)
-				let l_m_p_o_item = "&".substitute(p_o_item, "ä", "", "")
 				if !exists("NotOptMenu") && (o_loop_nu % s:menu_div == 0 || p_o_item_def == "sbr")
 					if p_o_item_def == "sbr"
 						let p_o_item_name = substitute(p_o_item, "^...:", "", "")
@@ -233,6 +232,7 @@ function! TeX_pack(pack)
 						endif
 					endif
 				endif
+				let l_m_p_o_item = "&".substitute(p_o_item, "ä", "", "")
 				let p_o_end = p_o_item[strlen(p_o_item)-1]
 				if p_o_end !~ "[a-zA-Z}]"
 					let r_m_p_o_item = "<plug><C-r>=IMAP_PutTextWithMovement('".p_o_item."ä".p_o_delimiter."«»')<cr>"
@@ -287,6 +287,16 @@ function! TeX_pack(pack)
 				let com_type = "(E)"
 				let l_m_item = "&".p_item_name."(E)"
 				let r_m_item = "<plug>\\begin{".p_item_name."}<cr> <cr>\\end{".p_item_name."}«»<Up><Left>"
+			elseif p_item_def == "ens"
+				let com_type = "(E)"
+				let p_env_spec = substitute(p_item_name, ".*:", "", "")
+				let p_env_name = matchstr(p_item_name, "^[^:]*")
+				let l_m_item = "&".p_env_name."(E)"
+				let r_m_item = "<plug>\\begin{".p_env_name."}".p_env_spec."<cr>«»<cr>\\end{".p_env_name."}«»<Up><Up><C-j>"
+			elseif p_item_def == "eno"
+				let com_type = "(E)"
+				let l_m_item = "&".p_item_name."(E)"
+				let r_m_item = "<plug>\\begin[«»]{".p_item_name."}<cr>«»<cr>\\end{".p_item_name."}«»<Up><Up><C-j>"
 			elseif p_item_def == "nor"
 				let com_type = "\\\\'"
 				let l_m_item = "\\\\&".p_item_name."'"
