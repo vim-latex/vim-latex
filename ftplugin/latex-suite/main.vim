@@ -605,7 +605,7 @@ endfunction " }}}
 "			"stabilize" that version by releasing a few pre-releases and then
 "			keep that as a stable point.
 function! Tex_Version()
-	return "Latex-Suite: version 1.6.11"
+	return "Latex-Suite: version 1.6.12"
 endfunction 
 
 com! -nargs=0 TVersion echo Tex_Version()
@@ -653,7 +653,7 @@ if g:Tex_SmartKeyQuote
 		endif
 		let boundary = '\|'
 		" This code seems to be obsolete, since this script variable is never
-		" set.  The idea is that some languages use ",," as an open- or
+		" set. The idea is that some languages use ",," as an open- or
 		" close-quote string, and we want to avoid confusing ordinary ","
 		" with a quote boundary.
 		if exists("s:TeX_strictquote")
@@ -664,21 +664,28 @@ if g:Tex_SmartKeyQuote
 				let boundary = boundary . '\>'
 			endif
 		endif
+
 		" Eventually return q; set it to the default value now.
 		let q = open
+		let pattern = 
+			\ escape(open, '\~') .
+			\ boundary .
+			\ escape(close, '\~') .
+			\ '\|^$\|"'
+
 		while 1	" Look for preceding quote (open or close), ignoring
 			" math mode and '\"' .
-			call search(escape(open . boundary . close . '\|^$\|"', "~"), "bw")
+			call search(pattern, "bw")
 			if synIDattr(synID(line("."), col("."), 1), "name") !~ "^texMath"
-				\ && (col(".") == 1 || getline(".")[col(".")-2] != '\')
+				\ && strpart(getline('.'), col('.')-2, 2) != '\"'
 				break
 			endif
 		endwhile
+		
 		" Now, test whether we actually found a _preceding_ quote; if so, is it
 		" an open quote?
 		if ( line(".") < l || line(".") == l && col(".") < c )
-			if strpart(getline("."), col(".")-1) =~
-						\ '\V\^' . escape(open, '\')
+			if strpart(getline("."), col(".")-1) =~ '\V\^' . escape(open, '\')
 				if line(".") == l && col(".") + strlen(open) == c
 					" Insert "<++>''<++>" instead of just "''".
 					let q = IMAP_PutTextWithMovement("<++>".close."<++>")
@@ -687,10 +694,12 @@ if g:Tex_SmartKeyQuote
 				endif
 			endif
 		endif
+
 		" Return to line l, column c:
 		execute restore_cursor
 		" Start with <Del> to remove the " put in by the :imap .
 		return "\<Del>" . q
+
 	endfunction
 
 endif
