@@ -2,7 +2,7 @@
 " 	     File: packages.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: sob lis 30 03:00  2002 C
+" Last Change: sob gru 07 12:00  2002 C
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -20,7 +20,7 @@ let s:path = expand("<sfile>:p:h")
 let s:menu_div = 20
 
 com! -nargs=* TPackage call Tex_pack_one(<f-args>)
-com! -nargs=0 TPackageUpdate :silent! call Tex_pack_one(expand("<cword>"))
+com! -nargs=0 TPackageUpdate :silent! call Tex_pack_updateall()
 com! -nargs=0 TPackageUpdateAll :silent! call Tex_pack_updateall()
 
 let g:Tex_package_supported = ''
@@ -83,8 +83,9 @@ function! Tex_pack_one(...)
 	if a:0 == 0
 		let pwd = getcwd()
 		exe 'cd '.s:path.'/packages'
-		let filename = Tex_ChooseFile('Choose a package: ')
+		let packname = Tex_ChooseFile('Choose a package: ')
 		exe 'cd '.pwd
+		call Tex_pack_check(packname)
 	else
 		let i = a:0
 		let omega = 1
@@ -94,6 +95,7 @@ function! Tex_pack_one(...)
 			let omega = omega + 1
 		endwhile
 	endif
+	return Tex_pack_supp(packname)
 endfunction
 " }}}
 " Tex_pack_all: scans the current file for \\usepackage{ lines {{{
