@@ -38,7 +38,7 @@ endif
 " ReadTemplate: reads in the template file from the template directory. {{{
 function! <SID>ReadTemplate(...)
 	if a:0 > 0
-		let filename = a:1.'.*'
+		let filename = a:1
 	else
 		let filelist = Tex_FindInRtp('', 'templates')
 		let filename = 
