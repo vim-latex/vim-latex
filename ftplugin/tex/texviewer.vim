@@ -144,7 +144,7 @@ function! Tex_completion(what, where)
 			exe 'silent! Sexplore '.s:search_directory
 			call <SID>Tex_explore_window("input")
 
-		elseif exists("g:Tex_completion_{s:type}")
+		elseif exists("g:Tex_completion_".s:type)
 			call <SID>CompleteName('plugin_'.s:type)
 
 		elseif exists("s:type") && g:Tex_completion_explorer =~ ','.s:type
