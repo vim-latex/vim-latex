@@ -2,8 +2,8 @@
 " 	     File: envmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
-" Last Change: Sun Jan 05 12:00 AM 2003 PST
-" 
+"  CVS Header: 
+"  $Header$
 "  Description: mappings/menus for environments. 
 "=============================================================================
 
@@ -570,22 +570,26 @@ endfunction " }}}
 " Description: 
 "   Based on input argument, it calls various specialized functions.
 function! Tex_PutEnvironment(env)
-	if a:env =~ "equation*\\|eqnarray*\\|align*\\|theorem\\|lemma\\|equation\\|eqnarray\\|align\\|multline"
-		return Tex_eqnarray(a:env)
-	elseif a:env =~ "enumerate\\|itemize\\|theindex\\|trivlist"
-		return Tex_itemize(a:env)
-    elseif a:env =~ "table\\|table*"
-        return Tex_table(a:env)
-    elseif a:env =~ "tabular\\|tabular*\\|array\\|array*"
-        return Tex_tabular(a:env)
-	elseif exists('*Tex_'.a:env)
-		exe 'return Tex_'.a:env.'(a:env)'
-	elseif a:env == '$$'
-		return IMAP_PutTextWithMovement('$$<++>$$')
-	elseif a:env == '['
-		return IMAP_PutTextWithMovement("\\[\<CR><++>\<CR>\\]<++>")
+	if s:isvisual == "yes"
+		return VEnclose('\begin{'.a:env.'}', '\end{'.a:env.'}', '\begin{'.a:env.'}', '\end{'.a:env.'}')
 	else
-        return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr><++>\<cr>\\end{".a:env."}<++>")
+		if a:env =~ "equation*\\|eqnarray*\\|align*\\|theorem\\|lemma\\|equation\\|eqnarray\\|align\\|multline"
+			return Tex_eqnarray(a:env)
+		elseif a:env =~ "enumerate\\|itemize\\|theindex\\|trivlist"
+			return Tex_itemize(a:env)
+		elseif a:env =~ "table\\|table*"
+			return Tex_table(a:env)
+		elseif a:env =~ "tabular\\|tabular*\\|array\\|array*"
+			return Tex_tabular(a:env)
+		elseif exists('*Tex_'.a:env)
+			exe 'return Tex_'.a:env.'(a:env)'
+		elseif a:env == '$$'
+			return IMAP_PutTextWithMovement('$$<++>$$')
+		elseif a:env == '['
+			return IMAP_PutTextWithMovement("\\[\<CR><++>\<CR>\\]<++>")
+		else
+			return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr><++>\<cr>\\end{".a:env."}<++>")
+		endif
 	endif
 endfunction " }}}
 " Mapping the <F5> key to insert/prompt for an environment/package {{{
@@ -601,10 +605,11 @@ if g:Tex_PromptedEnvironments != ''
 	let b:DoubleDollars = 0
 
 	" Provide only <plug>s here. main.vim will create the actual maps.
-	inoremap <silent> <Plug>Tex_FastEnvironmentInsert  <C-r>=Tex_FastEnvironmentInsert()<cr>
-	nnoremap <silent> <Plug>Tex_FastEnvironmentInsert  i<C-r>=Tex_FastEnvironmentInsert()<cr>
-	inoremap <silent> <Plug>Tex_FastEnvironmentChange  <C-O>:call Tex_ChangeEnvironments()<CR>
-	nnoremap <silent> <Plug>Tex_FastEnvironmentChange  :call Tex_ChangeEnvironments()<CR>
+	inoremap <silent> <Plug>Tex_FastEnvironmentInsert  <C-r>=Tex_FastEnvironmentInsert("no")<cr>
+	nnoremap <silent> <Plug>Tex_FastEnvironmentInsert  i<C-r>=Tex_FastEnvironmentInsert("no")<cr>
+	inoremap <silent> <Plug>Tex_FastEnvironmentChange  <C-O>:call Tex_ChangeEnvironments("no")<CR>
+	nnoremap <silent> <Plug>Tex_FastEnvironmentChange  :call Tex_ChangeEnvironments("no")<CR>
+	vnoremap <silent> <Plug>Tex_FastEnvironmentInsert  <C-\><C-N>:call Tex_FastEnvironmentInsert("yes")<CR>
 
 	" Tex_FastEnvironmentInsert: maps <F5> to prompt for env and insert it " {{{
 	" Description:
@@ -614,10 +619,11 @@ if g:Tex_PromptedEnvironments != ''
 	"   inserts a environment template either by reading in a word from the
 	"   current line or prompting the user to choose one.
 	"
-	function! Tex_FastEnvironmentInsert()
+	function! Tex_FastEnvironmentInsert(isvisual)
 
 		let start_line = line('.')
 		let pos = line('.').' | normal! '.virtcol('.').'|'
+		let s:isvisual = a:isvisual
 
 		" decide if we are in the preamble of the document. If we are then
 		" insert a package, otherwise insert an environment.
@@ -665,10 +671,15 @@ if g:Tex_PromptedEnvironments != ''
 	"
 	function! Tex_package_from_line()
 		" Function Tex_PutPackage is defined in packages.vim
-		let l = getline(".")
-		let pack = matchstr(l, '^\s*\zs.*')
-		normal!  0"_D
-		return Tex_pack_one(pack)
+		" Ignores <F5> in Visual mode 
+		if s:isvisual == "yes"
+			return 0
+		else	   
+			let l = getline(".")
+			let pack = matchstr(l, '^\s*\zs.*')
+			normal!  0"_D
+			return Tex_pack_one(pack)
+		endif
 	endfunction 
 	
 	" }}}
@@ -837,6 +848,9 @@ function! Tex_SetFastEnvironmentMaps()
 		endif
 		if !hasmapto('<Plug>Tex_FastEnvironmentChange', 'n')
 			nmap <silent> <buffer> <S-F5> <Plug>Tex_FastEnvironmentChange
+		endif
+		if !hasmapto('<Plug>Tex_FastEnvironmentInsert', 'v')
+			vmap <silent> <buffer> <F5> <Plug>Tex_FastEnvironmentInsert
 		endif
 	endif
 	if g:Tex_HotKeyMappings != ''
