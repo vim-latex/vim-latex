@@ -332,7 +332,7 @@ function! s:Tex_CompleteRefCiteCustom(type)
 		if getline('.') =~ '\\bibitem{'
 			let bibkey = matchstr(getline('.'), '\\bibitem{\zs.\{-}\ze}')
 		else
-			let bibkey = matchstr(getline('.'), '{\zs.\{-}\ze,')
+			let bibkey = matchstr(getline('.'), '{\zs.\{-}\ze\(,\|$\)')
 		endif
 		let completeword = strpart(bibkey, strlen(s:prefix))
 
