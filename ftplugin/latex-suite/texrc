@@ -382,10 +382,12 @@ TexLet g:Tex_PromptedCommands =
 " something like \'{a} and if so, deletes all of it. i.e, diacritics are
 " treated as single characters for backspacing.
 " Setting this to zero will leave the <BS> key unmapped.
+" Default: 1 
 TexLet g:Tex_SmartKeyBS = 1
 
 " Pressing " (english double quote) will insert `` or '' by making an
 " intelligent guess about whether we intended to open or close a quote.
+" Default: 1 
 TexLet g:Tex_SmartKeyQuote = 1
 
 " Users of other languages might want to change the quote characters to suit
@@ -398,6 +400,7 @@ TexLet g:Tex_SmartQuoteClose = "''"
 " Latex-suite maps the <space> key in such a way that $ characters are not
 " broken across lines.
 " NOTE: Setting this to 1 has the side-effect of making the 'tw' setting be 0.
+" Default: 
 TexLet g:Tex_SmartKeySpace = 0
 
 " Pressing ... (3 dots) results in \ldots outside math mode and \cdots in math
@@ -407,7 +410,7 @@ TexLet g:Tex_SmartKeySpace = 0
 "   $1+...+3$ should expand to $1+\cdots+n$, whereas $1,...,n$ should expand
 "   to $1,\ldots,n$. The amsmath package actually provides a command \dots
 "   which does this. Maybe use that if amsmath is detected?
-"
+" Default: 1
 TexLet g:Tex_SmartKeyDot = 1
 
 " }}}
@@ -415,16 +418,21 @@ TexLet g:Tex_SmartKeyDot = 1
 "
 " Options for preview window for ref/cite completion.
 " Height of cwindow
+" Default: 5 
 TexLet g:Tex_ViewerCwindowHeight = 5 
 " Height of preview window
+" Default: 10 
 TexLet g:Tex_ViewerPreviewHeight = 10 
 
 " Options for explorer completion.
 " Height of explorer window
+" Default: 10 
 TexLet g:Tex_ExplorerHeight = 10
 
 " Directory for images. Read |latex-completion-explorer| before changing
+" Default: '' 
 TexLet g:Tex_ImageDir = ''
+
 " }}}
 
 " }}}
@@ -439,6 +447,7 @@ TexLet g:Tex_Menus = 1
 " Math contains a large number of tex math elemets such as arrows,
 " mathematical fonts (\mathrm), mathematical diacritics (\dot), binary
 " relational operators etc. This menu compromises about 75% of the menus.
+" Default: 1 
 TexLet g:Tex_MathMenus = 1 
 
 " The following options control the "compactness" of the menus. 
@@ -446,6 +455,7 @@ TexLet g:Tex_MathMenus = 1
 " Setting this option to 1 makes the Font, Counter and Dimensioning menus to
 " be collected together into a single 'Tex-Elements' menu. Setting this to 0
 " creates seperate menus for each of them.
+" Default: 1 
 TexLet g:Tex_NestElementMenus = 1
 
 " Sometimes when you are using a lot of packages with lots of options etc,
@@ -457,13 +467,14 @@ TexLet g:Tex_PackagesMenu = 1
 " The following option will create the packages option within the TeX-Suite
 " menu.
 " Default: 1
-TexLet g:Tex_NestPackagesMenu = 0
+TexLet g:Tex_NestPackagesMenu = 1
 
 " This is the prefix added to the menu names created by latex suite.  Add a
 " dot to the following option to nest the menus under the menu name before the
 " dot.
 " NOTE: With a '.' as the last character of the following setting, every
 " single menu created by latex suite will be nested under the same menu.
+" Default: 'TeX-' 
 TexLet g:Tex_MenuPrefix = 'TeX-'
 
 
@@ -485,6 +496,16 @@ TexLet g:Tex_Folding = 1
 " NOTE: the MakeTeXFolds() function will still be available (unless disabled
 "       by g:Tex_Folding), so you can do <F6> or \rf to refresh/create folds.
 TexLet g:Tex_AutoFolding = 1 
+
+" }}}
+" ============================================================================== 
+" TEXINPUTS: check this directories for user packages {{{
+" Search some directories for user packages. They can contain, \usepackage,
+" \newcommand etc. commands. LaTeX uses $TEXINPUTS variable. Because relations
+" between Vim and shell aren't straightforward copy it here. Use exact syntax.
+" Example g:Tex_TEXINPUTS = '.:~/texmf//:'. More in |latex-package-scanning|.
+" Default: ''
+TexLet g:Tex_TEXINPUTS = ''
 
 " }}}
 " ============================================================================== 
