@@ -34,16 +34,17 @@ if exists('*s:TexFill')
 	finish
 endif
 
-" TexFormatLine: format line retaining $$'s on the same line.
-function! s:TexFill(width)  " {{{
+" TexFormatLine: format line retaining $$'s on the same line. {{{
+function! s:TexFill(width) 
 	if a:width != 0 && col(".") > a:width
 		" For future use, record the current line and the number of the current column
 		let current_line = getline(".")
 		let current_column = col(".")
 		exe "normal! a##\<Esc>"
 		call <SID>TexFormatLine(a:width,current_line,current_column)
+		exe "normal! ?##\<CR>2s\<Esc>"
 		" Remove ## from the search history.
-		exe "normal! ?##\<CR>2s\<Esc>".s:RemoveLastHistoryItem
+		call histdel("/", -1)|let @/=histget("/", -1)
 	endif
 endfunction
 
@@ -62,7 +63,8 @@ function! s:TexFormatLine(width, current_line, current_column)    " {{{
 		let evendollars = 1
 		let counter = 0
 		while counter <= a:width-1
-			if string[counter] == '$' && string[counter-1] != '\'  " Skip \$.
+			" Pay attention to '$$'.
+			if string[counter] == '$' && string[counter-1] != '$'
 				let evendollars = 1 - evendollars
 				let number_of_dollars = number_of_dollars + 1
 			endif
@@ -72,7 +74,7 @@ function! s:TexFormatLine(width, current_line, current_column)    " {{{
 		exe 'normal! ' . (a:width + 1) . '|'
 		if evendollars
 			" Then you are not between dollars.
-			exe "normal! ?\\$\\| \<CR>W"
+			exe "normal! ?\\$\\+\\| \<CR>W"
 		else
 			" Then you are between dollars.
 			normal! F$
@@ -94,11 +96,6 @@ function! s:TexFormatLine(width, current_line, current_column)    " {{{
 		call <SID>TexFormatLine(a:width, a:current_line, a:current_column)
 	endif
 endfunction
-
-" }}}
-" s:RemoveLastHistoryItem: removes last search item from search history {{{
-" Description: Execute this string to clean up the search history.
-let s:RemoveLastHistoryItem = ':call histdel("/", -1)|let @/=histget("/", -1)'
 
 " }}}
 
