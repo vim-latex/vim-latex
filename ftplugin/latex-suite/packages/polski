@@ -21,3 +21,25 @@ let g:TeX_package_polski =
 \"ctgh,".
 \"tg,".
 \"tgh"
+
+function! TPackagePolskiTylda()
+	call IMAP(" A ", " A~", "tex")
+	call IMAP(" a ", " a~", "tex")
+	call IMAP(" I ", " I~", "tex")
+	call IMAP(" i ", " i~", "tex")
+	call IMAP(" O ", " O~", "tex")
+	call IMAP(" o ", " o~", "tex")
+	call IMAP(" U ", " U~", "tex")
+	call IMAP(" u ", " u~", "tex")
+	call IMAP(" W ", " W~", "tex")
+	call IMAP(" w ", " w~", "tex")
+	call IMAP(" Z ", " Z~", "tex")
+	call IMAP(" z ", " z~", "tex")
+	call IMAP(" tys. ", "~tys. ", "tex")
+	call IMAP(" mln", "~mln", "tex")
+	call IMAP(" mld", "~mld", "tex")
+	call IMAP("...", "\ldots{}", "tex")
+	call IMAP(" ---", "~---", "tex")
+	call IMAP(" r. ", "~r. ", "tex")
+endfunction
+call TPackagePolskiTylda()
