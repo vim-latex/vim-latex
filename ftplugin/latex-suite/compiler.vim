@@ -128,7 +128,7 @@ function! RunLaTeX()
             " otherwise, if a *.latexmain file is found, then use that file to
             " construct a main file.
             if mainfname == ''
-                let mainfname = expand("%:t:r")
+                let mainfname = expand("%:t")
             endif
             exec 'make '.mainfname
         endif
@@ -214,6 +214,10 @@ function! ViewLaTeX(size)
 						\ exists('v:servername') &&
 						\ (s:viewer == "xdvi" || s:viewer == "xdvik")
 				exec '!'.s:viewer.' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.mainfname.'.dvi &'
+			elseif exists('g:Tex_UseEditorSettingInDVIViewer') &&
+						\ g:Tex_UseEditorSettingInDVIViewer == 1 && a:size == "all" &&
+						\ s:viewer == "kdvi"
+				exec '!kdvi --unique '.mainfname.'.dvi &'
 			else
 				if a:size == "all"
 					exec '!'.s:viewer.' '.mainfname.'.dvi &'
@@ -279,6 +283,10 @@ function! ForwardSearchLaTeX()
 			exec '!'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.mainfname.'.dvi &'
 		else
 			exec '!'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').' '.mainfname.'.dvi &'
+		elseif exists('g:Tex_UseEditorSettingInDVIViewer') &&
+					\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
+					\ viewer == "kdvi"
+			exec '!kdvi --unique file:'.mainfname.'.dvi\#src:'.line('.').Tex_GetMainFileName(":p:t:r").' &'
 		endif
 	end
 
