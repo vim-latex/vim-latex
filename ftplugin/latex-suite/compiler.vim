@@ -173,7 +173,7 @@ function! Tex_SetupErrorWindow()
         if exists('g:Tex_GotoError') && g:Tex_GotoError == 1
  	        call GotoErrorLocation(mfnlog)
         else
-           wincmd k
+			exec s:origwinnum.' wincmd w'
         endif
 	endif
 
@@ -223,6 +223,7 @@ function! RunLaTeX()
 		let i = i + 1
 	endwhile
 	
+	let s:origwinnum = winnr()
 	call Tex_SetupErrorWindow()
 
 	exec 'cd '.curd
@@ -460,7 +461,7 @@ function! PositionPreviewWindow(filename)
 	if getline('.') =~ '|\d\+ warning|'
 		let searchpat = escape(matchstr(getline('.'), '|\d\+ warning|\s*\zs.*'), '\ ')
 	else
-		let searchpat = 'l.'.linenum
+		let searchpat = 'l\.'.linenum
 	endif
 
 	" We first need to be in the scope of the correct file in the .log file.
