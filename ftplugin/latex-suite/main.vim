@@ -93,43 +93,42 @@ if !exists('s:doneMappings')
 	call IMAP (g:Tex_Leader.'I', "\\int_{<++>}^{<++>}<++>", 'tex')
 	" }}}
 	" Greek Letters {{{
-	call IMAP('`a', '\alpha', 'tex') " {{{
-	call IMAP('`b', '\beta', 'tex')
-	call IMAP('`c', '\chi', 'tex')
-	call IMAP('`d', '\delta', 'tex')
-	call IMAP('`e', '\varepsilon', 'tex')
-	call IMAP('`f', '\varphi', 'tex')
-	call IMAP('`g', '\gamma', 'tex')
-	call IMAP('`h', '\eta', 'tex')
-	call IMAP('`k', '\kappa', 'tex')
-	call IMAP('`l', '\lambda', 'tex')
-	call IMAP('`m', '\mu', 'tex')
-	call IMAP('`n', '\nu', 'tex')
-	call IMAP('`p', '\pi', 'tex')
-	call IMAP('`q', '\theta', 'tex')
-	call IMAP('`r', '\rho', 'tex')
-	call IMAP('`s', '\sigma', 'tex')
-	call IMAP('`t', '\tau', 'tex')
-	call IMAP('`u', '\upsilon', 'tex')
-	call IMAP('`v', '\varsigma', 'tex')
-	call IMAP('`w', '\omega', 'tex')
-	call IMAP('`w', '\wedge', 'tex')  " AUCTEX style
-	call IMAP('`x', '\xi', 'tex')
-	call IMAP('`y', '\psi', 'tex')
-	call IMAP('`z', '\zeta', 'tex')
+	call IMAP(g:Tex_Leader.'a', '\alpha', 'tex')
+	call IMAP(g:Tex_Leader.'b', '\beta', 'tex')
+	call IMAP(g:Tex_Leader.'c', '\chi', 'tex')
+	call IMAP(g:Tex_Leader.'d', '\delta', 'tex')
+	call IMAP(g:Tex_Leader.'e', '\varepsilon', 'tex')
+	call IMAP(g:Tex_Leader.'f', '\varphi', 'tex')
+	call IMAP(g:Tex_Leader.'g', '\gamma', 'tex')
+	call IMAP(g:Tex_Leader.'h', '\eta', 'tex')
+	call IMAP(g:Tex_Leader.'k', '\kappa', 'tex')
+	call IMAP(g:Tex_Leader.'l', '\lambda', 'tex')
+	call IMAP(g:Tex_Leader.'m', '\mu', 'tex')
+	call IMAP(g:Tex_Leader.'n', '\nu', 'tex')
+	call IMAP(g:Tex_Leader.'p', '\pi', 'tex')
+	call IMAP(g:Tex_Leader.'q', '\theta', 'tex')
+	call IMAP(g:Tex_Leader.'r', '\rho', 'tex')
+	call IMAP(g:Tex_Leader.'s', '\sigma', 'tex')
+	call IMAP(g:Tex_Leader.'t', '\tau', 'tex')
+	call IMAP(g:Tex_Leader.'u', '\upsilon', 'tex')
+	call IMAP(g:Tex_Leader.'v', '\varsigma', 'tex')
+	call IMAP(g:Tex_Leader.'w', '\omega', 'tex')
+	call IMAP(g:Tex_Leader.'w', '\wedge', 'tex')  " AUCTEX style
+	call IMAP(g:Tex_Leader.'x', '\xi', 'tex')
+	call IMAP(g:Tex_Leader.'y', '\psi', 'tex')
+	call IMAP(g:Tex_Leader.'z', '\zeta', 'tex')
 	" not all capital greek letters exist in LaTeX!
 	" reference: http://www.giss.nasa.gov/latex/ltx-405.html
-	call IMAP('`D', '\Delta', 'tex')
-	call IMAP('`F', '\Phi', 'tex')
-	call IMAP('`G', '\Gamma', 'tex')
-	call IMAP('`Q', '\Theta', 'tex')
-	call IMAP('`L', '\Lambda', 'tex')
-	call IMAP('`X', '\Xi', 'tex')
-	call IMAP('`Y', '\Psi', 'tex')
-	call IMAP('`S', '\Sigma', 'tex')
-	call IMAP('`U', '\Upsilon', 'tex')
-	call IMAP('`W', '\Omega', 'tex')
-	" }}}
+	call IMAP(g:Tex_Leader.'D', '\Delta', 'tex')
+	call IMAP(g:Tex_Leader.'F', '\Phi', 'tex')
+	call IMAP(g:Tex_Leader.'G', '\Gamma', 'tex')
+	call IMAP(g:Tex_Leader.'Q', '\Theta', 'tex')
+	call IMAP(g:Tex_Leader.'L', '\Lambda', 'tex')
+	call IMAP(g:Tex_Leader.'X', '\Xi', 'tex')
+	call IMAP(g:Tex_Leader.'Y', '\Psi', 'tex')
+	call IMAP(g:Tex_Leader.'S', '\Sigma', 'tex')
+	call IMAP(g:Tex_Leader.'U', '\Upsilon', 'tex')
+	call IMAP(g:Tex_Leader.'W', '\Omega', 'tex')
 	" }}}
 	" ProtectLetters: sets up indentity maps for things like ``a {{{
 	" " Description: If we simply do
@@ -365,7 +364,7 @@ function! Tex_CreatePrompt(promptList, cols, sep)
 
 		let j = 0
 		while j < a:cols && i + j <= num_common
-			let com = Tex_Strntok(a:promptList, ',', i+j)
+			let com = Tex_Strntok(a:promptList, a:sep, i+j)
 			let promptStr = promptStr.'('.(i+j).') '. 
 						\ com."\t".( strlen(com) < 4 ? "\t" : '' )
 
@@ -411,6 +410,16 @@ function! Tex_GetMainFileName(...)
 endfunction 
 
 " }}}
+" Tex_ChooseFromPrompt: process a user input to a prompt string {{{
+" " Description: 
+function! Tex_ChooseFromPrompt(dialog, list, sep)
+	let inp = input(a:dialog)
+	if inp =~ '\d\+'
+		return Tex_Strntok(a:list, a:sep, inp)
+	else
+		return inp
+	endif
+endfunction " }}}
 " Tex_ChooseFile: produces a file list and prompts for choice {{{
 " Description: 
 function! Tex_ChooseFile(dialog)
