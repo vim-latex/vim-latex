@@ -1834,12 +1834,31 @@ Tex_FoldedCommands                                          *ls_8_2_3* *ls_a_cj*
                                                             *Tex_FoldedCommands*
 
 This entry defines which commands will be folded. It is a comma seperated string
-of words each of which defines a single command. The defualt setting is  >
-    footnote,intertext
-The words need not be standard Latex commands. You can use whatever words you
-like. Each word will fold all commands whose name begins with that word as in
-the case of the Tex_FoldedEnvironments [|ls_a_ci|] variable.
+of words each of which defines a single command. The defualt setting is empty,
+i.e no commands are folded. The words need not be standard Latex commands. You
+can use whatever words you like. Each word will fold all commands whose name
+begins with that word as in the case of the Tex_FoldedEnvironments [|ls_a_ci|]
+variable.
 
+NOTE: It is very difficult to fold commands reliably because it is very
+      difficult to create a regexp which will match a line containing unmatched
+      parentheses (or curly brackets), but will not match a line containing
+      matched parentheses.
+      
+      Just to make things safer, only lines which start a command but do not
+      contain additional curly braces after the command has started are folded.
+      In other words, if you wanted to fold the the command "mycommand", then
+      the lines  >
+          \mycommand{This is a line
+          and some more text on the next line
+          }
+<     will be folded, but the lines  >
+          \mycommand{This is a \textbf{line}
+          and some more text
+          }
+<     will not be folded. This is a bug which is very difficult to fix.
+      
+      
 See also advanced fold settings [|ls_a_cl|].
 
 
