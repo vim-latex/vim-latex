@@ -123,6 +123,9 @@ endfunction
 " Tex_pack_all: scans the current file for \usepackage{} lines {{{
 "   and if supported, loads the options and commands found in the
 "   corresponding package file.
+"  Now scans also for \newenvironment and \newcommand lines and adds names to
+"  g:Tex_Prompted variables, they can be easy available through <F5> and <F7>
+"  shortcuts 
 function! Tex_pack_all()
 
 	let pos = line('.').' | normal! '.virtcol('.').'|'
@@ -142,6 +145,7 @@ function! Tex_pack_all()
 
 	0
 	let beginline = search('\\begin{document}', 'W')
+	let endline = search('\\end{document}', 'W')
 	0
 
 	" Scan
@@ -188,6 +192,40 @@ function! Tex_pack_all()
 		let @a = saveA
 
 	endwhile
+
+	" Scans whole file (up to \end{document}) for \newcommand and adds this
+	" commands to g:Tex_PromptedCommands variable, it is easily available
+	" through <F7>
+	0 
+	let s:Tex_LookForCommand = g:Tex_PromptedCommandsDefault 
+	while search('^\s*\\newcommand\*\?{.\{-}}', 'W')
+
+		if line('.') > endline 
+			break
+		endif
+
+		let newcommand = matchstr(getline('.'), '\\newcommand\*\?{\\\zs.\{-}\ze}')
+		let s:Tex_LookForCommand = s:Tex_LookForCommand . ',' . newcommand
+
+	endwhile
+	let g:Tex_PromptedCommands = s:Tex_LookForCommand
+
+	" Scans whole file (up to \end{document}) for \newenvironment and adds this
+	" environments to g:Tex_PromptedEnvironments variable, it is easily available
+	" through <F5>
+	0
+	let s:Tex_LookForEnvironment = g:Tex_PromptedEnvironmentsDefault 
+	while search('^\s*\\newenvironment\*\?{.\{-}}', 'W')
+
+		if line('.') > endline 
+			break
+		endif
+
+		let newenvironment = matchstr(getline('.'), '\\newenvironment\*\?{\zs.\{-}\ze}')
+		let s:Tex_LookForEnvironment = s:Tex_LookForEnvironment . ',' . newenvironment
+
+	endwhile
+	let g:Tex_PromptedEnvironments = s:Tex_LookForEnvironment
 
 	if toquit
 		q	
