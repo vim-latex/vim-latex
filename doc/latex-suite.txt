@@ -1,6 +1,6 @@
 *latex-suite*   Tools for an enhanced LaTeX environment in Vim
                         For Vim version 6.0 and above.
-                  Last Change: wto lis 26 10:00  2002 C
+                  Last Change: Fri Dec 06 01:00 AM 2002 PST
 
                  By Srinath Avadhanula <srinath@fastmail.fm>,
                       Mikolaj Machowski <mikmach@wp.pl>,
@@ -15,9 +15,10 @@ macros to speed up editing LaTeX documents to functions for forward searching
 many people. Please see |latex-suite-credits| for a list of people who have
 helped.
 
-For license and conditions of use look |copyright|. All occurences of ``Vim''
-replace with ``latexSuite'', and as maintainers and owners of copyrights are
-Srinath Avadhanula and Mikolaj Machowski.
+Latex-suite is released under the Vim charityware license. For license and
+conditions of use look at |copyright|. Replace all occurences of ``Vim'' with
+``Latex-Suite''. The current copyright holders of Latex-Suite are Srinath
+Avadhanula and Mikolaj Machowski.
 
 Homepage: http://vim-latex.sourceforge.net
 
@@ -48,8 +49,11 @@ file:  >
 <   set sw=2 >
     " TIP: if you write your \label's as \label{fig:something}, then if you
     " type in \ref{fig: and press <C-n> you will automatically cycle through 
-    " all the figure labels.
+    " all the figure labels. Very useful!
 <   set iskeyword+=: >
+    " IMPORTANT: If you are a win32 user, then the following setting is
+    " necessary in order to have latex called correctly from within vim.
+<   set shellslash 
 
 
 The tools which are included in LaTeX suite can be grouped together into the
@@ -57,45 +61,47 @@ following. Almost every feature described here can be customized to some
 degree. Please see the included file latex-suite/texrc file for the complete
 list of variables which can be customized.
 
-TABLE OF CONTENTS                                         *latex-suite-toc*
+}}}
+===========================================================================
+TABLE OF CONTENTS                           *latex-suite-toc* {{{
                                                           
-|latex-macros|      Insert and visual mode mappings and menu items for
-                    commonly used LaTeX typesetting elements 
+|latex-macros|        Insert and visual mode mappings and menu items for
+                      commonly used LaTeX typesetting elements 
 
-|latex-compiling|   This version of latex-suite ships with a version of the
-                    compiler specification which produces slightly less
-                    verbose output. It can also be dynamically re-configured
-                    to change the verbosity level.
+|latex-compiling|     This version of latex-suite ships with a version of the
+                      compiler specification which produces slightly less
+                      verbose output. It can also be dynamically re-configured
+                      to change the verbosity level.
 
-|latex-viewing|     This is a set of functions which open up the compiled .dvi
-                    document using the specified DVI viewer.
+|latex-viewing|       This is a set of functions which open up the compiled
+                      .dvi document using the specified DVI viewer.
 
-|latex-searching|   Xdvi (for UNIX) and Yap (for Windows) both provide ways
-                    for "forward searching" LaTeX documents. This section
-                    describes how to use these features and how to set up your
-                    dvi viewer to best use this feature.
+|latex-searching|     Xdvi (for UNIX) and Yap (for Windows) both provide ways
+                      for "forward searching" LaTeX documents. This section
+                      describes how to use these features and how to set up
+                      your dvi viewer to best use this feature.
 
-|latex-folding|     manual folding based on LaTeX syntax elements. 
+|latex-folding|       manual folding based on LaTeX syntax elements. 
 
-|latex-packages|    This module provides a way to generate custom menus based
-                    on the packages used in the file being edited.
+|latex-packages|      This module provides a way to generate custom menus based
+                      on the packages used in the file being edited.
 
-|latex-templates|   Custom templates
+|latex-templates|     Custom templates
 
-|latex-macros|      Custom macros
+|latex-custom-macros| Custom macros
 
-|latex-help|        LaTeX's tex-info file translated into a vim help file.
+|latex-help|          LaTeX's tex-info file translated into a vim help file.
 
-|latex-dictionary|  A dictionary of standard LaTeX terms.
+|latex-dictionary|    A dictionary of standard LaTeX terms.
 
-|latex-tools|       This version of latex-suite also ships with 2 external
-                    tools:
-                    1. |vimlatex| an external utility which filters the output
-                       of the LaTeX compiler in order to ensure a more robust
-                       error-parsing.
-                    2. |ltags| A script to generate a tags file. It recognizes
-                       files being \input'ed into a main file.
-                       (ltags is written by Dimitri Antoniou)
+|latex-tools|         This version of latex-suite also ships with 2 external
+                      tools:
+                      1. |vimlatex| an external utility which filters the output
+                         of the LaTeX compiler in order to ensure a more robust
+                         error-parsing.
+                      2. |ltags| A script to generate a tags file. It recognizes
+                         files being \input'ed into a main file.
+                         (ltags is written by Dimitri Antoniou)
 }}}
 ===========================================================================
 LATEX MACROS                                   *latex-macros* {{{
@@ -366,7 +372,9 @@ as you download and install latex-suite.  In order to compile a LaTeX file,
 simply press \ll while editing the file.  This runs latex on the current file
 and displays the errors in a |quickfix-window|. You can then scroll through
 the errors and press <enter> to be taken to the location of the corresponding
-error.
+error. Along with the errors being listed in the quickfix window, the log file
+corresponding is also opened in |preview| mode. It is scrolled automatically
+to keep in sync with the error being viewed in the quickfix window.
 
 |latex-compiler-target|         : specifying a different target format for
                                   compilation.
