@@ -75,8 +75,8 @@ function! Tex_Complete(what, where)
 		endif
 
 		if exists("s:type") && s:type =~ 'ref'
-			call Tex_Debug("silent! grep! ".Tex_EscapeForGrep('\label{'.s:prefix)." *.tex", 'view')
-			exec "silent! grep! ".Tex_EscapeForGrep('\label{'.s:prefix)." *.tex"
+			call Tex_Debug("silent! grep! ".Tex_EscapeForGrep('\\label{'.s:prefix)." *.tex", 'view')
+			exec "silent! grep! ".Tex_EscapeForGrep('\\label{'.s:prefix)." *.tex"
 			redraw!
 			call <SID>Tex_SetupCWindow()
 
@@ -131,7 +131,7 @@ function! Tex_Complete(what, where)
 			call <SID>Tex_CompleteRefCiteCustom('plugin_'.s:type)
 
 		else
-			let s:word = matchstr(s:curline, '\zs\k\{-}$')
+			let s:word = expand('<cword>')
 			if s:word == ''
 				if col('.') == strlen(getline('.'))
 					startinsert!
@@ -142,26 +142,26 @@ function! Tex_Complete(what, where)
 					return
 				endif
 			endif
-			call Tex_Debug("silent! grep! '\\<".s:word."' *.tex", 'view')
-			exe "silent! grep! '\\<".s:word."' *.tex"
+			call Tex_Debug("silent! grep! ".Tex_EscapeForGrep('\<'.s:word.'\>')." *.tex", 'view')
+			exec "silent! grep! ".Tex_EscapeForGrep('\<'.s:word.'\>')." *.tex"
 
 			call <SID>Tex_SetupCWindow()
 		endif
 		
 	elseif a:where == 'tex'
 		" Process :TLook command
-		exe "silent! grep! '".a:what."' *.tex"
+		exe "silent! grep! ".Tex_EscapeForGrep(a:what)." *.tex"
 		call <SID>Tex_SetupCWindow()
 
 	elseif a:where == 'bib'
 		" Process :TLookBib command
-		exe "silent! grep! '".a:what."' *.bib"
-		exe "silent! grepadd! '".a:what."' *.bbl"
+		exe "silent! grep! ".Tex_EscapeForGrep(a:what)." *.bib"
+		exe "silent! grepadd! ".Tex_EscapeForGrep(a:what)." *.bbl"
 		call <SID>Tex_SetupCWindow()
 
 	elseif a:where == 'all'
 		" Process :TLookAll command
-		exe "silent! grep! '".a:what."' *"
+		exe "silent! grep! ".Tex_EscapeForGrep(a:what)." *"
 		call <SID>Tex_SetupCWindow()
 	endif
 
@@ -537,7 +537,7 @@ function! Tex_ScanFileForCite(prefix)
 				if bufnr('%') != thisbufnum
 					call Tex_Debug('finding .bbl file ['.bufname('.').']', 'bib')
 					lcd %:p:h
-					exec "silent! grepadd ".Tex_EscapeForGrep('\bibitem{'.a:prefix)." %"
+					exec "silent! grepadd ".Tex_EscapeForGrep('\\bibitem{'.a:prefix)." %"
 				endif
 			endif
 			" close the newly opened window
@@ -561,7 +561,8 @@ function! Tex_ScanFileForCite(prefix)
 
 		split
 		lcd %:p:h
-		exec "silent! grepadd ".Tex_EscapeForGrep('\bibitem{'.a:prefix)." %")
+		call Tex_Debug("silent! grepadd ".Tex_EscapeForGrep('\\bibitem{'.a:prefix)." %", 'view')
+		exec "silent! grepadd ".Tex_EscapeForGrep('\\bibitem{'.a:prefix)." %"
 		q
 		
 		return 1
