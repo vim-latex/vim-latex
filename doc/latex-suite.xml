@@ -32,20 +32,20 @@
   <date>&date;</date>
   <abstract>
    <para>
-    Latex-Suite attempts to provide a comprehensive set of tools to
+    &ls; attempts to provide a comprehensive set of tools to
     view, edit and compile LaTeX documents in Vim. Together, they
     provide tools starting from macros to speed up editing LaTeX
     documents to functions for forward searching .dvi documents.
-    Latex-suite has been possible because of the contributions of many
+    &ls; has been possible because of the contributions of many
     people. Please see <link
      linkend="latex-suite-credits">latex-suite-credits</link> for a list of
     people who have helped.
    </para>
    <para>
-    Latex-suite is released under the Vim charityware license. For
+    &ls; is released under the Vim charityware license. For
     license and conditions of use look at |copyright|. Replace all
     occurences of ``Vim'' with ``Latex-Suite''. The current copyright
-    holders of Latex-Suite are Srinath Avadhanula and Mikolaj Machowski.
+    holders of &ls; are Srinath Avadhanula and Mikolaj Machowski.
    </para>
    <para>
     Homepage: <ulink url="http://vim-latex.sourceforge.net">http://vim-latex.sourceforge.net</ulink>
@@ -65,7 +65,7 @@
    Make sure that you create a few necessary settings in your
    <literal>~/.vimrc.</literal>
    <programlisting>
-" REQUIRED. This makes vim invoke latex-suite when you open a tex file.
+" REQUIRED. This makes vim invoke &ls; when you open a tex file.
 filetype plugin on
 
 " IMPORTANT: win32 users will need to have 'shellslash' set so that latex
@@ -73,7 +73,7 @@ filetype plugin on
 set shellslash
 
 " IMPORTANT: grep will sometimes skip displaying the file name if you
-" search in a singe file. This will confuse latex-suite. Set your grep
+" search in a singe file. This will confuse &ls;. Set your grep
 " program to alway generate a file-name.
 set grepprg=grep\ -nH\ $*
 
@@ -103,7 +103,7 @@ set iskeyword+=:
    current file.
   </para>
   <para>
-   When latex-suite first starts up, it scans the
+   When &ls; first starts up, it scans the
    <literal>$VIM/ftplugin/latex-suite/templates/</literal>
    directory and creates menu items based on the files found there. When
    you select a template from this menu, the file will be read in above
@@ -136,7 +136,7 @@ set iskeyword+=:
  <section id="latex-macros">
   <title>&ls; Macros</title>
   <para>
-   Latex-Suite ships with a very comprehensive set of insert mode and
+   &ls; ships with a very comprehensive set of insert mode and
    |visual-mode| mappings and menu items to typeset most of the LaTeX
    elements.
   </para>
@@ -249,7 +249,7 @@ set iskeyword+=:
      <title>Method 1</title>
      <para>
       If you press <literal>&lt;F5&gt;</literal> in the
-      insert mode while on an empty line, latex-suite prompts you
+      insert mode while on an empty line, &ls; prompts you
       with a list of environments you might want to insert. You can
       either choose one from the list or type in a new environment
       name. This list can be customized via the <link
@@ -267,7 +267,7 @@ set iskeyword+=:
      <title>Method 2</title>
      <para>
       If you press <literal>&lt;F5&gt;</literal> while on a line
-      containing a single word, then latex-suite creates a
+      containing a single word, then &ls; creates a
       environment of that name.
      </para>
     </section>
@@ -733,7 +733,7 @@ SSP for subparagraph</programlisting>
    </formalpara>
    <formalpara>
     <title>Smart Space</title>
-    Latex-suite maps the <literal>&lt;space&gt;</literal> key in such a
+    &ls; maps the <literal>&lt;space&gt;</literal> key in such a
     way that $ characters are not broken across lines. It does this by
     first setting <literal>tw=0</literal> so that Vim will not
     automatically break lines and then maps the
@@ -850,7 +850,7 @@ SSP for subparagraph</programlisting>
     menu.
    </para>
    <para>
-    When latex-suite starts up, it scans the
+    When &ls; starts up, it scans the
     <literal>$VIM/ftplugin/latex-suite/macros/</literal> directory and
     creates a menu from the files found there. Each file is considered as
     a single macro. You can place your own macros in this directory,
@@ -885,9 +885,9 @@ SSP for subparagraph</programlisting>
        <entry>
         Opens up the corresponding macro file for editing. Use
         |:TexMacroEdit| in non-gui mode. When you try to edit {macro}
-        not from local directory LaTeX-Suite will copy it to your local
+        not from local directory &ls; will copy it to your local
         directory with suffix "-local". If local copy already exists
-        LaTeX-Suite prompt for overwriting it.
+        &ls; prompt for overwriting it.
        </entry>
       </row>
       <row>
@@ -896,7 +896,7 @@ SSP for subparagraph</programlisting>
         Deletes the corresponding macro. Use the prefixed numbers for
         fast navigation of menus. Use |:TexMacroDelete| in non-gui mode.
         When you choose to delete {macro} which is not in your local
-        directory LaTeX-Suite will refuse to delete it.
+        directory &ls; will refuse to delete it.
        </entry>
       </row>
       <row>
@@ -1711,7 +1711,7 @@ newfile.tex [Preview]                                         11,3           21%
   </para>
   <para>
    If you are using commonly used LaTeX tools, then you should be all set
-   as soon as you download and install latex-suite.  In order to compile a
+   as soon as you download and install &ls;.  In order to compile a
    LaTeX file, simply press <literal>\ll</literal> while editing the file.
    This runs latex on the current file and displays the errors in a
    |quickfix-window| below the file being edited. You can then scroll
@@ -1775,7 +1775,7 @@ newfile.tex [Preview]                                         11,3           21%
     <programlisting>.tex -&gt; .dvi -&gt; .ps -&gt; .pdf</programlisting>
     to generate <literal>pdf</literal> files from <literal>dvi</literal>
     files, then you will need to specify the following setting in your
-    latex-suite configuration (see <link
+    &ls; configuration (see <link
      linkend="customizing-latex-suite">customizing &ls;</link> for where
     these settings should go):
     <programlisting>
@@ -2027,6 +2027,13 @@ endif</programlisting>
     Two commands |TPartComp| and |TPartView| are provided to be able to get
     this functionality via the command line.
    </para>
+   <para>
+    From release 1.6 onwards of &ls;, the temporary file created
+    for part compilation will reside in the same directory as the file from
+    which the fragment is being created. This ensures that any relative
+    path-names defined in the fragment will still work. &ls; will
+    attempt to clean the temporary file(s) created when Vim exits.
+   </para>
   </section>
  </section>
  <section id="latex-viewing">
@@ -2115,7 +2122,7 @@ endif</programlisting>
  <section id="latex-folding">
   <title>Latex Folding</title>
   <para>
-   Latex-suite ships with the plugin SyntaxFolds.vim which is a plugin for
+   &ls; ships with the plugin SyntaxFolds.vim which is a plugin for
    creating "fake" syntax folds on the fly. The fold method is actually manual
    but the folding is based on &latex; syntax. This offers a speed increase over
    regular syntax folding. Ofcourse it has the disadvantage that the folds are
@@ -2175,14 +2182,187 @@ endif</programlisting>
   <section id="customizing-what-to-fold">
    <title>Customizing what to fold</title>
    <para>
-    At this time, there is no setting available to tweak the folds which are
-    created by &ls;. However, the folds created by &ls; are listed in
-    <literal>$VIM/ftplugin/latex-suite/folding.vim</literal>. You will need
-    to modify the function <literal>MakeTexFolds()</literal> defined in
-    that file to modify the fold syntax. <literal>MakeTexFolds</literal>
-    makes a number of calls to <literal>AddSyntaxFoldItem</literal>. Each
-    such call defines a new "fold item". The order in which these calls are
-    made defines how the folds are nested. For example, if you desire an
+    From version 1.6 onwards, the folding in &ls; can be controlled
+    to a large extent via a number of global variables.
+   </para>
+   <section id="Tex_FoldedSections">
+    <title>Tex_FoldedSections</title>
+    <para>
+     This entry defines which sections will be folded. This
+     setting is a comma seperated list of section names. 
+     The default value is:
+     <programlisting>slide,part,chapter,section,%%fakesection,
+subsection,subsubsection,paragraph</programlisting>
+     Each of the entries in the list will fold up a section of the
+     corresponding name. The <literal>%%fakesection</literal> section is
+     provided as a means for the user to group lines into "fake" sections.
+     A <literal>%%fakesection</literal> is assumed to start on a line which
+     begins with the string <literal>%%fakesection</literal> and continue
+     till the start of the next <literal>\section</literal>,
+     <literal>\subsection</literal> or any other section.
+    </para>
+    <para>
+     See also <link linkend="fold-setting-advanced">advanced fold
+      settings</link>.
+    </para>
+   </section>
+   <section id="Tex_FoldedEnvironments">
+    <title>Tex_FoldedEnvironments</title>
+    <para>
+     This entry defines which environments will be folded. It is a
+     comma seperated string of words each of which defines a single
+     environment. The default settng is
+     <programlisting>verbatim,comment,eq,gather,
+align,figure,table,thebibliography,
+keywords,abstract,titlepage</programlisting>
+     The words need not be standard Latex environments. You can
+     add any word you like. Also, each word will fold up all
+     environments whose name begins with that word. For example, in
+     the setting above, the word <literal>"eq"</literal> folds up the
+     <literal>\begin{equation}</literal>,
+     <literal>\begin{eqnarray}</literal>,
+     <literal>\begin{eqnarray*}</literal> environments. To avoid
+     this, you can replace the word <literal>"eq"</literal> with
+     <literal>"eq}"</literal>.
+    </para>
+    <para>
+     See also <link linkend="fold-setting-advanced">advanced fold
+      settings</link>.
+    </para>
+   </section>
+   <section id="Tex_FoldedCommands">
+    <title>Tex_FoldedCommands</title>
+    <para>
+     This entry defines which commands will be folded. It is a comma
+     seperated string of words each of which defines a single command.
+     The defualt setting is
+     <programlisting>footnote,intertext</programlisting>
+     The words need not be standard Latex commands. You can use whatever
+     words you like. Each word will fold all commands whose name begins
+     with that word as in the case of the <link
+      linkend="Tex_FoldedEnvironments">Tex_FoldedEnvironments</link>
+     variable.
+    </para>
+    <para>
+     See also <link linkend="fold-setting-advanced">advanced fold
+      settings</link>.
+    </para>
+   </section>
+   <section id="Tex_FoldedMisc">
+    <title>Tex_FoldedMisc</title>
+    <para>
+     This entry defines fold syntax for certain items which do not
+     naturally fit into the section, environment of command lists. It is a
+     comma seperated list of words. The default value is:
+     <programlisting>item,preamble,&lt;&lt;&lt;</programlisting>
+     <note>
+      <para>
+       Unlike the other Tex_FoldXXXX variables, the words in this setting
+       are limited to take values from the following list:
+      </para>
+      <para>
+       <informaltable frame="all">
+        <tgroup cols="2">
+         <thead>
+          <row>
+           <entry>Value</entry>
+           <entry>Meaning</entry>
+          </row>
+         </thead>
+         <tbody>
+          <row>
+           <entry>comments</entry>
+           <entry>Folds up contiguous blocks of comments</entry>
+          </row>
+          <row>
+           <entry>item</entry>
+           <entry>Folds up the <literal>\item</literal>s within list
+            environments</entry>
+          </row>
+          <row>
+           <entry>preamble</entry>
+           <entry>Folds up the preamble of a document. (The part between
+            the <literal>\documentclass</literal> command and the
+            <literal>\begin{document}</literal> environment)</entry>
+          </row>
+          <row>
+           <entry><literal>&lt;&lt;&lt;</literal></entry>
+           <entry>Folds defined manually by the user using the
+            <literal>&lt;&lt;&lt;</literal> and
+            <literal>&gt;&gt;&gt;</literal> strings as fold-markers.</entry>
+          </row>
+         </tbody>
+        </tgroup>
+       </informaltable>
+       Any other words in the <literal>Tex_FoldedMisc</literal> setting
+       are silently ignored.
+      </para>
+     </note>
+    </para>
+    <para>
+     See also <link linkend="fold-setting-advanced">advanced fold
+      settings</link>.
+    </para>
+   </section>
+   <section id="fold-setting-advanced">
+    <title>Advanced Fold setting details</title>
+    <para>
+     The order of the words in the <literal>Tex_FoldedXXXX</literal>
+     variables is <emphasis>important</emphasis>. The order defines the
+     order in which the folds are nested. For example, the value
+     <literal>"subsection,section"</literal> for the
+     <literal>Tex_FoldedSections</literal> variable will not fold any
+     subsections at all. This is because the folds are created in the
+     <emphasis>reverse</emphasis> order in which they occur in the
+     <literal>Tex_FoldedSections</literal> setting and also, once a fold is
+     created, the interior of the fold is not examined for creating
+     additional folds. In the above case, this means that a
+     <literal>\section</literal> is folded first and then its interior is
+     not examined further. The correct value should have been
+     <literal>"section,subsection"</literal>
+    </para>
+    <anchor id="fold-setting-adding" />
+    <para>
+     Each of the fold setting variables
+     <literal>Tex_FoldedSections</literal>,
+     <literal>Tex_FoldEnvironments</literal> etc., as explained previously
+     is a comma seperated string of variables. However, to make it easier
+     to <emphasis>add</emphasis> to the default settings without having to
+     repeat the whole default setting again, &ls; uses the following logic
+     in forming the complete setting string from the
+     <literal>Tex_FoldXXXX</literal> variables. If the variable starts with
+     a comma, then <literal>Tex_FoldXXXX</literal> is added to the end of
+     the default string rather than replacing it. Similarly, if it ends
+     with a comma, then it will be prepended to the beginning of the
+     default setting rather than replacing it.
+    </para>
+    <para>
+     For example, if <literal>Tex_FoldEnvironments</literal> is set to the
+     string <literal>"myenv"</literal>, then only an environment of the
+     form <literal>\begin{myenv}</literal> will be folded. However, if the
+     <literal>Tex_FoldEnvironments</literal> setting is
+     <literal>",myenv"</literal>, then the <literal>\begin{myenv}</literal>
+     environment will be folded after all other environments in the default
+     setting have been folded. On the other hand if
+     <literal>Tex_FoldEnvironments</literal> is of the form
+     <literal>"myenv,"</literal>, the <literal>\begin{myenv}</literal>
+     environment will be folded before the rest of the environments in the
+     default setting.
+    </para>
+   </section>
+  </section>
+  <section id="editing-folding">
+   <title>Editing the folding.vim file directly</title>
+   <para>
+    If you are using version 1.5 of &ls; or older, you will need to
+    directly edit the
+    <literal>$VIM/ftplugin/latex-suite/folding.vim</literal> file if you
+    wish to modify the folding scheme.  You will need to modify the
+    function <literal>MakeTexFolds()</literal> defined in that file to
+    modify the fold syntax.  <literal>MakeTexFolds</literal> makes a number
+    of calls to <literal>AddSyntaxFoldItem</literal>. Each such call
+    defines a new "fold item". The order in which these calls are made
+    defines how the folds are nested. For example, if you desire an
     <literal>figure</literal> environment to be nested within a
     <literal>section</literal>, then you should define the fold for the
     <literal>figure</literal> first. The syntax of
@@ -2487,8 +2667,8 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
     lists all available macros defined in runtime
     ftplugin/latex-suite/macros/ directories and prompt you to choose
     one of them.  When you try to edit {macro} not from local directory
-    LaTeX-Suite will copy it to your local directory with suffix
-    "-local". If local copy already exists LaTeX-Suite prompt for
+    &ls; will copy it to your local directory with suffix
+    "-local". If local copy already exists &ls; prompt for
     overwriting it.  In Vim >= 6.2 works completion of names of macros
     (see 'wildmenu', 'wildmode' for more about command-line completion).
     </para>
@@ -2497,7 +2677,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
     <title>:TMacroNew</title>
     <para>
      Splits window to write new macro. Directory in new buffer is
-     locally changed to latex-suite/macros/.
+     locally changed to &ls;/macros/.
     </para>
    </section>
    <section id="TMacroDelete">
@@ -2505,9 +2685,9 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
     <para>
     Delets {macro} from your local ftplugin/latex-suite/macros/
     directory.  When used without any arguments lists all available
-    macros defined in latex-suite/macros/ directory and prompt you to
+    macros defined in &ls;/macros/ directory and prompt you to
     choose one of them.  When you choose to delete {macro} which is not
-    in your local directory LaTeX-Suite will refuse to delete it.  In
+    in your local directory &ls; will refuse to delete it.  In
     Vim >= 6.2 works completion of names of macros (see 'wildmenu',
     'wildmode' for more about command-line completion)
     </para>
@@ -2778,7 +2958,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
       </tgroup>
      </informaltable>
      <para>
-      If set to 1, then latex-suite will create certain global debug
+      If set to 1, then &ls; will create certain global debug
       statements which can be printed by doing
       <programlisting>:call Tex_PrintDebug()</programlisting>
      </para>
@@ -2950,7 +3130,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
     </informaltable>
     <para>
      If this variable is set to 1, then when an enviroment is chosen from the
-     menu then for selected environments, latex-suite asks a series of
+     menu then for selected environments, &ls; asks a series of
      questions on the command line and inserts a template with the
      corresponding fields already filled in.  Setting this to zero will insert
      a template with <link linkend="place-holders">place-holders</link>
@@ -2970,7 +3150,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
       </tgroup>
      </informaltable>
      <para>
-      This option when set to 1, temporarily freezes latex-suite's macro
+      This option when set to 1, temporarily freezes &ls;'s macro
       expansion. It might be useful when you are using some other keymap
       which is causing excessive macro expansion. Use a buffer-local
       variable of the same name if you wish to affect just the present
@@ -3025,7 +3205,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
      </tgroup>
     </informaltable>
     <para>
-     The mappings in latex-suite are by default prefixed with the back-tick
+     The mappings in &ls; are by default prefixed with the back-tick
      character. For example, <literal>`/</literal> inserts
      <literal>\frac{&ph;}{&ph;}&ph;</literal> etc. You can change the
      prefix with the following setting.
@@ -3680,8 +3860,8 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
      </tgroup>
     </informaltable>
     <para>
-     This setting decides the location of the first top-level latex-suite
-     menu. You can for example shift all the menus created by latex-suite
+     This setting decides the location of the first top-level &ls;
+     menu. You can for example shift all the menus created by &ls;
      to the very end by setting this value to a large number like 990.
     </para>
    </section>
@@ -3860,7 +4040,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
     <tbody>
      <row>
       <entry>Artur R. Czechowski</entry>
-      <entry>maintains the BSD package of latex-suite. Lots of valuable
+      <entry>maintains the BSD package of &ls;. Lots of valuable
        feedback.</entry>
      </row>
      <row>
@@ -3887,7 +4067,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
       </entry>
       <entry>
        his variation of Stephen Riehm's bracketing system is used
-       in latex-suite.
+       in &ls;.
        
       </entry>
      </row>
@@ -3970,18 +4150,27 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
        
       </entry>
      </row>
+     <row>
+      <entry>
+       Zhang Lin-bo
+      </entry>
+      <entry>
+       lots of very useful additions to folding. The code for customizing
+       the folding scheme is due to him.
+      </entry>
+     </row>
     </tbody>
    </tgroup>
   </informaltable>
   <para>
-   A large number of functions in latex-suite come from various other people.
+   A large number of functions in &ls; come from various other people.
    Some of those people might have been missed here. Each function should however
    have the author's name/e-mail above it. Thats the more authoritative place to
    check out who has done what.
   </para>
   <anchor id="latex-suite-maintainer"></anchor>
   <para>
-   The current maintainer(s) of latex-suite is(are)
+   The current maintainer(s) of &ls; is(are)
   </para>
   <simplelist>
    <member>Srinath Avadhanula &lt;srinath@fastmail.fm&gt;</member>
