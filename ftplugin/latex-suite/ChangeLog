@@ -1,3 +1,9 @@
+2004-05-24 16:55  srinathava
+
+	* ftplugin/latex-suite/compiler.vim:
+
+	Bug: Error in viewing dvi documents using kdvi (Vaidotas Zemlys)
+
 2004-05-21 18:25  srinathava
 
 	* ftplugin/latex-suite/texrc:
