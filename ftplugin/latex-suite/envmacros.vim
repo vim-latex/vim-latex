@@ -1028,7 +1028,6 @@ function! <SID>SetEnvMacrosOptions()
 	if g:Tex_PromptedCommands != ''
 		call Tex_SetFastCommandMaps()
 	endif
-endif
 endfunction " }}}
 " Catch the Filetype event so we set maps for each buffer {{{
 augroup LatexSuite
