@@ -77,8 +77,8 @@ function! Tex_pack_check(package)
 	call Tex_Debug("searching for ".a:package." in dictionaries/ in &rtp", "pack")
 	let dictname = Tex_FindInRtp(a:package, 'dictionaries', ':p')
 	if dictname != ''
-		exe 'setlocal dict+=' . dictname
-		call Tex_Debug('setlocal dict+=' . dictname, 'pack')
+		exe 'setlocal dict^=' . dictname
+		call Tex_Debug('setlocal dict^=' . dictname, 'pack')
 		if g:Tex_package_supported !~ a:package
 			let g:Tex_package_supported = g:Tex_package_supported.','.a:package
 		endif

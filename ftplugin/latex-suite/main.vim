@@ -771,7 +771,7 @@ function! <SID>SetTeXOptions()
 	endif
 	let b:doneSetTeXOptions = 1
 
-	exe 'setlocal dict+='.s:path.'/dictionaries/dictionary'
+	exe 'setlocal dict^='.s:path.'/dictionaries/dictionary'
 
 	call Tex_Debug('SetTeXOptions: sourcing maps', 'main')
 	" smart functions
