@@ -23,7 +23,7 @@ Avadhanula and Mikolaj Machowski.
 Homepage: http://vim-latex.sourceforge.net
 
 {Vi of course does not have any of this}
-NOTE: If you are viewing this in vim 6.0+, then the sections should appear
+NOTE: If you are viewing this in Vim 6.0+, then the sections should appear
       folded (see |folding|). Use |za| to toggle back and forth between open
       and closed views.
 NOTE: If the sections do not appear folded, press za in normal mode. This will
@@ -52,7 +52,7 @@ file:  >
     " all the figure labels. Very useful!
 <   set iskeyword+=: >
     " IMPORTANT: If you are a win32 user, then the following setting is
-    " necessary in order to have latex called correctly from within vim.
+    " necessary in order to have latex called correctly from within Vim.
 <   set shellslash 
 
 
@@ -69,14 +69,17 @@ Editing
 =======
     |latex-macros|
         Insert mode and visual mode mappings and menu items for commonly used
-        LaTeX typesetting elements         
+        LaTeX typesetting elements.
 
     |latex-smart-keys|
-        mappings of some common keys like <BS> to make editing faster
+        Mappings of some common keys like <BS> to make editing faster.
+
+    |latex-viewer|
+        Fast access to list of labels and bibliography keys.
 
     |latex-bracketing-macros|
         A streamlined way of entering all the \left's and \right's while
-        typing latex
+        typing LaTeX.
 
     |latex-templates|
         Latex-suite ships with a select number of templates which you can use
@@ -106,9 +109,9 @@ Compiling/Viewing/Searching
 Folding
 =======
     |latex-folding|       
-        manual folding based on LaTeX syntax elements. 
+        Manual folding based on LaTeX syntax elements.
 
-Pacakge Support
+Package Support
 ===============
     |latex-packages|
         This module provides a way to generate custom menus based on the
@@ -117,7 +120,7 @@ Pacakge Support
 Miscelleneous Stuff
 ===================
     |latex-help|          
-        LaTeX's tex-info file translated into a vim help file.
+        LaTeX's tex-info file translated into a Vim help file.
     
     |latex-dictionary|   
         A dictionary of standard LaTeX terms.
@@ -151,7 +154,7 @@ The text <+eps file+> will be selected and she will be left in |select-mode| so
 that she can continue typing straight away. After having typed in the file
 name, she can press Control-J (while still in insert-mode). This will take her
 directly to the next "place-holder". i.e, the <+caption text+> will be visually
-selected with vim in select mode again for typing in the caption. This saves
+selected with Vim in select mode again for typing in the caption. This saves
 on a lot of key presses.
 
 NOTE: These mappings are are not standard mappings in the sense that only the
@@ -398,7 +401,7 @@ Smart Quotes
 
 Smart Space
     Latex-suite maps the <space> key in such a way that $ characters are not
-    broken across lines. It does this by first setting tw=0 so that vim will
+    broken across lines. It does this by first setting tw=0 so that Vim will
     not automatically break lines and then maps the <space> key to insert
     newlines keeping $$'s on the same line.
 
@@ -410,43 +413,43 @@ Smart Dots
 ===========================================================================
 LATEX VIEWER                                *latex-viewer* {{{
 
-Latex suite provides easy way of looking through BibTeX keys and completing 
+Latex suite provides easy way of looking through BibTeX keys and completing
 them.  The same for completion of \ref-like entries.
 
-After you insert \cite{, you can press <F9> key (still in Insert mode). Two 
-small windows will open.  Just below your main window will be list of 
-bibliography keys completed from all .bib files in directory of .tex file. 
-Name this window as cwindow.  Third window is context window to show next few 
-lines of current entry (usually the most important info like author, title 
+After you insert \cite{, you can press <F9> key (still in Insert mode). Two
+small windows will open.  Just below your main window will be list of
+bibliography keys completed from all .bib files in directory of .tex file.
+Name this window as cwindow.  Third window is context window to show next few
+lines of current entry (usually the most important info like author, title
 etc.).
 
-In cwindow you can move with j and k keys. Contex window will be automatically 
-updated. If information visible in context window is not enough you can use 
-J and K keys to move content of context window (without leaving cwindow). 
-After you choose correct bibentry press <cr>. Additional windows will close 
-and \cite{ will be completed to \cite{bibentry}. q returns to main window and 
+In cwindow you can move with j and k keys. Contex window will be automatically
+updated. If information visible in context window is not enough you can use
+J and K keys to move content of context window (without leaving cwindow).
+After you choose correct bibentry press <cr>. Additional windows will close
+and \cite{ will be completed to \cite{bibentry}. q returns to main window and
 closes additional windows.
 
-If you remember beginning of desired key enter \cite{be. In cwindow will be 
+If you remember beginning of desired key enter \cite{be. In cwindow will be
 shown only bibkeys beginning with "be".
 
-Very similar thing you can do with \ref{, after <F9> in cwindow will be 
+Very similar thing you can do with \ref{, after <F9> in cwindow will be
 visible all lines containing \label{...}. Also here use of prefix is possible.
 
-This works with all commads with "ref" or "cite" in them. Thus you will get 
-bib completion with \citen, \citenum or \pageref. If you want to create your 
-own command which use cite or ref mechanism make sure proper word is inside 
+This works with all commads with "ref" or "cite" in them. Thus you will get
+bib completion with \citen, \citenum or \pageref. If you want to create your
+own command which use cite or ref mechanism make sure proper word is inside
 it. Example: >
 
         \newcommand{\pref}[1]{~(p.~\pageref{#1})}
 <
-<F9> works also with normal words. You can use it here: "Its name is 
-tetr<F9>". Now Latex-suite will look in all .tex files in directory of edited 
-file word which is beginning with "tetr". Note: <cr> has here different 
-behavior. It does not try to complete word but moves you to location chosen in 
+<F9> works also with normal words. You can use it here: "Its name is
+tetr<F9>". Now Latex-suite will look in all .tex files in directory of edited
+file word which is beginning with "tetr". Note: <cr> has here different
+behavior. It does not try to complete word but moves you to location chosen in
 cwindow.
 
-Viewer module provides also three command-line utilities: |TLook|, |TLookBib| 
+Viewer module provides also three command-line utilities: |TLook|, |TLookBib|
 and |TLookAll|.
 
 }}}
@@ -590,9 +593,9 @@ do not exist, it defaults to "latex"'' (from |compiler-tex|)
 
 NOTE: For win32 users user MikTeX, sometimes the latex compiler's output has a
 bug where a single number is split across different lines. In this case, put
-the included vimlatex utility somehwere in your $PATH, make it executable and
-point g:tex_flavor to it. This is not always necessary, and you might want to
-try it without vimlatex till you first notice any problem.
+the included vim-latexSuite somewhere in your $PATH, make it executable and
+point g:tex_flavor to it. This is not always necessary, and you
+might want to try it without vim-latexSuite till you first notice any problem.
 
                                                         *latex-master-file*
 Often times the file you are currently editing is only a fragment being
@@ -759,13 +762,13 @@ file.
 
                                                   *latex-package-dictionary*
 Furthermore, if a file with the same name is found in the
-latex-suite/dictionaries/ directory, then that file will be added to vim's
+latex-suite/dictionaries/ directory, then that file will be added to Vim's
 'dictionary' setting for use with the |i_CTRL-X_CTRL-K| command.  Package
 dictionary file should follow outlines specified in 'dictionary'.
 
 
                                                         *latex-package-file*
-A latex-package-file is a simple vim script which defines some global
+A latex-package-file is a simple Vim script which defines some global
 variables. These global variables are used by latex-suite to create the custom
 menu. See the |latex-package-file-writing| section how to define a customized
 package file.
@@ -785,7 +788,7 @@ sub-menu called SIunits, which contains the commands and options for the
 SIunits package.You can use this sub-menu to insert commands from the package,
 add options to the package etc.
     
-NOTE: Since the package file is a vim-script, you could define custom
+NOTE: Since the package file is a Vim script, you could define custom
 functions there, add mappings etc.
 
 You can perform the following actions via the packages menu:
@@ -873,12 +876,15 @@ Command can be also given without prefix:. The result is >
 ===========================================================================
 LATEX HELP                                       *latex-help*  {{{
 
-latexhelp.txt is a collection of latex.info files `translated' into vim help
-format. Now you can seek for help for specific LaTeX item without exiting vim.
+latexhelp.txt is a collection of latex.info files `translated' into Vim help
+format. Now you can seek for help for specific LaTeX item without exiting Vim.
 
 Example: >
     :help \kill
-gives help for the LaTeX \kill command.
+gives help for the LaTeX \kill command. 
+
+You can also place cursor on LaTeX \item and press <F1>. If in latexhelp.txt
+is something about this you would be immediately taken there.
 
 In order to use this help file, you will need to run |:helptags| once after
 you download and unzip latex-suite.
@@ -889,7 +895,7 @@ LATEX DICTIONARY                           *latex-dictionary* {{{
 
 Latex-suite ships with a dictionary of over 600 commands from LaTeX and
 popular packages. When latex-suite starts up, it automatically adds this
-dictionary to vim's 'dictionary' option for use with vim's |i_CTRL-X_CTRL-K|
+dictionary to Vim's 'dictionary' option for use with Vim's |i_CTRL-X_CTRL-K|
 command. 
 
 It is also possible to load custom dictionaries automatically when packages
