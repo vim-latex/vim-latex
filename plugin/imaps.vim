@@ -7,7 +7,7 @@
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
 "
-" Last Change: Tue Dec 31 01:00 AM 2002 PST
+" Last Change: Tue Dec 31 10:00 AM 2002 PST
 " 
 " Documentation: {{{
 "
@@ -436,31 +436,22 @@ vmap <silent> <Plug>IMAP_JumpBack          <C-\><C-N>i<c-r>=IMAP_Jumpfunc('b', 0
 " }}}
 " Default maps for IMAP_Jumpfunc {{{
 " map only if there is no mapping already. allows for user customization.
+" NOTE: Default mappings for jumping to the previous placeholder are not
+"       provided. It is assumed that if the user will create such mappings
+"       hself if e so desires.
 if !hasmapto('<Plug>IMAP_JumpForward', 'i')
     imap <C-J> <Plug>IMAP_JumpForward
 endif
-if !hasmapto('<Plug>IMAP_JumpBack', 'i')
-    imap <S-C-J> <Plug>IMAP_JumpBack
-endif
 if !hasmapto('<Plug>IMAP_JumpForward', 'n')
     nmap <C-J> <Plug>IMAP_JumpForward
-endif
-if !hasmapto('<Plug>IMAP_JumpBack', 'n')
-    nmap <S-C-J> <Plug>IMAP_JumpBack
 endif
 if exists('g:Imap_StickyPlaceHolders') && g:Imap_StickyPlaceHolders
 	if !hasmapto('<Plug>IMAP_JumpForward', 'v')
 		vmap <C-J> <Plug>IMAP_JumpForward
 	endif
-	if !hasmapto('<Plug>IMAP_JumpBack', 'v')
-		vmap <S-C-J> <Plug>IMAP_JumpBack
-	endif
 else
 	if !hasmapto('<Plug>IMAP_DeleteAndJumpForward', 'v')
 		vmap <C-J> <Plug>IMAP_DeleteAndJumpForward
-	endif
-	if !hasmapto('<Plug>IMAP_DeleteAndJumpBack', 'v')
-		vmap <S-C-J> <Plug>IMAP_DeleteAndJumpBack
 	endif
 endif
 " }}}
