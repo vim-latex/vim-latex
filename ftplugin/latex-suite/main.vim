@@ -3,7 +3,7 @@
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
 "		   URL: 
-"  Last Change: Sat Nov 16 06:00 PM 2002 PST
+"  Last Change: Tue Nov 19 10:00 PM 2002 PST
 "
 " Help: 
 " Changes: {{{
@@ -522,10 +522,9 @@ function! <SID>SetTeXOptions()
 			nnoremap <buffer> <Leader>ls :call ForwardSearchLaTeX()<cr>
 		end
 	end
-	exe 'TCTarget '.g:Tex_DefaultTargetFormat
-	exe 'TVTarget '.g:Tex_DefaultTargetFormat
-	" compiler. if the user has put another compiler before ours, then we dont
-	" get into our compiler/tex.vim.
+	" This line seems to be necessary to source our compiler/tex.vim file.
+	" The docs are unclear why this needs to be done even though this file is
+	" the first compiler plugin in 'runtimepath'.
 	runtime compiler/tex.vim
 endfunction
 
