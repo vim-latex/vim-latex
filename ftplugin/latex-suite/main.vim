@@ -530,27 +530,38 @@ endfunction
 function! Tex_ResetIncrementNumber(val)
 	let s:incnum = a:val
 endfunction " }}}
-" Tex_EscapeForGrep: escapes \ and " the correct number of times {{{
+" Tex_EscapeForGrep: escapes back-slashes and doublequotes the correct number of times {{{
 " Description: This command escapes the backslash and double quotes in a
-" 	search pattern the correct number of times so it can be used in the :grep
-" 	command. This command is meant to be used as:
+" 	search pattern the correct number of times so it can be used in the ``:grep``
+" 	command. This command is meant to be used as::
+"
 " 		exec "silent! grep ".Tex_EscapeForGrep(pattern)." file"
+"
+" 	The input argument to this function should be the string which you want
+" 	the external command to finally see. For example, to search for a string
+" 	``'\bibitem'``, the grep command needs to be passed a string like
+" 	``'\\bibitem'``.  Examples::
+"
+" 		Tex_EscapeForGrep('\\bibitem')        	" correct
+" 		Tex_EscapeForGrep('\bibitem')			" wrong
+" 		Tex_EscapeForGrep("\\bibitem")			" wrong
+" 		Tex_EscapeForGrep('\<word\>')			" correct
+"
 function! Tex_EscapeForGrep(string)
-	" This first escaping is so that grep gets a string like '\\bibitem' when
-	" we want to search for a string like '\bibitem'.
-	let retVal = escape(a:string, "\\")
+	let retVal = a:string
 
-	" The next escape is because when the shellxquote is ", then the grep
-	" commad is usually called as 
-	" 	bash -c "grep pattern filename" 
-	" which means that we need to escape backslashes (because they get halved)
-	" and also double quotes.
+	" The shell halves the backslashes.
 	if &shell =~ 'sh'
 		let retVal = escape(retVal, "\\")
+
+		" If shellxquote is set, then the backslashes are halved yet again.
 		if &shellxquote == '"'
 			let retVal = escape(retVal, "\"\\")
 		endif
+
 	endif
+	" escape special characters which bash/cmd.exe might interpret
+	let retVal = escape(retVal, "<>")
 
 	return retVal
 endfunction " }}}
