@@ -67,7 +67,7 @@ function! Tex_completion(what, where)
 		let s:type = substitute(s:type, '[.*', '', 'e')
 
 		if exists("s:type") && s:type =~ 'ref'
-			exe 'silent! grep! "\\label{'.s:prefix.'" '.s:search_directory.'*.tex'
+			exe "silent! grep! '\\label{".s:prefix."' ".s:search_directory.'*.tex'
 			call <SID>Tex_c_window_setup()
 
 		elseif exists("s:type") && s:type =~ 'cite'
@@ -75,11 +75,11 @@ function! Tex_completion(what, where)
 			let bibfiles = <SID>Tex_FindBibFiles()
 			let bblfiles = <SID>Tex_FindBblFiles()
 			if bibfiles != ''
-				exe 'silent! grepadd! "@.*{'.s:prefix.'" '.bibfiles
-				let g:bbb = 'silent! grepadd! "@.*{'.s:prefix.'" '.bibfiles
+				exe "silent! grepadd! '@.*{".s:prefix."' ".bibfiles
+				let g:bbb = "silent! grepadd! '@.*{".s:prefix."' ".bibfiles
 			endif
 			if bblfiles != ''
-				exe 'silent! grepadd! "bibitem{'.s:prefix.'" '.bblfiles
+				exe "silent! grepadd! 'bibitem{".s:prefix."' ".bblfiles
 			endif
 			call <SID>Tex_c_window_setup()
 
@@ -124,25 +124,25 @@ function! Tex_completion(what, where)
 					return
 				endif
 			endif
-			exe 'silent! grep! "\<' . s:word . '" '.s:search_directory.'*.tex'
+			exe "silent! grep! '\<".s:word."' ".s:search_directory.'*.tex'
 			call <SID>Tex_c_window_setup()
 
 		endif
 		
 	elseif a:where == 'tex'
 		" Process :TLook command
-		exe 'silent! grep! "'.a:what.'" '.s:search_directory.'*.tex'
+		exe "silent! grep! '".a:what."' ".s:search_directory.'*.tex'
 		call <SID>Tex_c_window_setup()
 
 	elseif a:where == 'bib'
 		" Process :TLookBib command
-		exe 'silent! grep! "'.a:what.'" '.s:search_directory.'*.bib'
-		exe 'silent! grepadd! "'.a:what.'" '.s:search_directory.'*.bbl'
+		exe "silent! grep! '".a:what."' ".s:search_directory.'*.bib'
+		exe "silent! grepadd! '".a:what."' ".s:search_directory.'*.bbl'
 		call <SID>Tex_c_window_setup()
 
 	elseif a:where == 'all'
 		" Process :TLookAll command
-		exe 'silent! grep! "'.a:what.'" '.s:search_directory.'*'
+		exe "silent! grep! '".a:what."' ".s:search_directory.'*'
 		call <SID>Tex_c_window_setup()
 
 	endif
