@@ -3,7 +3,7 @@
 " 	     File: texrc.vim
 "      Author: Srinath Avadhanula
 "     Created: Mon Apr 01 11:00 AM 2002 PST
-" Last Change: Sun Oct 27 10:00 PM 2002 PST
+" Last Change: Mon Nov 11 12:00 AM 2002 PST
 "
 "  Description: This file contains resource configuration information for the
 "               latex-suite plugin.
@@ -302,6 +302,7 @@ TexLet g:Tex_SectionMenus = 1
 "
 " Setting this variable to zero will immediately disable _all_ menus. 
 " for finer control set this to 1 and then play with the other options.
+" Default: 1
 TexLet g:Tex_Menus = 1
 
 " Math contains a large number of tex math elemets such as arrows,
@@ -309,7 +310,7 @@ TexLet g:Tex_Menus = 1
 " relational operators etc. This menu compromises about 75% of the menus.
 TexLet g:Tex_MathMenus = 1 
 
-" The following 2 options control the "compactness" of the menus. 
+" The following options control the "compactness" of the menus. 
 "
 " Setting this option to 1 makes the Font, Counter and Dimensioning menus to
 " be collected together into a single 'Tex-Elements' menu. Setting this to 0
@@ -320,12 +321,20 @@ TexLet g:Tex_NestElementMenus = 1
 " then a lot of time might be spent at startup loading the menus.
 " Setting the following variable to 0 will stop autoloading the packages menu.
 " You can still goto TeX-Suite.Configure Menu and load this after startup.
+" Default: 1
 TexLet g:Tex_PackagesMenu = 1
 " The following option will create the packages option within the TeX-Suite
 " menu.
+" Default: 1
 TexLet g:Tex_NestPackagesMenu = 0
 
+" This is the prefix added to the menu names created by latex suite.  Add a
+" dot to the following option to nest the menus under the menu name before the
+" dot.
+" NOTE: With a '.' as the last character of the following setting, every
+" single menu created by latex suite will be nested under the same menu.
 TexLet g:Tex_MenuPrefix = 'TeX-'
+
 
 " }}}
 " ==============================================================================
