@@ -7,14 +7,14 @@
 "              Part of vim-latexSuite: http://vim-latex.sourceforge.net
 " ============================================================================
 
-if exists("g:Tex_Viewer")
+if exists("g:Tex_Completion")
 	finish
 endif
 
-inoremap <silent> <Plug>Tex_Viewer <Esc>:call Tex_viewer("default","text")<CR>
+inoremap <silent> <Plug>Tex_Completion <Esc>:call Tex_completion("default","text")<CR>
 
-if !hasmapto('<Plug>Tex_Viewer', 'i')
-	imap <buffer> <silent> <buffer> <F9> <Plug>Tex_Viewer
+if !hasmapto('<Plug>Tex_Completion', 'i')
+	imap <buffer> <silent> <F9> <Plug>Tex_Completion
 endif
 
 command -nargs=1 TLook call <SID>Tex_look(<q-args>)
@@ -22,15 +22,15 @@ command -nargs=1 TLookAll call <SID>Tex_lookall(<q-args>)
 command -nargs=1 TLookBib call <SID>Tex_lookbib(<q-args>)
 
 function! s:Tex_lookall(what)
-	call Tex_viewer(a:what, "all")
+	call Tex_completion(a:what, "all")
 endfunction
 
 function! s:Tex_lookbib(what)
-	call Tex_viewer(a:what, "bib")
+	call Tex_completion(a:what, "bib")
 endfunction
 
 function! s:Tex_look(what)
-	call Tex_viewer(a:what, "tex")
+	call Tex_completion(a:what, "tex")
 endfunction
 
 if getcwd() != expand("%:p:h")
@@ -42,7 +42,7 @@ endif
 " Tex_viewer: main function {{{
 " Description:
 "
-function! Tex_viewer(what, where)
+function! Tex_completion(what, where)
 
 	" Get info about current window and position of cursor in file
 	let s:winnum = winnr()
@@ -51,7 +51,7 @@ function! Tex_viewer(what, where)
 
 	if a:where == "text"
 		" What to do after <F9> depending on context
-		let s:curline = strpart(getline('.'), col('.') - 20, 20)
+		let s:curline = strpart(getline('.'), col('.') - 40, 40)
 		let s:prefix = matchstr(s:curline, '{\zs.\{-}$')
 		let s:type = matchstr(s:curline, '\\\zs.\{-}\ze{.\{-}$')
 
@@ -65,8 +65,32 @@ function! Tex_viewer(what, where)
 			exe 'silent! grepadd! "bibitem{'.s:prefix.'" %'
 			call <SID>Tex_c_window_setup()
 
+		elseif exists("s:type") && s:type =~ 'includegraphics'
+			let s:storehidefiles = g:explHideFiles
+			let g:explHideFiles = '^\.,\.tex$,\.bib$,\.bbl$,\.zip$,\.gz$$'
+			let s:curfile = expand("%:p")
+			exe 'silent! Sexplore '.s:search_directory.g:Tex_ImageDir
+			call <SID>Tex_explore_window("includegraphics")
+			
+		elseif exists("s:type") && s:type =~ 'bibliography'
+			let s:storehidefiles = g:explHideFiles
+			let g:explHideFiles = '^\.,\.tex$,\.pdf$,\.eps$,\.zip$,\.gz$'
+			let s:curfile = expand("%:p")
+			exe 'silent! Sexplore '.s:search_directory
+			call <SID>Tex_explore_window("bibliography")
+
 		else
 			let s:word = matchstr(s:curline, '\zs\k\{-}$')
+			if s:word == ''
+				if col('.') == strlen(getline('.'))
+					startinsert!
+					return
+				else
+					normal! l
+					startinsert
+					return
+				endif
+			endif
 			exe 'silent! grep! "\<' . s:word . '" '.s:search_directory.'*.tex'
 			call <SID>Tex_c_window_setup()
 
@@ -109,8 +133,11 @@ function! s:Tex_c_window_setup()
     nnoremap <buffer> <silent> <down> <down>:call <SID>UpdateViewerWindow()<CR>
 
 	" Change behaviour of <cr> only for 'ref' and 'cite' context. 
-	if exists("s:type") && s:type =~ 'ref\|cite'
-		nnoremap <buffer> <silent> <cr> :call <SID>CompleteName()<CR>
+	if exists("s:type") && s:type =~ 'ref'
+		nnoremap <buffer> <silent> <cr> :silent! call <SID>CompleteName("ref")<CR>
+
+	elseif exists("s:type") && s:type =~ 'cite'
+		nnoremap <buffer> <silent> <cr> :silent! call <SID>CompleteName("cite")<CR>
 
 	else
 		" In other contexts jump to place described in cwindow and close small
@@ -123,6 +150,19 @@ function! s:Tex_c_window_setup()
 	nnoremap <buffer> <silent> K :wincmd j<cr><c-y>:wincmd k<cr>
 
 	exe 'nnoremap <buffer> <silent> q :'.s:winnum.' wincmd w<cr>:pclose!<cr>:cclose<cr>'
+
+endfunction " }}}
+" Tex_explore_window: settings for completion of filenames {{{
+" Description: 
+"
+function! s:Tex_explore_window(type) 
+
+	exe g:Tex_ExplorerHeight.' wincmd _'
+	if a:type == 'includegraphics'
+		nnoremap <silent> <buffer> <cr> :silent! call <SID>CompleteName("includegraphics")<CR>
+	elseif a:type == 'bibliography'
+		nnoremap <silent> <buffer> <cr> :silent! call <SID>CompleteName("bibliography")<CR>
+	endif
 
 endfunction " }}}
 " UpdateViewerWindow: update error and preview window {{{
@@ -194,9 +234,9 @@ endfunction " }}}
 " CompleteName: complete/insert name for current item {{{
 " Description: handle completion of items depending on current context
 "
-function! s:CompleteName()
+function! s:CompleteName(type)
 
-	if s:type =~ 'cite'
+	if a:type =~ 'cite'
 		if getline('.') =~ '\\bibitem{'
 			let bibkey = matchstr(getline('.'), '\\bibitem{\zs.\{-}\ze}')
 		else
@@ -204,17 +244,44 @@ function! s:CompleteName()
 		endif
 		let completeword = strpart(bibkey, strlen(s:prefix))
 
-	elseif s:type =~ 'ref'
+	elseif a:type =~ 'ref'
 		let label = matchstr(getline('.'), '\\label{\zs.\{-}\ze}')
 		let completeword = strpart(label, strlen(s:prefix))
+
+	elseif a:type =~ 'includegraphics\|bibliography'
+		let line = substitute(strpart(getline('.'),0,b:maxFileLen),'\s\+$','','')
+		if isdirectory(b:completePath.line)
+			call EditEntry("", "edit")
+			exe 'nnoremap <silent> <buffer> <cr> :silent! call <SID>CompleteName("'.a:type.'")<CR>'
+			let g:explHideFiles = s:storehidefiles
+			return
+
+		else
+			let ifile = substitute(line, '\..\{-}$', '', '')
+			let filename = b:completePath.ifile
+			
+			if g:Tex_ImageDir != '' && a:type =~ 'includegraphics'
+				let imagedir = s:curfile . g:Tex_ImageDir
+				let completeword = <SID>Tex_RelPath(filename, imagedir)
+			else
+				let completeword = <SID>Tex_RelPath(filename, s:curfile)
+			endif
+
+			let g:explHideFiles = s:storehidefiles
+		endif
 		
 	endif
 
 	" Return to proper place in main window, close small windows
-	exe s:winnum.' wincmd w'
-	pclose!
-	cclose
-	exe s:pos
+	if s:type =~ 'cite\|ref' 
+		exe s:winnum.' wincmd w'
+		pclose!
+		cclose
+		exe s:pos
+	elseif s:type =~ 'includegraphics\|bibliography'
+		wincmd q
+		exe s:pos
+	endif
 
 	" Complete word, check if add closing }
 	exe 'normal! a'.completeword."\<Esc>"
@@ -245,7 +312,40 @@ function! s:GoToLocation()
 
 endfunction " }}}
 
-let g:Tex_Viewer = 1
+" Tex_Common: common part of strings {{{
+function! s:Tex_Common(path1, path2)
+	" Assume the caller handles 'ignorecase'
+	if a:path1 == a:path2
+		return a:path1
+	endif
+	let n = 0
+	while a:path1[n] == a:path2[n]
+		let n = n+1
+	endwhile
+	return strpart(a:path1, 0, n)
+endfunction " }}}
+" Tex_RelPath: ultimate file name {{{
+function! s:Tex_RelPath(explfilename,texfilename)
+	let path1 = a:explfilename
+	let path2 = a:texfilename
+	if has("win32")
+		let path1 = substitute(path1, '\\', '/', 'ge')
+		let path2 = substitute(path2, '\\', '/', 'ge')
+	endif
+	let n = matchend(<SID>Tex_Common(path1, path2), '.*/')
+	let path1 = strpart(path1, n)
+	let path2 = strpart(path2, n)
+	if path2 !~ '/'
+		let subrelpath = ''
+	else
+		let subrelpath = substitute(path2, '[^/]\{-}/', '../', 'ge')
+		let subrelpath = substitute(subrelpath, '[^/]*$', '', 'ge')
+	endif
+	let relpath = subrelpath.path1
+	return relpath
+endfunction " }}}
+
+let g:Tex_Completion = 1
 " this statement has to be at the end.
 let s:doneOnce = 1
 
