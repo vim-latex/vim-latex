@@ -3,30 +3,6 @@
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
 "		   URL: 
-"  Last Change: Sun Jan 05 12:00 AM 2003 PST
-"
-" Help: 
-" Changes: {{{
-" Apr 26 2002: 1. Major reworking of files and such.
-"                 Lots of changes are not documented here. see the cvs log for
-"                 change information.
-" Apr 04 2002: 1. changed yap to yap -1 (BNF)
-"              2. changed g:smartBS to s:smartBS (BNF)
-" Apr 04 2002: 1. (BNF) I changed SmartBS() so that it accepts an argument
-" 				  instead of using a global variable.
-" 			   2. I made some minor simplifications to
-" 				  s:SetTeXOptions() .
-" Mar 17 2002: 1. added errorformat and makeprg options for latex.
-" Dec 09 2001: 1. took some stuff from auctex.vim
-"				  such as smart quotes and dollar, etc.
-" Dec 07 2001: 1. changed things so that most mappings emulate the operator
-"				  pending mode. this greatly facilitates typing by not
-"				  requiring the LHS to be typed quickly. one can infact type
-"				  the LHS (without the <tab>), roam around in the file, come
-"				  back to the end of the file, press <tab> and still have the
-"				  LHS expand properly!
-"			   2. planning a second release for this.
-" }}}
 
 " line continuation used here.
 let s:save_cpo = &cpo
@@ -102,6 +78,7 @@ if !exists('s:doneMappings')
 	call IMAP (g:Tex_Leader.'&', '\wedge', "tex")
 	call IMAP (g:Tex_Leader.'-', '\bigcap', "tex")
 	call IMAP (g:Tex_Leader.'+', '\bigcup', "tex")
+	call IMAP (g:Tex_Leader.'M', '\sum_{<++>}^{<++>}<++>', 'tex')
 	call IMAP (g:Tex_Leader.'(', '\subset', "tex")
 	call IMAP (g:Tex_Leader.')', '\supset', "tex")
 	call IMAP (g:Tex_Leader.'<', '\le', "tex")
@@ -115,72 +92,64 @@ if !exists('s:doneMappings')
 	call IMAP (g:Tex_Leader.'I', "\\int_{<++>}^{<++>}<++>", 'tex')
 	" }}}
 	" Greek Letters {{{
-	let s:greek_a = "\\alpha" " {{{
-	let s:greek_b = "\\beta"
-	let s:greek_c = "\\chi"
-	let s:greek_d = "\\delta"
-	let s:greek_e = "\\varepsilon"
-	let s:greek_f = "\\varphi"
-	let s:greek_g = "\\gamma"
-	let s:greek_h = "\\eta"
-	let s:greek_k = "\\kappa"
-	let s:greek_l = "\\lambda"
-	let s:greek_m = "\\mu"
-	let s:greek_n = "\\nu"
-	let s:greek_p = "\\pi"
-	let s:greek_q = "\\theta"
-	let s:greek_r = "\\rho"
-	let s:greek_s = "\\sigma"
-	let s:greek_t = "\\tau"
-	let s:greek_u = "\\upsilon"
-	let s:greek_v = "\\varsigma"
-	let s:greek_w = "\\omega"
-	" let s:greek_w = "\\wedge"  " AUCTEX style
-	let s:greek_x = "\\xi"
-	let s:greek_y = "\\psi"
-	let s:greek_z = "\\zeta"
+	call IMAP('`a', '\alpha', 'tex') " {{{
+	call IMAP('`b', '\beta', 'tex')
+	call IMAP('`c', '\chi', 'tex')
+	call IMAP('`d', '\delta', 'tex')
+	call IMAP('`e', '\varepsilon', 'tex')
+	call IMAP('`f', '\varphi', 'tex')
+	call IMAP('`g', '\gamma', 'tex')
+	call IMAP('`h', '\eta', 'tex')
+	call IMAP('`k', '\kappa', 'tex')
+	call IMAP('`l', '\lambda', 'tex')
+	call IMAP('`m', '\mu', 'tex')
+	call IMAP('`n', '\nu', 'tex')
+	call IMAP('`p', '\pi', 'tex')
+	call IMAP('`q', '\theta', 'tex')
+	call IMAP('`r', '\rho', 'tex')
+	call IMAP('`s', '\sigma', 'tex')
+	call IMAP('`t', '\tau', 'tex')
+	call IMAP('`u', '\upsilon', 'tex')
+	call IMAP('`v', '\varsigma', 'tex')
+	call IMAP('`w', '\omega', 'tex')
+	call IMAP('`w', '\wedge', 'tex')  " AUCTEX style
+	call IMAP('`x', '\xi', 'tex')
+	call IMAP('`y', '\psi', 'tex')
+	call IMAP('`z', '\zeta', 'tex')
 	" not all capital greek letters exist in LaTeX!
 	" reference: http://www.giss.nasa.gov/latex/ltx-405.html
-	let s:greek_D = "\\Delta"
-	let s:greek_F = "\\Phi"
-	let s:greek_G = "\\Gamma"
-	let s:greek_Q = "\\Theta"
-	let s:greek_L = "\\Lambda"
-	let s:greek_X = "\\Xi"
-	let s:greek_Y = "\\Psi"
-	let s:greek_S = "\\Sigma"
-	let s:greek_U = "\\Upsilon"
-	let s:greek_W = "\\Omega"
+	call IMAP('`D', '\Delta', 'tex')
+	call IMAP('`F', '\Phi', 'tex')
+	call IMAP('`G', '\Gamma', 'tex')
+	call IMAP('`Q', '\Theta', 'tex')
+	call IMAP('`L', '\Lambda', 'tex')
+	call IMAP('`X', '\Xi', 'tex')
+	call IMAP('`Y', '\Psi', 'tex')
+	call IMAP('`S', '\Sigma', 'tex')
+	call IMAP('`U', '\Upsilon', 'tex')
+	call IMAP('`W', '\Omega', 'tex')
 	" }}}
-	" InsertGreekLetter: inserts greek letter {{{
-	" Description: checks the text before the preceeding ` in order to account
-	" for the start of a double quote, otherwise when we try to write
-	" something like ``a (at the beginning of a quote), we immediately get 
-	" `\alpha. Also if there is a \ preceding the `, then do not insert a
-	" greek letter so we can insert accented letters such as \`a.
-	function! TEX_InsertGreekLetter(char)
-		if a:char =~ '[a-zA-Z]' && getline('.')[col('.')-2] != '`'
-					\ && getline('.')[col('.')-2] != "\\"
-			exe 'return s:greek_'.a:char
-		else
-			return g:Tex_Leader.a:char
-		end
-	endfunction 
 	" }}}
-	" SetupGreekLetters: mappings for greek letters for expansion as `a {{{
-	" Description: 
-	function! <SID>SetupGreekLetters()
+	" ProtectLetters: sets up indentity maps for things like ``a {{{
+	" " Description: If we simply do
+	" 		call IMAP('`a', '\alpha', 'tex')
+	" then we will never be able to type 'a' after a tex-quotation. Since
+	" IMAP() always uses the longest map ending in the letter, this problem
+	" can be avoided by creating a fake map for ``a -> ``a.
+	" This function sets up fake maps of the following forms:
+	" 	``[aA]  -> ``[aA]    (for writing in quotations)
+	" 	\`[aA]  -> \`[aA]    (for writing diacritics)
+	function! s:ProtectLetters()
 		let i = char2nr('a')
 		while i <= char2nr('z')
-			call IMAP(g:Tex_Leader.nr2char(i), "\<C-r>=TEX_InsertGreekLetter('".nr2char(i)."')\<CR>", 'tex')
-			if exists('s:greek_'.nr2char(i-32))
-				call IMAP(g:Tex_Leader.nr2char(i-32), "\<C-r>=TEX_InsertGreekLetter('".nr2char(i-32)."')\<CR>", 'tex')
-			endif
+			call IMAP('``'.nr2char(i), '``'.nr2char(i), 'tex')
+			call IMAP('\`'.nr2char(i), '\`'.nr2char(i), 'tex')
+			call IMAP('``'.nr2char(i-32), '``'.nr2char(i-32), 'tex')
+			call IMAP('\`'.nr2char(i-32), '\`'.nr2char(i-32), 'tex')
 			let i = i + 1
 		endwhile
 	endfunction 
-	call s:SetupGreekLetters()
-	" }}}
+	call s:ProtectLetters()
 	" }}}
 	" vmaps: enclose selected region in brackets, environments {{{ 
 	" The action changes depending on whether the selection is character-wise
@@ -509,9 +478,7 @@ function! <SID>SetTeXOptions()
 	if g:Tex_SmartKeyDot
 		inoremap <buffer> <silent> . <C-R>=<SID>SmartDots()<CR>
 	endif
-	call Tex_Debug('checking to see if Tex_SetFastEnvironmentMaps needs to be called.', 'main')
 	if g:Tex_PromptedEnvironments != '' || g:Tex_HotKeyMappings != ''
-		call Tex_Debug('calling Tex_SetFastEnvironmentMaps', 'main')
 		call Tex_SetFastEnvironmentMaps()
 	endif
 
