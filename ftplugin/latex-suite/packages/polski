@@ -1,6 +1,6 @@
 " Author: Mikolaj Machowski <mikmach@wp.pl>
 " (c) Copyright by Mikolaj Machowski 2002
-" Last Change: pon lis 25 12:00  2002 C
+" Last Change: czw lis 28 01:00  2002 C
 " License: Vim Charityware
 "
 " Plik jest w kodowaniu iso-8859-2. Je¶li chcesz go uzywac w MS-Windows musisz
@@ -57,7 +57,8 @@ call TPackagePolskiTylda()
 " Z dodatkiem od Benjiego Fishera (sprawdzanie sk³adni)
 "
 " Spacja
-inoremap <buffer> <silent> <Space> <Space><C-R>=<SID>Tex_polish_space()<CR>
+inoremap <buffer> <silent> <Space> <C-R>=<SID>Tex_polish_space()<CR>
+inoremap <buffer> <silent> <CR> <C-R>=<SID>Tex_polish_space()<CR><BS><CR>
 
 " Wymuszenie tyldy
 inoremap <buffer> <silent> <S-Space> ~
@@ -67,64 +68,68 @@ inoremap <buffer> <silent> <C-Space> <Space>
 function! s:Tex_polish_space()
 	"Nic magicznego w matematyce
 	 if synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^texMath'
-		 return "\<BS> "
+		 return ' '
 	 else
 		let s:col = col('.')
 		let s:linelength = strlen(getline('.')) + 1
 		" Wstaw tylde po spojnikach
-		if strpart(getline('.'), col('.') - 4, 3) =~? '^[ ~(]\?[aiouwz] $'
-			return "\<BS>~"
+		if strpart(getline('.'), col('.') - 3, 2) =~? '^[[:space:]~(\[{]\?[aiouwz]$'
+			return '~'
 	    " Wstaw tylde po inicjalach - konkretnie po pojedynczych wielkich
-		" literach i kropce. Obs³uguje wiekszosc sytuacji.
-		elseif strpart(getline('.'), col('.') - 5, 4) =~? '^[ ~]\?\u\. $'
-			return "\<BS>~"
+		" literach i kropce. Obs³uguje poprawnie wiekszosc sytuacji.
+		elseif strpart(getline('.'), col('.') - 4, 3) =~? '^[[:space:]~(\[{]\?\u\.$'
+			return '~'
 		" Wstaw tylde po tytulach, skrotach bibliograficznych, podpisach
-		elseif strpart(getline('.'), col('.') - 9, 8) =~? '\(\s\|^\|\~\)\(str\.\|ryc\.\|rys\.\|tab\.\|art\.\|vol\.\|nr\|tabl\.\|rozdz\.\|ss\.\|s\.\|t\.\|z\.\|sir\|prof\.\|hab\.\|red\.\|min\.\|gen\.\|kpt\.\|przew\.\|p³k\|mjr\|mgr\|bp\|ks\.\|o\+\.\|¶w\.\|dr\)\s\+$'
-			return "\<BS>~"
+		elseif strpart(getline('.'), col('.') - 9, 8) =~? '\(\s\|^\|\~\)\(str\.\|ryc\.\|rys\.\|tab\.\|art\.\|vol\.\|nr\|tabl\.\|rozdz\.\|ss\.\|s\.\|t\.\|z\.\|sir\|prof\.\|hab\.\|red\.\|min\.\|gen\.\|kpt\.\|przew\.\|p³k\|mjr\|mgr\|bp\|ks\.\|o\+\.\|¶w\.\|dr\)$'
+			return '~'
 		" Wstaw tylde miedzy rokiem, wiekiem, a odpowiednim skrotem
-		elseif strpart(getline('.'), col('.') - 8, 7) =~? '[0-9IVXLCM]\s\+\(r\|w\)\.[^a-z±æê³ñó¶¿¼]\{-}\s\+$'
-			s/[0-9IVXLCM]\zs\s\+\ze\(w\|r\)\.[^a-z±æê³ñó¶¿¼]\{-}\s\+\%#/\~/ei
+		elseif strpart(getline('.'), col('.') - 8, 7) =~? '[0-9IVXLCM]\s\+\(r\|w\)\.[^a-z±æê³ñó¶¿¼]\{-}$'
+			s/[0-9IVXLCM]\zs\s\+\ze\(w\|r\)\.[^a-z±æê³ñó¶¿¼]\{-}\%#/\~/ei
 			exe 'normal '.s:col.'|'
 			if s:col == s:linelength
-				return "\<Del> "
+				startinsert!
 			else
-				return "\<Left> \<Del>"
+				startinsert
 			endif
+			return ' '
 		" Wstaw tylde miedzy liczba a miara, itd.
-		elseif strpart(getline('.'), col('.') - 10, 9) =~? '\(\d\|mln\|mld\|tys\.\)\s\+\(z³\|gr\|ha\|t\|mies\|godz\|min\|sek\|cm\|km\|mln\|mld\|tys\.\)[^a-z±æê³ñó¶¿¼]\{-}\s\+$'
-			s/\(\d\|mln\|mld\|tys\.\)\zs\s\+\ze\(z³\|gr\|ha\|m\|t\|mies\|godz\|min\|sek\|cm\|km\|mln\|mld\|tys\.\)[^a-z±æê³ñó¶¿¼]\{-}\s\+\%#/\~/ei
+		elseif strpart(getline('.'), col('.') - 10, 9) =~? '\(\d\|mln\|mld\|tys\.\)\s\+\(z³\|gr\|ha\|t\|mies\|godz\|min\|sek\|cm\|km\|mln\|mld\|tys\.\)[^a-z±æê³ñó¶¿¼]\{-}$'
+			s/\(\d\|mln\|mld\|tys\.\)\zs\s\+\ze\(z³\|gr\|ha\|m\|t\|mies\|godz\|min\|sek\|cm\|km\|mln\|mld\|tys\.\)[^a-z±æê³ñó¶¿¼]\{-}\%#/\~/ei
 			exe 'normal '.s:col.'|'
 			if s:col == s:linelength
-				return "\<Del> "
+				startinsert!
 			else
-				return "\<Left> \<Del>"
+				startinsert
 			endif
+			return ' '
 		" Rozwin myslnik w zbitkach w '\dywiz ':
 		" bialo-czerwony -> bialo\dywiz czerwony
-		elseif strpart(getline('.'), col('.') - 20, 19) =~? '[a-z±æê³ñó¶¿¼]-[a-z±æê³ñó¶¿¼]\{-}[^a-z±æê³ñó¶¿¼]\{-}\s\+$'
-			s/[a-z±æê³ñó¶¿¼]\zs-\ze[a-z±æê³ñó¶¿¼]\{-}[^a-z±æê³ñó¶¿¼]\{-}\s\+\%#/\\dywiz /ei
+		elseif strpart(getline('.'), col('.') - 20, 19) =~? '[a-z±æê³ñó¶¿¼]-[a-z±æê³ñó¶¿¼]\{-}[^a-z±æê³ñó¶¿¼]\{-}$'
+			s/[a-z±æê³ñó¶¿¼]\zs-\ze[a-z±æê³ñó¶¿¼]\{-}[^a-z±æê³ñó¶¿¼]\{-}\%#/\\dywiz /ei
 			let colb = s:col + 6
 			exe 'normal '.colb.'|'
 			if s:col == s:linelength
-				return "\<Del> "
+				startinsert!
 			else
-				return "\<Left> \<Del>"
+				startinsert
 			endif
+			return ' '
 		" Rozwin '--' miedzy liczbami w '\ppauza ':
 		" 39--45 -> 39\ppauza 45
-		elseif strpart(getline('.'), col('.') - 10, 9) =~? '[0-9IVXLCM]--[0-9IVXLCM]\{-}[^0-9IVXLCM]\{-}\s\+$'
-			s/[0-9IVXLCM]\zs--\ze[0-9IVXLCM]\{-}[^0-9IVXLCM]\{-}\s\+\%#/\\ppauza /ei
+		elseif strpart(getline('.'), col('.') - 10, 9) =~? '[0-9IVXLCM]--[0-9IVXLCM]\{-}[^0-9IVXLCM]\{-}$'
+			s/[0-9IVXLCM]\zs--\ze[0-9IVXLCM]\{-}[^0-9IVXLCM]\{-}\%#/\\ppauza /ei
 			let colb = s:col + 6
 			exe 'normal '.colb.'|'
 			if s:col == s:linelength
-				return "\<Del> "
+				startinsert!
 			else
-				return "\<Left> \<Del>"
+				startinsert
 			endif
+			return ' '
 		endif
 		" Tu koncz komentowanie ostatniej sekcji
 	endif
-	return "\<BS> "
+	return " "
 endfunction 
 
-" vim:ft=vim
+" vim:ft=vim:ff=unix
