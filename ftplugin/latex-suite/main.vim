@@ -3,7 +3,7 @@
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
 "		   URL: 
-"  Last Change: sob maj 04 08:00  2002 U
+"  Last Change: czw lis 07 01:00  2002 C
 "
 " Help: 
 " Changes: {{{
@@ -126,11 +126,6 @@ if !exists('s:doneMappings')
 	call IMAP ("frac".s:ml, "\\frac{ä}{«»}«»", "tex")
 	call IMAP ("sq".s:ml, "\\sqrt{ä}«»", "tex")
 	call IMAP ("eps".s:ml, "\\psfig{figure=ä.eps}«»", "tex")
-	call IMAP ("sec".s:ml, "\\section{ä}«»", "tex")
-	call IMAP ("ssec".s:ml, "\\subsection{ä}«»", "tex")
-	call IMAP ("sssec".s:ml, "\\subsubsection{ä}«»", "tex")
-	call IMAP ("sec2".s:ml, "\\subsection{ä}«»", "tex")
-	call IMAP ("sec3".s:ml, "\\subsubsection{ä}«»", "tex")
 	call IMAP ("sum".s:ml, "\\sum{ä}{«»}«»", "tex")
 	call IMAP ("suml".s:ml, "\\sum\\limits_{ä}^{«»}«»", "tex")
 	call IMAP ("int".s:ml, "\\int_{ä}^{«»}«»", "tex")
@@ -141,8 +136,6 @@ if !exists('s:doneMappings')
 	call IMAP ("rr".s:ml, "\\right", "tex")
 	call IMAP ("ll".s:ml, "\\left", "tex")
 	call IMAP ("part".s:ml, "\\partial", "tex")
-	call IMAP ("dot".s:ml, "\\dot{ä}«»", "tex")
-	call IMAP ("ddot".s:ml, "\\ddot{ä}«»", "tex")
 	" }}}
 	" Greek Letters {{{
 	let s:greek_a = "\\alpha" " {{{
@@ -314,11 +307,13 @@ function! s:SmartBS(pat)
 	endif
 endfun
 " }}}
-" SmartDots: inserts \cdots instead of ... in math mode otherwise ... {{{
+" SmartDots: inserts \cdots instead of ... in math mode otherwise \ldots {{{
 function! <SID>SmartDots()
 	if synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^texMath'
 		\&& strpart(getline('.'), col('.')-3, 2) == '..' 
 		return "\<bs>\<bs>\\cdots"
+	elseif strpart(getline('.'), col('.')-3, 2) == '..' 
+		return "\<bs>\<bs>\\ldots"
 	else
 		return '.'
 	endif
