@@ -2,7 +2,7 @@
 " 	     File: envmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
-" Last Change: pi± lis 15 12:00  2002 C
+" Last Change: pi± lis 15 11:00  2002 C
 " 
 "  Description: mappings/menus for environments. 
 "=============================================================================
@@ -58,7 +58,7 @@ function! <SID>Tex_EnvMacros(lhs, submenu, name)
 		let location = location.a:lhs.'\ ('.vlhs.')'
 
 		if g:Tex_EnvironmentMaps && !exists('s:doneOnce')
-			call IMAP (a:lhs, "\\begin{".a:name."}\<CR>".extra."«»\<CR>\\end{".a:name."}«»", 'tex')
+			call IMAP (a:lhs, '\begin{'.a:name."}\<CR>".extra."«»\<CR>\\end{".a:name."}«»", 'tex')
 			exec 'vnoremap <silent> '.vlhs.' '.vrhs
 		endif
 
@@ -122,7 +122,7 @@ function! <SID>Tex_SectionMacros(lhs, name)
 
 	if g:Tex_SectionMaps && !exists('s:doneOnce')
 		exe 'vnoremap '.vlhs.' '.vrhs
-		call IMAP (a:lhs, "\\".a:name."{«»}«»", 'tex')
+		call IMAP (a:lhs, "\\".a:name.'{«»}«»', 'tex')
 	endif
 
 	if g:Tex_Menus && g:Tex_SectionMenus
@@ -134,10 +134,10 @@ function! <SID>Tex_SectionMacros(lhs, name)
 		let advirhs = "\<C-r>=Tex_InsSecAdv('".a:name."')\<CR>"
 		let advvrhs = "\<C-\\>\<C-N>:call Tex_VisSecAdv('".a:name."')\<CR>"
 
-		exe 'amenu '.advlocation." <plug>".advirhs
+		exe 'amenu '.advlocation.' <plug>'.advirhs
 		exe 'vnoremenu '.advlocation." ".advvrhs
 
-		exe 'amenu '.location." <plug>".irhs
+		exe 'amenu '.location.' <plug>'.irhs
 		exe 'vnoremenu '.location." ".vrhs
 	endif
 endfunction " }}}
@@ -190,14 +190,14 @@ call s:Tex_SpecialMacros('', 'EnvCommands.&Slides.', '&addtime', '\addtime', 0)
 call s:Tex_SpecialMacros('', '', '-sepenv0-', ' :', 0)
 " }}}
 " Lists {{{
-call s:Tex_SpecialMacros("ELI", '&Lists.',  'list', "\\begin{list}{«label»}{«commands»}\<cr>\\item «»\<cr>\\end{list}«»")
+call s:Tex_SpecialMacros('ELI', '&Lists.',  'list', "\\begin{list}{«label»}{«commands»}\<cr>\\item «»\<cr>\\end{list}«»")
 call s:Tex_EnvMacros('EEN', '&Lists.', 'enumerate')
 call s:Tex_EnvMacros('EIT', '&Lists.', 'itemize')
 call s:Tex_EnvMacros('ETI', '&Lists.', 'theindex')
 call s:Tex_EnvMacros('ETL', '&Lists.', 'trivlist')
 " }}}
 " Tables {{{
-call s:Tex_SpecialMacros("ETE", '&Tables.', 'table', "\\begin{table}\<cr>\\centering\<cr>\\caption{tab:ä}\<cr>\\begin{tabular}{«dimensions»}\<cr>«»\<cr>\\end{tabular}\<cr>\\label{tab:«label»}\<cr>\\end{table}«»")
+call s:Tex_SpecialMacros('ETE', '&Tables.', 'table', "\\begin{table}\<cr>\\centering\<cr>\\caption{tab:ä}\<cr>\\begin{tabular}{«dimensions»}\<cr>«»\<cr>\\end{tabular}\<cr>\\label{tab:«label»}\<cr>\\end{table}«»")
 call s:Tex_EnvMacros('ETG', '&Tables.', 'tabbing')
 call s:Tex_EnvMacros('',    '&Tables.', 'table*')
 call s:Tex_EnvMacros('',    '&Tables.', 'table2')
@@ -213,7 +213,7 @@ call s:Tex_EnvMacros('EEQ', '&Math.', 'equation')
 call s:Tex_EnvMacros('EMA', '&Math.', 'math')
 " }}}
 " Structure {{{
-call s:Tex_SpecialMacros("EAR", 'Math.', 'array', "\\leftä\<cr>\\begin{array}{«dimension»}\<cr>«elements»\<cr>\\end{array}\<cr>\\right«»")
+call s:Tex_SpecialMacros('EAR', 'Math.', 'array', "\\leftä\<cr>\\begin{array}{«dimension»}\<cr>«elements»\<cr>\\end{array}\<cr>\\right«»")
 call s:Tex_EnvMacros('EAB', '&Structure.', 'abstract')
 call s:Tex_EnvMacros('EAP', '&Structure.', 'appendix')
 call s:Tex_EnvMacros('ECE', '&Structure.', 'center')
@@ -247,15 +247,15 @@ call s:Tex_SectionMacros('SSP', 'subparagraph')
 " }}}
 " Miscellaneous {{{
 call s:Tex_SpecialMacros('', '', '-sepenv1-', ' :', 0)
-call s:Tex_SpecialMacros("EFI", '', 'figure', "\\begin{figure}[«htpb»]\<cr>\\centerline{\\psfig{figure=«eps file»}}\<cr>\\caption{«caption text»}\<cr>\\label{fig:«label»}\<cr>\\end{figure}«»")
+call s:Tex_SpecialMacros('EFI', '', 'figure', "\\begin{figure}[«htpb»]\<cr>\\centerline{\\psfig{figure=«eps file»}}\<cr>\\caption{«caption text»}\<cr>\\label{fig:«label»}\<cr>\\end{figure}«»")
 call s:Tex_EnvMacros('', '', 'figure*')
 call s:Tex_EnvMacros('ELR', '', 'lrbox')
-call s:Tex_SpecialMacros("EMP", '', 'minipage', "\\begin{minipage}[«tb»]{«width»}\<cr>«»\<cr>\\end{minipage}«»")
-call s:Tex_SpecialMacros("EPI", '', 'picture', "\\begin{picture}(«width», «height»)(«xoff»,«yoff»)\<cr>\\put(«xoff»,«yoff»){\\framebox(«»,«»){«»}}\<cr>\\end{picture}«»")
+call s:Tex_SpecialMacros('EMP', '', 'minipage', "\\begin{minipage}[«tb»]{«width»}\<cr>«»\<cr>\\end{minipage}«»")
+call s:Tex_SpecialMacros('EPI', '', 'picture', "\\begin{picture}(«width», «height»)(«xoff»,«yoff»)\<cr>\\put(«xoff»,«yoff»){\\framebox(«»,«»){«»}}\<cr>\\end{picture}«»")
 " }}}
 
 if g:Tex_CatchVisMapErrors
-	exe "vnoremap ".g:Tex_Leader2."   :\<C-u>call ExecMap('".g:Tex_Leader2."', 'v')\<CR>"
+	exe 'vnoremap '.g:Tex_Leader2."   :\<C-u>call ExecMap('".g:Tex_Leader2."', 'v')\<CR>"
 endif
 
 " ==============================================================================
@@ -263,13 +263,13 @@ endif
 " ============================================================================== 
 " Tex_itemize: {{{
 function! Tex_itemize(indent, env)
-	exe 'normal i'.a:indent."\\begin{".a:env."}\<cr>\\item \<cr>\\end{".a:env."}«»\<Up>"
+	exe 'normal i'.a:indent.'\begin{'.a:env."}\<cr>\\item \<cr>\\end{".a:env."}«»\<Up>"
 endfunction
 " }}} 
 " Tex_description: {{{
 function! Tex_description(indent, env)
-	let itlabel = input("(Optional) Item label? ")
-	if (itlabel != "")
+	let itlabel = input('(Optional) Item label? ')
+	if itlabel != ''
 		let itlabel = '['.itlabel.']'
 	endif
 	exe 'normal i'.a:indent."\\begin{description}\<cr>\\item".itlabel." \<cr>\\end{description}«»\<Up>"
@@ -277,29 +277,29 @@ endfunction
 " }}} 
 " Tex_figure: {{{
 function! Tex_figure(indent, env)
-    let flto    = input("Float to (htbp)? ")
-    let caption = input("Caption? ")
-    let center  = input("Center ([y]/n)? ")
+    let flto    = input('Float to (htbp)? ')
+    let caption = input('Caption? ')
+    let center  = input('Center ([y]/n)? ')
     let label   = input('Label (for use with \ref)? ')
     " additional to AUC Tex since my pics are usually external files
-    let pic = input("Name of Pic-File? ")
-    if (flto != "")
-        let flto = "[".flto."]\<cr>"
+    let pic = input('Name of Pic-File? ')
+    if flto != ''
+        let flto = '['.flto."]\<cr>"
     else
         let flto = "\<cr>"
     endif
-    if (pic != "")
-        let pic = "\\input{".pic."}\<cr>"
+    if pic != ''
+        let pic = '\input{'.pic."}\<cr>"
     else
         let pic = "ä\<cr>"
     endif
-    if (caption != "")
-        let caption = "\\caption{".caption."}\<cr>"
+    if caption != ''
+        let caption = '\caption{'.caption."}\<cr>"
     endif
-    if (label != "")
-        let label = "\\label{fig:".label."}\<cr>"
+    if label != ''
+        let label = '\label{fig:'.label."}\<cr>"
     endif
-    if (center == "y" || center == "")
+    if (center == 'y' || center == '')
       let centr = "\\begin{center}\<cr>"
       let centr = centr . pic 
       let centr = centr . caption
@@ -310,9 +310,9 @@ function! Tex_figure(indent, env)
       let centr = centr . caption
       let centr = centr . label
     endif
-    let figure = "\\begin{".a:env."}".flto
+    let figure = '\begin{'.a:env.'}'.flto
     let figure = figure . centr
-    let figure = figure . "\\end{".a:env."}"
+    let figure = figure . '\end{'.a:env.'}'
 	exe 'normal i'.a:indent.figure."\<Esc>$"
 endfunction
 " }}} 
@@ -322,19 +322,19 @@ function! Tex_table(indent, env)
     let caption = input('Caption? ')
     let center  = input('Center (y/n)? ')
     let label   = input('Label? ')
-    if (flto != "")
+    if flto != ''
         let flto ='['.flto."]\<cr>"
     else
         let flto = ''
     endif
     let ret='\begin{table}'.flto
-    if (center == "y")
+    if center == 'y'
         let ret=ret."\\begin{center}\<cr>"
     endif
-    let foo = "\\begin{tabular}"
+    let foo = '\begin{tabular}'
     let pos = input('(Optional) Position (t b)? ')
-    if (pos!='')
-        let foo = foo.'['.pos."]"
+    if pos != ''
+        let foo = foo.'['.pos.']'
 	else
 		let foo = foo."\<cr>"
     endif
@@ -343,56 +343,56 @@ function! Tex_table(indent, env)
 		let format = '«»'
 	endif
     let ret = ret.foo.'{'.format."}\<cr>ä\<cr>\\end{tabular}«»\<cr>"
-    if (center == 'y')
+    if center == 'y'
         let ret=ret."\\end{center}\<cr>"
     endif
-    if (caption != '')
+    if caption != ''
         let ret=ret.'\caption{'.caption."}\<cr>"
     endif
-    if (label != "")
+    if label != ''
         let ret=ret.'\label{tab:'.label."}\<cr>"
     endif
-    let ret=ret."\\end{table}«»"
-	exe "normal i".ret."\<Esc>?ä\<cr>:nohl\<cr>C"
+    let ret=ret.'\end{table}«»'
+	exe 'normal i'.ret."\<Esc>?ä\<cr>:nohl\<cr>C"
 endfunction
 " }}} 
 " Tex_tabular: {{{
 function! Tex_tabular(indent, env)
-    let pos    = input("(Optional) Position (t b)? ")
+    let pos    = input('(Optional) Position (t b)? ')
     let format = input("Format  ( l r c p{width} | @{text} )? ")
-    if (pos != '')
+    if pos != ''
       let pos = '['.pos.']'
     endif
     if format != ''
       let format = '{'.format.'}'
     endif
-    exe 'normal i'.a:indent."\\begin{".a:env.'}'.pos.format."\<cr> \<cr>\\end{".a:env."}«»\<Up>"
+    exe 'normal i'.a:indent.'\begin{'.a:env.'}'.pos.format."\<cr> \<cr>\\end{".a:env."}«»\<Up>"
 endfunction
 " }}} 
 " Tex_eqnarray: {{{
 function! Tex_eqnarray(indent, env)
-    let label = input("Label?  ")
-    if (label != "")
+    let label = input('Label?  ')
+    if label != ''
         let arrlabel = '\label{'.label."}\<cr> "
       else
-        let arrlabel = " "
+        let arrlabel = ' '
     endif
-    exe 'normal i'.a:indent."\\begin{".a:env."}\<cr>".arrlabel."\<cr>\\end{".a:env."}«»\<Up>"
+    exe 'normal i'.a:indent.'\begin{'.a:env."}\<cr>".arrlabel."\<cr>\\end{".a:env."}«»\<Up>"
 endfunction
 " }}} 
 " Tex_list: {{{
 function! Tex_list(indent, env)
 	let label = input('Label (for \item)? ')
-	if (label != '')
+	if label != ''
 		let label = '{'.label.'}'
 		let addcmd = input('Additional commands? ')
-		if (addcmd != '')
+		if addcmd != ''
 			let label = label . '{'.addcmd.'}'
 		endif
 	else
 		let label = ''
 	endif
-	exe 'normal i'.a:indent."\\begin{list}".label."\<cr>\\item \<cr>\\end{list}«»\<Up>"
+	exe 'normal i'.a:indent.'\begin{list}'.label."\<cr>\\item \<cr>\\end{list}«»\<Up>"
 endfunction
 " }}} 
 " Tex_document: {{{
@@ -400,7 +400,7 @@ function! Tex_document(indent, env)
     let dstyle = input('Document style? ')
     let opts = input('(Optional) Options? ')
     let foo = '\documentclass'
-    if (opts == '')
+    if opts == ''
         let foo = foo.'{'.dstyle.'}'
     else
         let foo = foo.'['.opts.']'.'{'.dstyle.'}'
@@ -413,7 +413,7 @@ function! Tex_minipage(indent, env)
     let foo = '\begin{minipage}'
     let pos = input('(Optional) Position (t b)? ')
     let width = input('Width? ')
-    if (pos=="")
+    if pos == ''
         let foo = foo.'{'.width.'}'
     else
         let  foo = foo.'['.pos.']{'.width.'}'
@@ -427,9 +427,9 @@ function! Tex_thebibliography(indent, env)
     let indent = input('Indent for BibItem? ')
     let foo = '{'.indent.'}'
     let biblabel = input('(Optional) Bibitem label? ')
-    let key = input("Add key? ")
+    let key = input('Add key? ')
     let bar = '\bibitem'
-    if (biblabel != '')
+    if biblabel != ''
         let bar = bar.'['.biblabel.']'
     endif
     let bar = bar.'{'.key.'}'
@@ -440,15 +440,54 @@ endfunction
 " Merged contributions from Carl Mueller
 " asdf is a fake argument to recognize if call is coming from keyboard or from
 " menu 
-inoremap <buffer> <F5> <C-0>:call Tex_DoEnvironment("asdf")<CR>
-noremap  <buffer> <F5> :call Tex_DoEnvironment("asdf")<CR>
+inoremap <F5> <C-O>:call Tex_FFive_intelligent()<cr>
+noremap  <F5> :call Tex_FFive_intelligent()<cr>
+function! Tex_FFive_intelligent() " {{{
+	let start_line = line('.')
+	let pos = line('.').' | normal! '.virtcol('.').'|'
+	if search('\\documentclass', 'bW') && search('\\begin{document}')
+		let begin_line = search('\\begin{document}')
+		if start_line < begin_line
+			exe pos
+			call Tex_package_from_line()
+		else
+			exe pos
+			call Tex_DoEnvironment('asdf')
+		endif
+	elseif search('\\documentclass')
+		exe pos
+		call Tex_package_from_line()
+	else
+		exe pos
+		call Tex_DoEnvironment('asdf')
+	endif
+endfunction " }}}
+function! Tex_package_from_line() " {{{
+	" Function Tex_PutPackage is defined in packages.vim
+	let l = getline(".")
+	let pack = matchstr(l, '^\s*\zs.*')
+	if pack == ''
+		let pack = input('Package? ')
+		if pack != ''
+			call Tex_PutPackage(pack)
+		endif
+		return 0
+	else
+		normal 0D
+		call Tex_PutPackage(pack)
+	endif
+endfunction " }}}
+
 
 function! Tex_DoEnvironment(env) " {{{
-	let l = getline(".")
-	if a:env == "asdf"
+	let l = getline('.')
+	if a:env == 'asdf'
 		let env = matchstr(l, '^\s*\zs.*')
 		if env == ''
-			call Tex_PutEnvironment(l, input("Environment? "))
+			let env = input('Environment? ')
+			if env != ''
+				call Tex_PutEnvironment(l, env)
+			endif
 		else
 			let ind = matchstr(l, '^\s*\ze')
 			normal 0D
@@ -468,8 +507,8 @@ function! Tex_PutEnvironment(indent, env) " {{{
         call Tex_table(a:indent, a:env)
     elseif a:env =~ "tabular\\|tabular*\\|array\\|array*"
         call Tex_tabular(a:indent, a:env)
-	elseif exists("*Tex_".a:env)
-		exe "call Tex_".a:env."(a:indent, a:env)"
+	elseif exists('*Tex_'.a:env)
+		exe 'call Tex_'.a:env.'(a:indent, a:env)'
 	else
         exe 'normal i'.a:indent.'\begin{'.a:env."}\<cr> \<cr>\\end{".a:env."}«»\<Up>"
 	endif
@@ -477,13 +516,11 @@ endfunction " }}}
 
 let b:DoubleDollars = 0
 
-inoremap <buffer> <C-F5> <C-O>:call <SID>ChangeEnvironment(input("Environment? "))<CR>
-noremap <buffer> <C-F5> :call <SID>ChangeEnvironment(input("Environment? "))<CR>
 inoremap <buffer> <S-F5> <C-O>:call Tex_change_environment()<CR>
-noremap <buffer> <S-F5> :call Tex_change_environment()<CR>
+noremap  <buffer> <S-F5> :call Tex_change_environment()<CR>
 
 function! Tex_AmsLatex() " {{{
-	if g:Tex_package_supported =~ "amsmath"
+	if g:Tex_package_supported =~ 'amsmath'
 		let amslatex = 1
 	endif
     return amslatex
@@ -493,15 +530,15 @@ endfunction " }}}
 let s:math_environment = 'eqnarray,eqnarray*,align,align*,equation,equation*,[,$$'
 let s:item_environment = 'list,trivlist,enumerate,itemize,theindex'
 function Tex_change_environment() " {{{
-    let env_line = searchpair("\\[\\|begin{", "", "\\]\\|end{", "bn")
+    let env_line = searchpair("\\[\\|begin{", '', "\\]\\|end{", "bn")
 	if env_line != 0
-		if getline(env_line) =~ "\\["
-			let env_name = "["
+		if getline(env_line) !~ 'begin{'
+			let env_name = '['
 		else
 			let env_name = matchstr(getline(env_line), 'begin{\zs.\{-}\ze}')
 		endif
 	endif
-	if !exists("env_name")
+	if !exists('env_name')
 		echomsg "You are not inside environment"
 		return 0
 	endif
@@ -511,7 +548,7 @@ function Tex_change_environment() " {{{
 				\ "(1) eqnarray  (2) eqnarray*\n".
 				\ "(3) align     (4) align*\n".
 				\ "(5) equation* (6) other\n".
-				\ "(7) leave unchanged\n".
+				\ "<cr>  leave unchanged\n".
 				\ "Enter number: ')"
 		if change_env == 1
 			call <SID>Change('eqnarray', 1, '', 1)
@@ -524,11 +561,15 @@ function Tex_change_environment() " {{{
 		elseif change_env == 5
 			call <SID>Change('equation*', 0, '&\|\\lefteqn{\|\\nonumber\|\\\\', 0)
 		elseif change_env == 6
-			call <SID>Change(input('Environment? '), 0, '', '')
-		elseif change_env == 7
+			let env = input('Environment? ')
+			if env != ''
+				call <SID>Change(env, 0, '', '')
+			endif
+			return 0
+		elseif change_env == ''
 			return 0
 		else
-			echomsg "Wrong argument"
+			echomsg 'Wrong argument'
 			return 0
 		endif
 	else
@@ -573,14 +614,15 @@ function! s:Change(env, label, delete, putInNonumber) " {{{
 	if a:putInNonumber == 1
 		exe top
 		call search('\\end\|\\\\')
-		if line(".") != bottom
+		if line('.') != bottom
 			exe '.+1,' . bottom . 's/\\\\/\\nonumber\\\\/e'
 			exe (bottom-1) . 's/\s*$/  \\nonumber/'
 		endif
 	endif
 	if a:label == 1
 		exe top
-		if getline(top+1) !~ '.*label.*'
+		if search("\\label", "W") > bottom
+			exe top
 			let local_label = input('Label? ')
 			if local_label != ''
 				put = '\label{'.local_label.'}'
@@ -590,7 +632,7 @@ function! s:Change(env, label, delete, putInNonumber) " {{{
 	else
 		exe 'silent '.top . ',' . bottom . ' g/\\label/delete'
 	endif
-	if exists("local_label") && local_label != ''
+	if exists('local_label') && local_label != ''
 		exe start_line + 1.' | normal! '.start_col.'|'
 	else
 		exe start_line.' | normal! '.start_col.'|'
@@ -603,41 +645,9 @@ function! s:ArgumentsForArray(arg) " {{{
 	normal kgJj
 endfunction 
 " }}}
-function! s:ChangeEnvironment(env) " {{{
-	if b:DoubleDollars == 0
-		call searchpair('\\\[\|\\begin{','','\\\]\|\\end{','')
-	else
-		call search('\$\$\|\\end{')
-	end
-	let l = getline(line("."))
-	let indent = strpart(l, 0, match(l, '\S'))
-	if b:DoubleDollars == 0
-		s/\\\]\|\\end{.\{-}}/\='\\end{' . a:env . '}'/
-		call searchpair('\\\[\|\\begin{','','\\\]\|\\end{','b')
-		s/\\\[\|\\begin{.\{-}}/\='\\begin{' . a:env . '}'/
-	else
-		s/\$\$\|\\end{.\{-}}/\='\\end{' . a:env . '}'/
-		call search('\$\$\|\\begin{','b')
-		s/\$\$\|\\begin{.\{-}}/\='\\begin{' . a:env . '}'/
-	endif
-	if a:env =~# '^\(theorem\|lemma\|equation\|eqnarray\|align\|multline\)$'
-		if (-1 == match(getline(line(".")),"\\label"))
-			let label = input("Label? ")
-			if label != ''
-				put! = indent . '\label{' . label . '}'
-			endif
-		endif
-	elseif a:env[strlen(a:env)-1] == '*'
-		if (-1 != match(getline(line(".")),"\\label"))
-			delete
-		endif
-	endif
-	echo ''
-endfunction 
-" }}}
 function! s:PutInNonumber() " {{{
 	call search('\\end\|\\\\')
-	if getline(line("."))[col(".")] != "e"
+	if getline(line('.'))[col('.')] != "e"
 		.+1,'>s/\\\\/\\nonumber\\\\/e
 		normal `>k
 		s/\s*$/  \\nonumber/
@@ -649,3 +659,4 @@ endfunction
 let s:doneOnce = 1
 
 " vim:fdm=marker:nowrap:noet
+
