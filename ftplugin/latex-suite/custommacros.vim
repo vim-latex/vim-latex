@@ -3,7 +3,8 @@
 "      Author: Mikolaj Machowski
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Sat May 04 03:00 PM 2002 PDT
+<<<<<<< custommacros.vim
+" Last Change: ¶ro maj 08 07:00  2002 U
 " 
 "  Description: functions for processing custom macros in the
 "               latex-suite/macros directory
@@ -127,10 +128,10 @@ endfunction
 
 " }}}
 " commands for macros {{{
-com! -nargs=? TexMacro          :call <SID>ReadMacro(<f-args>)
-com! -nargs=0 TexMacroNew       :call <SID>NewMacro()
-com! -nargs=? TexMacroEdit      :call <SID>EditMacro(<f-args>)
-com! -nargs=? TexMacroDelete    :call <SID>DeleteMacro(<f-args>)
+com! -nargs=? TMacro          :call <SID>ReadMacro(<f-args>)
+com! -nargs=0 TMacroNew       :call <SID>NewMacro()
+com! -nargs=? TMacroEdit      :call <SID>EditMacro(<f-args>)
+com! -nargs=? TMacroDelete    :call <SID>DeleteMacro(<f-args>)
 
 " }}}
 
