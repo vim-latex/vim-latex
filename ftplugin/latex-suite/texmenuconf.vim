@@ -36,7 +36,7 @@ if has('gui_running') && g:Tex_Menus
 	exec 'anoremenu 80.30 '.s:mainmenuname.'&Compile<tab>\\ll'.
 		\'   :silent! call RunLaTeX()<CR>'
 	exec 'anoremenu 80.35 '.s:mainmenuname.'Compile&Part<tab>\\lc'.
-		\'   :silent! call Tex_PartCompilation()<CR>'
+		\'   :silent! call Tex_PartCompilation("fline","lline", "v")<CR>'
 	exec 'anoremenu 80.40 '.s:mainmenuname.'&View<tab>\\lv'.
 		\'   :silent! call ViewLaTeX("all")<CR>'
 	exec 'anoremenu 80.45 '.s:mainmenuname.'Vi&ewPart<tab>\\lp'.
