@@ -221,7 +221,8 @@ function! Tex_RunLaTeX()
 		endif
 
 		" If there are any errors, then break from the rest of the steps
-		if Tex_GetErrorList() != ''
+		if Tex_GetErrorList() =~ '\v:\d+ (error|warning):'
+			call Tex_Debug('There were errors in compiling, breaking chain...', 'comp')
 			break
 		endif
 
