@@ -2,6 +2,7 @@
 "        File: syntaxFolds.vim
 "      Author: Srinath Avadhanula
 "              ( srinath@fastmail.fm )
+" Last Change: Sun Oct 27 01:00 AM 2002 PST
 " Description: Emulation of the syntax folding capability of vim using manual
 "              folding
 "
@@ -26,14 +27,59 @@
 "              \end{section}
 "              the section is assumed to end 1 line _before_ another section
 "              starts.
-"    Example: A syntax fold region for a latex section is
-"      startpat = "\\section{"
-"      endpat   = "\\section{"
-"      startoff = 0
-"      endoff   = -1
+"    startskip: a pattern which defines the beginning of a "skipped" region.
+"
+"               For example, suppose we define a \itemize fold as follows:
+"               startpat =  '^\s*\\item',
+"               endpat = '^\s*\\item\|^\s*\\end{\(enumerate\|itemize\|description\)}',
+"               startoff = 0,
+"               endoff = -1
+"
+"               This defines a fold which starts with a line beginning with an
+"               \item and ending one line before a line beginning with an
+"               \item or \end{enumerate} etc.
+"
+"               Then, as long as \item's are not nested things are fine.
+"               However, once items begin to nest, the fold started by one
+"               \item can end because of an \item in an \itemize
+"               environment within this \item. i.e, the following can happen:
+"
+"               \begin{itemize}
+"               \item Some text <------- fold will start here
+"                     This item will contain a nested item
+"                     \begin{itemize} <----- fold will end here because next line contains \item...
+"                     \item Hello
+"                     \end{itemize} <----- ... instead of here.
+"               \item Next item of the parent itemize
+"               \end{itemize}
+"
+"               Therefore, in order to completely define a folding item which
+"               allows nesting, we need to also define a "skip" pattern.
+"               startskip and end skip do that.
+"               Leave '' when there is no nesting.
+"    endskip: the pattern which defines the end of the "skip" pattern for
+"             nested folds.
+"
+"    Example: 
+"    1. A syntax fold region for a latex section is
+"           startpat = "\\section{"
+"           endpat   = "\\section{"
+"           startoff = 0
+"           endoff   = -1
+"           startskip = ''
+"           endskip = ''
 "    Note that the start and end patterns are thus the same and endoff has a
 "    negative value to capture the effect of a section ending one line before
 "    the next starts.
+"    2. A syntax fold region for the \itemize environment is:
+"           startpat = '^\s*\\item',
+"           endpat = '^\s*\\item\|^\s*\\end{\(enumerate\|itemize\|description\)}',
+"           startoff = 0,
+"           endoff = -1,
+"           startskip = '^\s*\\begin{\(enumerate\|itemize\|description\)}',
+"           endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'
+"     Note the use of startskip and endskip to allow nesting.
+"
 "
 " Each time a call is made to FoldRegions(), all the regions (which might be
 " disjoint, but not nested) are folded up.
