@@ -45,12 +45,16 @@ function! <SID>ReadTemplate(...)
 	else
 		let pwd = getcwd()
 		exe 'cd '.s:path.'/templates'
-		let filename = Tex_ChooseFile('Choose a template file:')
+		let filename = 
+					\ Tex_ChooseFromPrompt("Choose a template file:\n" . 
+					\ Tex_CreatePrompt(glob('*'), 2, "\n") . 
+					\ "\nEnter number or name of file :", 
+					\ glob('*'), "\n")
 		exe 'cd '.pwd
 	endif
 
 	let fname = glob(s:path."/templates/".filename)
-	exe "0read ".fname
+	silent! exe "0read ".fname
 	" The first line of the file contains the specifications of what the
 	" placeholder characters and the other special characters are.
 	let pattern = '\v(\S+)\t(\S+)\t(\S+)\t(\S+)'
@@ -65,7 +69,7 @@ function! <SID>ReadTemplate(...)
 	" delete the first line into ze blackhole.
 	0 d _
 
-	call Tex_pack_all()
+	call Tex_pack_updateall()
 endfunction
 
 " }}}
