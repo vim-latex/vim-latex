@@ -23,9 +23,7 @@ function! <SID>SetTemplateMenu()
 			break
 		endif
 		exe "amenu ".g:Tex_TemplatesMenuLocation."&".i.":<Tab>".fname." ".
-			\":call <SID>ReadTemplate('".fname."')<CR>".
-			\":call <SID>ProcessTemplate()<CR>:0<CR>".
-			\"i<C-r>=IMAP_Jumpfunc('', 1)<CR>"
+			\":call <SID>ReadTemplate('".fname."')<CR>"
 		let i = i + 1
 	endwhile
 endfunction 
@@ -50,7 +48,9 @@ function! <SID>ReadTemplate(...)
 
 	let fname = Tex_FindInRtp(filename.'.tex', 'templates', ':p')
 	call Tex_Debug("0read ".fname, 'templates')
+
 	silent! exe "0read ".fname
+
 	" The first line of the file contains the specifications of what the
 	" placeholder characters and the other special characters are.
 	let pattern = '\v(\S+)\t(\S+)\t(\S+)\t(\S+)'
@@ -60,10 +60,21 @@ function! <SID>ReadTemplate(...)
 	let s:exeTemp = substitute(getline(1), pattern, '\3', '')
 	let s:comTemp = substitute(getline(1), pattern, '\4', '')
 
-	call Tex_Debug('phs = '.s:phsTemp.', phe = '.s:pheTemp.', exe = '.s:exeTemp.', com = '.s:comTemp, 'templates')
+	call s:ProcessTemplate()
+	0 d_
 
-	" delete the first line into ze blackhole.
-	0 d _
+	" Do not handle the placeholders here. Let IMAP_PutTextWithMovement do it
+	" because it handles UTF-8 character substitutions etc. Therefore delete
+	" the text into @a and paste it using IMAP_PutTextWithMovement().
+	let _a = @a
+	normal! ggVG"ax
+	
+	call Tex_Debug("normal! i\<C-r>=IMAP_PutTextWithMovement(@a, '".s:phsTemp."', '".s:pheTemp."')\<CR>", 'templates')
+	exec "normal! i\<C-r>=IMAP_PutTextWithMovement(@a, '".s:phsTemp."', '".s:pheTemp."')\<CR>"
+
+	let @a = _a
+
+	call Tex_Debug('phs = '.s:phsTemp.', phe = '.s:pheTemp.', exe = '.s:exeTemp.', com = '.s:comTemp, 'templates')
 
 	call Tex_pack_updateall(1)
 endfunction
@@ -80,11 +91,6 @@ function! <SID>ProcessTemplate()
 		exec 'silent! %s/'.s:exeTemp.'\(.\{-}\)'.s:exeTemp.'/\=<SID>Exec(submatch(1))/ge'
 		exec 'silent! g/'.s:comTemp.s:comTemp.'/d'
 		
-		let phsUser = IMAP_GetPlaceHolderStart()
-		let pheUser = IMAP_GetPlaceHolderEnd()
-
-		exec 'silent! %s/'.s:phsTemp.'\(.\{-}\)'.s:pheTemp.'/'.phsUser.'\1'.pheUser.'/ge'
-
 		" A function only puts one item into the search history...
 		call Tex_CleanSearchHistory()
 	endif
@@ -108,9 +114,6 @@ endfunction
 " Command definitions {{{
 if v:version >= 602
 	com! -complete=custom,Tex_CompleteTemplateName -nargs=? TTemplate :call <SID>ReadTemplate(<f-args>)
-		\| :call <SID>ProcessTemplate()
-		\| :0
-		\| :exec "normal! i\<C-r>=IMAP_Jumpfunc('', 1)\<CR>"
 		\| :startinsert
 
 	" Tex_CompleteTemplateName: for completing names in TTemplate command {{{
@@ -128,9 +131,6 @@ if v:version >= 602
 	
 else
 	com! -nargs=? TTemplate :call <SID>ReadTemplate(<f-args>)
-		\| :call <SID>ProcessTemplate()
-		\| :0
-		\| :exec "normal! i\<C-r>=IMAP_Jumpfunc('', 1)\<CR>"
 		\| :startinsert
 
 endif
