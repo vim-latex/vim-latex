@@ -11,6 +11,7 @@ latexs:
 	zip -q latexSuite.zip plugin/imaps.vim
 	zip -q latexSuite.zip plugin/SyntaxFolds.vim
 	zip -q latexSuite.zip plugin/libList.vim
+	zip -q latexSuite.zip plugin/explorer.vim
 	# ftplugins
 	zip -q latexSuite.zip ftplugin/tex_latexSuite.vim
 	zip -q latexSuite.zip ftplugin/tex/*.vim
@@ -18,6 +19,7 @@ latexs:
 	zip -q -R latexSuite.zip `find ftplugin/latex-suite -name '*' | grep -v CVS`
 	# documentation
 	zip -q latexSuite.zip doc/latex*.txt
+	zip -q latexSuite.zip doc/imaps*.txt
 	# indentation
 	zip -q latexSuite.zip indent/tex.vim
 	# compiler
