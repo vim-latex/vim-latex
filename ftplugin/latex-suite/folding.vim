@@ -92,7 +92,14 @@ function! MakeTexFolds(force)
 		let g:Tex_FoldedMisc = g:Tex_FoldedMisc . s
 	endif
 
-	let s = 'footnote,intertext'
+	" By default do not fold any commands. It looks like trying to fold
+	" commands is a difficult problem since commands can be arbitrarily nested
+	" and the end patterns are not unique unlike the case of environments.
+	" For this to work well, we need a regexp which will match a line only if
+	" a command begins on that line but does not end on that line. This
+	" requires a regexp which will match unbalanced curly braces and that is
+	" apparently not doable with regexps.
+	let s = ''
     if !exists('g:Tex_FoldedCommands')
 		let g:Tex_FoldedCommands = s
 	elseif g:Tex_FoldedCommands[0] == ','
@@ -268,7 +275,14 @@ function! MakeTexFolds(force)
 			endif
 			if s != ''
 				if pass == 0
-					call AddSyntaxFoldItem('^\s*\\'.s.'{','^\s*}',0,0)
+					" NOTE: This pattern ensures that a command which is
+					" terminated on the same line will not start a fold.
+					" However, it will also refuse to fold certain commands
+					" which have not terminated. eg:
+					" 	\commandname{something \bf{text} and 
+					" will _not_ start a fold.
+					" In other words, the pattern is safe, but not exact.
+					call AddSyntaxFoldItem('^\s*\\'.s.'{[^{}]*$','^\s*}',0,0)
 				else
 					call AddSyntaxFoldItem('^\s*\\begin{'.s,'^\s*\\end{'.s,0,0)
 				endif
