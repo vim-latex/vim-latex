@@ -202,24 +202,28 @@ function! s:CompleteName()
 		else
 			let bibkey = matchstr(getline('.'), '{\zs.\{-}\ze,')
 		endif
-		exe s:winnum.' wincmd w'
-		pclose!
-		cclose
-		exe s:pos
-		let bibkey2 = strpart(bibkey, strlen(s:prefix))
-		exe 'normal! a'.bibkey2."}\<Esc>"
+		let completeword = strpart(bibkey, strlen(s:prefix))
 
 	elseif s:type =~ 'ref'
-		let s:label = matchstr(getline('.'), '\\label{\zs.\{-}\ze}')
-		exe s:winnum.' wincmd w'
-		pclose!
-		cclose
-		exe s:pos
-		let label2 = strpart(s:label, strlen(s:prefix))
-		exe 'normal! a'.label2."}\<Esc>"
+		let label = matchstr(getline('.'), '\\label{\zs.\{-}\ze}')
+		let completeword = strpart(label, strlen(s:prefix))
 		
 	endif
 
+	" Return to proper place in main window, close small windows
+	exe s:winnum.' wincmd w'
+	pclose!
+	cclose
+	exe s:pos
+
+	" Complete word, check if add closing }
+	exe 'normal! a'.completeword."\<Esc>"
+
+	if getline('.')[col('.')] != '}'
+		exe "normal! a}\<Esc>"
+	endif
+
+	" Return to Insert mode
 	if col('.') == strlen(getline('.'))
 		startinsert!
 
