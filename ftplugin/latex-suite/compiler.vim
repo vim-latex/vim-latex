@@ -110,12 +110,10 @@ function! RunLaTeX()
 
 	exec 'make '.mainfname
 
-	let bufnum = bufnr('%')
+	let winnum = winnr('%')
 	cwindow
 	" just open the cwindow, do not remain there...
-	if bufnr('%') != bufnum
-		wincmd w
-	endif
+	execute winnum "wincmd w"
 
 	exec 'cd '.curd
 endfunction
