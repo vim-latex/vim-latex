@@ -348,7 +348,7 @@ function! Tex_ForwardSearchLaTeX()
 	" tips on vim.sf.net (vim.sf.net tip #225)
 	if has('win32')
 
-		let execString = 'silent! !start '. viewer.' -s '.line('.').expand('%:p:t').' '.mainfnameRoot
+		let execString = 'silent! !start '. viewer.' -s '.line('.').expand('%').' '.mainfnameRoot
 
 	else
 		if Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1 &&
