@@ -97,7 +97,7 @@ endfunction " }}}
 function! s:Tex_c_window_setup()
 
 	cclose
-	copen 5
+	exe 'copen '. g:Tex_ViewerCwindowHeight
 	setlocal nonumber
 	setlocal nowrap
 
@@ -145,6 +145,10 @@ function! s:UpdateViewerWindow()
 	" Close preview window and open it again in new place
     pclose
 	exe 'silent! bot pedit +'.viewline.' '.viewfile
+
+	" Vanilla 6.1 has bug. This additional setting of cwindow height prevents
+	" resizing of this window
+	exe g:Tex_ViewerCwindowHeight.' wincmd _'
 	
 	" Handle situation if there is no item beginning with s:prefix.
 	" Unfortunately, because we know it late we have to close everything and
@@ -170,7 +174,7 @@ function! s:UpdateViewerWindow()
 	wincmd j
 
 	" Settings of preview window
-	exe g:Tex_PreviewHeight.' wincmd _'
+	exe g:Tex_ViewerPreviewHeight.' wincmd _'
 	setlocal foldlevel=10
 
 	if s:type =~ 'cite'
