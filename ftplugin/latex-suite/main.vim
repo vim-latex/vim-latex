@@ -622,10 +622,10 @@ function! Tex_FindInRtp(filename, directory)
 		else
 			" Return list of macros/templates separated with ,
 			let list = globpath(&rtp, "ftplugin/latex-suite/".a:directory."/*")
-			let list = substitute(list,'\n',',','g')
-			let list = substitute(list,'^\|,[^,]*/',',','g')
-			let list = substitute(list,'^,', '', '')
 			let list = substitute(list,'\.tex', '', 'ge')
+			let list = substitute(list,'^\|\n',',','g')
+			let list = substitute(list,',[^,]*/',',','g')
+			let list = substitute(list,'^,', '', '')
 			return list
 		endif
 	endif
