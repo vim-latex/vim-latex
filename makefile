@@ -79,8 +79,8 @@ install:
 # stallin = reverse install
 # If you can think of a better name for this target, be my guest!
 stallin:
-	rsync -CrtW --existing ${VIMFILES} .
+	rsync -CrtW --existing ${VIMFILES}/ .
 
 sync:
 	rsync -CrtuW ${EXCLUDE}	. ${VIMFILES}
-	rsync -CrtuW --existing ${VIMFILES} .
+	rsync -CrtuW --existing ${VIMFILES}/ .

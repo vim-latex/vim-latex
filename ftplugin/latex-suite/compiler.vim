@@ -20,7 +20,8 @@ function! SetTeXCompilerTarget(type, target)
 	endif
 	if exists('g:Tex_'.a:type.'Rule_'.target)
 		if a:type == 'Compile'
-			exec 'let &l:makeprg = g:Tex_CompileRule_'.target
+			let &l:makeprg = escape(g:Tex_CompileRule_{target}, '{}\')
+			" exec 'let &l:makeprg = g:Tex_CompileRule_'.target
 		elseif a:type == 'View'
 			exec 'let s:viewer = g:Tex_'.a:type.'Rule_'.target
 		endif
@@ -139,7 +140,9 @@ function! ViewLaTeX()
 		" unfortunately, yap does not allow the specification of an external
 		" editor from the command line. that would have really helped ensure
 		" that this particular vim and yap are connected.
-		exec '!start '.s:viewer.' '.mainfname.'.'.s:target
+		exec '!start' s:viewer mainfname . '.' . s:target
+	elseif has('macunix')
+		execute '!open -a' s:viewer mainfname . '.' . s:target
 	else
 		" taken from Dimitri Antoniou's tip on vim.sf.net (tip #225).
 		" slight change to actually use the current servername instead of

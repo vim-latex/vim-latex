@@ -472,7 +472,11 @@ function! <SID>SetTeXOptions()
 	exe 'TVTarget '.g:Tex_DefaultTargetFormat
 	" compiler. if the user has put another compiler before ours, then we dont
 	" get into our compiler/tex.vim.
-	runtime compiler/tex.vim
+	" BNF 11/4/2002:  I commented out the next line, since it seems to
+	" override the effects of ftplugin/latex-suite/compiler.vim .
+	" This is a short-term solution.  Eventually, the work done in
+	" ftplugin/latex-suite/compiler.vim should be done in compiler/tex.vim .
+	" runtime compiler/tex.vim
 endfunction
 
 call <SID>SetTeXOptions()
