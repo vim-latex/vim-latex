@@ -2,6 +2,7 @@
 "	  Language: LaTeX (ft=tex)
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
+"		   CVS: $Id$
 "		   URL: 
 
 " line continuation used here.
@@ -490,6 +491,7 @@ function! Tex_Debug(str, ...)
 		let s:debugString_{pattern} = ''
 	endif
 	let s:debugString_{pattern} = s:debugString_{pattern}.a:str."\n"
+	let s:debugString_ = s:debugString_.pattern.' : '.a:str."\n"
 endfunction " }}}
 " Tex_PrintDebug: prings s:debugString {{{
 " Description: 
