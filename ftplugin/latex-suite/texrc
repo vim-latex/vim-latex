@@ -115,6 +115,8 @@ TexLet g:Tex_CompileRule_html = 'latex2html $*.tex'
 
 TexLet g:Tex_CompileRule_bib = 'bibtex $*'
 
+TexLet g:Tex_UseMakefile = 1
+
 " }}}
 " ------------------------------------------------------------------------------ 
 " Viewer rules {{{

@@ -4,6 +4,7 @@
 "     Created: Tue Apr 23 05:00 PM 2002 PST
 " 
 "  Description: functions for compiling/viewing/searching latex documents
+"          CVS: $Id$
 "=============================================================================
 
 " SetTeXCompilerTarget: sets the 'target' for the next call to RunLaTeX() {{{
@@ -107,20 +108,24 @@ function! Tex_CompileLatex()
 	" if mainfname exists, then it means it was supplied to RunLaTeX().
 	" Extract the complete file name including the extension.
 	let mainfname = Tex_GetMainFileName(':r')
+	call Tex_Debug('Tex_CompileLatex: getting mainfname = ['.mainfname.'] from Tex_GetMainFileName', 'comp')
 	if exists('b:fragmentFile') || mainfname == ''
 		let mainfname = escape(expand('%:t'), ' ')
 	endif
 
-	" if a makefile exists, then use that irrespective of whether *.latexmain
-	" exists or not. mainfname is still extracted from *.latexmain (if
-	" possible) log file name depends on the main file which will be compiled.
-	if glob('makefile') != '' || glob('Makefile') != ''
+	" if a makefile exists and the user wants to use it, then use that
+	" irrespective of whether *.latexmain exists or not. mainfname is still
+	" extracted from *.latexmain (if possible) log file name depends on the
+	" main file which will be compiled.
+	if !g:Tex_UseMakefile || glob('makefile') != '' || glob('Makefile') != ''
 		let _makeprg = &l:makeprg
 		let &l:makeprg = 'make $*'
 		if exists('s:target')
-			exec 'make '.s:target
+			call Tex_Debug('Tex_CompileLatex: execing [make! '.s:target.']', 'comp')
+			exec 'make! '.s:target
 		else
-			exec 'make'
+			call Tex_Debug('Tex_CompileLatex: execing [make!]', 'comp')
+			exec 'make!'
 		endif
 		let &l:makeprg = _makeprg
 	else
@@ -129,7 +134,8 @@ function! Tex_CompileLatex()
 		if &makeprg =~ '\$\*\.\w\+'
 			let mainfname = fnamemodify(mainfname, ':r')
 		endif
-		exec 'make '.mainfname
+		call Tex_Debug('Tex_CompileLatex: execing [make! '.mainfname.']', 'comp')
+		exec 'make! '.mainfname
 	endif
 	redraw!
 endfunction " }}}
@@ -459,7 +465,7 @@ function! PositionPreviewWindow(filename)
 	" searching forward from the beginning of the log file for l.9 will always
 	" land us on the error in a.tex.
 	if errfile != ''
-		exec 'bot pedit +/(\\(\\f\\|\\[\\|\]\\)*'.errfile.'/ '.a:filename
+		exec 'silent! bot pedit +/(\\(\\f\\|\\[\\|\]\\|\\s\\)*'.errfile.'/ '.a:filename
 	else
 		exec 'bot pedit +0 '.a:filename
 	endif
