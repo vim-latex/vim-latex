@@ -20,8 +20,7 @@ function! SetTeXCompilerTarget(type, target)
 	endif
 	if exists('g:Tex_'.a:type.'Rule_'.target)
 		if a:type == 'Compile'
-			let &l:makeprg = escape(g:Tex_CompileRule_{target}, '{}\')
-			" exec 'let &l:makeprg = g:Tex_CompileRule_'.target
+			let &l:makeprg = escape(g:Tex_CompileRule_{target}, g:Tex_EscapeChars)
 		elseif a:type == 'View'
 			exec 'let s:viewer = g:Tex_'.a:type.'Rule_'.target
 		endif
