@@ -7,7 +7,7 @@
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
 "
-" Last Change: Fri Dec 20 01:00 AM 2002 PST
+" Last Change: Sat Dec 21 10:00 PM 2002 EST
 " 
 " Documentation: {{{
 "
@@ -186,6 +186,26 @@ function! IMAP(lhs, rhs, ft, ...)
 endfunction
 
 " }}}
+
+" IMAP_list:  list the rhs and place holders corresponding to a:lhs {{{
+"
+" Added mainly for debugging purposes, but maybe worth keeping.
+fun! IMAP_list(lhs)
+	let char = a:lhs[strlen(a:lhs)-1]
+	let charHash = s:Hash(char)
+	if exists("s:LHS_" . &ft . "_" . charHash)
+		let ft = &ft
+	elseif exists("s:LHS__" . charHash)
+		let ft = ""
+	else
+		return ""
+	endif
+	let hash = s:Hash(a:lhs)
+	return "rhs = " . s:Map_{ft}_{hash} . " place holders = " .
+				\ s:phs_{ft}_{hash} . " and " . s:phe_{ft}_{hash}
+endfun
+" }}}
+
 " LookupCharacter: inserts mapping corresponding to this character {{{
 "
 " This function extracts from s:LHS_{&ft}_{a:char} or s:LHS__{a:char}
@@ -244,37 +264,50 @@ function! IMAP_PutTextWithMovement(str, ...)
 
 	let text = a:str
 
-	" If there are no place holders, just return the text.
-	if text !~ '\V'.phs.'\.\{-}'.phe
-		return text
-	endif
-
 	" The user's placeholder settings.
 	let phsUser = s:PlaceHolderStart()
 	let pheUser = s:PlaceHolderEnd()
 
 	" A very rare string: Do not use any special characters here. This is used
-	" for moving to the beginning of the inserted text
+	" for moving to the beginning of the inserted text.
 	let marker = '<!--- @#% Start Here @#% ----!>'
 	let markerLength = strlen(marker)
 
+	" Problem:  depending on the setting of the 'encoding' option, a character
+	" such as "\xab" may not match itself.  We try to get around this by
+	" changing the encoding of all our strings.  At the end, we have to
+	" convert back.
+	let textEnc = iconv(text, "latin1", &enc)
+	let phsEnc = iconv(phs, "latin1", &enc)
+	let pheEnc = iconv(phe, "latin1", &enc)
+	let phsUserEnc = iconv(phsUser, "latin1", &enc)
+	let pheUserEnc = iconv(pheUser, "latin1", &enc)
+
+	" If there are no place holders, just return the text.
+	if textEnc !~ '\V'.phs.'\.\{-}'.phe
+		return text
+	endif
+
 	" If the user does not want to use place-holders, then remove all but the
-	" first placeholder
+	" first placeholder.
 	if exists('g:Imap_UsePlaceHolders') && !g:Imap_UsePlaceHolders
 		" a heavy-handed way to just use the first placeholder and remove the
 		" rest.  Replace the first placeholder with phe ...
-		let text = substitute(text, '\V'.phs.'\.\{-}'.phe, phe, '')
+		let textEnc = substitute(textEnc, '\V'.phs.'\.\{-}'.phe, pheEnc, '')
 		" ... delete all the others ...
-		let text = substitute(text, '\V'.phs.'\.\{-}'.phe, '', 'g')
+		let textEnc = substitute(textEnc, '\V'.phs.'\.\{-}'.phe, '', 'g')
 		" ... and replace the first phe with phsUser.pheUser .
-		let text = substitute(text, '\V'.phe, phsUser.pheUser, '')
+		let textEnc = substitute(textEnc, '\V'.phe, phsUserEnc.pheUserEnc, '')
 	endif
 
 	" now replace all occurences of the placeholders here with the users choice
 	" of placeholder settings.
 	" NOTE: There can be more than 1 placeholders here. Therefore use a global
 	"       search and replace.
-	let text = substitute(text, '\V'.phs.'\(\.\{-}\)'.phe, phsUser.'\1'.pheUser, 'g')
+	let textEnc = substitute(textEnc, '\V'.phs.'\(\.\{-}\)'.phe,
+				\ phsUserEnc.'\1'.pheUserEnc, 'g')
+	" The substitutions are done, so convert back.
+	let text = iconv(textEnc, &enc, "latin1")
 	" Now append the marker (the rare string) to the beginning of the text so
 	" we know where the expansion started from
 	let text = marker.text
