@@ -2,7 +2,7 @@
 " 	     File: smartspace.vim
 "      Author: Carl Muller
 "     Created: Fri Dec 06 12:00 AM 2002 PST
-" Last Change: Fri Jan 03 03:00 PM 2003 PST
+" Last Change: Sat Jan 04 12:00 AM 2003 PST
 " 
 " Description: 
 "     Maps the <space> key in insert mode so that mathematical formulaes are
@@ -86,6 +86,9 @@ function! s:TexFormatLine(width) " {{{
 		endif
 		let length = col(".")
 	endwhile
+	if go == 0 && match(getline("."), '.*\$.*\$.*') != -1
+		exe "normal $F$wi\<CR>\<Esc>"
+	endif
 endfunction
 
 " }}}
