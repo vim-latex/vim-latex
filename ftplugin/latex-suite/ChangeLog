@@ -1,3 +1,9 @@
+10 Oct 2003
+    Features
+    * envmacros.vim:
+        Tex_InsertItem function. Inserts \item depending on current listing
+        directory. (Johannes Tanzler, MM)
+
 29 Sep 2003
     Changes
     * custommacros.vim:

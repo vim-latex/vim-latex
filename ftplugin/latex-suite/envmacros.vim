@@ -867,7 +867,41 @@ function! Tex_SetFastEnvironmentMaps()
 		call s:SetUpHotKeys()
 	endif
 endfunction " }}}
+" ==============================================================================
+" Contributions / Tex_InsertItem() from Johannes Tanzler
+" ============================================================================== 
+" Tex_InsertItem: insert \item into a list   {{{
+"    Description: Find last \begin line, extract env name, return to the start
+"    			  position and insert proper \item, depending on env name.
+"    			  Env names are stored in g: variables it can be used by
+"    			  package files. 
+let g:Tex_ItemNormal = ',itemize,enumerate,theindex,' 
+let g:Tex_ItemBib = ',thebibliography,' 
+let g:Tex_ItemDescription = ',description,' 
+function! Tex_InsertItem()
 
+    " Get current environment: 
+	let pos = line('.').' | normal! '.virtcol('.').'|'
+    let env_line = search('^[^%]*\\begin{', 'bW')
+    let env = matchstr(getline(env_line), '\\begin{\zs.\{-}\ze}')
+	exe pos
+
+    if g:Tex_ItemNormal =~ ','.env.','
+        return IMAP_PutTextWithMovement("\\item ")
+	elseif g:Tex_ItemDescription =~ ','.env.','
+        return IMAP_PutTextWithMovement("\\item[<+label+>] <++>")
+    elseif g:Tex_ItemBib =~ ','.env.','
+        return IMAP_PutTextWithMovement("\\item[<+biblabel+>]{<+bibkey+>}<++>")
+    else
+        return ''
+    endif
+
+endfunction
+
+inoremap <C-CR> <ESC>o<C-R>=Tex_InsertItem()<CR>
+inoremap <Leader>it <C-R>=Tex_InsertItem()<CR>
+
+" }}}
 " ==============================================================================
 " Implementation of Fast Environment commands for LaTeX commands 
 " ==============================================================================
