@@ -3,10 +3,10 @@
 " 	     File: texrc.vim
 "      Author: Srinath Avadhanula
 "     Created: Mon Apr 01 11:00 AM 2002 PST
-" Last Change: wto lis 26 09:00  2002 C
+" Last Change: Fri Dec 06 01:00 AM 2002 PST
 "
 "  Description: This file contains resource configuration information for the
-"               latex-suite plugin.
+"               latex-suite package.
 " 
 "        NOTE: This file should NOT be edited directly. The recommended usage
 "              is to make a copy somewhere, edit that copy and then source
@@ -14,15 +14,19 @@
 "
 "              This is because this file will be over-written each time you
 "              install a new copy of latex-suite. 
-"        NOTE: This file is best viewed with Vim-6.0+ with folding turned on.
 "
 " Installation:	This file should normally reside as:
-"                    $HOME/vimfiles/ftplugin/tex/texrc      (WINDOWS)
+"                    $HOME/vimfiles/ftplugin/latex-suite/texrc   (WINDOWS)
 "               or 
-"                    $HOME/.vim/ftplugin/tex/texrc             (UNIX)
+"                    $HOME/.vim/ftplugin/tex/latex-suite/texrc      (UNIX)
+"
 "               Copy it over somewhere and then put
-"                    source /path/to/texrc
+"
+"                    source /path/to/copy/of/texrc
+"
 "               in your ~/.vim/ftplugin/tex.vim file.
+"
+"        NOTE: This file is best viewed with Vim-6.0+ with folding turned on.
 "=============================================================================
 
 " ==============================================================================
@@ -168,15 +172,11 @@ TexLet g:Tex_Flavor = 'latex'
 " Macros: latex-suite comes with a large number of macros to speed up typing {{{
 "         latex. 
 "
-" Most of the AUC-TeX key-bindings are there. In addition there are a
-" comprehensive set of macros to insert environments, sections, fonts etc. In
-" addition to insert mode macros, visual mode macros are provided.
-
-" Place Holder Options:
+" Place Holder Options: {{{
 " (See |placeholders| for a description of what place-holders are).
 "
 " these options are actually used by imaps.vim, therefore the prefix is Imap_
-" and not Tex_. See |help placeholders| for a description of how to use
+" and not Tex_. See |placeholders| for a description of how to use
 " place-holders. You can either completely disable placeholders (not
 " recommended) and/or you can change the place holder characters. The Start
 " and End characters should only be single characters. i.e, '' or ,, etc are
@@ -185,12 +185,27 @@ TexLet g:Imap_UsePlaceHolders = 1
 TexLet g:Imap_PlaceHolderStart = '«'
 TexLet g:Imap_PlaceHolderEnd = '»'
 
+" }}}
+" Menu Wizard Option: {{{
+" If the following variable is set to 1, then when an enviroment is chosen
+" from the menu then for selected environments, latex-suite asks a series of
+" questions on the command line and inserts a template with the corresponding
+" fields already filled in.
+" Setting this to zero will insert a template with |placeholders| marking off
+" the places where fields need to be filled.
+TexLet g:Tex_UseMenuWizard = 0
+
+" }}}
+" Visual Mode Mapping Correction:  {{{
 " With so many visual maps, its helpful to have a way of catching typing
 " errors made in visual mode. What this does is to prompt you to correct your
 " visual mode mapping if you start out with g:Tex_Leader and then type some
 " illegal keys.
+" It basically maps just the g:Tex_Leader character to a function
 TexLet g:Tex_CatchVisMapErrors = 1
 
+" }}}
+" Diacritics: {{{
 " whether or not you want to use diacritics 
 " (diacritics speed up typing some languages. the way they are set up in
 " latex-suite is
@@ -200,6 +215,8 @@ TexLet g:Tex_CatchVisMapErrors = 1
 "  :o      = \^o
 TexLet g:Tex_Diacritics = 1 
 
+" }}}
+" Leader Options: {{{
 " The mappings in latex-suite are by default prefixed with the back-tick
 " character. For example, `/ inserts \frac{«»}{«»}«» etc. You can change the
 " prefix with the following setting.
@@ -213,6 +230,7 @@ TexLet g:Tex_Leader = '`'
 " character different from '`'.
 TexLet g:Tex_Leader2 = ','
 
+" }}}
 " Environment Macros: {{{
 " These mappings insert LaTeX "environments" such as 
 "       \begin{center}
@@ -249,9 +267,6 @@ TexLet g:Tex_Leader2 = ','
 TexLet g:Tex_EnvironmentMaps  = 1
 TexLet g:Tex_EnvironmentMenus = 1
 
-" Use wizards for environments during choosing from menu or templates as from
-" shortcuts.
-TexLet g:Tex_UseMenuWizard = 0
 
 " }}}
 " Font Macros: {{{
@@ -300,6 +315,79 @@ TexLet g:Tex_SectionMaps = 1
 TexLet g:Tex_SectionMenus = 1
 
 " }}}
+" Auctex Style Mappings: {{{
+" Auctex.vim has heavily inspired various portions of latex-suite providing
+" various new ways of conviniently inserting environments.
+"
+" If you press <F5> in the insert mode while on an empty line, latex-suite
+" prompts you with a list of environments you might want to insert. You can
+" either choose one from the list or type in a new environment name.
+" The variable below (which is a comma seperated list of environment names)
+" decides the prompt which latex-suite generates.
+" You can place as many items as you want here. If the environment name is a
+" standard latex environment such as table or figure, then latex-suite will
+" insert a template with additional fields, if not, just a bare bones
+" \begin{env}
+"   «»
+" \end{env} 
+" is inserted.
+" \[ and $$ are also recognized.
+" NOTE: Setting this variable to the empty string is a way of leaving the 
+"       <F5> key unmapped
+
+TexLet g:Tex_PromptedEnvironments =
+	\ 'eqnarray*,eqnarray,equation,equation*,\[,$$,align,align*'
+
+" Another quick way of inserting environments is to press one of the shifted
+" function keys from <F1> through <F4>.
+" Each environment in the following list is mapped to a corresponding shifted
+" function key. 
+" NOTE: Setting this variable to the empty string is a way of leaving all the
+"       shifted function keys untouched by latex-suite.
+" NOTE: Only the first 4 items of the list are used. The rest will be silently
+"       ignored.
+" The number of items in this list decides how many shifted function keys are
+" mapped.
+TexLet g:Tex_HotKeyMappings = 
+	\ 'eqnarray*,eqnarray,bmatrix'
+
+" }}}
+" Smart Key Mappings: {{{
+" Latex-suite shites with a number of 'smart' maps, where the behavior of
+" standard keys is modified in a way which makes editing tex files easy.
+
+" Pressing <BS> in insert mode checks to see whether we are just after
+" something like \'{a} and if so, deletes all of it. i.e, diacritics are
+" treated as single characters for backspacing.
+" Setting this to zero will leave the <BS> key unmapped.
+TexLet g:Tex_SmartKeyBS = 1
+
+" Pressing " (english double quote) will insert `` or '' by making an
+" intelligent guess about whether we intended to open or close a quote.
+TexLet g:Tex_SmartKeyQuote = 1
+
+" Users of other languages might want to change the quote characters to suit
+" their locale. 
+TexLet g:Tex_SmartQuoteOpen = "``"
+TexLet g:Tex_SmartQuoteClose = "''"
+
+" Latex-suite maps the <space> key in such a way that $ characters are not
+" broken across lines.
+" NOTE: Setting this to 1 has the side-effect of making the 'tw' setting be 0.
+TexLet g:Tex_SmartKeySpace = 1
+
+" Pressing ... (3 dots) results in \ldots outside math mode and \cdots in math
+" mode.
+"
+" TODO: Make it more intelligent within math mode. For example 
+"   $1+...+3$ should expand to $1+\cdots+n$, whereas $1,...,n$ should expand
+"   to $1,\ldots,n$. The amsmath package actually provides a command \dots
+"   which does this. Maybe use that if amsmath is detected?
+"
+TexLet g:Tex_SmartKeyDot = 1
+
+" }}}
+
 " }}}
 " ==============================================================================
 " Menus: set the kinds of menus which you would like to see. {{{
