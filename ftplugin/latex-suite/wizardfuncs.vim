@@ -203,10 +203,12 @@ endfunction "}}}
 " Add looking help into latexhelp.txt
 " ============================================================================== 
 
-inoremap <buffer> <silent> <F1> <C-O>:silent! call TexHelp()<CR>
-nnoremap <buffer> <silent> <F1> :silent! call TexHelp()<CR>
+inoremap <buffer> <silent> <F1> <C-O>:silent! call <SID>TexHelp()<CR>
+nnoremap <buffer> <silent> <F1> :silent! call <SID>TexHelp()<CR>
+command! -nargs=0 THelp silent! call <SID>TexHelp()<CR>
 
-function! TexHelp()
+" TexHelp: Cursor being on LaTeX item check if exists help tag about it " {{{
+function! s:TexHelp()
 	if synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^tex'
 		setlocal isk+=\
 		let curword = expand('<cword>')
@@ -219,7 +221,45 @@ function! TexHelp()
 	else
 		help
 	endif
-endfunction
+endfunction " }}}
+
+" ==============================================================================
+" Partial compilation
+" ============================================================================== 
+map <F10> :call Tex_PartCompilation()<cr> 
+
+" Tex_PartCompilation: compilation of selected fragment
+function! Tex_PartCompilation() range
+
+	let mainfile = Tex_GetMainFileName()
+	let g:partcomp = 1
+
+	let tmpfile = tempname()
+	let g:tfile = tmpfile
+
+	if mainfile != ''
+		exe 'bot 1 split '.mainfile
+		exe '1,/\s*\\begin{document}/w '.tmpfile
+		wincmd q
+	else
+		exe '1,/\s*\\begin{document}/w '.tmpfile
+	endif
+
+	let pos = line('.').' | normal! '.virtcol('.').'|'
+
+	exe a:firstline.','.a:lastline."w >> ".tmpfile
+	let _clipboard = @c
+	let @c = '\end{document}'
+	exe 'redir >> '.tmpfile
+	echo @c
+	redir END
+	let @c = _clipboard
+
+	exe pos
+	silent! call RunLaTeX()
+	unlet g:partcomp
+
+endfunction " }}}
 
 "
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4
