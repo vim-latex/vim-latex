@@ -175,7 +175,7 @@ function! Tex_pack_all()
 		" This gets us a string like 'pack1,pack2,pack3'
 		" TODO: This will contain duplicates if the user has duplicates.
 		"       Should we bother taking care of this?
-		let g:Tex_package_detected = g:Tex_package_detected.@a
+		let g:Tex_package_detected = g:Tex_package_detected.','.@a
 
 		" Finally convert @a into something like '"pack1","pack2"'
 		let @a = substitute(@a, '^\|$', '"', 'g')
@@ -192,6 +192,10 @@ function! Tex_pack_all()
 		let @a = saveA
 
 	endwhile
+
+	" Because creating list of detected packages gives string
+	" ',pack1,pack2,pack3' remove leading ,
+	let g:Tex_package_detected = substitute(g:Tex_package_detected, '^,', '', '')
 
 	" Scans whole file (up to \end{document}) for \newcommand and adds this
 	" commands to g:Tex_PromptedCommands variable, it is easily available
@@ -255,8 +259,14 @@ endfunction
 function! Tex_pack(pack)
 	if exists('g:TeX_package_'.a:pack)
 
-		exec 'amenu '.g:Tex_PackagesMenuLocation.'-sep'.a:pack.'- <Nop>'
 		let optionList = g:TeX_package_option_{a:pack}.','
+		let commandList = g:TeX_package_{a:pack}.','
+
+		" Don't create separator if in package file are only Vim commands. 
+		" Rare but possible.
+		if !(commandList == ',' && optionList == ',')
+			exec 'amenu '.g:Tex_PackagesMenuLocation.'-sep'.a:pack.'- <Nop>'
+		endif
 
 		if optionList != ''
 
@@ -266,7 +276,6 @@ function! Tex_pack(pack)
 
 		endif
 
-		let commandList = g:TeX_package_{a:pack}
 		if commandList != ''
 
 			let mainMenuName = g:Tex_PackagesMenuLocation.a:pack.'\ Commands.'
