@@ -234,11 +234,16 @@ function! s:LookupCharacter(char)
 				" An extremeley wierd way to get around the fact that vim
 				" doesn't have the equivalent of the :mapcheck() function for
 				" abbreviations.
+				let _a = @a
 				exec "redir @a | silent! iab ".lastword." | redir END"
-				if @a =~ "No abbreviation found"
+				let abbreviationRHS = matchstr(@a."\n", "\n".'i\s\+'.lastword.'\+\s\+@\?\zs.*\ze'."\n")
+
+				if @a =~ "No abbreviation found" || abbreviationRHS == ""
+					let @a = _a
 					return a:char
 				endif
-				let abbreviationRHS = matchstr(@a, "\n".'i\s\+\k\+\s\+@\?\zs.*')
+
+				let @a = _a
 				let abbreviationRHS = escape(abbreviationRHS, '<')
 				exec 'let abbreviationRHS = "'.abbreviationRHS.'"'
 
