@@ -3,7 +3,7 @@
 " 	     File: texrc.vim
 "      Author: Srinath Avadhanula
 "     Created: Mon Apr 01 11:00 AM 2002 PST
-" Last Change: Mon Apr 29 04:00 PM 2002 PDT
+" Last Change: Wed May 01 07:00 PM 2002 PDT
 "
 "  Description: This file contains resource configuration information for the
 "               latex-suite plugin.
@@ -54,7 +54,7 @@ com! -nargs=+ TexLet :call <SID>SafeLet(<q-args>)
 " ============================================================================== 
 
 " ==============================================================================
-" Rules: specifcations of programs for compiling and viewing {{{
+" Rules: specifications of programs for compiling and viewing {{{
 "
 
 " By default, when you compile a tex file using \ll, then you will be
@@ -208,8 +208,8 @@ TexLet g:Tex_Leader2 = ','
 "    first 2 letters of the environment name converted into upper case. For
 "    example, for the center environment above, use ECE. There are a few
 "    necessary exceptions such as:
-"        equation   -->  EQA
-"        eqnarray   -->  EQR
+"        equation   -->  EEQ
+"        eqnarray   -->  EEA
 "    Please see texmaps.vim for the complete list.
 " 
 " Along with the insert mode mappings, a set of visual mode mappings is
@@ -307,7 +307,7 @@ TexLet g:Tex_PackagesMenu = 1
 " menu.
 TexLet g:Tex_NestPackagesMenu = 0
 
-TexLet g:Tex_MenuPrefix = 'Tex-'
+TexLet g:Tex_MenuPrefix = 'X-'
 
 " }}}
 " ==============================================================================
