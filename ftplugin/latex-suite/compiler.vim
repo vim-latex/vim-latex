@@ -271,7 +271,7 @@ function! Tex_ViewLaTeX()
 		if strlen(s:viewer)
 			let s:viewer = '-a '.s:viewer
 		endif
-		let execString = 'silent! !open' s:viewer mainfname.'.'.s:target
+		let execString = 'silent! !open '.s:viewer.' '.mainfname.'.'.s:target
 	else
 		" taken from Dimitri Antoniou's tip on vim.sf.net (tip #225).
 		" slight change to actually use the current servername instead of
