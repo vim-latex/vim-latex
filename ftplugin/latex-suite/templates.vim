@@ -16,21 +16,28 @@ let s:path = expand("<sfile>:p:h")
 function! <SID>SetTemplateMenu()
 	let flist = glob(s:path."/templates/*")
 	let i = 1
+	let k = 1
 	while 1
 		let fname = Tex_Strntok(flist, "\n", i)
 		if fname == ''
 			break
 		endif
-		let fnameshort = fnamemodify(fname, ':p:t:r')
-		if fnameshort == ''
+		if fname =~ "CVS"
 			let i = i + 1
 			continue
 		endif
-		exe "amenu ".g:Tex_TemplatesMenuLocation."&".i.":<Tab>".fnameshort." ".
+		let fnameshort = fnamemodify(fname, ':p:t:r')
+		if fnameshort == ''
+			let i = i + 1
+			let k = k + 1
+			continue
+		endif
+		exe "amenu ".g:Tex_TemplatesMenuLocation."&".k.":<Tab>".fnameshort." ".
 			\":call <SID>ReadTemplate('".fnameshort."')<CR>".
 			\":call <SID>ProcessTemplate()<CR>:0<CR>".
 			\"i<C-r>=IMAP_Jumpfunc()<CR>"
 		let i = i + 1
+		let k = k + 1
 	endwhile
 endfunction 
 

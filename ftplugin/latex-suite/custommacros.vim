@@ -11,27 +11,34 @@
 
 let s:path = expand('<sfile>:p:h')
 
-" SetCustomMacrosMenu: sets up the menu for templates {{{
+" SetCustomMacrosMenu: sets up the menu for Macros {{{
 function! <SID>SetCustomMacrosMenu()
 	let flist = glob(s:path."/macros/*")
 	exe 'amenu '.g:Tex_MacrosMenuLocation.'&New :call NewMacro()<CR>'
 	exe 'amenu '.g:Tex_MacrosMenuLocation.'&Redraw :call RedrawMacro()<CR>'
 
 	let i = 1
+	let k = 1
 	while 1
 		let fname = Tex_Strntok(flist, "\n", i)
 		if fname == ''
 			break
 		endif
-		let fnameshort = fnamemodify(fname, ':p:t:r')
-		if fnameshort == ''
+		if fname =~ "CVS"
 			let i = i + 1
 			continue
 		endif
-		exe "amenu ".g:Tex_MacrosMenuLocation."&Delete.&".i.":<tab>".fnameshort." :call <SID>DeleteMacro('".fnameshort."')<CR>"
-		exe "amenu ".g:Tex_MacrosMenuLocation."&Edit.&".i.":<tab>".fnameshort."   :call <SID>EditMacro('".fnameshort."')<CR>"
-		exe "amenu ".g:Tex_MacrosMenuLocation."&".i.":<tab>".fnameshort." :call <SID>ReadMacro('".fnameshort."')<CR>"
+		let fnameshort = fnamemodify(fname, ':p:t:r')
+		if fnameshort == ''
+			let i = i + 1
+			let k = k + 1
+			continue
+		endif
+		exe "amenu ".g:Tex_MacrosMenuLocation."&Delete.&".k.":<tab>".fnameshort." :call <SID>DeleteMacro('".fnameshort."')<CR>"
+		exe "amenu ".g:Tex_MacrosMenuLocation."&Edit.&".k.":<tab>".fnameshort."   :call <SID>EditMacro('".fnameshort."')<CR>"
+		exe "amenu ".g:Tex_MacrosMenuLocation."&".k.":<tab>".fnameshort." :call <SID>ReadMacro('".fnameshort."')<CR>"
 		let i = i + 1
+		let k = k + 1
 	endwhile
 endfunction 
 

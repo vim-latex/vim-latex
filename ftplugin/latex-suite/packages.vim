@@ -3,7 +3,7 @@
 "      Author: Mikolaj Machowski
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: Wed May 01 07:00 PM 2002 PDT
+" Last Change: Mon Apr 29 01:00 PM 2002 PDT
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -173,6 +173,10 @@ function! TeX_pack_supp_menu()
 	let OptMenu = ""
 	while basic_nu_s_list < nu_s_list
 		let s_item = GetListItem(g:suplist, basic_nu_s_list)
+		if s_item =~ "CVS"
+		    let basic_nu_s_list = basic_nu_s_list + 1
+			continue
+		endif
 		let fptr = fnamemodify(s_item, ':p:t:r')
 		let fpt = fnamemodify(s_item, ':p:t')
 		if !exists("NotSupMenu") && basic_nu_s_list % s:menu_div == 0 
@@ -216,16 +220,16 @@ function! TeX_pack(pack)
 			while basic_nu_p_o_list < nu_p_o_list
 				let p_o_item = GetListItem(g:p_o_list, basic_nu_p_o_list)
 				let p_o_item_def = strpart(p_o_item, 0, 3)
+				let p_o_item_name = substitute(p_o_item, "^...:", "", "")
 				if !exists("NotOptMenu") && (o_loop_nu % s:menu_div == 0 || p_o_item_def == "sbr")
 					if p_o_item_def == "sbr"
-						let p_o_item_name = substitute(p_o_item, "^...:", "", "")
 						let OptMenu = ".&".p_o_item_name
 						let o_loop_nu = 1
 						let basic_nu_p_o_list = basic_nu_p_o_list + 1
 						let p_o_item = GetListItem(g:p_o_list, basic_nu_p_o_list)
 					else
-						let ost_index = strpart(l_m_p_o_item, 0, 5)
-						if strlen(l_m_p_o_item) > 5
+						let ost_index = strpart(p_o_item_name, 0, 4)
+						if strlen(p_o_item_name) > 5
 							let OptMenu = ".".ost_index."\\.\\.\\.\\ -"
 						else
 							let OptMenu = ".".ost_index."\\ -" 
@@ -287,16 +291,6 @@ function! TeX_pack(pack)
 				let com_type = "(E)"
 				let l_m_item = "&".p_item_name."(E)"
 				let r_m_item = "<plug>\\begin{".p_item_name."}<cr> <cr>\\end{".p_item_name."}«»<Up><Left>"
-			elseif p_item_def == "ens"
-				let com_type = "(E)"
-				let p_env_spec = substitute(p_item_name, ".*:", "", "")
-				let p_env_name = matchstr(p_item_name, "^[^:]*")
-				let l_m_item = "&".p_env_name."(E)"
-				let r_m_item = "<plug>\\begin{".p_env_name."}".p_env_spec."<cr>«»<cr>\\end{".p_env_name."}«»<Up><Up><C-j>"
-			elseif p_item_def == "eno"
-				let com_type = "(E)"
-				let l_m_item = "&".p_item_name."(E)"
-				let r_m_item = "<plug>\\begin[«»]{".p_item_name."}<cr>«»<cr>\\end{".p_item_name."}«»<Up><Up><C-j>"
 			elseif p_item_def == "nor"
 				let com_type = "\\\\'"
 				let l_m_item = "\\\\&".p_item_name."'"
@@ -341,7 +335,7 @@ endfunction
 " }}}
 " TeX_pack_supp: "supports" the package... {{{
 function! TeX_pack_supp(supp_pack)
-	exe "call TeX_pack('" . a:supp_pack . "')"
+	call TeX_pack(a:supp_pack)
 	exe "let g:s_p_o = g:TeX_package_option_".a:supp_pack 
 	if exists("g:s_p_o") && g:s_p_o != ""
 		exe "normal i\\usepackage{".a:supp_pack."}«»"
