@@ -3,28 +3,30 @@
 " 	     File: texrc.vim
 "      Author: Srinath Avadhanula
 "     Created: Mon Apr 01 11:00 AM 2002 PST
-" Last Change: Fri Dec 06 01:00 AM 2002 PST
+" Last Change: Fri Dec 13 09:00 AM 2002 EST
 "
 "  Description: This file contains resource configuration information for the
 "               latex-suite package.
 " 
-"        NOTE: This file should NOT be edited directly. The recommended usage
-"              is to make a copy somewhere, edit that copy and then source
-"              that copy in your ftplugin/tex.vim file.
-"
-"              This is because this file will be over-written each time you
-"              install a new copy of latex-suite. 
+"        NOTE: Do NOT be edit this file directly:
+"              this file will be over-written each time you install a new copy
+"              of latex-suite. 
 "
 " Installation:	This file should normally reside as:
 "                    $HOME/vimfiles/ftplugin/latex-suite/texrc   (WINDOWS)
 "               or 
-"                    $HOME/.vim/ftplugin/tex/latex-suite/texrc      (UNIX)
+"                    $HOME/.vim/ftplugin/latex-suite/texrc       (UNIX)
 "
-"               Copy it over somewhere and then put
+"               Make your local copy as:
+"                    $HOME/vimfiles/ftplugin/tex/texrc   (WINDOWS)
+"               or 
+"                    $HOME/.vim/ftplugin/tex/texrc       (UNIX)
 "
-"                    source /path/to/copy/of/texrc
-"
-"               in your ~/.vim/ftplugin/tex.vim file.
+"               It will be :source'd automatically when you edit a LaTeX file.
+"               You can edit your local copy with the command
+"                   :Ttexrc
+"               or with the menu item
+"                   TeX-Suite/Edit texrc
 "
 "        NOTE: This file is best viewed with Vim-6.0+ with folding turned on.
 "=============================================================================
@@ -82,7 +84,7 @@ if has('win32')
 	let s:CompileFlags = '--src-specials'
 	TexLet g:Tex_EscapeChars = ''
 else
-	let s:CompileFlags = '--src-specials'
+	let s:CompileFlags = ''
 	TexLet g:Tex_EscapeChars = '{}\'
 endif
 TexLet g:Tex_CompileRule_dvi = 'latex ' . s:CompileFlags .
