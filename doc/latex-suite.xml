@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='ISO-8859-1'?>
 
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-    "docbook/xml/docbookx.dtd" 
+    "docbook-xml/docbookx.dtd" 
 [<!ENTITY dummy      "dummy">
  <!ENTITY date       "$Date$">
  <!ENTITY ls         "Latex-Suite">

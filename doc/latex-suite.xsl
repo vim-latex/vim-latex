@@ -6,7 +6,7 @@
 
   <!-- $Id$ -->
 
-  <xsl:import href="docbook/xhtml/docbook.xsl"/>
+  <xsl:import href="docbook-xsl/xhtml/docbook.xsl"/>
 
   <!-- import common customizations -->
   <xsl:import href="latex-suite-common.xsl"/>
