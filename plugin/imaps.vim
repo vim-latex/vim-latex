@@ -639,7 +639,7 @@ endfun
 " }}}
 " s:RemoveLastHistoryItem: removes last search item from search history {{{
 " Description: Execute this string to clean up the search history.
-let s:RemoveLastHistoryItem = ':call histdel("/", -1)|let @/=Tex_LastSearchPattern'
+let s:RemoveLastHistoryItem = ':call histdel("/", -1)|let @/=g:Tex_LastSearchPattern'
 
 " }}}
 " s:Hash: Return a version of a string that can be used as part of a variable" {{{
