@@ -669,6 +669,13 @@ function! Tex_GetTempName(dirname)
 	return expand(a:dirname.slash.prefix.i.'.tex', ':p')
 endfunction
 " }}}
+" Tex_MakeMap: creates a mapping from lhs to rhs if rhs is not already mapped {{{
+" Description:  
+function! Tex_MakeMap(lhs, rhs, mode, extraargs)
+	if !hasmapto(a:rhs, a:mode)
+		exec a:mode.'map '.a:extraargs.' '.a:lhs.' '.a:rhs
+	endif
+endfunction " }}}
 
 " source texproject.vim before other files
 exe 'source '.s:path.'/texproject.vim'
