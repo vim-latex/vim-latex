@@ -4,7 +4,7 @@
 "              (minor modifications by Srinath Avadhanula)
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Thu Nov 07 05:00 PM 2002 P
+" Last Change: nie lis 10 05:00  2002 C
 " 
 "  Description: functions for handling templates in latex-suite/templates
 "               directory.
@@ -53,7 +53,7 @@ function! <SID>ReadTemplate(...)
 
 	let fname = glob(s:path."/templates/".filename)
 	exe "0read ".fname
-	call TeX_pack_all()
+	call Tex_pack_all()
 endfunction
 
 " }}}
