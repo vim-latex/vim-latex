@@ -156,22 +156,22 @@ function! Tex_SetupErrorWindow()
 	cwindow
 	" create log file name from mainfname
 	let mfnlog = fnamemodify(mainfname, ":t:r").'.log'
-	call Tex_Debug('mfnlog = '.mfnlog, 'comp')
+	call Tex_Debug('Tex_SetupErrorWindow: mfnlog = '.mfnlog, 'comp')
 	" if we moved to a different window, then it means we had some errors.
 	if winnum != winnr()
-		call UpdatePreviewWindow(mfnlog)
-		exe 'nnoremap <buffer> <silent> j j:call UpdatePreviewWindow("'.mfnlog.'")<CR>'
-		exe 'nnoremap <buffer> <silent> k k:call UpdatePreviewWindow("'.mfnlog.'")<CR>'
-		exe 'nnoremap <buffer> <silent> <up> <up>:call UpdatePreviewWindow("'.mfnlog.'")<CR>'
-		exe 'nnoremap <buffer> <silent> <down> <down>:call UpdatePreviewWindow("'.mfnlog.'")<CR>'
-		exe 'nnoremap <buffer> <silent> <enter> :call GotoErrorLocation("'.mfnlog.'")<CR>'
+		call Tex_UpdatePreviewWindow(mfnlog)
+		exe 'nnoremap <buffer> <silent> j j:call Tex_UpdatePreviewWindow("'.mfnlog.'")<CR>'
+		exe 'nnoremap <buffer> <silent> k k:call Tex_UpdatePreviewWindow("'.mfnlog.'")<CR>'
+		exe 'nnoremap <buffer> <silent> <up> <up>:call Tex_UpdatePreviewWindow("'.mfnlog.'")<CR>'
+		exe 'nnoremap <buffer> <silent> <down> <down>:call Tex_UpdatePreviewWindow("'.mfnlog.'")<CR>'
+		exe 'nnoremap <buffer> <silent> <enter> :call Tex_GotoErrorLocation("'.mfnlog.'")<CR>'
 
 		setlocal nowrap
 
 		" resize the window to just fit in with the number of lines.
 		exec ( line('$') < 4 ? line('$') : 4 ).' wincmd _'
         if exists('g:Tex_GotoError') && g:Tex_GotoError == 1
- 	        call GotoErrorLocation(mfnlog)
+ 	        call Tex_GotoErrorLocation(mfnlog)
         else
 			exec s:origwinnum.' wincmd w'
         endif
@@ -189,13 +189,17 @@ endfunction " }}}
 " in the ~/thesis directory. this will then run "latex main.tex" when
 " Tex_RunLaTeX() is called.
 function! Tex_RunLaTeX()
-	call Tex_Debug('getting to Tex_RunLaTeX, b:fragmentFile = '.exists('b:fragmentFile'), 'comp')
+	call Tex_Debug('+Tex_RunLaTeX, b:fragmentFile = '.exists('b:fragmentFile'), 'comp')
 
 	let dir = expand("%:p:h").'/'
 	let curd = getcwd()
 	call Tex_CD(expand("%:p:h"))
 
+	let initTarget = s:target
+
 	" first get the dependency chain of this format.
+	call Tex_Debug("Tex_RunLaTeX: compiling to target [".s:target."]", "comp")
+
 	let dependency = s:target
 	if exists('g:Tex_FormatDependency_'.s:target)
 		if g:Tex_FormatDependency_{s:target} !~ ','.s:target.'$'
@@ -205,20 +209,21 @@ function! Tex_RunLaTeX()
 		endif
 	endif
 
-	call Tex_Debug('getting dependency chain = ['.dependency.']', 'comp')
+	call Tex_Debug('Tex_RunLaTeX: getting dependency chain = ['.dependency.']', 'comp')
 
 	" now compile to the final target format via each dependency.
 	let i = 1
 	while Tex_Strntok(dependency, ',', i) != ''
 		let s:target = Tex_Strntok(dependency, ',', i)
+
 		call Tex_SetTeXCompilerTarget('Compile', s:target)
-		call Tex_Debug('setting target to '.s:target, 'comp')
+		call Tex_Debug('Tex_RunLaTeX: setting target to '.s:target, 'comp')
 
 		if g:Tex_MultipleCompileFormats =~ '\<'.s:target.'\>'
-			call Tex_Debug("compiling file multiple times via Tex_CompileMultipleTimes", "comp")
+			call Tex_Debug("Tex_RunLaTeX: compiling file multiple times via Tex_CompileMultipleTimes", "comp")
 			call Tex_CompileMultipleTimes()
 		else
-			call Tex_Debug("compiling file once via Tex_CompileLatex", "comp")
+			call Tex_Debug("Tex_RunLaTeX: compiling file once via Tex_CompileLatex", "comp")
 			call Tex_CompileLatex()
 		endif
 
@@ -227,17 +232,19 @@ function! Tex_RunLaTeX()
 
 		" If there are any errors, then break from the rest of the steps
 		if errlist =~  '\v(error|warning)'
-			call Tex_Debug('There were errors in compiling, breaking chain...', 'comp')
+			call Tex_Debug('Tex_RunLaTeX: There were errors in compiling, breaking chain...', 'comp')
 			break
 		endif
 
 		let i = i + 1
 	endwhile
 	
+	let s:target = initTarget
 	let s:origwinnum = winnr()
 	call Tex_SetupErrorWindow()
 
 	call Tex_CD(curd)
+	call Tex_Debug("-Tex_RunLaTeX", "comp")
 endfunction
 
 " }}}
@@ -544,6 +551,7 @@ function! Tex_CompileMultipleTimes()
 			" latex again.
 			if biblinesAfter != biblinesBefore
 				echomsg 'Need to rerun because bibliography file changed...'
+				call Tex_Debug('Tex_CompileMultipleTimes: Need to rerun because bibliography file changed...', 'comp')
 				let needToRerun = 1
 			endif
 		endif
@@ -551,12 +559,14 @@ function! Tex_CompileMultipleTimes()
 		" check if latex asks us to rerun
 		if Tex_IsPresentInFile('Rerun to get cross-references right', mainFileName_root.'.log')
 			echomsg "Need to rerun to get cross-references right..."
+			call Tex_Debug("Tex_CompileMultipleTimes: Need to rerun to get cross-references right...", 'comp')
 			let needToRerun = 1
 		endif
 
 		let runCount = runCount + 1
 	endwhile
 
+	call Tex_Debug("Tex_CompileMultipleTimes: Ran latex ".runCount." time(s)", "comp")
 	echomsg "Ran latex ".runCount." time(s)"
 
 	let g:Tex_IgnoredWarnings = origpats
@@ -576,7 +586,7 @@ endfunction " }}}
 " . going to the correct line _and column_ number from from the quick fix
 "   window.
 " ============================================================================== 
-" PositionPreviewWindow: positions the preview window correctly. {{{
+" Tex_PositionPreviewWindow: positions the preview window correctly. {{{
 " Description: 
 " 	The purpose of this function is to count the number of times an error
 " 	occurs on the same line. or in other words, if the current line is
@@ -584,7 +594,7 @@ endfunction " }}}
 " 	lines in the quickfix window before this line which also contain lines
 " 	like |10 error|. 
 "
-function! PositionPreviewWindow(filename)
+function! Tex_PositionPreviewWindow(filename)
 
 	if getline('.') !~ '|\d\+ \(error\|warning\)|'
 		if !search('|\d\+ \(error\|warning\)|')
@@ -664,7 +674,7 @@ function! PositionPreviewWindow(filename)
 	normal! z.
 
 endfunction " }}}
-" UpdatePreviewWindow: updates the view of the log file {{{
+" Tex_UpdatePreviewWindow: updates the view of the log file {{{
 " Description: 
 "       This function should be called when focus is in a quickfix window.
 "       It opens the log file in a preview window and makes it display that
@@ -672,15 +682,15 @@ endfunction " }}}
 "       currently on in the quickfix window. Control returns to the quickfix
 "       window when the function returns. 
 "
-function! UpdatePreviewWindow(filename)
-	call PositionPreviewWindow(a:filename)
+function! Tex_UpdatePreviewWindow(filename)
+	call Tex_PositionPreviewWindow(a:filename)
 
 	if &previewwindow
 		6 wincmd _
 		wincmd p
 	endif
 endfunction " }}}
-" GotoErrorLocation: goes to the correct location of error in the tex file {{{
+" Tex_GotoErrorLocation: goes to the correct location of error in the tex file {{{
 " Description: 
 "   This function should be called when focus is in a quickfix window. This
 "   function will first open the preview window of the log file (if it is not
@@ -689,7 +699,7 @@ endfunction " }}}
 "   which this error has occured. 
 "
 "   The position is both the correct line number and the column number.
-function! GotoErrorLocation(filename)
+function! Tex_GotoErrorLocation(filename)
 
 	" first use vim's functionality to take us to the location of the error
 	" accurate to the line (not column). This lets us go to the correct file
@@ -707,7 +717,7 @@ function! GotoErrorLocation(filename)
 
 	" find out where in the file we had the error.
 	let linenum = matchstr(getline('.'), '|\zs\d\+\ze \(warning\|error\)|')
-	call PositionPreviewWindow(a:filename)
+	call Tex_PositionPreviewWindow(a:filename)
 
 	if getline('.') =~ 'l.\d\+'
 
@@ -742,9 +752,9 @@ function! GotoErrorLocation(filename)
 	exec 'silent! '.linenum.' | normal! '.normcmd
 
 endfunction " }}}
-" SetCompilerMaps: sets maps for compiling/viewing/searching {{{
+" Tex_SetCompilerMaps: sets maps for compiling/viewing/searching {{{
 " Description: 
-function! <SID>SetCompilerMaps()
+function! <SID>Tex_SetCompilerMaps()
 	if exists('b:Tex_doneCompilerMaps')
 		return
 	endif
@@ -765,7 +775,7 @@ endfunction
 augroup LatexSuite
 	au LatexSuite User LatexSuiteFileType 
 		\ call Tex_Debug('compiler.vim: Catching LatexSuiteFileType event', 'comp') | 
-		\ call <SID>SetCompilerMaps()
+		\ call <SID>Tex_SetCompilerMaps()
 augroup END
 
 command! -nargs=0 -range=% TPartCompile :<line1>, <line2> silent! call Tex_PartCompile()
