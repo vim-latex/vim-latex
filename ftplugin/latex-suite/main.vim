@@ -577,7 +577,9 @@ function! <SID>SetTeXOptions()
 endfunction
 
 augroup LatexSuite
-	au LatexSuite User LatexSuiteFileType call <SID>SetTeXOptions()
+	au LatexSuite User LatexSuiteFileType 
+		\ call Tex_Debug('main.vim: Catching LatexSuiteFileType event') | 
+		\ call <SID>SetTeXOptions()
 augroup END
 
 " }}}
