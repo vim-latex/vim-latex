@@ -3,7 +3,7 @@
 "      Author: Srinath Avadhanula
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Wed Nov 13 06:00 PM 2002 PST
+" Last Change: Thu Nov 14 09:00 AM 2002 PST
 " 
 "  Description: functions for compiling/viewing/searching latex documents
 "=============================================================================
@@ -28,7 +28,7 @@ function! SetTeXCompilerTarget(type, target)
 	else
 		let curd = getcwd()
 		exe 'cd '.expand('%:p:h')
-		if glob('makefile*') == ''
+		if glob('makefile*') == '' && glob('Makefile*') == ''
 			if has('gui_running')
 				call confirm(
 					\'No '.a:type.' rule defined for target '.target."\n".
@@ -90,7 +90,7 @@ function! RunLaTeX()
 	exec 'cd '.expand("%:p:h")
 
 	" if a makefile exists, just use the make utility
-	if glob('makefile') || glob('Makefile')
+	if glob('makefile') != '' || glob('Makefile') != ''
 		let _makeprg = &l:makeprg
 		let &l:makeprg = 'make $*'
 		if exists('s:target')
@@ -103,12 +103,12 @@ function! RunLaTeX()
 	" construct a main file.
 	elseif Tex_GetMainFileName() != ''
 		let mainfname = Tex_GetMainFileName()
+		exec 'make '.mainfname
 	else
 		" otherwise just use this file.
 		let mainfname = expand("%:t:r")
+		exec 'make '.mainfname
 	endif
-
-	exec 'make '.mainfname
 
 	let winnum = winnr()
 	cwindow
