@@ -265,16 +265,25 @@ function! Tex_ViewLaTeX()
 		call Tex_CD(expand("%:p:h"))
 	endif
 
-	if has('win32')
+	let _mp = &mp
+
+	if Tex_GetVarValue('Tex_ViewRuleComplete_'.s:target) != ''
+
+		let &mp = Tex_GetVarValue('Tex_ViewRuleComplete_'.s:target)
+		let &mp = substitute(&mp, '{v:servername}', v:servername, 'g')
+
+	elseif has('win32')
 		" unfortunately, yap does not allow the specification of an external
 		" editor from the command line. that would have really helped ensure
 		" that this particular vim and yap are connected.
-		let execString = '!start '.s:viewer.' "'.mainfname.'.'.s:target.'"'
+		let &mp = 'start '.s:viewer.' "$*"'
+
 	elseif has('macunix')
 		if strlen(s:viewer)
 			let s:viewer = '-a '.s:viewer
 		endif
-		let execString = 'silent! !open '.s:viewer.' '.mainfname.'.'.s:target
+		let &mp = 'open '.s:viewer.' $*.'.s:target
+
 	else
 		" taken from Dimitri Antoniou's tip on vim.sf.net (tip #225).
 		" slight change to actually use the current servername instead of
@@ -282,26 +291,38 @@ function! Tex_ViewLaTeX()
 		" Using an option for specifying the editor in the command line
 		" because that seems to not work on older bash'es.
 		if s:target == 'dvi'
+
 			if Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1 &&
-						\ exists('v:servername') &&
+						\ v:servername != '' &&
 						\ (s:viewer == "xdvi" || s:viewer == "xdvik")
-				let execString = 'silent! !'.s:viewer.' -editor "gvim --servername '.v:servername.
-							\ ' --remote-silent +\%l \%f" '.mainfname.'.dvi &'
+
+				let &mp = s:viewer.' -editor "gvim --servername '.v:servername.
+							\ ' --remote-silent +\%l \%f" $*.dvi &'
+
 			elseif Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1 &&
 						\ s:viewer == "kdvi"
-				let execString = 'silent! !kdvi --unique '.mainfname.'.dvi &'
+
+				let &mp = 'kdvi --unique $*.dvi &'
+
 			else
-				let execString = 'silent! !'.s:viewer.' '.mainfname.'.dvi &'
+
+				let &mp = s:viewer.' $*.dvi &'
+
 			endif
-			redraw!
+
 		else
-			let execString = 'silent! !'.s:viewer.' '.mainfname.'.'.s:target.' &'
-			redraw!
+
+			let &mp = s:viewer.' $*.'.s:target.' &'
+
 		endif
 	end
 
-	call Tex_Debug("Tex_ViewLaTeX: execString = ".execString, "comp")
-	execute execString
+	call Tex_Debug("Tex_ViewLaTeX: makeprg = ".&mp, "comp")
+
+	exec 'silent! make! '.mainfname
+
+	let &mp = _mp
+
 	if !has('gui_running')
 		redraw!
 	endif

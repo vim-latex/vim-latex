@@ -137,9 +137,9 @@ TexLet g:Tex_UseMakefile = 1
 " NOTE: Windows users:
 " 		Set your $PATH variable to include the full path to these programs.
 if has('win32')
-        TexLet g:Tex_ViewRule_ps = 'gsview32'
-        TexLet g:Tex_ViewRule_pdf = 'AcroRd32'
-        TexLet g:Tex_ViewRule_dvi = 'yap -1'
+	TexLet g:Tex_ViewRule_ps = 'gsview32'
+	TexLet g:Tex_ViewRule_pdf = 'AcroRd32'
+	TexLet g:Tex_ViewRule_dvi = 'yap -1'
 elseif has('macunix')
 	" Let the system pick.  If you want, you can override the choice here.
 	TexLet g:Tex_ViewRule_ps = ''
@@ -155,6 +155,37 @@ else
 	" #225)
 	TexLet g:Tex_UseEditorSettingInDVIViewer = 0
 endif
+
+" Tex_ViewRuleComplete_{format}
+"
+" If a variable like this is specified, then it takes precedence over the
+" variable with the same suffix defined above. i.e, Tex_ViewRuleComplete_dvi
+" takes precedence over Tex_ViewRule_dvi. 
+"
+" If only Tex_ViewRule_{format} is specified, then latex-suite constructs the
+" actual system command which calls that program automatically. For example,
+" if you specify Tex_ViewRule_dvi = 'kdvi', then latex-suite will issue the
+" command
+" 	!kdvi --unique file.dvi &
+"
+" However, if your viewer program accepts the file to be viewed in a way which
+" doesn't fit with the way latex-suite constructs the system command, then
+" specify it using this variable. You can use the same format here which
+" 'makeprg' accepts. So $* can be used in place of the main file name. 
+"
+" IMPORTANT: Make sure you make the process go into the background otherwise
+"            vim will wait for the viewer to terminate before letting you edit
+"            the file again.
+"
+" Example:
+" Suppose you have a latex->html converter which converts a file say foo.tex
+" to a file foo/index.html. Then you would use:
+"
+" 	let g:Tex_ViewRuleComplete_html = 'MozillaFirebird $*/index.html &'
+"
+" Doing something like this would not be possible using Tex_ViewRule_html
+TexLet g:Tex_ViewRuleComplete_dvi = ''
+
 " }}}
 " ------------------------------------------------------------------------------ 
 " }}}
