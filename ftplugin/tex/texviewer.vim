@@ -176,6 +176,7 @@ function! s:Tex_c_window_setup()
 	setlocal nonumber
 	setlocal nowrap
 
+	let s:scrollOffVal = &scrolloff
 	call <SID>UpdateViewerWindow()
 
     nnoremap <buffer> <silent> j j:call <SID>UpdateViewerWindow()<CR>
@@ -185,22 +186,22 @@ function! s:Tex_c_window_setup()
 
 	" Change behaviour of <cr> only for 'ref' and 'cite' context. 
 	if exists("s:type") && s:type =~ 'ref'
-		nnoremap <buffer> <silent> <cr> :silent! call <SID>CompleteName("ref")<CR>
+		exec 'nnoremap <buffer> <silent> <cr> :set scrolloff='.s:scrollOffVal.'<CR>:silent! call <SID>CompleteName("ref")<CR>'
 
 	elseif exists("s:type") && s:type =~ 'cite'
-		nnoremap <buffer> <silent> <cr> :silent! call <SID>CompleteName("cite")<CR>
+		exec 'nnoremap <buffer> <silent> <cr> :set scrolloff='.s:scrollOffVal.'<CR>:silent! call <SID>CompleteName("cite")<CR>'
 
 	else
 		" In other contexts jump to place described in cwindow and close small
 		" windows
-		nnoremap <buffer> <silent> <cr> :call <SID>GoToLocation()<cr>
+		exec 'nnoremap <buffer> <silent> <cr> :set scrolloff='.s:scrollOffVal.'<CR>:call <SID>GoToLocation()<cr>'
 
 	endif
 
 	nnoremap <buffer> <silent> J :wincmd j<cr><c-e>:wincmd k<cr>
 	nnoremap <buffer> <silent> K :wincmd j<cr><c-y>:wincmd k<cr>
 
-	exe 'nnoremap <buffer> <silent> q :call Tex_CloseSmallWindows()<cr>'
+	exe 'nnoremap <buffer> <silent> q :set scrolloff='.s:scrollOffVal.'<CR>:call Tex_CloseSmallWindows()<cr>'
 
 endfunction " }}}
 " Tex_CloseSmallWindows: {{{
