@@ -328,7 +328,7 @@ endfunction " }}}
 function! s:Tex_RelPath(explfilename,texfilename)
 	let path1 = a:explfilename
 	let path2 = a:texfilename
-	if has("win32")
+	if has("win32") || has("win16") || has("dos32") || has("dos16")
 		let path1 = substitute(path1, '\\', '/', 'ge')
 		let path2 = substitute(path2, '\\', '/', 'ge')
 	endif
@@ -342,6 +342,9 @@ function! s:Tex_RelPath(explfilename,texfilename)
 		let subrelpath = substitute(subrelpath, '[^/]*$', '', 'ge')
 	endif
 	let relpath = subrelpath.path1
+	if has("win32") || has("win16") || has("dos32") || has("dos16")
+		let relpath = substitute(relpath, '/', "\\", 'ge')
+	endif
 	return relpath
 endfunction " }}}
 
@@ -349,4 +352,4 @@ let g:Tex_Completion = 1
 " this statement has to be at the end.
 let s:doneOnce = 1
 
-" vim:fdm=marker:nowrap:noet:ff=unix
+" vim:fdm=marker:nowrap:noet:ff=unix:ts=4:sw=4
