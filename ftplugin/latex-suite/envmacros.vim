@@ -554,7 +554,13 @@ function! Tex_PutEnvironment(env)
 		endif
 		return VEnclose('\begin{'.a:env.'}', '\end{'.a:env.'}', '\begin{'.a:env.'}', '\end{'.a:env.'}')
 	else
-		if a:env =~ 'equation*\|eqnarray*\|theorem\|lemma\|equation\|eqnarray\|align\*\|align\>\|multline'
+		" The user can define something like 
+		" let g:Tex_Env_theorem = "\\begin{theorem}\<CR><++>\<CR>\\end{theorem}"
+		" This will effectively over-write the default definition of the
+		" theorem environment which uses a \label.
+		if exists("g:Tex_Env_{'".a:env."'}")
+			return IMAP_PutTextWithMovement(g:Tex_Env_{a:env})
+		elseif a:env =~ 'equation*\|eqnarray*\|theorem\|lemma\|equation\|eqnarray\|align\*\|align\>\|multline'
 			let g:aa = a:env
 			return Tex_eqnarray(a:env)
 		elseif a:env =~ "enumerate\\|itemize\\|theindex\\|trivlist"
