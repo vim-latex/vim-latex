@@ -1,3 +1,65 @@
+2004-06-09 13:47  srinathava
+
+	* ftplugin/latex-suite/main.vim:
+
+	New: A global versioning system for Latex-suite which will be helpful in
+	     making sure users have the correct version etc.
+
+2004-06-09 10:02  srinathava
+
+	* ftplugin/latex-suite/main.vim:
+
+	Bug: Get an error
+	     E117: Unknown function: Tex_GetVarValue
+	Why: We use Tex_GetVarValue before it is defined.
+	Fix: Move the smart key functions below the "helper" functions. The helper
+	     functions should always be defined before any other function which
+	     might use them.
+
+2004-06-06 16:21  srinathava
+
+	* ftplugin/latex-suite/: compiler.vim, main.vim, texrc:
+
+	New: Make the program for creating the .ind file customizable via the
+	     Tex_MakeIndexFlavor. (requested by Berta Milan)
+
+	New: Make the pattern used to detect diacritics customizable via the
+	     Tex_SmartBSPattern (requested by Berta Milan)
+
+2004-05-30 00:35  srinathava
+
+	* plugin/imaps.vim:
+
+	Bug: Typing
+	     >>> \begin{array}
+	     >>>    \end{}
+	     results in
+	     >>> \begin{array}
+	     >>> \end{<++>}
+	     with the cursor at the end (Berta Milan)
+	Why: When the indentation of a line changes while typing the text returned
+	     by IMAP_PutTextWithMovement, then IMAP_Mark('go') does not go to the
+	     same location as set by IMAP_Mark('set'). This causes the cursor to be
+	     located not before the first placeholder causing the first
+	     placeholder to be "missed".
+	Fix: Check to see if the indentation of the line remembered by
+	     IMAP_Mark('set') has changed and if so, move a little to the left or
+	     right to adjust for the indentation changing.
+
+2004-05-25 11:51  srinathava
+
+	* ftplugin/latex-suite/envmacros.vim:
+
+	Bug: <F7> for inserting commands doesn't work in Insert mode and works
+	     buggily in Normal mode.
+	Why: Used <cword> to extract the word under the cursor which doesn't work
+	     if the cursor is just past the end of a word. This is a common
+	     occurence when <F7> is pressed just after typing a word. Also in
+	     normal mode, just used the part of the word which is before the
+	     cursor.
+	Fix: Use matchstr(getline('.'), '\w\+$') to extract the word before the
+	     cursor. This works even after the end of a word in insert mode.
+
 2004-05-24 16:55  srinathava
 
 	* ftplugin/latex-suite/compiler.vim:

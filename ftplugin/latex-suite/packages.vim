@@ -74,11 +74,11 @@ function! Tex_pack_check(package)
 		endif
 	endif
 	" Return full list of dictionaries (separated with ,) for package in &rtp
-	call Tex_Debug("searching for ".a:package." in dictionaries/ in &rtp", "pack")
+	call Tex_Debug("Tex_pack_check: searching for ".a:package." in dictionaries/ in &rtp", "pack")
 	let dictname = Tex_FindInRtp(a:package, 'dictionaries', ':p')
 	if dictname != ''
 		exe 'setlocal dict^=' . dictname
-		call Tex_Debug('setlocal dict^=' . dictname, 'pack')
+		call Tex_Debug('Tex_pack_check: setlocal dict^=' . dictname, 'pack')
 		if g:Tex_package_supported !~ a:package
 			let g:Tex_package_supported = g:Tex_package_supported.','.a:package
 		endif
@@ -104,8 +104,6 @@ function! Tex_pack_uncheck(package)
 endfunction
 
 " }}}
-" This function should go to main.vim for reuse with templates and macros.
-" I keep it here because want to do it in onefile patch. 
 " Tex_pack_updateall: updates the TeX-Packages menu {{{
 " Description:
 " 	This function first calls Tex_pack_all to scan for \usepackage's etc if
@@ -142,7 +140,7 @@ function! Tex_pack_updateall(force)
 		call Tex_Debug(':Tex_pack_updateall: split '.Tex_EscapeSpaces(fname), 'pack')
 		exe 'split '.Tex_EscapeSpaces(fname)
 	else
-		call Tex_Debug(':Tex_pack_updateall: split')
+		call Tex_Debug(':Tex_pack_updateall: split', 'pack')
 		split
 	endif
 		
