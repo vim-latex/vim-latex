@@ -220,6 +220,11 @@ function! RunLaTeX()
 			call Tex_CompileLatex()
 		endif
 
+		" If there are any errors, then break from the rest of the steps
+		if Tex_GetErrorList() != ''
+			break
+		endif
+
 		let i = i + 1
 	endwhile
 	

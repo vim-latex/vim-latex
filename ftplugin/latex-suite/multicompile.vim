@@ -44,11 +44,10 @@ function! Tex_CompileMultipleTimes()
 		silent! call Tex_CompileLatex()
 		
 		" If there are errors in any latex compilation step, immediately
-		" return.
-		let _a = @a
-		redir @a | silent! clist | redir END
-		let errlist = @a
-		let @a = _a
+		" return. For now, do not bother with warnings because those might go
+		" away after compiling again or after bibtex is run etc.
+		let errlist = Tex_GetErrorList()
+		call Tex_Debug("errors = [".errlist."]", "err")
 
 		if errlist =~ '\d\+\s\f\+:\d\+\serror'
 			let g:Tex_IgnoredWarnings = origpats
