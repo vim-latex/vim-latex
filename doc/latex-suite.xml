@@ -220,7 +220,7 @@ set iskeyword+=:
    &ls; provides a rich set of mappings to insert, enclose and modify
    &latex; environments.
    <section id="insert-mode-environment-mappings">
-    <title>Insert-mode Mappings</title>
+    <title id="insert-mode-environment-mappings.title">Insert-mode Mappings</title>
     <para> 
      These mappings insert LaTeX "environments" such as:
      <programlisting>\begin{center}
@@ -230,6 +230,10 @@ set iskeyword+=:
      various ways of inserting environments into the source file. If
      the environment is a standard latex environment, then latex suite
      might also include common fields associated with it.
+    </para>
+    <para>
+     See <link linkend="Tex_Env_name">this section</link> for details on
+     how to customize the way &ls; will expand various environments.
     </para>
     <section id="ls-imap-f5">
      <title>Method 1</title>
@@ -997,6 +1001,7 @@ call IMAP('foobar', 'something else', 'tex')</programlisting>
            indentation set up, then the right hand side will also be
            indented just as if you had typed it in normally.
           </para>
+          <anchor id="IMAP_PutTextWithMovement" />
           <para>
            You can also set up a &ls; style mapping which calls a custom function
            as follows:
@@ -3053,6 +3058,56 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
      Leaving this string empty will leave the <literal>&lt;F7&gt;</literal>
      key unmapped.
     </para>
+   </section>
+   <section id="Tex_Env_name">
+    <title>Tex_Env_name</title>
+     <para>
+      If you wish to wish to expand certain environments differently from
+      the way &ls; does it, you can define custom expansions using global
+      variables of the form <literal>Tex_Env_{name}</literal> where
+      <literal>name</literal> corresponds to the environment. This
+      over-riding setting only works for Methods 1-3 described in the
+      section <link linkend="insert-mode-environment-mappings"
+       endterm="insert-mode-environment-mappings.title"></link>.
+      In the future, it will work with the fourth method too.
+     </para>
+     <para>
+      For example, if you press <literal>&lt;F5&gt;</literal> after typing
+      <literal>theorem</literal>, &ls; will by default expand it to
+      <programlisting>\begin{theorem}
+     \label{&ph;}&ph;
+\end{theorem}&ph;</programlisting>
+       However, if you wish change this to
+      <programlisting>\begin{theorem}
+     &ph;
+\end{theorem}&ph;</programlisting>
+       then define the following variable
+      <programlisting>let g:Tex_Env_theorem = "\\begin{theorem}\&lt;CR&gt;&ph;\&lt;CR&gt;\\end{theorem}"</programlisting>
+      </para>
+     <para>
+      Notice how special characters such as carriage return are specified
+      using the <literal>"\&lt;key&gt;"</literal> notation. Also use double
+      quotes if you wish to enter such special keys. Also backslashes have
+      to be doubled.
+     </para>
+     <para>
+      You could even use strings returned by functions as the expansion by
+      using the <link
+       linkend="IMAP_PutTextWithMovement">IMAP_PutTextWithMovement()</link>
+      function.
+     </para>
+     <para>
+      If the name of the environment contains special characters (for
+      example, the <literal>eqnarray*</literal> environment), then use the
+      following form:
+      <programlisting>let g:Tex_Env_{'eqnarray*'} = 
+        \ "\\begin{eqnarray*}\&lt;CR&gt;&ph; &amp;=&amp; &ph;\&lt;CR&gt;\\end{eqnarray*}&ph;"</programlisting>
+       This will make pressing <literal>&lt;F5&gt;</literal> after
+       <literal>eqnarray*</literal> expand to
+       <programlisting>\begin{eqnarray*}
+	&ph; &amp;=&amp; &ph;
+\end{eqnarray*}&ph;</programlisting>
+     </para>
    </section>
   </section>
   <section id="customizing-smart-keys">
