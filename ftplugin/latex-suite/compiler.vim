@@ -110,6 +110,9 @@ function! RunLaTeX()
 		endif
 		let &l:makeprg = _makeprg
 	elseif exists("g:partcomp")
+		" Change directory to location of temporary file. In this way output 
+		" files will be in temporary directory (no garbage in real current 
+		" directory). System will take care about space.
 		let curdir = getcwd()
 		let pcomdir = fnamemodify(g:tfile, ":p:h")
 		exe 'lcd '.pcomdir
@@ -150,6 +153,9 @@ endfunction
 " Description: opens the DVI viewer for the file being currently edited.
 " Again, if the current file is a \input in a master file, see text above
 " RunLaTeX() to see how to set this information.
+" If ViewLaTeX was called with argument "part" show file which name is stored 
+" in g:tfile variable. If g:tfile doesnt exist, no problem. Function is called 
+" as silent. 
 function! ViewLaTeX(size)
 	if &ft != 'tex'
 		echo "calling ViewLaTeX from a non-tex file"
@@ -192,8 +198,10 @@ function! ViewLaTeX(size)
 		" because that seems to not work on older bash'es.
 		if s:target == 'dvi'
 			if exists('g:Tex_UseEditorSettingInDVIViewer') &&
-						\ g:Tex_UseEditorSettingInDVIViewer == 1 && a:size == "all"
-				exec '!'.s:viewer.' -editor "gvim --servername '.v:servername.' --remote-silent +%l %f" '.mainfname.'.dvi &'
+						\ g:Tex_UseEditorSettingInDVIViewer == 1 && a:size == "all" &&
+						\ exists('v:servername') &&
+						\ (s:viewer == "xdvi" || s:viewer == "xdvik")
+				exec '!'.s:viewer.' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.mainfname.'.dvi &'
 			else
 				if a:size == "all"
 					exec '!'.s:viewer.' '.mainfname.'.dvi &'
@@ -252,7 +260,14 @@ function! ForwardSearchLaTeX()
 	if has('win32')
 		exec '!start '.viewer.' -s '.line('.').expand('%:p:t').' '.mainfname
 	else
-		exec '!'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').' '.mainfname.'.dvi'
+		if exists('g:Tex_UseEditorSettingInDVIViewer') &&
+					\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
+					\ exists('v:servername') &&
+					\ (viewer == "xdvi" || viewer == "xdvik") &&
+			exec '!'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.mainfname.'.dvi &'
+		else
+			exec '!'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').' '.mainfname.'.dvi &'
+		endif
 	end
 
 	exec 'cd '.curd
