@@ -745,7 +745,7 @@ function! <SID>SetCompilerMaps()
 	call Tex_MakeMap(s:ml."ll", "<Plug>Tex_Compile", 'n', '<buffer>')
 	call Tex_MakeMap(s:ml."ll", "<Plug>Tex_Compile", 'v', '<buffer>')
 	call Tex_MakeMap(s:ml."lv", "<Plug>Tex_View", 'n', '<buffer>')
-	call Tex_MakeMap(s:ml."ls", "<Plug>Tex_ForwardSearch", 'ls', '<buffer>')
+	call Tex_MakeMap(s:ml."ls", "<Plug>Tex_ForwardSearch", 'n', '<buffer>')
 endfunction 
 " }}}
 
