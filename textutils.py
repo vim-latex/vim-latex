@@ -96,6 +96,8 @@ def OffsetText(text, indent):
 # }}}
 # RightJustify(lines, width): {{{
 def RightJustify(lines, width):
+    if width == 0:
+        width = TextWidth(lines)
     text = ""
     for line in lines.split("\n"):
         text += " "*(width - len(line)) + line + "\n"
@@ -104,12 +106,14 @@ def RightJustify(lines, width):
     return text
 
 # }}}
+# CenterText(lines, width): {{{
 def CenterText(lines, width):
     text = ''
     for line in lines.split("\n"):
         text += " "*(width/2 - len(line)/2) + line + '\n'
     return text
 
+# }}}
 # TextWidth(text): {{{
 def TextWidth(text):
     """

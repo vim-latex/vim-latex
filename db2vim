@@ -37,13 +37,17 @@ BLOCK_QUOTE = 4
 COL_SPACE = 2
 
 # a bunch of globals used in creating the Table of contents.
-# TOC_HASH['ls_1_1'] = 'section 1.1 label'
-# LEVEL_HASH['ls_1_1'] = section level of section 1.1 (this is always equal
-#                        to the number of '_', but we maintain this hash
-#                        just ot be safe).
-# TITLE_HASH['ls_1_1'] = 'Title of section 1.1'
+#
+# TOC_HASH['section 1.1 label'] = 'ls_1_1'
+#
+# LEVEL_HASH['section 1.1 label'] = 1 
+#       (top level article has level 0)
+#
+# TITLE_HASH['section 1.1 label'] = 'Title of section 1.1'
+#
 # FILENAME = the name of the file being processed with the last extension
 #            changed to .txt
+#
 # TOC_PREFIX = 'ls_' (the prefix used to create the section labels).
 TOC_HASH = {}
 LEVEL_HASH = {}
@@ -51,10 +55,109 @@ TITLE_HASH = {}
 FILENAME = ''
 TOC_PREFIX = ''
 
+ANCHOR_HASH = {}
+URL_HASH = {}
+
 # STDERR for printing debugging info.
 DEBUG = 0
 STDERR = sys.stderr
+STRICT = 0
+NUM_ANCHORS = {0:1}
 
+################################################################################
+# Miscellaneous utility functions
+################################################################################
+# encodeTo52(num) {{{
+def encodeTo52(num):
+    ret = ''
+
+    if num < 26:
+        return unichr(ord('a') + num)
+    elif num < 52:
+        return unichr(ord('A') + num - 26)
+    else:
+        return encodeTo52(int(num/52)) + encodeTo52(num % 52)
+# }}}
+# makeTocHash(rootElement) {{{
+def makeTocHash(rootElement, width, prefix='', level=0):
+    retText = ""
+    sectionsTable = []
+    lastLabelUsed = 0
+
+    for section in rootElement.getChildrenByTagName('section'):
+        title = section.getChildrenByTagName('title')[0]
+        titleText = handleElement(title, width)
+        lastLabelUsed += 1
+        thisLabel = TOC_PREFIX + prefix + str(lastLabelUsed)
+
+        sectionid = section.getAttribute('id')
+        if not sectionid:
+            section.setAttribute('id', thisLabel)
+            sectionid = thisLabel
+
+        NUM_ANCHORS[0] += 1
+        ANCHOR_HASH[sectionid] = TOC_PREFIX + 'a_' + encodeTo52(NUM_ANCHORS[0] + 52)
+
+        TOC_HASH[sectionid] = thisLabel
+        LEVEL_HASH[sectionid] = level
+        TITLE_HASH[sectionid] = titleText
+
+        if section.getChildrenByTagName('section'):
+            childText = makeTocHash(section, width - 5,
+                prefix = prefix+str(lastLabelUsed) + '_',
+                level = level + 1)
+
+# }}}
+# makeAnchorHash(rootElement) {{{
+def makeAnchorHash(rootElement):
+    anchors = rootElement.getElementsByTagName('anchor') + rootElement.getElementsByTagName('note')
+    numAnchors = 0
+    for anchor in anchors:
+        if not anchor.getAttribute('id'):
+            continue
+
+        NUM_ANCHORS[0] += 1
+        if ANCHOR_HASH.has_key(anchor.getAttribute('id')) or TOC_HASH.has_key(anchor.getAttribute('id')):
+            print >> STDERR, "anchor [%s] multiply defined" % anchor.getAttribute('id')
+
+        ANCHOR_HASH[anchor.getAttribute('id')] = TOC_PREFIX + 'a_' + encodeTo52(NUM_ANCHORS[0] + 52)
+    
+# }}}
+# makeURLHash(rootElement) {{{
+def makeURLHash(rootElement):
+    urls = rootElement.getElementsByTagName('ulink')
+    numURLs = 0
+    for url in urls:
+        if not url.getAttribute('url') or URL_HASH.has_key(url.getAttribute('url')):
+            continue
+        numURLs += 1
+        URL_HASH[url.getAttribute('url')] = TOC_PREFIX + 'u_' + str(numURLs)
+
+# }}}
+# makeTOC(node, width, prefix='', level=0, maxleve=1): {{{
+def makeTOC(node, width, maxlevel=1):
+    retText = ""
+    sectionsTable = []
+    lastLabelUsed = 0
+
+    for section in node.getChildrenByTagName('section'):
+
+        sectionid = section.getAttribute('id')
+        thisLabel = TOC_HASH.get(sectionid, '')
+        titleText = TITLE_HASH.get(sectionid, '')
+        level = LEVEL_HASH.get(sectionid, 10)
+
+        if level <= maxlevel:
+            retText += '|' + thisLabel + '| ' +  titleText + '\n'
+
+        if level < maxlevel and section.getChildrenByTagName('section'):
+            childText = makeTOC(section, width-5)
+            retText += VertCatString("    ", 4, childText) + '\n'
+
+        retText = re.sub(r'\s+$', r'\n', retText)
+
+    return retText
+# }}}
 
 ################################################################################
 # Generalized function for handling dom elements.
@@ -63,7 +166,7 @@ STDERR = sys.stderr
 def IsInlineTag(self):
     if self.nodeType == self.TEXT_NODE:
         return 1
-    elif self.nodeType == self.ELEMENT_NODE and inlineTags.get(self.tagName, 0):
+    elif inlineTags.get(self.tagName, 0):
         return 1
     else:
         return 0
@@ -89,18 +192,21 @@ xml.dom.minidom.Element.getChildrenByTagName = getChildrenByTagName
 
 
 # }}}
-# handleElement(rootElement, width=TEXT_WIDTH, strict=0): {{{
-def handleElement(rootElement, width=TEXT_WIDTH, strict=0):
+# handleElement(rootElement, width=TEXT_WIDTH): {{{
+def handleElement(rootElement, width=TEXT_WIDTH):
     """
     handleElement(rootElement, width=TEXT_WIDTH):
 
     Generalized function to handle an Element node in a DOM tree.
     """
 
-
     retText = ""
     child = rootElement.firstChild
     while not child is None:
+
+        printerr('node type = %d' % child.nodeType)
+        if child.nodeType == child.ELEMENT_NODE:
+            printerr('processing [%s]' % child.tagName)
 
         isinline = IsInlineTag(child)
 
@@ -109,6 +215,7 @@ def handleElement(rootElement, width=TEXT_WIDTH, strict=0):
         and child.nodeType == child.ELEMENT_NODE \
         and handlerMaps.has_key(child.tagName):
             # offset the child text by the current indentation value
+            printerr('making recursive call to known child.')
             retText += handlerMaps[child.tagName](child, width)
             child = child.nextSibling
 
@@ -141,7 +248,8 @@ def handleElement(rootElement, width=TEXT_WIDTH, strict=0):
         # If we cannot understand _anything_ about the element, then just
         # handle its children hoping we have something to gather from
         # there.
-        elif not strict:
+        elif not STRICT:
+            printerr('making recursive call for unkown child')
             retText += handleElement(child, width)
             child = child.nextSibling
 
@@ -157,9 +265,14 @@ def handleElement(rootElement, width=TEXT_WIDTH, strict=0):
 ################################################################################
 # handleArticleInfo(articleinfo, width): {{{
 def handleArticleInfo(articleinfo, width):
+
+    makeTocHash(articleinfo.parentNode, width)
+    makeAnchorHash(articleinfo.parentNode)
+    makeURLHash(articleinfo.parentNode)
+
     title = articleinfo.getChildrenByTagName('title')
     if title is None:
-        print >> STDERR, "Article should have a title!"
+        print("Article should have a title!")
         sys.exit(1)
 
     name = GetText(title[0].childNodes)
@@ -205,48 +318,6 @@ sequences and commands to work with folds.
 
     return retText + '\n' + RightJustify('*' + FILENAME + '-toc*', width) + '\n' + toc + foldwarn
 
-# makeTOC(node, width): {{{
-
-def makeTOC(parent, width, prefix='', level=0, maxlevel=1):
-    retText = ""
-    sectionsTable = []
-    lastLabelUsed = 0
-
-    for section in parent.getChildrenByTagName('section'):
-
-        sectionid = section.getAttribute('id')
-        if sectionid and TOC_HASH.has_key(sectionid):
-            thisLabel = TOC_HASH[sectionid]
-            titleText = TITLE_HASH[sectionid]
-
-        else:
-            title = section.getChildrenByTagName('title')[0]
-            titleText = handleElement(title, width)
-            lastLabelUsed += 1
-            thisLabel = TOC_PREFIX + prefix + str(lastLabelUsed)
-
-            sectionid = section.getAttribute('id')
-            if not sectionid:
-                section.setAttribute('id', thisLabel)
-                sectionid = thisLabel
-
-            TOC_HASH[sectionid] = thisLabel
-            LEVEL_HASH[sectionid] = level
-            TITLE_HASH[sectionid] = titleText
-
-        if level <= maxlevel:
-            retText += '|' + thisLabel + '| ' +  titleText + "\n"
-
-        if section.getChildrenByTagName('section'):
-            childText = makeTOC(section, width-5, 
-                prefix = (prefix + str(lastLabelUsed) + '_'),
-                level = level + 1)
-            childText = re.sub(r'\n+$', '', childText)
-            if level < maxlevel:
-                retText += VertCatString("    ", 4, childText) + '\n'
-
-    return retText
-# }}}
 # }}}
 # handleOption(option, width): {{{
 def handleOption(option, width):
@@ -358,7 +429,7 @@ def calculateColumnWidthsDoublePass(rows, width):
 
     newcolwidths = []
     for colwidth in maxwidths.values():
-        newcolwidths += [max(colwidth, newmaxwidth)]
+        newcolwidths += [min(colwidth, newmaxwidth)]
 
     # make another run and this time ask each cell to restrict itself to
     # newmaxwidth as calculated above.
@@ -397,7 +468,7 @@ def handleList(list, width, marker=0):
         itemText = handleElement(item, width - len(decoration))
         itemText = VertCatString(decoration, None, itemText)
 
-        retText += '\n' + re.sub(r'\n+$', '', itemText) + "\n"
+        retText += '\n' + re.sub(r'\s+$', '', itemText) + "\n"
 
     return retText
 
@@ -410,18 +481,25 @@ def handleNote(note, width):
         name = GetText(title.childNodes)
         note.removeChild(title)
 
+    noteid = ''
+    if note.getAttribute('id'):
+        noteTagText = '*' + note.getAttribute('id') + '* '
+        noteTagText += '*' + ANCHOR_HASH[note.getAttribute('id')] + '*'
+        noteTagText = IndentParagraphs(noteTagText, width/2)
+        noteid = RightJustify(noteTagText, width) + '\n'
+
     noteText = handleElement(note, width-len("NOTE: "))
     if title is not None:
         noteText = name + '\n' +('-' * len(name)) + '\n' + noteText
 
-    noteText = VertCatString("NOTE: ", None, noteText)
+    noteText = noteid + VertCatString("NOTE: ", None, noteText)
 
     return noteText + "\n"
 
 # }}}
 # handleParagraph(paragraph, width): {{{
 def handleParagraph(paragraph, width):
-    partext = handleElement(paragraph, width, strict=0)
+    partext = handleElement(paragraph, width)
 
     partext = re.sub(r'\n+$', '', partext)
     partext = re.sub(r'^\n+', '', partext)
@@ -437,7 +515,7 @@ def handleFormalParagraph(formalparagraph, width):
         name = GetText(title.childNodes)
         formalparagraph.removeChild(title)
 
-    partext = handleElement(formalparagraph, width, strict=0)
+    partext = handleElement(formalparagraph, width)
 
     partext = re.sub(r'\n+$', '', partext)
     partext = re.sub(r'^\n+', '', partext)
@@ -459,9 +537,14 @@ def handleBlockQuote(block, width):
 # handleLink(link, width): {{{
 def handleLink(link, width):
     linkend = link.getAttribute('linkend')
+    if not ANCHOR_HASH.has_key(linkend):
+        print >> STDERR, "Warning: Link ID [%s] not found in TOC" % linkend
     text = handleElement(link, width)
+    anchorpt = ANCHOR_HASH.get(linkend)
+    if not anchorpt:
+        anchorpt = ''
 
-    return text + ' [|' + linkend + '|]'
+    return text + ' [|' + anchorpt + '|]'
 
 # }}}
 # handleAnchor(anchor, width): {{{
@@ -470,7 +553,10 @@ def handleAnchor(anchor, width):
         return ''
 
     anchor.setAttribute('processed', '1')
-    return RightJustify('*'+anchor.getAttribute('id')+'*', width) \
+
+    anchorText = '*'+anchor.getAttribute('id')+'* '
+    anchorText += '*'+ANCHOR_HASH[anchor.getAttribute('id')]+'*'
+    return RightJustify(anchorText, width) \
         + "\n"
 
 # }}}
@@ -484,11 +570,14 @@ def handleSection(section, width):
     if TOC_HASH.has_key(sectionid):
         tagsformatted = '*%s* ' % TOC_HASH[sectionid]
 
-    if sectionid and sectionid != TOC_HASH[sectionid]:
+    if ANCHOR_HASH.has_key(sectionid):
+        tagsformatted += '*%s* ' % ANCHOR_HASH[sectionid]
+
+    if sectionid and TOC_HASH.has_key(sectionid) and sectionid != TOC_HASH[sectionid]:
         tagsformatted += '*%s*' % sectionid
 
     # try to indent to a width of 20
-    tagsformatted = IndentParagraphs(tagsformatted, 20)
+    tagsformatted = RightJustify(IndentParagraphs(tagsformatted, 30), 0)
     tagswidth = TextWidth(tagsformatted)
 
     # width(name) + nspaces + width(tags) = 80
@@ -500,10 +589,11 @@ def handleSection(section, width):
     section.removeChild(title)
     text = handleElement(section, width)
 
-    if LEVEL_HASH[sectionid] == 0:
+    thislevel = LEVEL_HASH.get(sectionid, -1)
+    if thislevel == 0:
         delim = '='
         newlines = '\n\n'
-    elif LEVEL_HASH[sectionid] == 1:
+    elif thislevel == 1:
         delim = '-'
         newlines = '\n'
     else:
@@ -511,12 +601,27 @@ def handleSection(section, width):
         newlines = '\n'
 
     thisTOC = ''
-    if LEVEL_HASH[sectionid] <= 1:
-        thisTOC = makeTOC(section, width, maxlevel=0)
+    if thislevel <= 1:
+        thisTOC = makeTOC(section, width, maxlevel=1)
 
     return "\n" + (delim * TEXT_WIDTH) + \
         "\n" + header + newlines + thisTOC + newlines + re.sub(r'\n+$', '', text) + "\n"
 
+# }}}
+# handleUlink(ulink, width) {{{
+def handleUlink(ulink, width):
+    url = ulink.getAttribute('url')
+    text = handleElement(ulink)
+    return text + ' |%s|' % URL_HASH[url]
+
+# }}}
+# handleIndexTerm(indexterm, width)  {{{
+def handleIndexTerm(indexterm, width) :
+    return ''
+# }}}
+# handleEmphasis(emphasis, width) {{{
+def handleEmphasis(emphasis, width):
+    return '_' + GetText(emphasis.childNodes) + '_'
 # }}}
 
 ################################################################################
@@ -539,8 +644,13 @@ handlerMaps = {
     'anchor': handleAnchor,
     'section': handleSection,
     'blockquote': handleBlockQuote,
+    'ulink': handleUlink,
+    'emphasis': handleEmphasis,
+    'indexterm': handleIndexTerm
 }
-inlineTags = {'tag':1, 'literal':1, 'link':1}
+inlineTags = {'tag':1, 'literal':1, 'link':1, 
+    'ulink':1, 'citetitle':1, 'indexterm':1,
+    'emphasis':1, 'filename':1 }
 # }}}
 
 # helper functions for usage() and printerr() {{{
@@ -552,7 +662,6 @@ def printerr(statement):
         print >> STDERR, statement
 
 # }}}
-
 # main function {{{
 if __name__ == "__main__":
     option = {}
@@ -601,13 +710,26 @@ The following modelines should nicely fold up this help manual.
 
 vim:ft=help:fdm=expr:nowrap
 vim:foldexpr=getline(v\:lnum-1)=~'-\\{80}'?'>2'\:getline(v\:lnum-1)=~'=\\{80}'?'>1'\:getline(v\:lnum)=~'=\\{80}'?'0'\:getline(v\:lnum)=~'-\\{80}'?'1'\:'='
-vim:foldtext=substitute(v\:folddashes.substitute(getline(v\:foldstart),'\\s*\\*.*',"",""),'^--','--\ \ \ \ ','')
+vim:foldtext=substitute(v\:folddashes.substitute(getline(v\:foldstart),'\\s*\\*.*',"",""),'^--','\ \ \ \ \ \ ','')
 ================================================================================'''
 
-    processedDoc = handleElement(dom.documentElement, strict=option.has_key('-s'))
+    STRICT = option.has_key('-s')
+
+    processedDoc = handleElement(dom.documentElement)
     processedDoc = re.sub(r'&codeend;([^\n]*)\n\s([ ]+)', '\n<\g<2>\g<1>\n \g<2>', processedDoc)
     processedDoc = re.sub(r'&codeend;([^\n]*)\n(?=[^ ]|\n)', '\n\g<1>\n', processedDoc)
-    processedDoc = processedDoc + modeline
+
+    urlsection = r"""
+================================================================================
+URLs used in this file
+
+"""
+    labels = zip(URL_HASH.values(), URL_HASH.keys())
+    labels.sort()
+    for label, url in labels:
+        urlsection += '*%s* : %s\n' % (label, url)
+
+    processedDoc = processedDoc + urlsection + modeline
     print processedDoc.encode('iso-8859-1')
 
 # }}}
