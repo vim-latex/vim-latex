@@ -242,13 +242,14 @@ command! -nargs=? Tshortcuts call Tex_shortcuts(<f-args>)<CR>
 " Tex_shortcuts: Show shortcuts in terminal after : command {{{
 function! Tex_shortcuts(...)
 	if a:0 == 0
-		let shorts = input( " Allowed arguments are:"
+		let shorts = input(" Allowed arguments are:"
 		\."\n g     General"
 		\."\n e     Environments"
 		\."\n f     Fonts"
 		\."\n s     Sections"
+		\."\n m     Math"
 		\."\n a     All"
-		\."\n Enter your choice : ")
+		\."\n Enter your choice (<Enter> quits) : ")
 		call Tex_shortcuts(shorts)
 	elseif a:1 == 'g'
 		echo g:generalshortcuts
@@ -258,11 +259,14 @@ function! Tex_shortcuts(...)
 		echo g:fontshortcuts
 	elseif a:1 == 's'
 		echo g:sectionshortcuts
+	elseif a:1 == 'm'
+		echo g:mathshortcuts
 	elseif a:1 == 'a'
 		echo g:generalshortcuts
 		echo g:environmentshortcuts
 		echo g:fontshortcuts
 		echo g:sectionshortcuts
+		echo g:mathshortcuts
 	endif
 
 endfunction
@@ -332,6 +336,42 @@ let g:sectionshortcuts = ''
 \."\n SS2   ".g:Tex_Leader2."s2   subsubsection"
 \."\n SPG   ".g:Tex_Leader2."pg   paragraph"
 \."\n SSP   ".g:Tex_Leader2."sp   subparagraph"
+" }}}
+" Math shortcuts {{{
+let g:mathshortcuts = ''
+\."\n Math shortcuts - Insert mode"
+\."\n `a     \\alpha            `b     \\beta"
+\."\n `g     \\gamma            `d     \\delta"
+\."\n `e     \\varepsilon       `z     \\zeta"
+\."\n `h     \\eta              `q     \\theta"
+\."\n `i     \\iota             `k     \\kappa"
+\."\n `l     \\lambda           `m     \\mu"
+\."\n `n     \\nu               `x     \\xi"
+\."\n `p     \\pi               `r     \\rho"
+\."\n `s     \\sigma            `v     \\varsigma"
+\."\n `t     \\tau              `u     \\upsilon"
+\."\n `f     \\varphi           `c     \\chi"
+\."\n `y     \\psi              `w     \\omega"
+\."\n `A     \\Alpha            `B     \\Beta"
+\."\n `G     \\Gamma            `D     \\Delta"
+\."\n `E     \\Epsilon          `Z     \\mathrm{Z}"
+\."\n `H     \\Eta              `K     \\Kappa"
+\."\n `L     \\Lambda           `M     \\Mu"
+\."\n `N     \\Nu               `X     \\Xi"
+\."\n `P     \\Pi               `R     \\Rho"
+\."\n `S     \\Sigma            `T     \\Tau"
+\."\n `U     \\Upsilon          `C     \\Chi"
+\."\n `Y     \\Psi              `W     \\Omega"
+\."\n `(     \\subset           `)     \\Subset"
+\."\n `=     \\equiv            =~     \\approx"
+\."\n `-     \\bigcap           `+     \\bigcup"
+\."\n `.     \\cdot             `*     \\times"
+\."\n `\\     \\setminus         `@     \\circ"
+\."\n `&     \\wedge            `,     \\nonumber"
+\."\n `8     \\infty            `_     \\bar{}"
+\."\n `:     \\ddot{}           `;     \\dot{}"
+\."\n `^     \\hat{}            `~     \\tilde{}"
+\."\n `6     \\partial"
 " }}}
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4
