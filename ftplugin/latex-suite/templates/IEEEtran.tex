@@ -18,8 +18,6 @@
 % Last Change: !comp!strftime("%a %b %d %I:00 %p %Y ").substitute(strftime('%Z'), '\<\(\w\)\(\w*\)\>\(\W\|$\)', '\1', 'g')!comp!
 %
 \documentclass[journal]{IEEEtran}
-\begin{document}
-
 
 \usepackage{cite, graphicx, subfigure, amsmath} 
 \interdisplaylinepenalty=2500
@@ -28,7 +26,7 @@
 % *** Do not use packages that alter fonts (such as pslatex).         ***
 % There should be no need to do such things with IEEEtran.cls V1.6 and later.
 
-
+<++>
 % correct bad hyphenation here
 \hyphenation{<+op-tical net-works semi-conduc-tor+>}
 
@@ -47,11 +45,11 @@
 % a separate \thanks must be used for each paragraph as LaTeX2e's \thanks
 % was not built to handle multiple paragraphs
 \author{<+Sumit Bhardwaj+>~\IEEEmembership{<+Student~Member,~IEEE,+>}
-        <+John~Doe+>,~\IEEEmembership{<+Fellow,~OSA,+>}
-        <+and~Jane~Doe,+>~\IEEEmembership{<+Life~Fellow,~IEEE+>}% <-this % stops a space
+<+John~Doe+>,~\IEEEmembership{<+Fellow,~OSA,+>}
+<+and~Jane~Doe,+>~\IEEEmembership{<+Life~Fellow,~IEEE+>}}% <-this % stops a space
 \thanks{<+Manuscript received January 20, 2002; revised August 13, 2002.
-        This work was supported by the IEEE.+>}% <-this % stops a space
-\thanks{<+S. Bhardwaj is with the Indian Institute of Technology, Delhi.+>}}
+This work was supported by the IEEE.+>}% <-this % stops a space
+\thanks{<+S. Bhardwaj is with the Indian Institute of Technology, Delhi.+>}
 %
 % The paper headers
 \markboth{<+Journal of VIM-\LaTeX\ Class Files,~Vol.~1, No.~8,~August~2002+>}{
@@ -107,7 +105,7 @@ for IEEE journal papers produced under \LaTeX\ using IEEEtran.cls version
 
 \bibitem{IEEEhowto:kopka}
 H.~Kopka and P.~W. Daly, \emph{A Guide to {\LaTeX}}, 3rd~ed.\hskip 1em plus
-  0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
+0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
 
 \end{thebibliography}
 
@@ -142,5 +140,3 @@ Biography text here.
 %\enlargethispage{-5in}
 
 \end{document}
-
-
