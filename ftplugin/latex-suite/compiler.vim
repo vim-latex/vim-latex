@@ -334,12 +334,12 @@ function! Tex_ForwardSearchLaTeX()
 					\ exists('v:servername') &&
 					\ (viewer == "xdvi" || viewer == "xdvik") 
 			exec '!'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.mainfname.'.dvi &'
-		else
-			exec '!'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').' '.mainfname.'.dvi &'
 		elseif exists('g:Tex_UseEditorSettingInDVIViewer') &&
 					\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
 					\ viewer == "kdvi"
 			exec '!kdvi --unique file:'.mainfname.'.dvi\#src:'.line('.').Tex_GetMainFileName(":p:t:r").' &'
+		else
+			exec '!'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').' '.mainfname.'.dvi &'
 		endif
 		redraw!
 	end
