@@ -505,12 +505,12 @@ if g:Tex_Menus
 	exe 'amenu '.g:Tex_PackagesMenuLocation.'&UpdateAll :call Tex_pack_updateall()<cr>'
 
  	call Tex_pack_supp_menu()
- 	call Tex_pack_updateall()
-
 endif
 
 augroup LatexSuite
-	au LatexSuite User LatexSuiteInit call Tex_pack_updateall()
+	au LatexSuite User LatexSuiteFileType 
+		\ call Tex_Debug('packages.vim: Catching LatexSuiteFileType event') | 
+		\ call Tex_pack_updateall()
 augroup END
 
 " vim:fdm=marker:ts=4:sw=4:noet:ff=unix
