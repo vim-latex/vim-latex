@@ -3,7 +3,6 @@
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
 "  CVS Header: 
-"  $Header$
 "  Description: mappings/menus for environments. 
 "=============================================================================
 
@@ -989,31 +988,54 @@ if g:Tex_PromptedCommands != ''
 		
 	endfunction
 	" }}}
-	" Tex_SetFastCommandMaps: function for setting up the <F7> keys {{{
-	" Description: This function is made public so it can be called by the
-	"              SetTeXOptions() function in main.vim
-	function! Tex_SetFastCommandMaps()
-		if g:Tex_PromptedCommands != ''
-			if !hasmapto('<Plug>Tex_FastCommandInsert', 'i')
-				imap <silent> <buffer> <F7> <Plug>Tex_FastCommandInsert
-			endif
-			if !hasmapto('<Plug>Tex_FastCommandInsert', 'n')
-				nmap <silent> <buffer> <F7> <Plug>Tex_FastCommandInsert
-			endif
-			if !hasmapto('<Plug>Tex_FastCommandChange', 'i')
-				imap <silent> <buffer> <S-F7> <Plug>Tex_FastCommandChange
-			endif
-			if !hasmapto('<Plug>Tex_FastCommandChange', 'n')
-				nmap <silent> <buffer> <S-F7> <Plug>Tex_FastCommandChange
-			endif
-			if !hasmapto('<Plug>Tex_FastCommandInsert', 'v')
-				vmap <silent> <buffer> <F7> <Plug>Tex_FastCommandInsert
-			endif
-		endif
-	endfunction " }}}
 
 endif
 
+" }}}
+" Tex_SetFastCommandMaps: function for setting up the <F7> keys {{{
+" Description: This function is made public so it can be called by the
+"              SetTeXOptions() function in main.vim
+function! Tex_SetFastCommandMaps()
+	if g:Tex_PromptedCommands != ''
+		if !hasmapto('<Plug>Tex_FastCommandInsert', 'i')
+			imap <silent> <buffer> <F7> <Plug>Tex_FastCommandInsert
+		endif
+		if !hasmapto('<Plug>Tex_FastCommandInsert', 'n')
+			nmap <silent> <buffer> <F7> <Plug>Tex_FastCommandInsert
+		endif
+		if !hasmapto('<Plug>Tex_FastCommandChange', 'i')
+			imap <silent> <buffer> <S-F7> <Plug>Tex_FastCommandChange
+		endif
+		if !hasmapto('<Plug>Tex_FastCommandChange', 'n')
+			nmap <silent> <buffer> <S-F7> <Plug>Tex_FastCommandChange
+		endif
+		if !hasmapto('<Plug>Tex_FastCommandInsert', 'v')
+			vmap <silent> <buffer> <F7> <Plug>Tex_FastCommandInsert
+		endif
+	endif
+endfunction " }}}
+
+" SetEnvMacrosOptions: sets mappings for buffers {{{
+" " Description: 
+function! <SID>SetEnvMacrosOptions()
+	if exists('b:doneTexEnvMaps')
+		return
+	endif
+	let b:doneTexEnvMaps = 1
+	if g:Tex_PromptedEnvironments != '' || g:Tex_HotKeyMappings != ''
+		call Tex_SetFastEnvironmentMaps()
+	endif
+	if g:Tex_PromptedCommands != ''
+		call Tex_SetFastCommandMaps()
+	endif
+endif
+endfunction " }}}
+" Catch the Filetype event so we set maps for each buffer {{{
+augroup LatexSuite
+	augroup LatexSuite User LatexSuiteFileType 
+		\ | call Tex_Debug('envmacros.vim: catching LatexSuiteFileType')
+		\ | call s:SetEnvMacrosOptions()
+augroup END
 " }}}
 
 " this statement has to be at the end.
