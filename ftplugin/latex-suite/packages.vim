@@ -2,6 +2,7 @@
 " 	     File: packages.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 06:00 PM 2002 PST
+"         CVS: $Id$
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -77,11 +78,11 @@ endfunction
 " 	necessary. After that, it 'supports' and 'unsupports' packages as needed
 " 	in such a way as to not repeat work.
 function! Tex_pack_updateall(force)
-	call Tex_Debug('+Tex_pack_updateall')
+	call Tex_Debug('+Tex_pack_updateall', 'pack')
 
 	" Find out which file we need to scan.
 	if Tex_GetMainFileName() != ''
-		let fname = Tex_GetMainFileName(':p:r')
+		let fname = Tex_GetMainFileName(':p')
 	else
 		let fname = expand('%:p')
 	endif
@@ -102,8 +103,89 @@ function! Tex_pack_updateall(force)
 
 	" This sets up a global variable of all detected packages.
 	let g:Tex_package_detected = ''
-	call Tex_pack_all(fname)
-	call Tex_Debug('updateall: detected = '.g:Tex_package_detected)
+	" reset the environments and commands.
+	let g:Tex_PromptedEnvironments = g:Tex_PromptedEnvironmentsDefault
+	let g:Tex_PromptedCommands = g:Tex_PromptedCommandsDefault
+
+	call Tex_ScanForPackages(fname)
+	call Tex_Debug('updateall: detected ['.g:Tex_package_detected.'] in first run', 'pack')
+	
+	" Now for each package find out if this is a custom package and if so,
+	" scan that as well. We will use the ':wincmd f' command in vim to let vim
+	" search for the file paths for us. We open up a new file, write down the
+	" name of each package and ask vim to open it for us using the 'gf'
+	" command.
+	"
+	" NOTE: This while loop will also take into account packages included
+	"       within packages to any level of recursion as long as
+	"       g:Tex_package_detected is always padded with new package names
+	"       from the end.
+	"
+	" First set the &path setting to the user's TEXINPUTS setting.
+	let _path = &path
+	let _suffixesadd = &suffixesadd
+
+	let &path = '.,'.g:Tex_TEXINPUTS
+	let &suffixesadd = '.sty,.tex'
+
+	let scannedPackages = ''
+
+	let i = 1
+	let packname = Tex_Strntok(g:Tex_package_detected, ',', i)
+	while packname != ''
+
+		call Tex_Debug('scanning package '.packname, 'pack')
+
+		" Scan this package only if we have not scanned it before in this
+		" run.
+		if scannedPackages =~ '\<'.packname.'\>'
+			let i = i + 1
+
+			call Tex_Debug(packname.' already scanned', 'pack')
+			let packname = Tex_Strntok(g:Tex_package_detected, ',', i)
+			continue
+		endif 
+
+		let v:errmsg = ''
+		" write down the name of this package in the fake buffer.
+		call Tex_Debug('silent! find '.packname.'.sty', 'pack')
+		split
+		exec 'silent! find '.packname.'.sty'
+		call Tex_Debug('present file = '.bufname('%'), 'pack')
+
+		" If this file was not found, assume that it means its not a
+		" custom package and mark it "scanned".
+		if v:errmsg =~ '^E345'
+			let scannedPackages = scannedPackages.','.packname
+			q
+
+			call Tex_Debug(packname.' not found anywhere', 'pack')
+			let i = i + 1
+			let packname = Tex_Strntok(g:Tex_package_detected)
+			continue
+		endif
+
+		" otherwise we are presently editing a custom package, scan it for
+		" more \usepackage lines from the first line to the last.
+		let packpath = expand('%:p')
+		let &complete = &complete.'s'.packpath
+
+		call Tex_Debug('found custom package '.packpath, 'pack')
+		call Tex_ScanForPackages(packpath, line('$'), line('$'))
+		call Tex_Debug('After scanning, g:Tex_package_detected = '.g:Tex_package_detected, 'pack')
+
+		let scannedPackages = scannedPackages.','.packname
+		" Do not use bwipe, but that leads to excessive buffer number
+		" consumption. Besides, its intuitive for a custom package to remain
+		" on the buffer list.
+		q
+
+		let i = i + 1
+		let packname = Tex_Strntok(g:Tex_package_detected, ',', i)
+	endwhile
+
+	let &path = _path
+	let &suffixesadd = _suffixesadd
 
 	" Now only support packages we didn't last time.
 	" First remove packages which were used last time but are no longer used.
@@ -178,40 +260,53 @@ function! Tex_pack_one(...)
 	endif
 endfunction
 " }}}
-" Tex_pack_all: scans the current file for \usepackage{} lines {{{
+" Tex_ScanForPackages: scans the current file for \usepackage{} lines {{{
 "   and if supported, loads the options and commands found in the
 "   corresponding package file. Also scans for \newenvironment and
 "   \newcommand lines and adds names to g:Tex_Prompted variables, they can be
 "   easy available through <F5> and <F7> shortcuts 
-function! Tex_pack_all(fname)
-
-	let g:lastname = a:fname
+function! Tex_ScanForPackages(fname, ...)
 
 	let pos = line('.').' | normal! '.virtcol('.').'|'
 	let currfile = expand('%:p')
+	call Tex_Debug('currfile = '.currfile.', a:fname = '.a:fname, 'pack')
 
 	let toquit = 0
 	if a:fname != currfile
+
+		call Tex_Debug('splitting file', 'pack')
 		exe 'split '.a:fname
 		let toquit = 1
 	endif
 
-	0
-	let beginline = search('\\begin{document}', 'W')
-	let endline = search('\\end{document}', 'W')
-	0
+	" For package files without \begin and \end{document}, we might be told to
+	" search from beginning to end.
+	if a:0 < 2
+		0
+		let beginline = search('\\begin{document}', 'W')
+		let endline = search('\\end{document}', 'W')
+		0
+	else
+		let beginline = a:1
+		let endline = a:2
+	endif
+	call Tex_Debug('beginline = '.beginline.', endline = '.endline, 'pack')
+	
 
 	" Scan the file. First open up all the folds, because the command
 	" /somepattern
 	" issued in a closed fold _always_ goes to the first match.
 	normal! ggVGzO
 
-	while search('^\s*\\usepackage\_.\{-}{\_.\+}', 'W')
+	" The wrap trick enables us to match \usepackage on the first line as
+	" well.
+	let wrap = 'w'
+	while search('^\s*\\usepackage\_.\{-}{\_.\+}', wrap)
+		let wrap = 'W'
 
-		if !exists("s:Tex_up_check")
-			if line('.') > beginline 
-				break
-			endif
+		call Tex_Debug('finding package on '.line('.'), 'pack')
+		if line('.') > beginline 
+			break
 		endif
 
 		let saveA = @a
@@ -279,160 +374,37 @@ function! Tex_pack_all(fname)
 	" commands to g:Tex_PromptedCommands variable, it is easily available
 	" through <F7>
 	0 
-	let s:Tex_LookForCommand = g:Tex_PromptedCommandsDefault 
 	while search('^\s*\\newcommand\*\?{.\{-}}', 'W')
 
-		if !exists("s:Tex_up_check")
-			if line('.') > endline 
-				break
-			endif
+		if line('.') > endline 
+			break
 		endif
 
 		let newcommand = matchstr(getline('.'), '\\newcommand\*\?{\\\zs.\{-}\ze}')
-		let s:Tex_LookForCommand = s:Tex_LookForCommand . ',' . newcommand
+		let g:Tex_PromptedCommands = g:Tex_PromptedCommands . ',' . newcommand
 
 	endwhile
-	let g:Tex_PromptedCommands = s:Tex_LookForCommand
 
 	" Scans whole file (up to \end{document}) for \newenvironment and adds this
 	" environments to g:Tex_PromptedEnvironments variable, it is easily available
 	" through <F5>
 	0
-	let s:Tex_LookForEnvironment = g:Tex_PromptedEnvironmentsDefault 
-	while search('^\s*\\newenvironment\*\?{.\{-}}', 'W')
+	call Tex_Debug('looking for newenvironments in '.bufname('%'), 'pack')
 
-		if !exists("s:Tex_up_check")
-			if line('.') > endline 
-				break
-			endif
+	while search('^\s*\\newenvironment\*\?{.\{-}}', 'W')
+		call Tex_Debug('found newenvironment on '.line('.'), 'pack')
+
+		if line('.') > endline 
+			break
 		endif
 
 		let newenvironment = matchstr(getline('.'), '\\newenvironment\*\?{\zs.\{-}\ze}')
-		let s:Tex_LookForEnvironment = s:Tex_LookForEnvironment . ',' . newenvironment
+		let g:Tex_PromptedEnvironments = g:Tex_PromptedEnvironments . ',' . newenvironment
 
 	endwhile
-	let g:Tex_PromptedEnvironments = s:Tex_LookForEnvironment
 
 	if toquit
 		q	
-	endif
-	 
-	" Check if one of declared packages isn't user package in current 
-	" Basing on TEXINPUTS. 
-	if !exists("s:Tex_up_check")
-		" Prevents endless loop
-		let s:Tex_up_check = 1
-
-		" Operate on list of packages from current/main file,
-		" g:Tex_package_detected will be changing
-		let tpd_orig = g:Tex_package_detected
-
-		" Iterate through original list
-		let fn = 1
-		while Tex_Strntok(tpd_orig, ',', fn) != ''
-			let userpackage = Tex_Strntok(tpd_orig, ',', fn)
-			let stypath = expand("%:p:h").'/'.userpackage.'.sty'
-			call Tex_Debug('userpackage = '.userpackage.', stypath = '.stypath, 'pack')
-
-			" If package with given name exists in current dir
-			" check if there are usepackage commands, newcommand etc.
-			if filereadable(stypath)
-				call Tex_pack_all(stypath)
-				" Remove this file from list of buffers
-				exe 'bwipe '.stypath
-				" But add word completion - if such file exists probably there
-				" is huge collection of commands, <F7> doesn't solve
-				" everything
-				exe 'setlocal complete+=s'.stypath
-			endif
-
-			" Check list of locations from $TEXINPUTS variable. But before simple
-			" trick - add current directory to make everything in one loop
-			if g:Tex_TEXINPUTS != '' 
-				let inputdirs = g:Tex_TEXINPUTS
-
-				let id = 1
-				while Tex_Strntok(inputdirs, ':', id) != ''
-					let cur_input_dir = Tex_Strntok(inputdirs, ':', id)
-
-					" Skip current directory, we checked it already 
-					if cur_input_dir == "\\." || cur_input_dir == "\\./"
-						let g:cid1 = cur_input_dir
-						let id = id + 1
-						continue
-
-					" Deal with ./ entries
-					elseif cur_input_dir =~ "^\\./"
-						let g:cid2 = cur_input_dir
-
-						let cur_dir = expand("%:p:h")
-
-						if cur_input_dir == './/'
-							let stypath = globpath(cur_dir.'/*', userpackage.'.sty')
-							if filereadable(stypath)
-								call Tex_pack_all(stypath)
-								exe 'bwipe '.stypath
-								exe 'setlocal complete+=s'.stypath
-							endif
-
-						else
-							let cur_input_dir = substitute(cur_input_dir,'./','','e')
-							let stypath = cur_dir.'/'.cur_input_dir.'/'.userpackage.'.sty'
-							if filereadable(stypath)
-								call Tex_pack_all(stypath)
-								exe 'bwipe '.stypath
-								exe 'setlocal complete+=s'.stypath
-							endif
-
-						endif
-
-					" Check one-level directory item variable.
-					elseif cur_input_dir !~ '//$'
-						let cur_input_dir = substitute(cur_input_dir,'/*$','','ge')
-						let stypath = cur_input_dir.'/'.userpackage.'.sty'
-						let stypath = fnamemodify(stypath, ':p')
-						if filereadable(stypath)
-							call Tex_pack_all(stypath)
-							exe 'bwipe '.stypath
-							exe 'setlocal complete+=s'.stypath
-						endif
-
-					" Check the rest. Now this is fake because currently Vim
-					" doesn't accept ** in globpath(). Solution with '/*'
-					" provides only one level depth but ** in globpath() is on
-					" TODO list. In future versions of Vim we will only need
-					" to add one * in globpath.
-					else
-						let cur_input_dir = substitute(cur_input_dir,'/*$','','ge')
-						let stypath = fnamemodify(cur_input_dir, ':p:h')
-
-						let stypath2 = stypath.'/'.userpackage.'.sty'
-						if filereadable(stypath2)
-							call Tex_pack_all(stypath2)
-							exe 'bwipe '.stypath2
-							exe 'setlocal complete+=s'.stypath2
-						endif
-							
-						let stypathglob = globpath(stypath.'/*', userpackage.'.sty')
-						if filereadable(stypathglob)
-							call Tex_pack_all(stypathglob)
-							exe 'bwipe '.stypathglob
-							exe 'setlocal complete+=s'.stypathglob
-						endif
-
-					endif
-
-					let id = id + 1
-
-				endwhile
-
-			endif
-
-
-			let fn = fn + 1
-
-		endwhile
-
 	endif
 	
 	exe pos
