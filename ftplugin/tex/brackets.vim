@@ -1,7 +1,7 @@
 " ==============================================================================
 " Author: Carl Mueller
 " 		  (incorporated into latex-suite by Srinath Avadhanula)
-" Last Change: Sun Dec 29 11:00 PM 2002 PST
+" Last Change: Tue Dec 31 11:00 AM 2002 PST
 " Description:
 " 	This ftplugin provides the following maps:
 " . <M-b> encloses the previous character in \mathbf{}
@@ -47,14 +47,24 @@ let b:did_brackets = 1
 " ============================================================================== 
 " {{{
 
-if !hasmapto('Tex_MathBF', 'i') && mapcheck('<M-b>', 'i') == ''
-	inoremap <buffer> <silent> <M-b> <C-r>=Tex_MathBF()<CR>
+" Provide <plug>'d mapping for easy user customization.
+"
+inoremap <silent> <Plug>Tex_MathBF      <C-r>=Tex_MathBF()<CR>
+inoremap <silent> <Plug>Tex_MathCal     <C-r>=Tex_MathCal()<CR>
+inoremap <silent> <Plug>Tex_LeftRight   <C-r>=Tex_LeftRight()<CR>
+
+" Provide mappings only if the user hasn't provided a map already or if the
+" target lhs doesn't have a mapping.
+" TODO: These will be removed in future revisions. Alt mappings are a headache
+"       for European users...
+if !hasmapto('<Plug>Tex_MathBF', 'i') && mapcheck('<M-b>', 'i') == ''
+	imap <buffer> <silent> <M-b>        <Plug>Tex_MathBF
 endif
-if !hasmapto('Tex_MathCal', 'i') && mapcheck('<M-c>', 'i') == ''
-	inoremap <buffer> <silent> <M-c> <C-R>=Tex_MathCal()<CR>
+if !hasmapto('<Plug>Tex_MathCal', 'i') && mapcheck('<M-c>', 'i') == ''
+	imap <buffer> <silent> <M-c>        <Plug>Tex_MathCal
 endif
-if !hasmapto('Tex_LeftRight', 'i') && mapcheck('<M-l>', 'i') == ''
-	inoremap <buffer> <silent> <M-l> <C-r>=Tex_LeftRight()<CR>
+if !hasmapto('<Plug>Tex_LeftRight', 'i') && mapcheck('<M-l>', 'i') == ''
+	imap <buffer> <silent> <M-l>        <Plug>Tex_LeftRight
 endif
 
 " }}}
