@@ -75,7 +75,7 @@ function! MakeTexFolds(force)
 	" Folding items which are not caught in any of the standard commands,
 	" environments or sections.
 	TexLet g:Tex_FoldedMisc = 'comments,item,slide,'.
-				\ 'preamble,title,<<<'
+				\ 'preamble,<<<'
 
 	" 1. Use default value if g:Tex_Foldedxxxxxx is not defined
 	" 2. prepend default value to g:Tex_Foldedxxxxxx if it starts with ','
@@ -211,7 +211,18 @@ function! MakeTexFolds(force)
 			\ )
 	endif
 	" }}}
-	
+
+	" {{{ title
+	if g:Tex_FoldedMisc =~ '\<title\>'
+		call AddSyntaxFoldItem (
+			\ '^\s*\\title\W',
+			\ '^\s*\\maketitle',
+			\ 0,
+			\ 0
+			\ )
+	endif
+	" }}}
+ 
 	" Commands and Environments {{{
 	" Fold the commands and environments in 2 passes.
 	let pass = 0
@@ -286,17 +297,6 @@ function! MakeTexFolds(force)
 	endif
 	" }}}
 
-	" {{{ title
-	if g:Tex_FoldedMisc =~ '\<title\>'
-		call AddSyntaxFoldItem (
-			\ '^\s*\\title\W',
-			\ '\\maketitle',
-			\ 0,
-			\ 0
-			\ )
-	endif
-	" }}}
- 
 	" Manually folded regions {{{
 	if g:Tex_FoldedMisc = '\(^\|,\)<<<\(,\|$\)'
 		call AddSyntaxFoldItem (
