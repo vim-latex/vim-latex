@@ -7,7 +7,7 @@
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
 "
-" Last Change: Fri Jan 03 12:00 AM 2003 PST
+" Last Change: Fri Jan 03 04:00 PM 2003 PST
 " 
 " Documentation: {{{
 "
@@ -629,7 +629,15 @@ endfun
 " }}}
 " IMAP_Debug: interface to Tex_Debug if available, otherwise emulate it {{{
 " Description: 
+" Do not want a memory leak! Set this to zero so that imaps always
+" starts out in a non-debugging mode.
+if !exists('g:Imap_Debug')
+	let g:Imap_Debug = 0
+endif
 function! IMAP_Debug(string, pattern)
+	if !g:Imap_Debug
+		return
+	endif
 	if exists('*Tex_Debug')
 		call Tex_Debug(a:string, a:pattern)
 	else
