@@ -3,7 +3,7 @@
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
 "		   URL: 
-"  Last Change: Sun Dec 22 08:00 AM 2002 EST
+"  Last Change: Sun Dec 22 09:00 AM 2002 EST
 "
 " Help: 
 " Changes: {{{
@@ -272,7 +272,8 @@ if g:Tex_SmartKeyQuote
 		endif
 		" Return to line l, column c:
 		execute restore_cursor
-		return q
+		" Start with <Del> to remove the " put in by the :imap .
+		return "\<Del>" . q
 	endfunction
 
 endif
@@ -465,7 +466,7 @@ function! <SID>SetTeXOptions()
 
 	" smart functions
 	if g:Tex_SmartKeyQuote 
-		inoremap <buffer> <silent> " "<Left><C-R>=<SID>TexQuotes()<CR><Del>
+		inoremap <buffer> <silent> " "<Left><C-R>=<SID>TexQuotes()<CR>
 	endif
 	if g:Tex_SmartKeyBS
 		inoremap <buffer> <silent> <BS> <C-R>=<SID>SmartBS(<SID>SmartBS_pat())<CR>
