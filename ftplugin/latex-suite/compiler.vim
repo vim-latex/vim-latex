@@ -242,9 +242,6 @@ endfunction
 " Description: opens the DVI viewer for the file being currently edited.
 " Again, if the current file is a \input in a master file, see text above
 " Tex_RunLaTeX() to see how to set this information.
-" If Tex_ViewLaTeX was called with argument "part" show file which name is stored 
-" in g:tfile variable. If g:tfile doesnt exist, no problem. Function is called 
-" as silent. 
 function! Tex_ViewLaTeX()
 	if &ft != 'tex'
 		echo "calling Tex_ViewLaTeX from a non-tex file"
