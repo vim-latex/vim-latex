@@ -35,10 +35,6 @@ if v:version >= 602
 		let packnames = substitute(packnames,'\n',',','g')
 		let packnames = substitute(packnames,'^\|,[^,]*/',',','g')
 		let packnames = substitute(packnames,',','\n','g')
-		"let pwd = getcwd()
-		"exe 'lcd '.s:path.'/packages'
-		"let packnames = glob('*')
-		"exe 'lcd '. pwd
 		return packnames
 	endfunction
 	" }}}
