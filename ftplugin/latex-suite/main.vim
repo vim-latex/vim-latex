@@ -3,7 +3,7 @@
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
 "		   URL: 
-"  Last Change: Tue Nov 19 10:00 PM 2002 PST
+"  Last Change: sob lis 23 10:00  2002 C
 "
 " Help: 
 " Changes: {{{
@@ -466,7 +466,6 @@ exe 'source '.s:path.'/elementmacros.vim'
 exe 'source '.s:path.'/mathmacros.vim'
 exe 'source '.s:path.'/compiler.vim'
 exe 'source '.s:path.'/folding.vim'
-exe 'source '.s:path.'/packages.vim'
 exe 'source '.s:path.'/templates.vim'
 exe 'source '.s:path.'/custommacros.vim'
 exe 'source '.s:path.'/bibtex.vim'
@@ -531,6 +530,9 @@ endfunction
 call <SID>SetTeXOptions()
 
 " }}}
+
+" Mappings defined in package files will overwritten all other
+exe 'source '.s:path.'/packages.vim'
 
 let &cpo = s:save_cpo
 
