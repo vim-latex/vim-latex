@@ -214,12 +214,12 @@ function! ViewLaTeX()
 		" because that seems to not work on older bash'es.
 		if s:target == 'dvi'
 			if exists('g:Tex_UseEditorSettingInDVIViewer') &&
-						\ g:Tex_UseEditorSettingInDVIViewer == 1 && a:size == "all" &&
+						\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
 						\ exists('v:servername') &&
 						\ (s:viewer == "xdvi" || s:viewer == "xdvik")
 				exec '!'.s:viewer.' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.mainfname.'.dvi &'
 			elseif exists('g:Tex_UseEditorSettingInDVIViewer') &&
-						\ g:Tex_UseEditorSettingInDVIViewer == 1 && a:size == "all" &&
+						\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
 						\ s:viewer == "kdvi"
 				exec '!kdvi --unique '.mainfname.'.dvi &'
 			else
