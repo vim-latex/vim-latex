@@ -115,7 +115,7 @@ function! Tex_pack_updateall(force)
 	call Tex_Debug('+Tex_pack_updateall', 'pack')
 
 	" Find out which file we need to scan.
-	let fname = escape(Tex_GetMainFileName(':p'), ' ')
+	let fname = Tex_GetMainFileName(':p')
 
 	" If this is the same as last time, don't repeat.
 	if !a:force && exists('s:lastScannedFile') &&
@@ -138,8 +138,12 @@ function! Tex_pack_updateall(force)
 	let g:Tex_PromptedEnvironments = g:Tex_PromptedEnvironmentsDefault
 	let g:Tex_PromptedCommands = g:Tex_PromptedCommandsDefault
 
-	call Tex_ScanForPackages(fname)
-	call Tex_Debug('updateall: detected ['.g:Tex_package_detected.'] in first run', 'pack')
+	call Tex_Debug(':Tex_pack_updateall: split '.Tex_EscapeSpaces(fname), 'pack')
+	exe 'split '.Tex_EscapeSpaces(fname)
+	call Tex_ScanForPackages()
+	q
+
+	call Tex_Debug(':Tex_pack_updateall: detected ['.g:Tex_package_detected.'] in first run', 'pack')
 	
 	" Now for each package find out if this is a custom package and if so,
 	" scan that as well. We will use the ':find' command in vim to let vim
@@ -163,14 +167,14 @@ function! Tex_pack_updateall(force)
 	let packname = Tex_Strntok(g:Tex_package_detected, ',', i)
 	while packname != ''
 
-		call Tex_Debug('scanning package '.packname, 'pack')
+		call Tex_Debug(':Tex_pack_updateall: scanning package '.packname, 'pack')
 
 		" Scan this package only if we have not scanned it before in this
 		" run.
 		if scannedPackages =~ '\<'.packname.'\>'
 			let i = i + 1
 
-			call Tex_Debug(packname.' already scanned', 'pack')
+			call Tex_Debug(':Tex_pack_updateall: '.packname.' already scanned', 'pack')
 			let packname = Tex_Strntok(g:Tex_package_detected, ',', i)
 			continue
 		endif 
@@ -180,10 +184,10 @@ function! Tex_pack_updateall(force)
 		" modified etc.
 		split
 
-		call Tex_Debug('silent! find '.packname.'.sty', 'pack')
+		call Tex_Debug(':Tex_pack_updateall: silent! find '.Tex_EscapeSpaces(packname).'.sty', 'pack')
 		let thisbufnum = bufnr('%')
-		exec 'silent! find '.packname.'.sty'
-		call Tex_Debug('present file = '.bufname('%'), 'pack')
+		exec 'silent! find '.Tex_EscapeSpaces(packname).'.sty'
+		call Tex_Debug(':Tex_pack_updateall: present file = '.bufname('%'), 'pack')
 
 		" If this file was not found, assume that it means its not a
 		" custom package and mark it "scanned".
@@ -193,7 +197,7 @@ function! Tex_pack_updateall(force)
 			let scannedPackages = scannedPackages.','.packname
 			q
 
-			call Tex_Debug(packname.' not found anywhere', 'pack')
+			call Tex_Debug(':Tex_pack_updateall: '.packname.' not found anywhere', 'pack')
 			let i = i + 1
 			let packname = Tex_Strntok(g:Tex_package_detected, ',', i)
 			continue
@@ -204,9 +208,9 @@ function! Tex_pack_updateall(force)
 		let packpath = expand('%:p')
 		let &complete = &complete.'s'.packpath
 
-		call Tex_Debug('found custom package '.packpath, 'pack')
-		call Tex_ScanForPackages(packpath, line('$'), line('$'))
-		call Tex_Debug('After scanning, g:Tex_package_detected = '.g:Tex_package_detected, 'pack')
+		call Tex_Debug(':Tex_pack_updateall: found custom package '.packpath, 'pack')
+		call Tex_ScanForPackages(line('$'), line('$'))
+		call Tex_Debug(':Tex_pack_updateall: After scanning, g:Tex_package_detected = '.g:Tex_package_detected, 'pack')
 
 		let scannedPackages = scannedPackages.','.packname
 		" Do not use bwipe, but that leads to excessive buffer number
@@ -247,7 +251,10 @@ function! Tex_pack_updateall(force)
 
 	" Throw an event that we are done scanning packages. Some packages might
 	" use this to change behavior based on which options have been used etc.
+	call Tex_Debug(":Tex_pack_updateall: throwing LatexSuiteScannedPackages event", "pack")
 	silent! do LatexSuite User LatexSuiteScannedPackages
+
+	call Tex_Debug("-Tex_pack_updateall", "pack")
 endfunction
 
 " }}}
@@ -297,16 +304,10 @@ endfunction
 "   corresponding package file. Also scans for \newenvironment and
 "   \newcommand lines and adds names to g:Tex_Prompted variables, they can be
 "   easy available through <F5> and <F7> shortcuts 
-function! Tex_ScanForPackages(fname, ...)
-	let pos = line('.').' | normal! '.virtcol('.').'|'
-	let currfile = escape(expand('%:p'), ' ')
-	call Tex_Debug('currfile = '.currfile.', a:fname = '.a:fname, 'pack')
+function! Tex_ScanForPackages(...)
+	call Tex_Debug("+Tex_ScanForPackages", "pack")
 
-	let toquit = 0
-	if a:fname != currfile
-		exe 'split '.a:fname
-		let toquit = 1
-	endif
+	let pos = line('.').' | normal! '.virtcol('.').'|'
 
 	" For package files without \begin and \end{document}, we might be told to
 	" search from beginning to end.
@@ -319,7 +320,8 @@ function! Tex_ScanForPackages(fname, ...)
 		let beginline = a:1
 		let endline = a:2
 	endif
-	call Tex_Debug('beginline = '.beginline.', endline = '.endline, 'pack')
+
+	call Tex_Debug(":Tex_ScanForPackages: Begining scans in [".bufname('%')."], beginline = ".beginline, "pack")
 	
 
 	" Scan the file. First open up all the folds, because the command
@@ -329,13 +331,13 @@ function! Tex_ScanForPackages(fname, ...)
 	silent! normal! ggVGzO
 	let v:errmsg = erm
 
+	call Tex_Debug(":Tex_ScanForPackages: beginning scan for \\usepackage lines", "pack")
 	" The wrap trick enables us to match \usepackage on the first line as
 	" well.
 	let wrap = 'w'
 	while search('^\s*\\usepackage\_.\{-}{\_.\+}', wrap)
 		let wrap = 'W'
 
-		call Tex_Debug('finding package on '.line('.'), 'pack')
 		if line('.') > beginline 
 			break
 		endif
@@ -388,9 +390,12 @@ function! Tex_ScanForPackages(fname, ...)
 		let @a = substitute(@a, '^\|$', '"', 'g')
 		let @a = substitute(@a, ',', '","', 'g')
 
+		call Tex_Debug(":Tex_ScanForPackages: found package(s) [".@a."] on line ".line('.'), "pack")
+
 		" restore @a
 		let @a = saveA
 	endwhile
+	call Tex_Debug(":Tex_ScanForPackages: End scan \\usepackage, detected packages = ".g:Tex_package_detected, "pack")
 
 	" TODO: This needs to be changed. In the future, we might have
 	" functionality to remember the fold-state before opening up all the folds
@@ -403,6 +408,7 @@ function! Tex_ScanForPackages(fname, ...)
 	" ',pack1,pack2,pack3' remove leading ,
 	let g:Tex_package_detected = substitute(g:Tex_package_detected, '^,', '', '')
 
+	call Tex_Debug(":Tex_ScanForPackages: Beginning scan for \\newcommand's", "pack")
 	" Scans whole file (up to \end{document}) for \newcommand and adds this
 	" commands to g:Tex_PromptedCommands variable, it is easily available
 	" through <F7>
@@ -422,7 +428,7 @@ function! Tex_ScanForPackages(fname, ...)
 	" environments to g:Tex_PromptedEnvironments variable, it is easily available
 	" through <F5>
 	0
-	call Tex_Debug('looking for newenvironments in '.bufname('%'), 'pack')
+	call Tex_Debug(":Tex_ScanForPackages: Beginning scan for \\newenvironment's", 'pack')
 
 	while search('^\s*\\newenvironment\*\?{.\{-}}', 'W')
 		call Tex_Debug('found newenvironment on '.line('.'), 'pack')
@@ -436,11 +442,6 @@ function! Tex_ScanForPackages(fname, ...)
 
 	endwhile
 
-	if toquit
-		call Tex_Debug("quitting from ".bufname('%'), "pack")
-		q	
-	endif
-	
 	exe pos
 	" first make a random search so that we push at least one item onto the
 	" search history. Since vim puts only one item in the history per function
@@ -449,6 +450,8 @@ function! Tex_ScanForPackages(fname, ...)
 	normal! /^<CR>
 	" now delete it...
 	call histdel('/', -1)
+
+	call Tex_Debug("-Tex_ScanForPackages", "pack")
 endfunction
    
 " }}}
@@ -457,7 +460,6 @@ endfunction
 "   of 20...
 function! Tex_pack_supp_menu()
 	let suplist = Tex_FindInRtp('', 'packages')
-	call Tex_Debug("suplist = [".suplist.']', "pack")
 
 	call Tex_MakeSubmenu(suplist, g:Tex_PackagesMenuLocation.'Supported.', 
 		\ '<plug><C-r>=Tex_pack_one("', '")<CR>')

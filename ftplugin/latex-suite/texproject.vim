@@ -24,10 +24,10 @@ function! s:Tex_ProjectEdit()
 	let file = expand("%:p")
 	let mainfname = Tex_GetMainFileName()
 	if glob(mainfname.'.latexmain') != ''
-		exe 'split '.mainfname.'.latexmain'
+		exec 'split '.Tex_EscapeSpaces(mainfname.'.latexmain')
 	else
-		exe 'split '.escape(s:path.'/projecttemplate.vim', ' ')
-		exe 'saveas '.escape(file.'.latexmain', ' ')
+		exec 'split '.Tex_EscapeSpaces(s:path.'/projecttemplate.vim')
+		exec 'saveas '.Tex_EscapeSpaces(file.'.latexmain')
 		let g:Tex_ProjectExists = 1
 	endif
 

@@ -591,7 +591,9 @@ function! Tex_Debug(str, ...)
 	let s:debugString_ = (exists('s:debugString_') ? s:debugString_ : '')
 		\ . pattern.' : '.a:str."\n"
 
-	" exec '!echo '.pattern.' : '.a:str.' >> /tmp/ls.log'
+	redir! >> /tmp/ls.log
+	silent! echo pattern.' : '.a:str
+	redir END
 endfunction " }}}
 " Tex_PrintDebug: prings s:debugString {{{
 " Description: 
@@ -641,7 +643,6 @@ function! Tex_FindInRtp(filename, directory, ...)
 	let pattern = (a:filename != '' ? a:filename : '*')
 
 	let filelist = globpath(&rtp, 'ftplugin/latex-suite/'.a:directory.'/'.pattern)."\n"
-	call Tex_Debug("filelist = ".filelist, "main")
 
 	if filelist == "\n"
 		return ''
@@ -715,7 +716,12 @@ endfunction " }}}
 " Tex_CD: cds to given directory escaping spaces if necessary {{{
 " " Description: 
 function! Tex_CD(dirname)
-	exec 'cd '.escape(a:dirname, ' ')
+	exec 'cd '.Tex_EscapeSpaces(a:dirname)
+endfunction " }}}
+" Tex_EscapeSpaces: escapes unescaped spaces from a path name {{{
+" Description:
+function! Tex_EscapeSpaces(path)
+	return substitute(a:path, '[^\\]\(\\\\\)*\zs ', '\\ ', 'g')
 endfunction " }}}
 
 " source texproject.vim before other files
