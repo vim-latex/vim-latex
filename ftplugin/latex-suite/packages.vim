@@ -2,7 +2,7 @@
 " 	     File: packages.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: Sun Dec 29 04:00 PM 2002 PST
+" Last Change: Sat Jan 04 06:00 PM 2003 PST
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -141,38 +141,53 @@ function! Tex_pack_all()
 		let toquit = 1
 	endif
 
-	exe 0
+	0
 	let beginline = search('\\begin{document}', 'W')
-	exe 0
-	let oldpack = ''
-	let packname = ''
-	while search('usepackage.*', 'W')
+	0
+
+	" Scan
+	while search('^\s*\\usepackage\_.\{-}{\_.\+}', 'W')
 		if line('.') > beginline 
 			break
-		elseif getline('.') =~ '^\s*%'
-			continue
-		elseif getline('.') =~ '^[^%]\{-}\\usepackage[^{]\{-}[%$]'
-			let packname = matchstr(getline(search('^[^%]\{-}\]{', 'W')), '^.\{-}\]{\zs[^}]*\ze}')
-		elseif getline('.') =~ '^[^%]\{-}\\usepackage'
-			let packname = matchstr(getline("."), '^[^%]\{-}usepackage.\{-}{\zs[^}]*\ze}')
 		endif
-		let packname = substitute(packname, '\s', '', 'g')
-		if packname =~ ','
-			let i = 1
-			while 1
-				let pname = Tex_Strntok(packname, ',', i)
-				if pname == ''
-					break
-				endif
-				let g:Tex_package_detected = g:Tex_package_detected.' '.pname
-				call Tex_pack_one(pname)
-				let i = i + 1
-			endwhile
-		elseif oldpack != packname
-			let g:Tex_package_detected = g:Tex_package_detected.' '.packname
-			call Tex_pack_one(packname)
+
+		let saveA = @a
+
+		" The following statement puts the stuff between the { }'s of a
+		" \usepackage{stuff,foo} into @a. Do not use matchstr() and the like
+		" because we can have things split across lines and such.
+		exec "normal! /{\<CR>lv/}\<CR>h\"ay"
+
+		" now remove all whitespace from @a. We need to remove \n and \r
+		" because we can encounter stuff like
+		" \usepackage{pack1,
+		"             newpackonanotherline}
+		let @a = substitute(@a, "[ \t\n\r]", '', 'g')
+
+		" Now we have something like pack1,pack2,pack3 with possibly commas
+		" and stuff before the first package and after the last package name.
+		" Remove those.
+		let @a = substitute(@a, '\(^\W*\|\W*$\)', '', 'g')
+
+		" This gets us a string like 'pack1,pack2,pack3'
+		" TODO: This will contain duplicates if the user has duplicates.
+		"       Should we bother taking care of this?
+		let g:Tex_package_detected = g:Tex_package_detected.@a
+
+		" Finally convert @a into something like '"pack1","pack2"'
+		let @a = substitute(@a, '^\|$', '"', 'g')
+		let @a = substitute(@a, ',', '","', 'g')
+
+		" ... so it can be used using one exec statement. Take care not to
+		" call things with an empty argument otherwise, we will get a prompt
+		" from the Tex_pack_one function.
+		if @a != ''
+			exec 'call Tex_pack_one('.@a.')'
 		endif
-		let oldpack = packname
+
+		" restore @a
+		let @a = saveA
+
 	endwhile
 
 	if toquit
