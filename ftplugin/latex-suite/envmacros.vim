@@ -938,17 +938,20 @@ endfunction " }}}
 "
 function! Tex_DoCommand(...)
 	if a:0 < 1
-		if getline('.') != ''
+		" If the current line is empty or if a visual selection has been made,
+		" prompt for a new environment.
+		if getline('.') == '' || (exists('s:isvisual') && s:isvisual == 'yes')
+			let com = PromptForCommand('Choose a command to insert: ')
+			if com != ''
+				return Tex_PutCommand(com)
+			else
+				return ''
+			endif
+		else
 			let lastword = expand('<cword>')
 			if lastword != ''
 				return substitute(lastword, '.', "\<bs>", 'g').Tex_PutCommand(lastword)
 			endif
-		endif
-		let com = PromptForCommand('Choose a command to insert: ')
-		if com != ''
-			return Tex_PutCommand(com)
-		else
-			return ''
 		endif
 	else
 		return Tex_PutCommand(a:1)
@@ -1056,7 +1059,7 @@ if g:Tex_PromptedCommands != ''
 	"
 	function! s:ChangeCommand(newcom)
 
-		exe 'normal ct{'.a:newcom."\<Esc>"
+		exe 'normal! ct{'.a:newcom."\<Esc>"
 		
 	endfunction
 	" }}}
