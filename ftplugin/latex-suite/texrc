@@ -70,6 +70,11 @@ else
 	TexLet g:Tex_RmCmd = 'del'
 endif
 
+" whether to turn on debugging
+TexLet g:Tex_Debug = 0
+" If non empty, all the debugging information will be written to a file of
+" this name.
+TexLet g:Tex_DebugLog = ''
 
 " }}}
 " ==============================================================================
@@ -200,6 +205,14 @@ TexLet g:Tex_GotoError = 1
 
 " Remove temp files created during part compilations when vim exits.
 TexLet g:Tex_RemoveTempFiles = 1
+
+" }}}
+" ============================================================================== 
+" Project: how to deal with multi file projects via latex-suite {{{
+
+" Use a valid vim expression here if you want to customize the way latex-suite
+" searches for a master file from within another file.
+TexLet g:Tex_MainFileExpression = ''
 
 " }}}
 " ============================================================================== 
@@ -506,6 +519,13 @@ TexLet g:Tex_RememberCiteSearch = 0
 " Paths to the bibliography files and custom packages.
 TexLet g:Tex_BIBINPUTS = ''
 TexLet g:Tex_TEXINPUTS = ''
+
+" Whether latex-suite simply searches for \\label's in all the .tex file found
+" in the current directory or whether it will use a more complex algorithm. 
+" See 
+" 	:help Tex_UseSimpleLabelSearch 
+" for more information
+TexLet g:Tex_UseSimpleLabelSearch = 0
 
 " }}}
 " ==============================================================================
