@@ -2,7 +2,7 @@
 " 	     File: mathmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: Mon Apr 29 01:00 PM 2002 PDT
+" Last Change: sob lis 09 10:00  2002 C
 " 
 "  Description: macros for everything mathematical in latex.
 "=============================================================================
@@ -59,7 +59,14 @@ exe s:pA1.'leftharpoondown          <plug>\leftharpoondown '
 exe s:pA1.'rightharpoonup           <plug>\rightharpoonup '
 exe s:pA1.'rightharpoondown         <plug>\rightharpoondown '
 exe s:pA1.'rightleftharpoons        <plug>\rightleftharpoons '
-exe s:pA1.'Leftarrow                <plug>\Leftarrow'
+exe s:pA1.'overleftarrow            <plug>\overleftarrow '
+exe s:pA1.'overrightarrow           <plug>\overrightarrow '
+exe s:pA1.'overleftrightarrow       <plug>\overleftrightarrow '
+exe s:pA1.'underleftarrow           <plug>\underleftarrow '
+exe s:pA1.'underrightarrow          <plug>\underrightarrow '
+exe s:pA1.'underleftrightarrow      <plug>\underleftrightarrow '
+exe s:pA1.'xleftarrow               <plug>\xleftarrow '
+exe s:pA1.'xrightarrow              <plug>\xrightarrow '
 " }}}
 " MATH nArrows {{{
 let s:pA1a = s:pA."&nArrows."
@@ -609,6 +616,10 @@ exe s:pA16a.'rlcorner               <plug>\rlcorner '
 exe s:pA16a.'-sepcorner- :'
 exe s:pA16a.'vert                   <plug>\vert '
 exe s:pA16a.'Vert                   <plug>\Vert '
+exe s:pA16a.'lvert                  <plug>\lvert '
+exe s:pA16a.'lVert                  <plug>\lVert '
+exe s:pA16a.'rvert                  <plug>\rvert '
+exe s:pA16a.'rVert                  <plug>\rVert '
 exe s:pA16a.'uparrow                <plug>\uparrow '
 exe s:pA16a.'Uparrow                <plug>\Uparrow '
 exe s:pA16a.'downarrow              <plug>\downarrow '
@@ -641,6 +652,7 @@ exe s:pA17.'exp                     <plug>\exp '
 exe s:pA17.'gcd                     <plug>\gcd '
 exe s:pA17.'hom                     <plug>\hom '
 exe s:pA17.'inf                     <plug>\inf '
+exe s:pA17.'injlim                  <plug>\injlim '
 exe s:pA17.'ker                     <plug>\ker '
 exe s:pA17.'lg                      <plug>\lg '
 exe s:pA17.'lim                     <plug>\lim '
@@ -651,12 +663,17 @@ exe s:pA17.'log                     <plug>\log '
 exe s:pA17.'max                     <plug>\max '
 exe s:pA17.'min                     <plug>\min '
 exe s:pA17.'Pr                      <plug>\Pr '
+exe s:pA17.'projlim                 <plug>\projlim '
 exe s:pA17.'sec                     <plug>\sec '
 exe s:pA17.'sin                     <plug>\sin '
 exe s:pA17.'sinh                    <plug>\sinh '
 exe s:pA17.'sup                     <plug>\sup '
 exe s:pA17.'tan                     <plug>\tan '
 exe s:pA17.'tanh                    <plug>\tanh '
+exe s:pA17.'varlimsup               <plug>\varlimsup '
+exe s:pA17.'varliminf               <plug>\varliminf '
+exe s:pA17.'varinjlim               <plug>\varinjlim '
+exe s:pA17.'varprojlim              <plug>\varprojlim '
 " }}}
 " {{{ MathSpacing
 let s:pA18 = s:pA."MathSpacing."
@@ -667,6 +684,12 @@ exe s:pA18.'[space]                 <plug>\  '
 exe s:pA18.'quad                    <plug>\quad '
 exe s:pA18.'qquad                   <plug>\qquad '
 exe s:pA18.'!                       <plug>\! '
+exe s:pA18.'thinspace               <plug>\thinspace '
+exe s:pA18.'medspace                <plug>\medspace '
+exe s:pA18.'thickspace              <plug>\thickspace '
+exe s:pA18.'negthinspace            <plug>\negthinspace '
+exe s:pA18.'negmedspace             <plug>\negmedspace '
+exe s:pA18.'negthickspace           <plug>\negthickspace '
 " 1}}}
 
 " vim:fdm=marker:ts=4:sw=4:noet
