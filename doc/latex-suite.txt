@@ -613,7 +613,7 @@ Customizing Bib-TeX fields                                  *ls_3_8_1* *ls_a_bu*
 If you wish the BBB command to insert a few additional fields in addition to the
 fields it creates, then you will need to define global variables of the form  >
     g:Bib_{type}_options
-in you $VIM/ftplugin/bib.vim file, where {option} is a string like 'article',
+in you $VIM/ftplugin/bib.vim file, where {type} is a string like 'article',
 'book' etc. This variable should contain one of the letters defined in the
 following table
 
@@ -663,6 +663,21 @@ insert the following template  >
         otherinfo = {<++>}
     }<++>
 
+
+If you have some other fields you wish to associate with an article which are
+not listed above, then you will have to use the Bib_{type}_extrafields option.
+This is a newline seperated string of complete field names which will be
+included in the template. For example, if you define  >
+    let g:Bib_article_extrafields = "crossref\nabstract"
+then the article template will include the lines  >
+    crossref = {<++>},
+    abstract = {<++>},
+
+
+NOTE: You will need to define Bib_* settings in your
+      $VIMRUNTIME/ftplugin/bib.vim file.
+      
+      
 
 --------------------------------------------------------------------------------
 Smart Key Mappings                                            *ls_3_9* *ls_a_bv*
