@@ -2,7 +2,7 @@
 " 	     File: envmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
-" Last Change: Thu Dec 05 10:00 PM 2002 PST
+" Last Change: Fri Dec 06 12:00 AM 2002 PST
 " 
 "  Description: mappings/menus for environments. 
 "=============================================================================
@@ -503,21 +503,19 @@ endfunction
 " ==============================================================================
 " Contributions / suggestions from Carl Mueller (auctex.vim)
 " ============================================================================== 
-let s:common_environments = 'equation,equation*,eqnarray,eqnarray*,\[,$$,align,align*'
-
-" SetUpEnvironmentsPrompt: sets up a prompt string using s:common_environments {{{
+" SetUpEnvironmentsPrompt: sets up a prompt string using g:Tex_PromptedEnvironments {{{
 " Description: 
 " 
 function! SetUpEnvironmentsPrompt()
-	let num_common = GetListCount(s:common_environments)
+	let num_common = GetListCount(g:Tex_PromptedEnvironments)
 
 	let i = 1
 	let s:common_env_prompt = "\n"
 
 	while i < num_common
 
-		let env1 = Tex_Strntok(s:common_environments, ',', i)
-		let env2 = Tex_Strntok(s:common_environments, ',', i + 1)
+		let env1 = Tex_Strntok(g:Tex_PromptedEnvironments, ',', i)
+		let env2 = Tex_Strntok(g:Tex_PromptedEnvironments, ',', i + 1)
 
 		let s:common_env_prompt = s:common_env_prompt.'('.i.') '.env1."\t".( strlen(env1) < 4 ? "\t" : '' ).'('.(i+1).') '.env2."\n"
 
@@ -535,7 +533,7 @@ function! PromptForEnvironment(ask)
 
 	let inp = input(a:ask.s:common_env_prompt)
 	if inp =~ '^[0-9]$'
-		let env = Tex_Strntok(s:common_environments, ',', inp)
+		let env = Tex_Strntok(g:Tex_PromptedEnvironments, ',', inp)
 	else
 		let env = inp
 	endif
@@ -558,7 +556,8 @@ function! Tex_DoEnvironment(...)
 				return Tex_PutEnvironment(env)
 			endif
 		else
-			normal! 0D
+			" delete the word on the line into the blackhole register.
+			normal! 0"_D
 			return Tex_PutEnvironment(env)
 		endif
 	else
@@ -587,168 +586,245 @@ function! Tex_PutEnvironment(env)
         return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr>«»\<cr>\\end{".a:env."}«»")
 	endif
 endfunction " }}}
+" Mapping the <F5> key to insert/prompt for an environment/package {{{
+" and <S-F5> to prompt/replace an environment
+"
+" g:Tex_PromptedEnvironments is a variable containing a comma seperated list
+" of environments. This list defines the prompt which latex-suite sets up when
+" the user presses <F5> on an empty line.
+"
+" Leaving this empty is equivalent to disabling the feature.
+if g:Tex_PromptedEnvironments != ''
 
-inoremap <F5> <C-r>=Tex_FastEnvironmentInsert()<cr>
-nnoremap  <F5> i<C-r>=Tex_FastEnvironmentInsert()<cr>
+	let b:DoubleDollars = 0
 
-function! Tex_FastEnvironmentInsert() " {{{
+	inoremap <F5>       <C-r>=Tex_FastEnvironmentInsert()<cr>
+	nnoremap <F5>       i<C-r>=Tex_FastEnvironmentInsert()<cr>
+	inoremap <buffer>   <S-F5> <C-O>:call Tex_ChangeEnvironments()<CR>
+	nnoremap <buffer>   <S-F5> :call Tex_ChangeEnvironments()<CR>
 
-	let start_line = line('.')
-	let pos = line('.').' | normal! '.virtcol('.').'|'
+	" Tex_FastEnvironmentInsert: maps <F5> to prompt for env and insert it " {{{
+	" Description:
+	"   This function calculates whether we are in the preamble. If we are
+	"   then inserts a \usepackage line by either reading in a word from the
+	"   current line or prompting to type in one. If not in the preamble, then
+	"   inserts a environment template either by reading in a word from the
+	"   current line or prompting the user to choose one.
+	"
+	function! Tex_FastEnvironmentInsert()
 
-	if search('\\documentclass', 'bW') && search('\\begin{document}')
-		let begin_line = search('\\begin{document}')
-		if start_line < begin_line
+		let start_line = line('.')
+		let pos = line('.').' | normal! '.virtcol('.').'|'
+
+		" decide if we are in the preamble of the document. If we are then
+		" insert a package, otherwise insert an environment.
+		"
+		if search('\\documentclass', 'bW') && search('\\begin{document}')
+
+			" If there is a \documentclass line and a \begin{document} line in
+			" the file, then a part of the file is the preamble.
+
+			" search for where the document begins.
+			let begin_line = search('\\begin{document}')
+			" if the document begins after where we are presently, then we are
+			" in the preamble.
+			if start_line < begin_line
+				" return to our original location and insert a package
+				" statement.
+				exe pos
+				return Tex_package_from_line()
+			else
+				" we are after the preamble. insert an environment.
+				exe pos
+				return Tex_DoEnvironment()
+			endif
+
+		elseif search('\\documentclass')
+			" if there is only a \documentclass but no \begin{document}, then
+			" the entire file is a preamble. Put a package.
+
 			exe pos
 			return Tex_package_from_line()
+
 		else
+			" no \documentclass, put an environment.
+
 			exe pos
 			return Tex_DoEnvironment()
-		endif
-	elseif search('\\documentclass')
-		exe pos
-		return Tex_package_from_line()
-	else
-		exe pos
-		return Tex_DoEnvironment()
-	endif
-endfunction 
 
-" }}}
-function! Tex_package_from_line() " {{{
-	" Function Tex_PutPackage is defined in packages.vim
-	let l = getline(".")
-	let pack = matchstr(l, '^\s*\zs.*')
-	if pack == ''
-		let pack = input('Package? ')
-		if pack != ''
+		endif
+
+	endfunction 
+
+	" }}}
+	" Tex_package_from_line: puts a \usepackage line in the current line. " {{{
+	" Description:
+	"
+	function! Tex_package_from_line()
+		" Function Tex_PutPackage is defined in packages.vim
+		let l = getline(".")
+		let pack = matchstr(l, '^\s*\zs.*')
+		if pack == ''
+			let pack = input('Package? ')
+			if pack != ''
+				return Tex_PutPackage(pack)
+			endif
+			return 0
+		else
+			normal 0D
 			return Tex_PutPackage(pack)
 		endif
-		return 0
-	else
-		normal 0D
-		return Tex_PutPackage(pack)
-	endif
-endfunction " }}}
+	endfunction " }}}
+	" Tex_ChangeEnvironments: calls Change() to change the environment {{{
+	" Description:
+	"   Finds out which environment the cursor is positioned in and changes
+	"   that to the chosen new environment. This function knows the changes
+	"   which need to be made to change one env to another and calls
+	"   Change() with the info.
+	"
+	function! Tex_ChangeEnvironments() 
 
-let b:DoubleDollars = 0
+		let env_line = searchpair("$$\|\\[\|begin{", '', "$$\|\\]\|end{", "bn")
 
-inoremap <buffer> <S-F5> <C-O>:call Tex_change_environment()<CR>
-noremap  <buffer> <S-F5> :call Tex_change_environment()<CR>
-
-function! Tex_AmsLatex() " {{{
-	if g:Tex_package_supported =~ 'amsmath'
-		let amslatex = 1
-	endif
-    return amslatex
-endfunction " }}}
-
-"let b:searchmax = 100
-let s:math_environment = 'eqnarray,eqnarray*,align,align*,equation,equation*,[,$$'
-let s:item_environment = 'list,trivlist,enumerate,itemize,theindex'
-function! Tex_change_environment() " {{{
-    let env_line = searchpair("\\[\\|begin{", '', "\\]\\|end{", "bn")
-	if env_line != 0
-		if getline(env_line) !~ 'begin{'
-			let env_name = '['
-		else
-			let env_name = matchstr(getline(env_line), 'begin{\zs.\{-}\ze}')
-		endif
-	endif
-	if !exists('env_name')
-		echomsg "You are not inside environment"
-		return 0
-	endif
-	exe 'echomsg "You are within a '.env_name.' environment."'
-	let s:change_env = PromptForEnvironment('Do you want to change it to (number or name)? ')
-	if s:change_env == 'eqnarray'
-		call <SID>Change('eqnarray', 1, '', 1)
-	elseif s:change_env == 'eqnarray*'
-		call <SID>Change('eqnarray*', 0, '\\nonumber', 0)
-	elseif s:change_env == 'align'
-		call <SID>Change('align', 1, '', 1)
-	elseif s:change_env == 'align*'
-		call <SID>Change('align*', 0, '\\nonumber', 0)
-	elseif s:change_env == 'equation*'
-		call <SID>Change('equation*', 0, '&\|\\lefteqn{\|\\nonumber\|\\\\', 0)
-	elseif s:change_env == ''
-		return 0
-	else
-		call <SID>Change(s:change_env, 0, '', '')
-		return 0
-	endif
-endfunction " }}}
-function! s:Change(env, label, delete, putInNonumber) " {{{
-	let start_line = line('.')
-	let start_col = virtcol('.')
-	if a:env == '['
-		if b:DoubleDollars == 0
-			let first = '\\['
-			let second = '\\]'
-		else
-			let first = '$$'
-			let second = '$$'
-		endif
-	else
-		let first = '\\begin{' . a:env . '}'
-		let second = '\\end{' . a:env . '}'
-	endif
-	if b:DoubleDollars == 0
-		let bottom = searchpair('\\\[\|\\begin{','','\\\]\|\\end{','')
-		s/\\\]\|\\end{.\{-}}/\=second/
-		let top = searchpair('\\\[\|\\begin{','','\\\]\|\\end{','b')
-		s/\\\[\|\\begin{.\{-}}/\=first/
-	else
-		let bottom = search('\$\$\|\\end{')
-		s/\$\$\|\\end{.\{-}}/\=second/
-		let top = search('\$\$\|\\begin{','b')
-		s/\$\$\|\\begin{.\{-}}/\=first/
-	end
-	if a:delete != ''
-		exe 'silent '. top . "," . bottom . 's/' . a:delete . '//e'
-	endif
-	if a:putInNonumber == 1
-		exe top
-		call search('\\end\|\\\\')
-		if line('.') != bottom
-			exe '.+1,' . bottom . 's/\\\\/\\nonumber\\\\/e'
-			exe (bottom-1) . 's/\s*$/  \\nonumber/'
-		endif
-	endif
-	if a:label == 1
-		exe top
-		if search("\\label", "W") > bottom
-			exe top
-			let local_label = input('Label? ')
-			if local_label != ''
-				put = '\label{'.local_label.'}'
+		if env_line != 0
+			if getline(env_line) !~ 'begin{'
+				let env_name = '['
+			else
+				let env_name = matchstr(getline(env_line), 'begin{\zs.\{-}\ze}')
 			endif
-			normal $
 		endif
-	else
-		exe 'silent '.top . ',' . bottom . ' g/\\label/delete'
-	endif
-	if exists('local_label') && local_label != ''
-		exe start_line + 1.' | normal! '.start_col.'|'
-	else
-		exe start_line.' | normal! '.start_col.'|'
-	endif
-endfunction " }}}
+		
+		if !exists('env_name')
+			echomsg "You are not inside environment"
+			return 0
+		endif
 
-" Due to Ralf Arens <ralf.arens@gmx.net>
-function! s:ArgumentsForArray(arg) " {{{
-	put! = '{' . a:arg . '}'
-	normal kgJj
-endfunction 
+		exe 'echomsg "You are within a '.env_name.' environment."'
+		let s:change_env = PromptForEnvironment('Do you want to change it to (number or name)? ')
+
+		if s:change_env == 'eqnarray'
+			call <SID>Change('eqnarray', 1, '', 1)
+		elseif s:change_env == 'eqnarray*'
+			call <SID>Change('eqnarray*', 0, '\\nonumber', 0)
+		elseif s:change_env == 'align'
+			call <SID>Change('align', 1, '', 1)
+		elseif s:change_env == 'align*'
+			call <SID>Change('align*', 0, '\\nonumber', 0)
+		elseif s:change_env == 'equation*'
+			call <SID>Change('equation*', 0, '&\|\\lefteqn{\|\\nonumber\|\\\\', 0)
+		elseif s:change_env == ''
+			return 0
+		else
+			call <SID>Change(s:change_env, 0, '', '')
+			return 0
+		endif
+
+	endfunction 
+	
+	" }}}
+	" Change: changes the current env to the new env {{{
+	" Description: 
+	"   This function needs to know the changes which need to be made while
+	"   going from an old environment to a new one. This info, it gets from
+	"   Tex_ChangeEnvironments
+	" 
+	"   env : name of the new environment.
+	"   label : if 1, then insert a \label at the end of the environment.
+	"           otherwise, delete any \label line found.
+	"   delete : a pattern which is to be deleted from the original environment.
+	"            for example, going to a eqnarray* environment means we need to
+	"            delete \label's.
+	"   putInNonumber : whether we need to put a \nonumber before the end of the
+	"                 environment.
+	function! s:Change(env, label, delete, putInNonumber)
+
+		let start_line = line('.')
+		let start_col = virtcol('.')
+
+		if a:env == '['
+			if b:DoubleDollars == 0
+				let first = '\\['
+				let second = '\\]'
+			else
+				let first = '$$'
+				let second = '$$'
+			endif
+		else
+			let first = '\\begin{' . a:env . '}'
+			let second = '\\end{' . a:env . '}'
+		endif
+
+		if b:DoubleDollars == 0
+			let bottom = searchpair('\\\[\|\\begin{','','\\\]\|\\end{','')
+			s/\\\]\|\\end{.\{-}}/\=second/
+			let top = searchpair('\\\[\|\\begin{','','\\\]\|\\end{','b')
+			s/\\\[\|\\begin{.\{-}}/\=first/
+		else
+			let bottom = search('\$\$\|\\end{')
+			s/\$\$\|\\end{.\{-}}/\=second/
+			let top = search('\$\$\|\\begin{','b')
+			s/\$\$\|\\begin{.\{-}}/\=first/
+		end
+		if a:delete != ''
+			exe 'silent '. top . "," . bottom . 's/' . a:delete . '//e'
+		endif
+
+		if a:putInNonumber == 1
+			exe top
+			call search('\\end\|\\\\')
+			if line('.') != bottom
+				exe '.+1,' . bottom . 's/\\\\/\\nonumber\\\\/e'
+				exe (bottom-1) . 's/\s*$/  \\nonumber/'
+			endif
+		endif
+
+		if a:label == 1
+			exe top
+			if search("\\label", "W") > bottom
+				exe top
+				let local_label = input('Label? ')
+				if local_label != ''
+					put = '\label{'.local_label.'}'
+				endif
+				normal $
+			endif
+		else
+			exe 'silent '.top . ',' . bottom . ' g/\\label/delete'
+		endif
+
+		if exists('local_label') && local_label != ''
+			exe start_line + 1.' | normal! '.start_col.'|'
+		else
+			exe start_line.' | normal! '.start_col.'|'
+		endif
+	endfunction " }}}
+
+endif
+
 " }}}
-function! s:PutInNonumber() " {{{
-	call search('\\end\|\\\\')
-	if getline(line('.'))[col('.')] != "e"
-		.+1,'>s/\\\\/\\nonumber\\\\/e
-		normal `>k
-		s/\s*$/  \\nonumber/
-	endif
-endfunction 
+" Map <S-F1> through <S-F4> to insert environments {{{
+if g:Tex_HotKeyMappings != ''
+
+	" SetUpHotKeys: maps <F1> through <F4> to insert environments {{{
+	" Description: 
+	function! <SID>SetUpHotKeys()
+		let i = 1
+		let envname = Tex_Strntok(g:Tex_HotKeyMappings, ',', i)
+		while  envname != ''
+
+			exec 'inoremap <S-F'.i.'> <C-r>=Tex_PutEnvironment("'.envname.'")<CR>'
+
+			let i = i + 1
+			let envname = Tex_Strntok(g:Tex_HotKeyMappings, ',', i)
+			
+		endwhile
+
+	endfunction " }}}
+
+	call s:SetUpHotKeys()
+
+endif
+
 " }}}
 
 " this statement has to be at the end.
