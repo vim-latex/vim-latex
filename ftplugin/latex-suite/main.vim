@@ -758,6 +758,7 @@ if g:Tex_Diacritics != 0
 	exe 'source '.s:path.'/diacritics.vim'
 endif
 
+exe 'source '.s:path.'/texviewer.vim'
 
 " ==============================================================================
 " Finally set up the folding, options, mappings and quit.
