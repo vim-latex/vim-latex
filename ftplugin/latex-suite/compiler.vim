@@ -146,6 +146,7 @@ function! RunLaTeX()
             " construct a main file.
             if mainfname == ''
 				let mainfname = expand("%:t")
+			endif
             exec 'make '.mainfname
         endif
 		redraw!
