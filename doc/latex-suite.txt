@@ -50,7 +50,7 @@ Homepage: http://vim-latex.sourceforge.net |ls_u_1|
     |ls_5_3| Latex-Suite \cite completion
     |ls_5_4| Latex-Suite filename completion
     |ls_5_5| Custom command completion
-|ls_6| Compiling LaTeX files via Latex-Suite
+|ls_6| LaTeX Compiling
     |ls_6_1| Setting Compilation rules
     |ls_6_2| Handling dependencies in compilation
     |ls_6_3| Compiling multiple times
@@ -1350,7 +1350,7 @@ You can define your own completion variables in a similar manner for commands
 which you might use.
 
 ================================================================================
-Compiling LaTeX files via Latex-Suite                           *ls_6* *ls_a_bT*
+LaTeX Compiling                                                 *ls_6* *ls_a_bT*
                                                                *latex-compiling*
 
 |ls_6_1| Setting Compilation rules

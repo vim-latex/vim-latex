@@ -1667,7 +1667,7 @@ newfile.tex [Preview]                                         11,3           21%
   </section>
  </section>
  <section id="latex-compiling">
-  <title>Compiling &latex; files via &ls;</title>
+  <title>&latex; Compiling</title>
   <para>
    This functionality, available via the TeX-Suite menu, provides various tools
    to compile and debug &latex; files from within &vim;.
