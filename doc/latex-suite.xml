@@ -55,12 +55,24 @@
  <section id="recommended-settings">
   <title>Recommended Settings</title>
   <para>
-   Latex-Suite works best if you have the following settings in your ~/.vimrc:
-  <programlisting>" this line is responsible for loading latex-suite when a .tex file is
-" opened.
+   Make sure that you create a few necessary settings in your
+   <literal>~/.vimrc.</literal>
+   <programlisting>
+" REQUIRED. This makes vim invoke latex-suite when you open a tex file.
 filetype plugin on
-" for automatic indentation specific to LaTeX.
-filetype indent on</programlisting>
+
+" IMPORTANT: win32 users will need to have 'shellslash' set so that latex
+" can be called correctly.
+set shellslash
+
+" IMPORTANT: grep will sometimes skip displaying the file name if you
+" search in a singe file. This will confuse latex-suite. Set your grep
+" program to alway generate a file-name.
+set grepprg=grep\ -nH\ $*
+
+" OPTIONAL: This enables automatic indentation as you type.
+filetype indent on
+</programlisting>
   </para>
   <para>
    In addition, the following settings could go in your ~/.vim/ftplugin/tex.vim
@@ -72,9 +84,7 @@ set sw=2
 " type in \ref{fig: and press &lt;C-n&gt; you will automatically cycle through
 " all the figure labels. Very useful!
 set iskeyword+=:
-" IMPORTANT: If you are a win32 user, then the following setting is
-" necessary in order to have latex called correctly from within Vim.
-set shellslash</programlisting>
+</programlisting>
   </para>
  </section>
  <section id="latex-suite-templates">
@@ -164,65 +174,70 @@ set shellslash</programlisting>
    The following sections describe the various editing macros provided
    by &ls;.
   </para>
-  <section id="insert-mode-environment-mappings">
-   <title>Insert-mode Environment Mappings</title>
-   <para> These mappings insert LaTeX "environments" such as:
-   <programlisting>\begin{center}
+  <section id="environment-mappings">
+   <title>Environment Mappings</title>
+   &ls; provides a rich set of mappings to insert, enclose and modify
+   &latex; environments.
+   <section id="insert-mode-environment-mappings">
+    <title>Insert-mode Mappings</title>
+    <para> 
+     These mappings insert LaTeX "environments" such as:
+     <programlisting>\begin{center}
     &ph;
 \end{center}&ph;</programlisting>
-    with the cursor left at the first |placeholder|. There are
-    various ways of inserting environments into the source file. If
-    the environment is a standard latex environment, then latex suite
-    might also include common fields associated with it.
-   </para>
-   <section id="ls-imap-f5">
-    <title>Method 1</title>
-    <para>
-     If you press <literal>&lt;F5&gt;</literal> in the
-     insert mode while on an empty line, latex-suite prompts you
-     with a list of environments you might want to insert. You can
-     either choose one from the list or type in a new environment
-     name. This list can be customized via the <link
-      linkend="Tex_PromptedEnvironments"><literal>g:Tex_PromptedEnvironments</literal></link>
-     setting.
+     with the cursor left at the first |placeholder|. There are
+     various ways of inserting environments into the source file. If
+     the environment is a standard latex environment, then latex suite
+     might also include common fields associated with it.
     </para>
-    <para>
-     In addition to the <literal>Tex_PromptedEnvironments</literal>
-     variable, &ls; also lists envionments found in custom packages as
-     described in the section <link linkend="package-actions">Package
-      actions.</link>
+    <section id="ls-imap-f5">
+     <title>Method 1</title>
+     <para>
+      If you press <literal>&lt;F5&gt;</literal> in the
+      insert mode while on an empty line, latex-suite prompts you
+      with a list of environments you might want to insert. You can
+      either choose one from the list or type in a new environment
+      name. This list can be customized via the <link
+       linkend="Tex_PromptedEnvironments"><literal>g:Tex_PromptedEnvironments</literal></link>
+      setting.
     </para>
-   </section>
-   <section>
-    <title>Method 2</title>
-    <para>
-     If you press <literal>&lt;F5&gt;</literal> while on a line
-     containing a single word, then latex-suite creates a
-     environment of that name.
+     <para>
+      In addition to the <literal>Tex_PromptedEnvironments</literal>
+      variable, &ls; also lists envionments found in custom packages as
+      described in the section <link linkend="package-actions">Package
+       actions.</link>
     </para>
    </section>
-   <section>
-    <title>Method 3</title>
-    <para>
-     The shifted function keys, <literal>&lt;S-F1&gt;</literal> to
-     <literal>&lt;S-F4&gt;</literal>can also be optionally mapped
-     to some common environments which you insert most often. The
-     environments mapped to each key can also be customized via the <link
-      linkend="Tex_HotKeyMappings">g:Tex_HotKeyMappings</link> setting.
+    <section>
+     <title>Method 2</title>
+     <para>
+      If you press <literal>&lt;F5&gt;</literal> while on a line
+      containing a single word, then latex-suite creates a
+      environment of that name.
     </para>
    </section>
-   <section>
-    <title>Method 4</title>
-    <para>
-     Environments can also be inserted by pressing a 3 capital
-     letter sequence starting with an <literal>E</literal>. The following subsection
-     describes this in detail. The sequence of 3 letters generally
-     tries to follow the following rules:
+    <section>
+     <title>Method 3</title>
+     <para>
+      The shifted function keys, <literal>&lt;S-F1&gt;</literal> to
+      <literal>&lt;S-F4&gt;</literal> can also be optionally mapped
+      to some common environments which you insert most often. The
+      environments mapped to each key can also be customized via the <link
+       linkend="Tex_HotKeyMappings">g:Tex_HotKeyMappings</link> setting.
+    </para>
+   </section>
+    <section>
+     <title>Method 4</title>
+     <para>
+      Environments can also be inserted by pressing a 3 capital
+      letter sequence starting with an <literal>E</literal>. The following subsection
+      describes this in detail. The sequence of 3 letters generally
+      tries to follow the following rules:
     </para>
      <orderedlist>
       <listitem>
        All environment mappings begin with <literal>E</literal>
-      </listitem>
+     </listitem>
       <listitem>
        If the environment can be broken up into 2 distinct words,
        such as flushright (flush + right), then the next 2 letters
@@ -235,50 +250,101 @@ eqnarray   (_e_qn + _a_rray)   ---&gt; EEA</programlisting>
        first 2 letters of the name of the environment.
        Example:
        <programlisting>equation (_eq_uation)          ---&gt; EEQ</programlisting>
-      </listitem>
+     </listitem>
      </orderedlist>
-    <para>
-     Unfortunately there are some environments that cannot be
-     split in two words and first two letters in name are
-     identical. In this case shortcut is created from E, first and
-     last letter.  Example:
-     <programlisting>quote     (_q_uot_e_)          ---&gt; EQE
+     <para>
+      Unfortunately there are some environments that cannot be
+      split in two words and first two letters in name are
+      identical. In this case shortcut is created from E, first and
+      last letter.  Example:
+      <programlisting>quote     (_q_uot_e_)          ---&gt; EQE
 quotation (_q_uotatio_n_)      ---&gt; EQN</programlisting>
-     Of course, not every last one of the environments can follow
-     this rule because of ambiguities. In case of doubt, pull down
-     the Tex-Environments menu. The menu item should give the hint
-     for the map.
+      Of course, not every last one of the environments can follow
+      this rule because of ambiguities. In case of doubt, pull down
+      the Tex-Environments menu. The menu item should give the hint
+      for the map.
     </para>
    </section>
   </section>
-  <section id="visual-mode-environment-mapings">
-   <title>Visual-mode Environment Mappings</title>
-   <para>
-    &ls; provides visual-mode mappings which enclose visually
-    selected portions of text in environments. These mappings are
-    derived from the corresponding insert-mode environment mappings
-    according to the following simple rule:
+   <section id="visual-mode-environment-mapings">
+    <title>Visual-mode Mappings</title>
+    <para>
+     &ls; provides visual-mode mappings which enclose visually
+     selected portions of text in environments. These mappings are
+     derived from the corresponding insert-mode environment mappings
+     according to the following simple rule:
 
-    <programlisting>ECE           --&gt; ,ce</programlisting>
-    The rule simply says that the leading <literal>E</literal> is
-    converted to <literal>,</literal> and the next 2 letters are
-    small case.  
+     <programlisting>ECE           --&gt; ,ce</programlisting>
+     The rule simply says that the leading <literal>E</literal> is
+     converted to <literal>,</literal> and the next 2 letters are
+     small case.  
 
-    Here <literal>ECE</literal> is the insert-mode map which inserts
-    the <literal>\begin{center} ... \end{center}</literal>
-    environment.  Correspondingly, if you select a portion of text
-    visually and press <literal>,ce</literal> while still in visual
-    mode, then the selected portion will be enclosed in
-    <literal>\begin{center} ... \end{center}</literal>.
+     Here <literal>ECE</literal> is the insert-mode map which inserts
+     the <literal>\begin{center} ... \end{center}</literal>
+     environment.  Correspondingly, if you select a portion of text
+     visually and press <literal>,ce</literal> while still in visual
+     mode, then the selected portion will be enclosed in
+     <literal>\begin{center} ... \end{center}</literal>.
 
-    Some of the visual mode mappings are sensitive to whether you
-    choose line-wise or character-wise. For example, if you choose a
-    word and press <literal>,ce</literal>, then you get
-    <literal>\centerline{word}</literal>, whereas if you press
-    <literal>,ce</literal> on a line-wise selection, you get:
-    <programlisting>\begin{center}
+     Some of the visual mode mappings are sensitive to whether you
+     choose line-wise or character-wise. For example, if you choose a
+     word and press <literal>,ce</literal>, then you get
+     <literal>\centerline{word}</literal>, whereas if you press
+     <literal>,ce</literal> on a line-wise selection, you get:
+     <programlisting>\begin{center}
     line
 \end{center}</programlisting>
+   </para>
+   </section>
+   <section id="normal-mode-environment-mappings">
+    <title>Normal Mode Mappings</title>
+    <para>
+     Pressing <literal>&lt;S-F5&gt;</literal> in normal mode detects which
+     environment the cursor is presently located in and prompts you to
+     replace it with a new one. The innermost environment is detected. For
+     example, in the following source:
+     <programlisting>\begin{eqnarray}
+  \begin{array}{ccc}
+    2 &amp; 3 &amp; 4
+  \end{array}
+\end{eqnarray}</programlisting>
+     if you are located in the middle "2 &amp; 3 &amp; 4" line, then pressing
+     <literal>&lt;S-F5&gt;</literal> will prompt you to change the array
+     environment, not the eqnarray environment. In addition, &ls; will also
+     try to change lines within the environment to be consistent with the
+     new environment. For example, if the original environment was an
+     <literal>eqnarray</literal> environment with a
+     <literal>\label</literal> command, then changing it to an
+     <literal>eqnarray*</literal> environment will delete the
+     <literal>\label</literal>.
+    </para>
+    <para>
+     Pressing <literal>&lt;F5&gt;</literal> in normal mode has the same
+     effect as pressing <literal>&lt;F5&gt;</literal> in insert-mode,
+     namely you will be prompted to choose an environment to insert.
+    </para>
+   </section>
+  </section>
+  <section id="latex-command-maps">
+   <title>&latex; command maps</title>
+   <anchor id="ls-imap-f7" />
+   <para>
+    &ls; provides two simple mappings <literal>&lt;F7&gt;</literal> and
+    <literal>&lt;S-F7&gt;</literal> which work in both insert and normal
+    mode in an idential manner. Pressing <literal>&lt;F7&gt;</literal>
+    prompts you with a list of commands to choose from and then inserts it
+    into the text of the document. The list of commands is constructed from
+    the <link
+     linkend="Tex_PromptedCommands"><literal>g:Tex_PromptedCommands</literal></link>
+    setting and also from commands which &ls; finds while scanning custom
+    packages which &ls; finds. See the <link
+     linkend="package-actions">Package actions</link> section for details
+    on which files are scanned etc.
+   </para>
+   <para>
+    In both insert and normal mode <literal>&lt;S-F7&gt;</literal> will
+    find out if you are presently within an environment and then prompt you
+    with a list of commands to change it to.
    </para>
   </section>
   <section id="font-maps">
@@ -298,7 +364,7 @@ quotation (_q_uotatio_n_)      ---&gt; EQN</programlisting>
    </para>
    <para>
     Example: Typing <literal>FEM</literal> in insert-mode expands to
-    <literal>\textem{&ph;}&ph;</literal>.
+    <literal>\emph{&ph;}&ph;</literal>.
    </para>
    <para>
     Just like environment mappings, you can visually select an area and press
@@ -597,8 +663,30 @@ otherinfo = {&ph;}
    <para>
     &ls; utilizes a set of macros originally created by Carl Mueller in
     auctex.vim to make inserting all the <literal>\left ... \right</literal>
-    stuff very easy. The following maps are provided:
+    stuff very easy and to also make some use of the heavily under-utilized
+    <literal>&lt;Alt&gt;</literal> key. 
    </para>
+   <note>
+    <para>
+     By default, typing <literal>Alt-&lt;key&gt;</literal> in &vim; takes
+     focus to the menu bar if a menu with the hotkey
+     <literal>&lt;key&gt;</literal> exists. If in your case, there are
+     conflicts due to this behavior, you will need to set
+     <programlisting>set winaltkeys=no</programlisting>
+     in your <literal>$VIM/ftplugin/tex.vim</literal> in order to use these
+     maps.
+    </para>
+   </note>
+   <note>
+    <title>Customizing the maps</title>
+    <para>
+     If for some reason, you wish to not map the
+     <literal>&lt;Alt&gt;</literal> keys, (some European users need to use
+     the <literal>&lt;Alt&gt;</literal> key to enter diacritics), you can
+     change these maps to other keys as described in the section <link
+      linkend="customize-alt-key-maps">Customizing Alt-key maps</link>.
+    </para>
+   </note>
    <section id="Alt-L">
     <title><literal>&lt;Alt-L&gt;</literal></title>
     <para>
@@ -656,25 +744,6 @@ otherinfo = {&ph;}
       <literal>\mathcal{}</literal>
      </para>
    </section>
-   <note>
-    <para>
-     By default, typing <literal>Alt-&lt;key&gt;</literal> in &vim; takes
-     focus to the menu bar if a menu with the hotkey
-     <literal>&lt;key&gt;</literal> exists. If in your case, there are
-     conflicts due to this behavior, you will need to set
-     <programlisting>set winaltkeys=no</programlisting>
-     in your <literal>$VIM/ftplugin/tex.vim</literal> in order to use these
-     maps.
-    </para>
-   </note>
-   <note>
-    <title>Customizing the maps</title>
-    <para>You can also customize the keys which trigger this functionality
-     by remapping certain <literal>&lt;Plug&gt;</literal> mappings as
-     described in <link linkend="customize-alt-key-maps">Customizing
-      Alt-key maps</link>.
-    </para>
-   </note>
   </section>
   <section id="custom-macros-menu">
    <title>Custom Macros</title>
@@ -815,6 +884,7 @@ otherinfo = {&ph;}
     For example, the <literal>SIUnits</literal> package has a custom
     dictionary.
    </para>
+  <anchor id="latex-package-scanning" />
    <para>
     If a package detected at startup is found by &ls; in the current
     directory or in a location specified by the <link
@@ -828,7 +898,6 @@ otherinfo = {&ph;}
     mode.
    </para>
   </section>
-  <anchor id="latex-package-scanning" />
   <para>
    In addition, the <literal>TeX-Suite > Packages</literal> menu also
    contains the following submenus
@@ -1257,7 +1326,7 @@ newfile.tex [Preview]                                         11,3           21%
     result in &ls; displaying a warning message without taking any action.
    </para>
   <section id="compiler-rules">
-   <title>Setting Compilation rules.</title>
+   <title>Setting Compilation rules</title>
    <para>
     In order to compile &latex; files into various formats, &ls; needs to know
     which external programs to call and in which way they need to be called.
@@ -1523,7 +1592,7 @@ nmap \pdf :call Tex_CompileToPDF()&lt;CR&gt;</programlisting>
    The fold-text is set to the first line of the folded text unless the fold is a
    table, figure etc. (an environment). In this case, if a \caption and/or a
    label is found in the folded region, then those are used to make a more
-   meaningful fold-tex, otherwise the second line of the environment is displayed
+   meaningful fold-text, otherwise the second line of the environment is displayed
    along with the name of the environment. In other words, the following
   </para>
   <programlisting>\begin{figure}[h]
@@ -1714,8 +1783,9 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
  <section id="latex-suite-commands-maps">
   <title>&ls; Commands and Maps</title>
   <para>
-   LatexSuite defines set of commands for non-GUI and power users. They are
-   taking care about Macros, Templates and Packages.
+   This section describes the maps and commands used in &ls;. It also
+   describes a way to change the map sequences according to your
+   preference.
   </para>
   <section id="latex-suite-maps">
    <title>&ls; Maps</title>
@@ -1743,12 +1813,10 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
      between placeholders, the <literal>map</literal> statement above has
      to be placed in your <literal>~/.vimrc</literal>. For other mappings
      you can place the <literal>map</literal> statement in your
-     <literal>$VIM/ftplugin/tex.vim</literal> file.
-    </para>
-    <para>
-     The reason for this is that the <literal>&lt;C-j&gt;</literal> maps
-     are created in <literal>plugin/imaps.vim</literal>, which is sourced
-     as soon as &vim; starts before sourcing any ftplugin files.
+     <literal>$VIM/ftplugin/tex.vim</literal> file.  The reason for this is
+     that the <literal>&lt;C-j&gt;</literal> maps are created in
+     <literal>plugin/imaps.vim</literal>, which is sourced as soon as &vim;
+     starts before sourcing any ftplugin files.
     </para>
    </note>
    <section id="customize-imap-maps">
@@ -2593,11 +2661,14 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
      </tgroup>
     </informaltable>
     <para>
-     Use this setting to choose the default compilation target. For example,
-     setting this to <literal>pdf</literal> makes &ls; compile a pdf file when
-     you press <literal>\l</literal>. Make sure that a rule has been defined
-     for compiling to this target format as described <link
-      linkend="Tex_CompileRule_format">here</link>.
+     Use this setting to choose the default target format. For example,
+     setting this to <literal>pdf</literal> makes &ls; compile a pdf file
+     when you press <literal>\ll</literal> and fire up the
+     <literal>pdf</literal> viewer on pressing <literal>\lv</literal>. Make
+     sure that a rules for compiling and viewing have been defined for this
+     target format as described <link
+      linkend="Tex_CompileRule_format">here</link> and <link
+      linkend="Tex_ViewRule_format">here</link>.
     </para>
    </section>
    <section id="Tex_CompileRule_format">

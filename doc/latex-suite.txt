@@ -1,3 +1,45 @@
+bodyText =  [[u'w', u'address'], [u'a', u'author'], [u'b', u'booktitle'], [u'c', u'chapter'], [u'd', u'edition'], [u'e', u'editor'], [u'h', u'howpublished'], [u'i', u'institution'], [u'k', u'isbn'], [u'j', u'journal'], [u'm', u'month'], [u'z', u'note'], [u'n', u'number'], [u'o', u'organization'], [u'p', u'pages'], [u'q', u'publisher'], [u'r', u'school'], [u's', u'series'], [u't', u'title'], [u'u', u'type'], [u'v', u'volume'], [u'y', u'year']]
+bodyText =  [[u'(', u'\\left( <++> \\right)'], [u'[', u'\\left[ <++> \\right]'], [u'|', u'\\left| <++> \\right|'], [u'{', u'\\left\\{ <++> \\right\\}'], [u'<', u'\\langle <++> \\rangle'], [u'q', u'\\lefteqn{<++>}<++>']]
+bodyText =  [[u'{New}', u'Creates a new (unnamed) buffer in the latex-suite/macros/ directory. Use the\ncommand :TexMacroNew in non-gui mode.'], [u'{Edit}', u'Opens up the corresponding macro file for editing. Use :TexMacroEdit in non-gui\nmode.'], [u'{Delete}', u'Deletes the corresponding macro. Use the prefixed numbers for fast navigation of\nmenus. Use :TexMacroDelete in non-gui mode.'], [u'{Redraw}', u'Rescans the macros/ directory and refreshes the macros list.']]
+bodyText =  [[u'startpat', u'a line matching this pattern defines the beginning of a fold.'], [u'endpat', u'a line matching this pattern defines the end of a fold.'], [u'startoff', u'this is the offset from the starting line at which folding will actually start'], [u'endoff', u'like startoff, but gives the offset of the actual fold end from the line satisfying endpat. startoff and\nendoff are necessary when the folding region does not have a specific end pattern corresponding to a start\npattern. for example in latex, \\begin{section} defines the beginning of a section, but its not necessary to\nhave a corresponding \\end{section} the section is assumed to end 1 line before another section starts.'], [u'startskip', u'A Pattern Which Defines The Beginning Of A "Skipped" Region.\n\nFor example, suppose we define a \\itemize fold as follows: >\n     =  \'^\\s*\\\\item\',\n     = \'^\\s*\\\\item\\|^\\s*\\\\end{\\(enumerate\\|itemize\\|description\\)}\',\n     = 0,\n     = -1&codeend;\n\nThis defines a fold which starts with a line beginning with an \\item and ending one line before a line\nbeginning with an \\item or \\end{enumerate} etc.\n\nThen, as long as \\item\'s are not nested things are fine. However, once items begin to nest, the fold\nstarted by one \\item can end because of an \\item in an \\itemize environment within this \\item. i.e, the\nfollowing can happen: >\n    \\begin{itemize}\n    \\item Some text                         <------- fold will start here\n    This item will contain a nested item\n    \\begin{itemize}                         <----- fold will end here because next line contains \\item...\n    \\item Hello  \n    \\end{itemize}                           <----- ... instead of here.\n    \\item Next item of the parent itemize  \n    \\end{itemize}&codeend;\n\nTherefore, in order to completely define a folding item which allows nesting, we need to also define a\n"skip" pattern. startskip and end skip do that. Leave \'\' when there is no nesting.'], [u'endskip', u'the pattern which defines the end of the "skip" pattern for nested folds.']]
+bodyText =  [[u'<Plug>IMAP_JumpForward', u'<C-j>'], [u'<Plug>IMAP_JumpBack', u'(none)'], [u'<Plug>IMAP_DeleteAndJumpForward', u'(none)'], [u'<Plug>IMAP_DeleteAndJumpBack', u'(none)']]
+bodyText =  [[u'<Plug>Tex_MathBF', u'<Alt-B>'], [u'<Plug>Tex_MathCal', u'<Alt-C>'], [u'<Plug>Tex_LeftRight', u'<Alt-L>']]
+bodyText =  [[u'0', u'part'], [u'1', u'chapter'], [u'2', u'section'], [u'3', u'subsection'], [u'4', u'subsubsection'], [u'5', u'paragraph'], [u'6', u'subparagraph']]
+bodyText =  [[u'+<n>', u'inserts section name <n> logical levels above the last used comand'], [u'-<n>', u'inserts section name <n> logical levels below the last used comand'], [u'+', u'inserts section name one logical level below the last used command (equal to +1).'], [u'++', u'inserts section name two logical levels below the last used command (equal to +2).'], [u'-', u'inserts section name one logical level over the last used command (equal to -1).'], [u'--', u'inserts section name two logical levels over the last used command (equal to -2).']]
+bodyText =  [[u'g', u'General shortcuts'], [u'e', u'Environment shortcuts'], [u'f', u'Font shortcuts'], [u's', u'Section shortcuts'], [u'a', u'All shortcuts']]
+bodyText =  [[u'Type', u'Boolean'], [u'Default Value', u'1']]
+bodyText =  [[u'Imap_PlaceHolderStart', u'String', u"'<+'"], [u'Imap_PlaceHolderEnd', u'String', u"'+>'"]]
+bodyText =  [[u'Type', u'Boolean'], [u'Default Value', u'1']]
+bodyText =  [[u'Type', u'Boolean'], [u'Default Value', u'1']]
+bodyText =  [[u'g:Tex_EnvironmentMaps', u'Environment Mappings [|insert-mode-environment-mappings|]', u'1'], [u'g:Tex_EnvironmentMenus', '', u'1'], [u'g:Tex_FontMaps', u'Font Mappings [|font-maps|]', u'1'], [u'g:Tex_FontMenus', '', u'1'], [u'g:Tex_SectionMaps', u'Section Mappings [|section-mappings|]', u'1'], [u'g:Tex_SectionMenus', '', u'1']]
+bodyText =  [[u'Type', u'Boolean'], [u'Default Value', u'0']]
+bodyText =  [[u'Type', u'Boolean'], [u'Default Value', u'1']]
+bodyText =  [[u'Type', u'Boolean'], [u'Default Value', u'0']]
+bodyText =  [[u'Type', u'String'], [u'Default Value', u"'`'"]]
+bodyText =  [[u'Type', u'String'], [u'Default Value', u"','"]]
+bodyText =  [[u'Type', u'String'], [u'Default Value', u"'eqnarray*,eqnarray,equation,equation*,\\[,$$,align,align*'"]]
+bodyText =  [[u'Type', u'String'], [u'Default Value', u"'eqnarray*,eqnarray,bmatrix'"]]
+bodyText =  [[u'Type', u'Boolean'], [u'Default Value', u'1']]
+bodyText =  [[u'Type', u'Boolean'], [u'Default Value', u'1']]
+bodyText =  [[u'g:Tex_SmartQuoteOpen', u'"``"'], [u'g:Tex_SmartQuoteClose', u'"\'\'"']]
+bodyText =  [[u'g:Tex_ViewerCwindowHeight', u'The height of the cwindow which displays the list of \\labels etc.', u'5'], [u'g:Tex_ViewerPreviewHeight', u'The height of the preview window which shows the context of a \\label etc.', u'10'], [u'g:Tex_ExplorerHeight', u'The height of the explorer window which lists the files from which to choose an\nimage file.', u'10'], [u'g:Tex_ImageDir', u'The directory to scan for images', u"''"]]
+bodyText =  [[u'Type', u'string'], [u'Default Value', u"''"]]
+bodyText =  [[u'Type', u'Boolean'], [u'Default Value', u'0']]
+bodyText =  [[u'Type', u'String'], [u'Default Value', u'dvi for windows/*nix and pdf for mac']]
+bodyText =  [[u'g:Tex_CompileRule_dvi', u"'latex -interaction=nonstopmode $*'"], [u'g:Tex_CompileRule_ps', u"'ps2pdf $*'"], [u'g:Tex_CompileRule_pdf', u"'pdflatex -interaction=nonstopmode $*'"]]
+bodyText =  [[u'Type', u'String'], [u'Default Value', u'a new-line seperated list of patterns as described below']]
+bodyText =  [[u'Type', u'Integer'], [u'Default Value', u'7']]
+bodyText =  [[u'g:Tex_ViewRule_dvi', u"'yap -1'", u"'xdvi'"], [u'g:Tex_ViewRule_ps', u"'gsview32'", u"'ghostview'"], [u'g:Tex_ViewRule_pdf', u"'AcroRd32'", u"'xpdf'"]]
+bodyText =  [[u'Type', u'Boolean'], [u'Default Value', u'1']]
+bodyText =  [[u'Type', u'Boolean'], [u'Default Value', u'1']]
+bodyText =  [[u'Type', u'Boolean'], [u'Default Value', u'1']]
+bodyText =  [[u'Type', u'Boolean'], [u'Default Value', u'1']]
+bodyText =  [[u'Type', u'String'], [u'Default Value', u"'TeX-'"]]
+bodyText =  [[u'Type', u'Boolean'], [u'Default Value', u'0']]
+bodyText =  [[u'Type', u'Boolean'], [u'Default Value', u'1']]
+bodyText =  [[u'Type', u'Boolean'], [u'Default Value', u'1']]
+bodyText =  [[u'Type', u'string'], [u'Default Value', u"''"]]
+bodyText =  [[u'Lubomir Host', u'provided the diacritics and also helped in development.\n\n'], [u'Alexander Wagner', u'valuable suggestions during development.\n\n'], [u'Luc Hermitte', u"his variation of Stephen Riehm's bracketing system is used in latex-suite.\n\n"], [u'Gergely Kontra', u'the clever little JumpFunc() in imaps.vim is due to him. The implementation of the\ntemplates also borrows from mu-template.vim by him.\n\n'], [u'Dimitri Antoniou', u'author of ltags and also provided the nice tip about forward / reverse search on\nDVI documents.\n\n'], [u'Stephen Riehm', u'the extremely helpful bracketing system is from him.\n\n'], [u'Alan Schmitt', u'provided some macros/folding elements.\n\n'], [u'Hari Krishna Dara', u'for ExecMap(), the clever little function which makes typing visual mode mappings\nso much easier and error-free.\n\n'], [u'Alan G Isac', u'for the comprehensive BibT() function for entering bibtex entries.\n\n'], [u'Gontran Baerts', u'for libList.vim\n\n'], [u'Peter Heslin', u'useful discussion and also a lot of bug fixes. the %%fakesection in folding.vim.\n\n']]
                               Latex-Suite Reference
                                 *latex-suite.txt*
                  Srinath Avadhanula <srinath AT fastmail DOT fm>
@@ -26,8 +68,8 @@ Homepage: http://vim-latex.sourceforge.net
 |ls_1| Recommended Settings
 |ls_2| Inserting Templates
 |ls_3| Latex-Suite Macros
-    |ls_3_1| Insert-mode Environment Mappings
-    |ls_3_2| Visual-mode Environment Mappings
+    |ls_3_1| Environment Mappings
+    |ls_3_2| LaTeX command maps
     |ls_3_3| Font Mappings
     |ls_3_4| Section Mappings
     |ls_3_5| Greek Letter Mappings
@@ -45,7 +87,7 @@ Homepage: http://vim-latex.sourceforge.net
 |ls_5| Latex Completion
     |ls_5_1| Latex-Suite \cite completion
 |ls_6| Compiling LaTeX files via Latex-Suite
-    |ls_6_1| Setting Compilation rules.
+    |ls_6_1| Setting Compilation rules
     |ls_6_2| Specifying which file to compile
     |ls_6_3| Customizing the compiler output
     |ls_6_4| Compiling parts of a file
@@ -71,17 +113,38 @@ Homepage: http://vim-latex.sourceforge.net
 |ls_11| Credits
 
 ================================================================================
+Viewing this file
+
+This file can be viewed with all the sections and subsections folded to ease
+navigation. By default, vim does not fold help documents. To create the folds,
+press za now.
+
+See |usr_28.txt| for an introduction to folding and |fold-commands| for key
+sequences and commands to work with folds.
+
+================================================================================
 Recommended Settings                                      *ls_1*
                                                           *recommended-settings*
 
 
 
-Latex-Suite works best if you have the following settings in your ~/.vimrc: >
-    " this line is responsible for loading latex-suite when a .tex file is
-    " opened.
+Make sure that you create a few necessary settings in your ~/.vimrc. >
+    
+    " REQUIRED. This makes vim invoke latex-suite when you open a tex file.
     filetype plugin on
-    " for automatic indentation specific to LaTeX.
+    
+    " IMPORTANT: win32 users will need to have 'shellslash' set so that latex
+    " can be called correctly.
+    set shellslash
+    
+    " IMPORTANT: grep will sometimes skip displaying the file name if you
+    " search in a singe file. This will confuse latex-suite. Set your grep
+    " program to alway generate a file-name.
+    set grepprg=grep\ -nH\ $*
+    
+    " OPTIONAL: This enables automatic indentation as you type.
     filetype indent on
+    
 
 
 In addition, the following settings could go in your ~/.vim/ftplugin/tex.vim
@@ -93,9 +156,7 @@ file: >
     " type in \ref{fig: and press <C-n> you will automatically cycle through
     " all the figure labels. Very useful!
     set iskeyword+=:
-    " IMPORTANT: If you are a win32 user, then the following setting is
-    " necessary in order to have latex called correctly from within Vim.
-    set shellslash
+    
 
 
 ================================================================================
@@ -134,8 +195,8 @@ NOTE: Templates are also accessible for non-gui users with the command
 Latex-Suite Macros                                                *ls_3*
                                                                   *latex-macros*
 
-|ls_3_1| Insert-mode Environment Mappings
-|ls_3_2| Visual-mode Environment Mappings
+|ls_3_1| Environment Mappings
+|ls_3_2| LaTeX command maps
 |ls_3_3| Font Mappings
 |ls_3_4| Section Mappings
 |ls_3_5| Greek Letter Mappings
@@ -184,12 +245,17 @@ Latex-Suite.
 
 
 --------------------------------------------------------------------------------
-Insert-mode Environment Mappings              *ls_3_1*
+Environment Mappings                                      *ls_3_1*
+                                                          *environment-mappings*
+|ls_3_1_1| Insert-mode Mappings
+|ls_3_1_2| Visual-mode Mappings
+|ls_3_1_3| Normal Mode Mappings
+
+Latex-Suite provides a rich set of mappings to insert, enclose and modify LaTeX
+environments.
+
+Insert-mode Mappings                          *ls_3_1_1*
                                               *insert-mode-environment-mappings*
-|ls_3_1_1| Method 1
-|ls_3_1_2| Method 2
-|ls_3_1_3| Method 3
-|ls_3_1_4| Method 4
 
 These mappings insert LaTeX "environments" such as: >
     \begin{center}
@@ -202,7 +268,7 @@ with it.
 
 
 
-Method 1                                                            *ls_3_1_1*
+Method 1                                                            *ls_3_1_1_1*
                                                                     *ls-imap-f5*
 
 If you press <F5> in the insert mode while on an empty line, latex-suite prompts
@@ -215,21 +281,21 @@ envionments found in custom packages as described in the section Package
 actions. [|package-actions|]
 
 
-Method 2                                                              *ls_3_1_2*
+Method 2                                                            *ls_3_1_1_2*
 
 If you press <F5> while on a line containing a single word, then latex-suite
 creates a environment of that name.
 
 
-Method 3                                                              *ls_3_1_3*
+Method 3                                                            *ls_3_1_1_3*
 
-The shifted function keys, <S-F1> to <S-F4>can also be optionally mapped to some
-common environments which you insert most often. The environments mapped to each
-key can also be customized via the g:Tex_HotKeyMappings [|Tex_HotKeyMappings|]
-setting.
+The shifted function keys, <S-F1> to <S-F4> can also be optionally mapped to
+some common environments which you insert most often. The environments mapped to
+each key can also be customized via the g:Tex_HotKeyMappings
+[|Tex_HotKeyMappings|] setting.
 
 
-Method 4                                                              *ls_3_1_4*
+Method 4                                                            *ls_3_1_1_4*
 
 Environments can also be inserted by pressing a 3 capital letter sequence
 starting with an E. The following subsection describes this in detail. The
@@ -258,8 +324,8 @@ Of course, not every last one of the environments can follow this rule because
 of ambiguities. In case of doubt, pull down the Tex-Environments menu. The menu
 item should give the hint for the map.
 
---------------------------------------------------------------------------------
-Visual-mode Environment Mappings               *ls_3_2*
+
+Visual-mode Mappings                           *ls_3_1_2*
                                                *visual-mode-environment-mapings*
 
 Latex-Suite provides visual-mode mappings which enclose visually selected
@@ -283,6 +349,44 @@ or character-wise. For example, if you choose a word and press ,ce, then you get
     \end{center}
 
 
+
+Normal Mode Mappings                          *ls_3_1_3*
+                                              *normal-mode-environment-mappings*
+
+Pressing <S-F5> in normal mode detects which environment the cursor is presently
+located in and prompts you to replace it with a new one. The innermost
+environment is detected. For example, in the following source: >
+    \begin{eqnarray}
+      \begin{array}{ccc}
+        2 & 3 & 4
+      \end{array}
+    \end{eqnarray}
+if you are located in the middle "2 & 3 & 4" line, then pressing <S-F5> will
+prompt you to change the array environment, not the eqnarray environment. In
+addition, Latex-Suite will also try to change lines within the environment to be
+consistent with the new environment. For example, if the original environment
+was an eqnarray environment with a \label command, then changing it to an
+eqnarray* environment will delete the \label.
+
+Pressing <F5> in normal mode has the same effect as pressing <F5> in
+insert-mode, namely you will be prompted to choose an environment to insert.
+
+--------------------------------------------------------------------------------
+LaTeX command maps                                          *ls_3_2*
+                                                            *latex-command-maps*
+
+                                                                    *ls-imap-f7*
+Latex-Suite provides two simple mappings <F7> and <S-F7> which work in both
+insert and normal mode in an idential manner. Pressing <F7> prompts you with a
+list of commands to choose from and then inserts it into the text of the
+document. The list of commands is constructed from the g:Tex_PromptedCommands
+[|Tex_PromptedCommands|] setting and also from commands which Latex-Suite finds
+while scanning custom packages which Latex-Suite finds. See the Package actions
+[|package-actions|] section for details on which files are scanned etc.
+
+In both insert and normal mode <S-F7> will find out if you are presently within
+an environment and then prompt you with a list of commands to change it to.
+
 --------------------------------------------------------------------------------
 Font Mappings                                               *ls_3_3* *font-maps*
 
@@ -295,7 +399,7 @@ Mnemonic:
 
 2. next 2 letters are the 2 letters describing the font.
 
-Example: Typing FEM in insert-mode expands to \textem{<++>}<++>.
+Example: Typing FEM in insert-mode expands to \emph{<++>}<++>.
 
 Just like environment mappings, you can visually select an area and press `sf to
 have it enclosed in: \textsf{word} or >
@@ -564,9 +668,24 @@ Alt Key Macros                                               *ls_3_10*
 |ls_3_10_3| <Alt-C>
 
 Latex-Suite utilizes a set of macros originally created by Carl Mueller in
-auctex.vim to make inserting all the \left ... \right stuff very easy. The
-following maps are provided:
+auctex.vim to make inserting all the \left ... \right stuff very easy and to
+also make some use of the heavily under-utilized <Alt> key.
 
+NOTE: By default, typing Alt-<key> in Vim takes focus to the menu bar if a menu
+      with the hotkey <key> exists. If in your case, there are conflicts due to
+      this behavior, you will need to set >
+          set winaltkeys=no
+<     in your $VIM/ftplugin/tex.vim in order to use these maps.
+      
+      
+NOTE: Customizing the maps
+      --------------------
+      If for some reason, you wish to not map the <Alt> keys, (some European
+      users need to use the <Alt> key to enter diacritics), you can change these
+      maps to other keys as described in the section Customizing Alt-key maps
+      [|customize-alt-key-maps|].
+      
+      
 
 
 <Alt-L>                                                      *ls_3_10_1* *Alt-L*
@@ -601,20 +720,6 @@ In insert mode, this key is polymorphic as follows:
 
 2. otherwise insert \cite{}.
 In visual mode, it will simply enclose the selection in \mathcal{}
-NOTE: By default, typing Alt-<key> in Vim takes focus to the menu bar if a menu
-      with the hotkey <key> exists. If in your case, there are conflicts due to
-      this behavior, you will need to set >
-          set winaltkeys=no
-<     in your $VIM/ftplugin/tex.vim in order to use these maps.
-      
-      
-NOTE: Customizing the maps
-      --------------------
-      You can also customize the keys which trigger this functionality by
-      remapping certain <Plug> mappings as described in Customizing Alt-key maps
-      [|customize-alt-key-maps|].
-      
-      
 
 --------------------------------------------------------------------------------
 Custom Macros                                               *ls_3_11*
@@ -638,12 +743,12 @@ choose one of them).
 There are some other tools provided in this menu, namely:
 
 
-{New}       Creates a new (unnamed) buffer in the latex-suite/macros/ directory.
-            Use the command :TexMacroNew in non-gui mode.
-{Edit}      Opens up the corresponding macro file for editing. Use :TexMacroEdit
-            in non-gui mode.
-{Delete}    Deletes the corresponding macro. Use the prefixed numbers for fast
-            navigation of menus. Use :TexMacroDelete in non-gui mode.
+{New}       Creates a new (unnamed) buffer in the latex-suite/macros/ directory. Use the
+            command :TexMacroNew in non-gui mode.
+{Edit}      Opens up the corresponding macro file for editing. Use :TexMacroEdit in non-gui
+            mode.
+{Delete}    Deletes the corresponding macro. Use the prefixed numbers for fast navigation of
+            menus. Use :TexMacroDelete in non-gui mode.
 {Redraw}    Rescans the macros/ directory and refreshes the macros list.
 
 ================================================================================
@@ -714,13 +819,13 @@ from that file.
 
 For example, the SIUnits package has a custom dictionary.
 
+                                                        *latex-package-scanning*
 If a package detected at startup is found by Latex-Suite in the current
 directory or in a location specified by the g:Tex_TEXINPUTS [|Tex_TEXINPUTS|]
 variable, Latex-Suite will scan the package for \newenvironment and newcommand
 lines and also append any commands and environments found to the list of
 commands and environments which you are prompted with when you press <F5>
 [|ls-imap-f5|] or <F7> [|ls-imap-f7|] in insert mode.
-                                                        *latex-package-scanning*
 In addition, the TeX-Suite > Packages menu also contains the following submenus
 
 Update
@@ -1057,7 +1162,7 @@ This will redo the completion list next time you use <F9>.
 Compiling LaTeX files via Latex-Suite                          *ls_6*
                                                                *latex-compiling*
 
-|ls_6_1| Setting Compilation rules.
+|ls_6_1| Setting Compilation rules
 |ls_6_2| Specifying which file to compile
 |ls_6_3| Customizing the compiler output
 |ls_6_4| Compiling parts of a file
@@ -1088,7 +1193,7 @@ Latex-Suite displaying a warning message without taking any action.
 
 
 --------------------------------------------------------------------------------
-Setting Compilation rules.                                      *ls_6_1*
+Setting Compilation rules                                       *ls_6_1*
                                                                 *compiler-rules*
 
 In order to compile LaTeX files into various formats, Latex-Suite needs to know
@@ -1314,7 +1419,7 @@ for "refresh folds").
 The fold-text is set to the first line of the folded text unless the fold is a
 table, figure etc. (an environment). In this case, if a \caption and/or a label
 is found in the folded region, then those are used to make a more meaningful
-fold-tex, otherwise the second line of the environment is displayed along with
+fold-text, otherwise the second line of the environment is displayed along with
 the name of the environment. In other words, the following
 
  >
@@ -1374,15 +1479,11 @@ empty strings ''. The explanation for each argument is as follows:
 Argument     Explanation~
 startpat     a line matching this pattern defines the beginning of a fold.
 endpat       a line matching this pattern defines the end of a fold.
-startoff     this is the offset from the starting line at which folding will
-             actually start
-endoff       like startoff, but gives the offset of the actual fold end from the
-             line satisfying endpat. startoff and endoff are necessary when the
-             folding region does not have a specific end pattern corresponding to
-             a start pattern. for example in latex, \begin{section} defines the
-             beginning of a section, but its not necessary to have a corresponding
-             \end{section} the section is assumed to end 1 line before another
-             section starts.
+startoff     this is the offset from the starting line at which folding will actually start
+endoff       like startoff, but gives the offset of the actual fold end from the line satisfying endpat. startoff and
+             endoff are necessary when the folding region does not have a specific end pattern corresponding to a start
+             pattern. for example in latex, \begin{section} defines the beginning of a section, but its not necessary to
+             have a corresponding \end{section} the section is assumed to end 1 line before another section starts.
 startskip    A Pattern Which Defines The Beginning Of A "Skipped" Region.
              
              For example, suppose we define a \itemize fold as follows: >
@@ -1392,14 +1493,12 @@ startskip    A Pattern Which Defines The Beginning Of A "Skipped" Region.
                   = -1
 <            
              
-             This defines a fold which starts with a line beginning with an \item
-             and ending one line before a line beginning with an \item or
-             \end{enumerate} etc.
+             This defines a fold which starts with a line beginning with an \item and ending one line before a line
+             beginning with an \item or \end{enumerate} etc.
              
-             Then, as long as \item's are not nested things are fine. However,
-             once items begin to nest, the fold started by one \item can end
-             because of an \item in an \itemize environment within this \item.
-             i.e, the following can happen: >
+             Then, as long as \item's are not nested things are fine. However, once items begin to nest, the fold
+             started by one \item can end because of an \item in an \itemize environment within this \item. i.e, the
+             following can happen: >
                  \begin{itemize}
                  \item Some text                         <------- fold will start here
                  This item will contain a nested item
@@ -1410,11 +1509,9 @@ startskip    A Pattern Which Defines The Beginning Of A "Skipped" Region.
                  \end{itemize}
 <            
              
-             Therefore, in order to completely define a folding item which allows
-             nesting, we need to also define a "skip" pattern. startskip and end
-             skip do that. Leave '' when there is no nesting.
-endskip      the pattern which defines the end of the "skip" pattern for nested
-             folds.
+             Therefore, in order to completely define a folding item which allows nesting, we need to also define a
+             "skip" pattern. startskip and end skip do that. Leave '' when there is no nesting.
+endskip      the pattern which defines the end of the "skip" pattern for nested folds.
 
 NOTE: Example 1
       ---------
@@ -1452,8 +1549,8 @@ Latex-Suite Commands and Maps                        *ls_9*
 |ls_9_2| Latex Suite Commands
 
 
-LatexSuite defines set of commands for non-GUI and power users. They are taking
-care about Macros, Templates and Packages.
+This section describes the maps and commands used in Latex-Suite. It also
+describes a way to change the map sequences according to your preference.
 
 
 --------------------------------------------------------------------------------
@@ -1478,11 +1575,9 @@ following in your ~/.vimrc. >
 
 NOTE: To change the IMAP mappings which affect jumping between placeholders, the
       map statement above has to be placed in your ~/.vimrc. For other mappings
-      you can place the map statement in your $VIM/ftplugin/tex.vim file.
-      
-      The reason for this is that the <C-j> maps are created in
-      plugin/imaps.vim, which is sourced as soon as Vim starts before sourcing
-      any ftplugin files.
+      you can place the map statement in your $VIM/ftplugin/tex.vim file. The
+      reason for this is that the <C-j> maps are created in plugin/imaps.vim,
+      which is sourced as soon as Vim starts before sourcing any ftplugin files.
       
       
 
@@ -1644,14 +1739,10 @@ Accepts arguments: n> inserts section name in <n> logical level. Levels are:
 
 +<n>    inserts section name <n> logical levels above the last used comand
 -<n>    inserts section name <n> logical levels below the last used comand
-+       inserts section name one logical level below the last used command (equal
-        to +1).
-++      inserts section name two logical levels below the last used command (equal
-        to +2).
--       inserts section name one logical level over the last used command (equal
-        to -1).
---      inserts section name two logical levels over the last used command (equal
-        to -2).
++       inserts section name one logical level below the last used command (equal to +1).
+++      inserts section name two logical levels below the last used command (equal to +2).
+-       inserts section name one logical level over the last used command (equal to -1).
+--      inserts section name two logical levels over the last used command (equal to -2).
 
 
 
@@ -1852,14 +1943,13 @@ setting each of the variables to zero will take away.
                                                                  *Tex_FontMenus*
                                                                *Tex_SectionMaps*
                                                               *Tex_SectionMenus*
-Setting                   Link to relevant section                 Default Value~
-g:Tex_EnvironmentMaps     Environment Mappings                     1
-                          [|insert-mode-environment-mappings|]     
-g:Tex_EnvironmentMenus                                             1
-g:Tex_FontMaps            Font Mappings [|font-maps|]              1
-g:Tex_FontMenus                                                    1
-g:Tex_SectionMaps         Section Mappings [|section-mappings|]    1
-g:Tex_SectionMenus                                                 1
+Setting                   Link to relevant section                                     Default Value~
+g:Tex_EnvironmentMaps     Environment Mappings [|insert-mode-environment-mappings|]    1
+g:Tex_EnvironmentMenus                                                                 1
+g:Tex_FontMaps            Font Mappings [|font-maps|]                                  1
+g:Tex_FontMenus                                                                        1
+g:Tex_SectionMaps         Section Mappings [|section-mappings|]                        1
+g:Tex_SectionMenus                                                                     1
 
 
 
@@ -2023,18 +2113,12 @@ These three settings affect the aesthetics of the completion functionality.
                                                        *Tex_ViewerPreviewHeight*
                                                             *Tex_ExplorerHeight*
                                                                   *Tex_ImageDir*
-Setting                      Explanation                         Default Value~
-g:Tex_ViewerCwindowHeight    The height of the cwindow which     5
-                             displays the list of \labels        
-                             etc.                                
-g:Tex_ViewerPreviewHeight    The height of the preview window    10
-                             which shows the context of a        
-                             \label etc.                         
-g:Tex_ExplorerHeight         The height of the explorer          10
-                             window which lists the files        
-                             from which to choose an image       
-                             file.                               
-g:Tex_ImageDir               The directory to scan for images    ''
+Setting                      Explanation                                                                        Default Value~
+g:Tex_ViewerCwindowHeight    The height of the cwindow which displays the list of \labels etc.                  5
+g:Tex_ViewerPreviewHeight    The height of the preview window which shows the context of a \label etc.          10
+g:Tex_ExplorerHeight         The height of the explorer window which lists the files from which to choose an    10
+                             image file.                                                                        
+g:Tex_ImageDir               The directory to scan for images                                                   ''
 
 
 g:Tex_BIBINPUTS                                                  *ls_10_4_2*
@@ -2080,13 +2164,13 @@ g:Tex_DefaultTargetFormat                              *ls_10_5_1*
 
 
 Type             String
-Default Value    dvi for windows/*nix and
-                 pdf for mac
+Default Value    dvi for windows/*nix and pdf for mac
 
-Use this setting to choose the default compilation target. For example, setting
-this to pdf makes Latex-Suite compile a pdf file when you press \l. Make sure
-that a rule has been defined for compiling to this target format as described
-here [|Tex_CompileRule_format|].
+Use this setting to choose the default target format. For example, setting this
+to pdf makes Latex-Suite compile a pdf file when you press \ll and fire up the
+pdf viewer on pressing \lv. Make sure that a rules for compiling and viewing
+have been defined for this target format as described here
+[|Tex_CompileRule_format|] and here [|Tex_ViewRule_format|].
 
 
 g:Tex_CompileRule_<format>                              *ls_10_5_2*
@@ -2097,13 +2181,9 @@ Latex-Suite supports compiling into dvi, ps and pdf by default. All these rules
 are strings defined by default as follows:
 
 
-g:Tex_CompileRule_dvi    'latex
-                         -interaction=nonstopmode
-                         $*'
+g:Tex_CompileRule_dvi    'latex -interaction=nonstopmode $*'
 g:Tex_CompileRule_ps     'ps2pdf $*'
-g:Tex_CompileRule_pdf    'pdflatex
-                         -interaction=nonstopmode
-                         $*'
+g:Tex_CompileRule_pdf    'pdflatex -interaction=nonstopmode $*'
 
 If you desire forward and inverse searching via Latex-Suite, you will need to
 change g:Tex_CompileRule_dvi to include -src-specials. However, this has been
@@ -2353,17 +2433,15 @@ Lubomir Host         provided the diacritics and also helped in development.
 Alexander Wagner     valuable suggestions during development.
                      
                      
-Luc Hermitte         his variation of Stephen Riehm's bracketing system is used in
-                     latex-suite.
+Luc Hermitte         his variation of Stephen Riehm's bracketing system is used in latex-suite.
                      
                      
-Gergely Kontra       the clever little JumpFunc() in imaps.vim is due to him. The
-                     implementation of the templates also borrows from
-                     mu-template.vim by him.
+Gergely Kontra       the clever little JumpFunc() in imaps.vim is due to him. The implementation of the
+                     templates also borrows from mu-template.vim by him.
                      
                      
-Dimitri Antoniou     author of ltags and also provided the nice tip about forward
-                     / reverse search on DVI documents.
+Dimitri Antoniou     author of ltags and also provided the nice tip about forward / reverse search on
+                     DVI documents.
                      
                      
 Stephen Riehm        the extremely helpful bracketing system is from him.
@@ -2372,19 +2450,17 @@ Stephen Riehm        the extremely helpful bracketing system is from him.
 Alan Schmitt         provided some macros/folding elements.
                      
                      
-Hari Krishna Dara    for ExecMap(), the clever little function which makes typing
-                     visual mode mappings so much easier and error-free.
+Hari Krishna Dara    for ExecMap(), the clever little function which makes typing visual mode mappings
+                     so much easier and error-free.
                      
                      
-Alan G Isac          for the comprehensive BibT() function for entering bibtex
-                     entries.
+Alan G Isac          for the comprehensive BibT() function for entering bibtex entries.
                      
                      
 Gontran Baerts       for libList.vim
                      
                      
-Peter Heslin         useful discussion and also a lot of bug fixes. the
-                     %%fakesection in folding.vim.
+Peter Heslin         useful discussion and also a lot of bug fixes. the %%fakesection in folding.vim.
                      
                      
 
@@ -2409,7 +2485,6 @@ Vim folding
 The following modelines should nicely fold up the help manual.
 
 vim:ft=help:fdm=expr
-vim:foldexpr=getline(v\:lnum-1)=~"=\\\\{80,}"?"a1"\:(getline(v\:lnum+1)=~"=\\\\{80,}"?"s1"\:"=")
+vim:foldexpr=getline(v\:lnum-1)=~'-\\{80}'?'>2'\:getline(v\:lnum-1)=~'=\\{80}'?'>1'\:getline(v\:lnum)=~'=\\{80}'?'0'\:getline(v\:lnum)=~'-\\{80}'?'1'\:'='
 vim:foldtext=v\:folddashes.substitute(getline(v\:foldstart),"\\\\s*\\\\*.*","","")
 ================================================================================
-
