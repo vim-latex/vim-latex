@@ -2,7 +2,7 @@
 " 	     File: envmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
-"  CVS Header: 
+"  CVS Header: $Id$
 "  Description: mappings/menus for environments. 
 "=============================================================================
 
@@ -507,22 +507,11 @@ endfunction
 " PromptForEnvironment: prompts for an environment {{{
 " Description: 
 function! PromptForEnvironment(ask)
-
-	if !exists('s:common_env_prompt')
-		let s:common_env_prompt = 
-					\ "\n" .
-					\ Tex_CreatePrompt(g:Tex_PromptedEnvironments, 2, ',') .
-					\ "Enter number or name of environment: "
-	endif
-
-	let inp = input(a:ask.s:common_env_prompt)
-	if inp =~ '^[0-9]\+$'
-		let env = Tex_Strntok(g:Tex_PromptedEnvironments, ',', inp)
-	else
-		let env = inp
-	endif
-
-	return env
+	return Tex_ChooseFromPrompt(
+		\ a:ask."\n" . 
+		\ Tex_CreatePrompt(g:Tex_PromptedEnvironments, 2, ",") .
+		\ "\nEnter nae or number of environment :", 
+		\ g:Tex_PromptedEnvironments, ",")
 endfunction " }}}
 " Tex_DoEnvironment: fast insertion of environments {{{
 " Description:
@@ -597,10 +586,10 @@ function! Tex_PutEnvironment(env)
 					endif
 					let i = i + 1
 				endwhile
-			else
-				return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr><++>\<cr>\\end{".a:env."}<++>")
-			endif
 		endif
+		" If nothing before us managed to create an environment, then just
+		" create a bare-bones environment from the name.
+		return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr><++>\<cr>\\end{".a:env."}<++>")
 	endif
 endfunction " }}}
 " Mapping the <F5> key to insert/prompt for an environment/package {{{
