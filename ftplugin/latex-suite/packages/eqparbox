@@ -1,6 +1,6 @@
 let g:TeX_package_option_eqparbox = ''
 
 let g:TeX_package_eqparbox = 
-\ 'brs:eqparbox[<+pos+>][<+height+>][<+inner-pos+>]{<+tag+>}{<+text+>}<++>,'
+\ 'brs:eqparbox[<+pos+>][<+height+>][<+inner-pos+>]{<+tag+>}{<+text+>},'
 \.'bra:eqboxwidth'
 
