@@ -185,6 +185,8 @@ endfunction
 "   easy available through <F5> and <F7> shortcuts 
 function! Tex_pack_all(fname)
 
+	let g:lastname = a:fname
+
 	let pos = line('.').' | normal! '.virtcol('.').'|'
 	let currfile = expand('%:p')
 
@@ -201,8 +203,11 @@ function! Tex_pack_all(fname)
 
 	" Scan
 	while search('^\s*\\usepackage\_.\{-}{\_.\+}', 'W')
-		if line('.') > beginline 
-			break
+
+		if !exists("s:Tex_up_check")
+			if line('.') > beginline 
+				break
+			endif
 		endif
 
 		let saveA = @a
@@ -269,8 +274,10 @@ function! Tex_pack_all(fname)
 	let s:Tex_LookForCommand = g:Tex_PromptedCommandsDefault 
 	while search('^\s*\\newcommand\*\?{.\{-}}', 'W')
 
-		if line('.') > endline 
-			break
+		if !exists("s:Tex_up_check")
+			if line('.') > endline 
+				break
+			endif
 		endif
 
 		let newcommand = matchstr(getline('.'), '\\newcommand\*\?{\\\zs.\{-}\ze}')
@@ -286,8 +293,10 @@ function! Tex_pack_all(fname)
 	let s:Tex_LookForEnvironment = g:Tex_PromptedEnvironmentsDefault 
 	while search('^\s*\\newenvironment\*\?{.\{-}}', 'W')
 
-		if line('.') > endline 
-			break
+		if !exists("s:Tex_up_check")
+			if line('.') > endline 
+				break
+			endif
 		endif
 
 		let newenvironment = matchstr(getline('.'), '\\newenvironment\*\?{\zs.\{-}\ze}')
@@ -299,6 +308,45 @@ function! Tex_pack_all(fname)
 	if toquit
 		q	
 	endif
+	 
+	" Check if one of declared packages isn't user package in current (TODO:
+	" or $TEXINPUTS or declared in texrc or ...)
+	if !exists("s:Tex_up_check")
+		" Prevents endless loop
+		let s:Tex_up_check = 1
+
+		" Operate on list of packages from current/main file,
+		" g:Tex_package_detected will be changing
+		let tpd_orig = g:Tex_package_detected
+
+		" Iterate through original list
+		let fn = 1
+		while Tex_Strntok(tpd_orig, ',', fn) != ''
+			let userpackage = Tex_Strntok(tpd_orig, ',', fn)
+			let stypath = expand("%:p:h").'/'.userpackage.'.sty'
+
+			" If package with given name exists in user space (not TeX space)
+			" check if there are usepackage commands, newcommand etc.
+			if filereadable(stypath)
+				let g:path = stypath
+				call Tex_pack_all(stypath)
+
+				" Remove this file from list of buffers
+				exe 'bwipe '.stypath
+
+				" But add word completion - if such file exists probably there
+				" is huge collection of commands, <F7> doesn't solve
+				" everything
+				exe 'setlocal complete+=s'.stypath
+
+			endif
+
+			let fn = fn + 1
+
+		endwhile
+
+	endif
+	
 	exe pos
 endfunction
    
