@@ -90,6 +90,15 @@ function! RunLaTeX()
 	" close any preview windows left open.
 	pclose!
 
+	" If a *.latexmain file is found, then use that file to
+	" construct a main file.
+	if Tex_GetMainFileName() != ''
+		let mainfname = Tex_GetMainFileName()
+	else
+		" otherwise just use this file.
+		let mainfname = expand("%:t:r")
+	endif
+
 	" if a makefile exists, just use the make utility
 	if glob('makefile') != '' || glob('Makefile') != ''
 		let _makeprg = &l:makeprg
@@ -100,14 +109,7 @@ function! RunLaTeX()
 			exec 'make'
 		endif
 		let &l:makeprg = _makeprg
-	" otherwise if a *.latexmain file is found, then use that file to
-	" construct a main file.
-	elseif Tex_GetMainFileName() != ''
-		let mainfname = Tex_GetMainFileName()
-		exec 'make '.mainfname
 	else
-		" otherwise just use this file.
-		let mainfname = expand("%:t:r")
 		exec 'make '.mainfname
 	endif
 
