@@ -395,9 +395,9 @@ nmap <silent> <script> <plug>cleanHistory :call Tex_CleanSearchHistory()<CR>
 " Tex_GetVarValue: gets the value of the variable {{{
 " Description: 
 " 	See if a window-local, buffer-local or global variable with the given name
-" 	exists and if so, returns the corresponding value. Otherwise return the
-" 	provided default value.
-function! Tex_GetVarValue(varname, default)
+" 	exists and if so, returns the corresponding value. If none exist, return
+" 	an empty string.
+function! Tex_GetVarValue(varname)
 	if exists('w:'.a:varname)
 		return w:{a:varname}
 	elseif exists('b:'.a:varname)
@@ -405,7 +405,7 @@ function! Tex_GetVarValue(varname, default)
 	elseif exists('g:'.a:varname)
 		return g:{a:varname}
 	else
-		return a:default
+		return ''
 	endif
 endfunction " }}}
 " Tex_GetMainFileName: gets the name of the main file being compiled. {{{
@@ -432,8 +432,8 @@ function! Tex_GetMainFileName(...)
 
 	" If the user wants to use his own way to specify the main file name, then
 	" use it straight away.
-	if Tex_GetVarValue('Tex_MainFileExpression', '') != ''
-		exec 'let retval = '.Tex_GetVarValue('Tex_MainFileExpression', '')
+	if Tex_GetVarValue('Tex_MainFileExpression') != ''
+		exec 'let retval = '.Tex_GetVarValue('Tex_MainFileExpression')
 		return retval
 	endif
 
@@ -591,8 +591,8 @@ function! Tex_Debug(str, ...)
 	let s:debugString_ = (exists('s:debugString_') ? s:debugString_ : '')
 		\ . pattern.' : '.a:str."\n"
 
-	if Tex_GetVarValue('Tex_DebugLog', '') != ''
-		exec 'redir! >> '.Tex_GetVarValue('Tex_DebugLog', '')
+	if Tex_GetVarValue('Tex_DebugLog') != ''
+		exec 'redir! >> '.Tex_GetVarValue('Tex_DebugLog')
 		silent! echo pattern.' : '.a:str
 		redir END
 	endif
