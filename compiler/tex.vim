@@ -119,19 +119,24 @@ end
 " called, then he should use the g:Tex_CompilerFormat variable. This variable
 " needs to be complete, i.e it should contain $* and stuff.
 if exists('g:Tex_CompilerFormat')
-	let &makeprg = current_compiler.g:Tex_CompilerFormat
+	let &l:makeprg = current_compiler.' '.g:Tex_CompilerFormat
 else
+	if exists('g:Tex_EscapeChars')	" Use this if LaTeX Suite is installed.
+		let escChars = g:Tex_EscapeChars
+	elseif has('win32')
+		let escChars = ''
+	else
+		let escChars = '{}\'
+	endif
 	" Furthermore, if 'win32' is detected, then we want to set the arguments up so
 	" that miktex can handle it.
 	if has('win32')
-		let &makeprg = current_compiler.' --src-specials -interaction=nonstopmode $*'
+		let options = '--src-specials'
 	else
-		if &shell =~ 'sh'
-			let &makeprg = current_compiler.' \\nonstopmode \\input\{$*\}'
-		else
-			let &makeprg = current_compiler.' \nonstopmode \input{$*}'
-		endif
+		let options = ''
 	endif
+	let &l:makeprg = current_compiler . ' ' . options .
+				\ escape(' \nonstopmode \input{$*}', escChars)
 endif
 
 " }}}
