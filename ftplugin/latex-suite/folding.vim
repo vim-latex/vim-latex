@@ -3,7 +3,7 @@
 "      Author: Srinath Avadhanula
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Sun Oct 27 02:00 AM 2002 PST
+" Last Change: Sun Oct 27 10:00 PM 2002 PST
 " 
 "  Description: functions to interact with Syntaxfolds.vim
 "=============================================================================
@@ -161,32 +161,32 @@ function! MakeTexFolds(force)
 	" }}}
 	" {{{ subsubsection
 	call AddSyntaxFoldItem (
-		\ '^\s*\\subsubsection\*\={',
-		\ '^\s*\\section\|^\s*\\subsection\|^\s*\\subsubsection\|^\s*\\end{document}',
+		\ '^\s*\\subsubsection\W',
+		\ '^\s*%%fakesection\|^\s*\\section\|^\s*\\subsection\|^\s*\\subsubsection\|^\s*\\end{document}',
 		\ 0,
 		\ -1,
 		\ )
 	" }}}
 	" {{{ subsection
 	call AddSyntaxFoldItem (
-		\ '^\s*\\subsection\*\={',
-		\ '^\s*\\section\|^\s*\\subsection\|^\s*\\end{document}',
+		\ '^\s*\\subsection\W',
+		\ '^\s*%%fakesection\|^\s*\\section\|^\s*\\subsection\|^\s*\\end{document}',
 		\ 0,
 		\ -1,
 		\ )
 	" }}}
 	" {{{ section
 	call AddSyntaxFoldItem (
-		\ '^\s*\\section\*\={',
-		\ '^\s*\\section\|^\s*\\end{document}',
+		\ '^\s*\\section\W',
+		\ '^\s*%%fakesection\|^\s*\\section\|^\s*\\end{document}',
 		\ 0,
 		\ -1,
 		\ )
 	" }}}
 	" {{{ fakesection (for forcing a fold item manually)
 	call AddSyntaxFoldItem (
-		\ '%%fakesection',
-		\ '%%fakesection\|^\s*\\section\|^\s*\\subsection\|^\s*\\subsubsection\|^\s*\\end{document}',
+		\ '^\s*%%fakesection',
+		\ '^\s*%%fakesection\|^\s*\\section\|^\s*\\subsection\|^\s*\\subsubsection\|^\s*\\end{document}',
 		\ 0,
 		\ -1,
 		\ )
