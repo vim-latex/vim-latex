@@ -21,6 +21,8 @@ LONG OPTIONS
     numbers. Default to 'ls_' if unsupplied.
 """
 
+"$Id$"
+
 import xml.dom.minidom
 import getopt
 import string
@@ -118,7 +120,7 @@ def makeAnchorHash(rootElement):
 
         NUM_ANCHORS[0] += 1
         if ANCHOR_HASH.has_key(anchor.getAttribute('id')) or TOC_HASH.has_key(anchor.getAttribute('id')):
-            print >> STDERR, "anchor [%s] multiply defined" % anchor.getAttribute('id')
+            print >> STDERR, "Warning: anchor [%s] multiply defined" % anchor.getAttribute('id')
 
         ANCHOR_HASH[anchor.getAttribute('id')] = TOC_PREFIX + 'a_' + encodeTo52(NUM_ANCHORS[0] + 52)
     
@@ -442,7 +444,7 @@ def calculateColumnWidthsDoublePass(rows, width):
 # handleCode(code, width): {{{
 def handleCode(code, width):
     retText =  GetText(code.childNodes)
-    return " >\n" + VertCatString("    ", 4, retText) + "&codeend;"
+    return " &codebegin;\n" + VertCatString("    ", 4, retText) + "&codeend;"
 
 
 # }}}
@@ -549,11 +551,6 @@ def handleLink(link, width):
 # }}}
 # handleAnchor(anchor, width): {{{
 def handleAnchor(anchor, width):
-    if anchor.getAttribute('processed') == '1':
-        return ''
-
-    anchor.setAttribute('processed', '1')
-
     anchorText = '*'+anchor.getAttribute('id')+'* '
     anchorText += '*'+ANCHOR_HASH[anchor.getAttribute('id')]+'*'
     return RightJustify(anchorText, width) \
@@ -667,6 +664,23 @@ def printerr(statement):
         print >> STDERR, statement
 
 # }}}
+# replaceComment(matchobj) {{{
+def replaceComment(matchobj):
+    initspace = matchobj.group(1)
+    firstsent = matchobj.group(2)
+    code = matchobj.group(3)
+
+    if len(initspace) > 0:
+        if initspace[0] == '<':
+            lastspace = initspace
+        else:
+            lastspace = '<' + initspace[:-1]
+    else:
+	lastspace = initspace
+
+    return '\n' + initspace + firstsent + ' >\n' + code + '\n' + lastspace
+    
+# }}}
 # main function {{{
 if __name__ == "__main__":
     option = {}
@@ -724,9 +738,11 @@ vim:foldtext=substitute(v\:folddashes.substitute(getline(v\:foldstart),'\\s*\\*.
 
     STRICT = option.has_key('-s')
 
+    pattern = re.compile(r'\n([< ]*)([^\n]+)&codebegin;\n(.*?)&codeend;', re.DOTALL)
+
     processedDoc = handleElement(dom.documentElement)
-    processedDoc = re.sub(r'&codeend;([^\n]*)\n\s([ ]+)', '\n<\g<2>\g<1>\n \g<2>', processedDoc)
-    processedDoc = re.sub(r'&codeend;([^\n]*)\n(?=[^ ]|\n)', '\n\g<1>\n', processedDoc)
+    while re.search('&codebegin;', processedDoc):
+        processedDoc = re.sub(pattern, replaceComment, processedDoc)
 
     urlsection = r"""
 ================================================================================
