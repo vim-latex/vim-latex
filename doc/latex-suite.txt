@@ -1,6 +1,6 @@
 *latex-suite*   Tools for an enhanced LaTeX environment in Vim
                         For Vim version 6.0 and above.
-                  Last Change: sob maj 11 05:00  2002 U
+                  Last Change: czw maj 16 06:00  2002 C
 
                  By Srinath Avadhanula <srinath@fastmail.fm>,
                       Mikolaj Machowski <mikmach@wp.pl>
@@ -13,6 +13,12 @@ macros to speed up editing LaTeX documents to functions for forward searching
 .dvi documents. Latex-suite has been possible because of the contributions of
 many people. Please see |latex-suite-credits| for a list of people who have
 helped.
+
+For license and conditions of use look |copyright|. All occurences of ``Vim''
+replace with ``latexSuite'', and as maintainers and owners of copyrights are
+Srinath Avadhanula and Mikolaj Machowski.
+
+Homepage: http://vim-latex.sourceforge.net
 
 {Vi of course does not have any of this}
 NOTE: If you are viewing this in vim 6.0+, then the sections should appear
@@ -592,8 +598,8 @@ dictionary file should follow outlines specified in 'dictionary'.
                                                         *latex-package-file*
 A latex-package-file is a simple vim script which defines some global
 variables. These global variables are used by latex-suite to create the custom
-menu. See the latex-suite/packages/exmpl file for a simple example of how to
-define a customized package file.
+menu. See the |latex-package-file-writing| section how to define a customized
+package file.
 
 If you do make a package file for latex-suite, please consider contacting the
 |latex-suite-maintainer|.
@@ -601,7 +607,7 @@ If you do make a package file for latex-suite, please consider contacting the
 Example: 
 
 From the packages menu, choose the >
-    Tex-Packages.Supported1.SIunits 
+    Tex-Packages.Supported.SIunits 
 option. This will insert a line of form: >
     \usepackage[«»]«»{SIunits}«»
 at the beginning of the file (with the cursor placed at the first
@@ -635,6 +641,64 @@ You can perform the following actions via the packages menu:
                    form:
                         \usepackage[«»]{package_name}
                    A |latex-package-dictionary| might also be created.
+
+                                               *latex-package-file-writing*
+Writing package files is very easy and gives possibility of creating simple
+templates with prefixes to command. Package file have to contain two
+variables:
+g:TeX_package_option_<package> and g:TeX_package_<package>
+
+First contain package options, second various commands supplied with
+<package>.
+
+Package option variable: >
+    g:TeX_package_option_<package> = "Option,Option2="
+= at the end gives: >
+    Option2=x,<<>>
+Here is allowed one prefix:
+{sbr:option} Breaks option menu into submenu. {option} is the name of submenu.
+
+Package variable: >
+    g:TeX_package_<package> = "pre:Command,pre:Command1"
+More detailed example is in latex-suite/packages/exmpl file (slightly
+outdated).
+Here is short summary of prefixes which can be used in package files:
+(x - place with cursor, <<>> - |placeholder|)
+
+{env:command}  Environment: creates simple environment template >
+            \begin{command}
+                x 
+            \end{command}<<>>
+{eno:command}  Environment with option: >
+            \begin[x]{command}
+                <<>>
+            \end{command}<<>>
+{ens:command[<<option>>]...}  Environment special: >
+            \begin[<<option>>]...{command}
+                <<>>
+            \end{command}<<>>
+{bra:command} Brackets: >
+            \command{x}<<>>
+{brd:command} Brackets double: >
+            \command{x}{<<>>}<<>>
+{brs:command[<<option>>]...} Brackets special (as environment special: >
+            \command[<<x>>]{<<>>}{<<>>}<<>>
+{nor:command} Normal: >
+            \command<Space>
+{noo:command} Normal with option: >
+            \command[x]<<>>
+{nob:command} Normal with option and brackets: >
+            \command[x]{<<>>}<<>>
+{pla:command} Plain: >
+            command<Space>
+{spe:command} Special: >
+            command   <-literal insertion of command
+{sep:command} creates separator. Good for aesthetics and usability :)
+{sbr:command} Breaks menu into submenus. <command> will be title of submenu.
+            Can be used also in package variable.
+
+Command can be also given without prefix:. The result is >
+           \command
 
 }}}
 ===========================================================================
