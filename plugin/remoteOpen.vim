@@ -49,10 +49,12 @@ function! RemoteOpen(arglist)
 		let linenum = 1
 		let filename = matchstr(a:arglist, '^\s*\zs.*\ze')
 	endif
+	call Tex_Debug("linenum = ".linenum.', filename = '.filename, "ropen")
 
 	" If there is no clientserver functionality, then just open in the present
 	" session and return
 	if !has('clientserver')
+		call Tex_Debug("-clientserver, opening locally and returning", "ropen")
 		exec "e ".filename
 		exec linenum
 		normal! zv
@@ -63,6 +65,7 @@ function! RemoteOpen(arglist)
 	let servers = serverlist()
 	" If there are no servers, open file locally.
 	if servers == ''
+		call Tex_Debug("no open servers, opening locally", "ropen")
 		exec "e ".filename
 		exec linenum
 		let g:Remote_Server = 1
@@ -89,8 +92,12 @@ function! RemoteOpen(arglist)
 			" ask the server to edit that file and come to the foreground.
 			" set a variable g:Remote_Server to indicate that this server
 			" session has at least one file opened via RemoteOpen
-			call remote_send(server, "\<C-\>\<C-n>:drop ".filename."\<CR>:".linenum."\<CR>:normal! zv\<CR>")
-			call remote_send(server, ":let g:Remote_Server = 1\<CR>")
+			call remote_send(server, 
+				\ "\<C-\>\<C-n>".
+				\ ":let g:Remote_Server = 1\<CR>".
+				\ ":drop ".filename."\<CR>".
+				\ ":".linenum."\<CR>zv"
+				\ )
 			call remote_foreground(server)
 			" quit this vim session
 			q
@@ -101,13 +108,18 @@ function! RemoteOpen(arglist)
 		let i = i + 1
 		let server = s:Strntok(servers, "\n", i) 
 	endwhile
+	call Tex_Debug("no server has file open, but firstServer = ".firstServer, "ropen")
 
 	" If none of the servers have the file open, then open this file in the
 	" first server. This has the advantage if yap tries to make vim open
 	" multiple vims, then at least they will all be opened by the same gvim
 	" server.
-	call remote_send(firstServer, "\<C-\>\<C-n>:drop ".filename."\<CR>:".linenum."\<CR>:normal! zv\<CR>")
-	call remote_send(firstServer, ":let g:Remote_Server = 1\<CR>")
+	call remote_send(firstServer, 
+		\ "\<C-\>\<C-n>".
+		\ ":let g:Remote_Server = 1\<CR>".
+		\ ":drop ".filename."\<CR>".
+		\ ":".linenum."\<CR>zv"
+		\ )
 	call remote_foreground(firstServer)
 	" quit this vim session
 	if v:servername != firstServer
