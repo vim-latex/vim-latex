@@ -108,8 +108,8 @@ function! <SID>DeleteMacro(...)
 		let filename = s:ChooseMacro('Choose a macro file for deletion :')
 	endif
 
-	" Remove only if filename is in local directory
 	if !filereadable(s:macrodirpath.filename)
+	" When file is not in local directory decline to remove it.
 		call confirm('This file is not in your local directory: '.filename."\n".
 					\ 'It will not be deleted.' , '&OK', 1)
 
@@ -132,17 +132,44 @@ function! <SID>EditMacro(...)
 	endif
 
 	if filereadable(s:macrodirpath.filename)
+		" If file exists in local directory open it. 
 		exe 'split '.s:macrodirpath.filename
 	else
+		" But if file doesn't exist in local dir it probably is in user
+		" restricted area. Instead opening try to copy it to local dir.
+		" Pity VimL doesn't have mkdir() function :)
 		let ch = confirm("You are trying to edit file which is probably read-only.\n".
 					\ "It will be copied to your local LaTeX-Suite macros directory\n".
 					\ "and you will be operating on local copy with suffix -local.\n".
 					\ "It will succeed only if ftplugin/latex-suite/macros dir exists.\n".
 					\ "Do you agree?", "&Yes\n&No", 1)
 		if ch == 1
-			new
-			exe '0read '.Tex_FindInRtp(filename, 'macros')
-			exe 'write '.s:macrodirpath.filename.'-local'
+			" But there is possibility we already created local modification.
+			" Check it and offer opening this file.
+			if filereadable(s:macrodirpath.filename.'-local')
+				let ch = confirm('Local version of '.filename." already exists.\n".
+					\ 'Do you want to open it or overwrite with original version?',
+					\ "&Open\nOver&write\n&Cancel", 1)
+				if ch == 1
+					exe 'split '.s:macrodirpath.filename.'-local'
+				elseif ch == 2
+					new
+					exe '0read '.Tex_FindInRtp(filename, 'macros')
+					" This is possible macro was edited before, wipe it out.
+					if bufexists(s:macrodirpath.filename.'-local')
+						exe 'bwipe '.s:macrodirpath.filename.'-local'
+					endif
+					exe 'write! '.s:macrodirpath.filename.'-local'
+				else
+					return
+				endif
+			else
+			" If file doesn't exist, open new file, read in system macro and
+			" save it in local macro dir with suffix -local
+				new
+				exe '0read '.Tex_FindInRtp(filename, 'macros')
+				exe 'write '.s:macrodirpath.filename.'-local'
+			endif
 		endif
 		
 	endif
