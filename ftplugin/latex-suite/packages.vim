@@ -213,7 +213,7 @@ function! Tex_pack_all(fname)
 		elseif getline('.') =~ '\\usepackage\['
 			" Entering here means that the user has split the \usepackage
 			" across newlines. Therefore, use yank.
-			exec "normal! /\[\<CR>lv/\]\<CR>h\"ay"
+			exec "normal! /{\<CR>\"ayi}"
 			let options = @a
 		else
 			let options = ''
@@ -222,7 +222,7 @@ function! Tex_pack_all(fname)
 		" The following statement puts the stuff between the { }'s of a
 		" \usepackage{stuff,foo} into @a. Do not use matchstr() and the like
 		" because we can have things split across lines and such.
-		exec "normal! /{\<CR>lv/}\<CR>h\"ay"
+       	exec "normal! /{\<CR>\"ayi}"
 
 		" now remove all whitespace from @a. We need to remove \n and \r
 		" because we can encounter stuff like
