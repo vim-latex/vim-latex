@@ -1694,32 +1694,121 @@ newfile.tex [Preview]                                         11,3           21%
     change these rules in texrc according to your local tex environment.
    </para>
    <note>
-    <title>Handling Dependencies in compilation</title>
-    <para>
-     Specifying a different format does not automatically account for
-     dependencies. For example, if in your case, you use
-     <programlisting>.tex -&gt; .dvi -&gt; .ps -&gt; .pdf</programlisting>
-     to generate PDF files from DVI, then you will need to choose dvi first,
-     compile, change format to ps, compile, change format and so on. You could
-     automate this via a mapping as follows:
-     <programlisting>function! Tex_CompileToPDF()
-    TCTarget dvi
-    normal \ll
-    TCTarget ps
-    normal \ll
-    TCTarget pdf
-    normal \ll
-endfunction
-nmap \pdf :call Tex_CompileToPDF()&lt;CR&gt;</programlisting>
-    </para>
-   </note>
-   <note>
     <para>
      For win32 users user MikTeX, sometimes the latex compiler's output has a
      bug where a single number is split across different lines. In this case,
      put the included <literal>vim-latex</literal> file distributed with &ls;.
     </para>
    </note>
+  </section>
+  <section id="compiler-dependency">
+   <title>Handling dependencies in compilation</title>
+   <para>
+    &ls; also handles compiling dependencies automatically via certain
+    rules which specify the "dependency chain" for each target format. 
+    For example, if in your case, you use
+    <programlisting>.tex -&gt; .dvi -&gt; .ps -&gt; .pdf</programlisting>
+    to generate <literal>pdf</literal> files from <literal>dvi</literal>
+    files, then you will need to specify the following setting in your
+    latex-suite configuration (see <link
+     linkend="customizing-latex-suite">customizing &ls;</link> for where
+    these settings should go):
+    <programlisting>
+let g:Tex_FormatDependency_pdf = 'dvi,ps,pdf'
+</programlisting>
+    This is a comma seperated string of formats specifying the order in
+    which the formats to be compiled into should be chosen.  With this
+    setting, if you set the target format to <literal>pdf</literal>, then
+    the next time you compile via the <literal>\ll</literal> shortcut, &ls;
+    will first generate a <literal>dvi</literal> file, then use that to
+    generate the <literal>ps</literal> file and finally create the
+    <literal>pdf</literal> file from that.
+   </para>
+   <note>
+    <para>
+     If any of the intermediate formats is listed in the
+     <literal>g:Tex_MultipleCompileFormats</literal> setting as described
+     in the section <link linkend="compiling-multiple">Compiling multiple
+      times</link>, then &ls; might make multiple calls to the compiler to
+     generate the output file of that format.
+    </para>
+   </note>
+   <para>
+    Along with the <literal>g:Tex_FormatDependency_{format}</literal>
+    setting, you should ofcourse specify the rule for compiling to each of
+    the formats as described in the <link linkend="compiler-rules">previous
+    section</link>. For example, with the setting above, you could use:
+    <programlisting>
+let g:Tex_CompileRule_dvi = 'latex --interaction=nonstopmode $*'
+let g:Tex_CompileRule_ps = 'dvips -Ppdf -o $*.ps $*.dvi'
+let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'
+    </programlisting>
+   </para>
+   <note>
+    <para>
+     By default, &ls; does not specify any compiler dependencies. Each
+     target format for which a rule has been derived will be compiled
+     independently.
+    </para>
+   </note>
+  </section>
+  <section id="compiling-multiple">
+   <title>Compiling multiple times</title>
+   <para>
+    Most &latex; compilers need to be re-run several times in several
+    commonly occuring situations in order to get a final camera ready copy.
+    For example, when <literal>\label</literal>'s change, when new
+    <literal>\cite</literal> commands are added etc. If the target format
+    you are compiling to requires multiple compilations, then you will
+    need to include the format in the
+    <literal>g:Tex_MultipleCompileFormats</literal> setting. This is a
+    comma seperated string of formats which need multiple compilations to
+    be generated correctly.
+   </para>
+   <para>
+    By default, this setting contains just the <literal>dvi</literal>
+    format. If you use the <literal>pdflatex</literal> compiler to generate
+    <literal>pdf</literal> files, then you might want to also include
+    <literal>pdf</literal> into the above setting.
+   </para>
+   <para>
+    For every format included in the
+    <literal>g:Tex_MultipleCompileFormats</literal> setting described
+    above, &ls; will use the following logic to generate the file. Note
+    that although the following description uses <literal>latex</literal>
+    to refer to the compiler, it could be some other compiler such as
+    <literal>pdflatex</literal> for generating <literal>pdf</literal>
+    output.
+   </para>
+   <para>
+    <orderedlist>
+     <listitem>First <literal>latex</literal> is run.</listitem>
+     <listitem>If the <literal>.aux</literal> file generated from the first
+      step above contains a <literal>\bibdata</literal> line, then it
+      means that we are using a <literal>.bib</literal> file. Therefore,
+      &ls; runs <literal>bibtex</literal>.</listitem>
+     <listitem>
+      If the <literal>.bbl</literal> file changes because of this, then we
+      note that we need to rerun &latex; again.
+     </listitem>
+     <listitem>If running latex generates a <literal>.idx</literal> file,
+      then we run <literal>makeindex</literal>. If the
+      <literal>.idx</literal> file is changed by
+      <literal>makeindex</literal>, then we note that we need to rerun
+      latex.</listitem>
+     <listitem>Also, we check to see if the &latex; compiler gives certain
+      standard warnings which notify that we need to compile once again. In
+      this case also, we note that we need to rerun &latex;.</listitem>
+     <listitem>If we found that we needed to rerun latex, then we repeat
+      the steps above.</listitem>
+    </orderedlist>
+   </para>
+   <para>
+    The &latex; file is compiled atmost 5 times using this logic.  These
+    steps will ensure that on most platforms/environments, you will get a
+    clean output with all the cross-references, citations etc correctly
+    labelled and ordered. 
+   </para>
   </section>
   <section id="latex-master-file">
    <title>Specifying which file to compile</title>
@@ -3106,6 +3195,49 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
      change <literal>g:Tex_CompileRule_dvi</literal> to include
      <literal>-src-specials</literal>. However, this has been known to cause
      problems with the output file. Therefore, use this with care.
+    </para>
+   </section>
+   <section fd="Tex_FormatDependency_format">
+    <title>g:Tex_FormatDependency_&lt;format&gt;</title>
+    <para>
+     <informaltable frame="all">
+      <tgroup cols="2">
+       <tbody>
+        <row><entry>Type</entry><entry>string</entry></row>
+        <row><entry>Default Value</entry>
+         <entry><literal>''</literal></entry></row>
+       </tbody>
+      </tgroup>
+     </informaltable>
+     By default, there are no format dependencies defined. Each definition
+     is of the form above where <literal>&lt;format&gt;</literal> is a
+     string such as <literal>'dvi'</literal> etc.
+    </para>
+    <para>
+     The value of each string is a comma seperated string such as 'dvi,ps'.
+     See the <link linkend="compiler-dependency">Compiler dependency</link>
+     section to see how to use/specify this setting
+    </para>
+   </section>
+   <section id="Tex_MultipleCompileFormats">
+    <title>g:Tex_MultipleCompileFormats</title>
+    <para>
+     <informaltable frame="all">
+      <tgroup cols="2">
+       <tbody>
+        <row><entry>Type</entry><entry>string</entry></row>
+        <row><entry>Default Value</entry>
+         <entry><literal>'dvi'</literal></entry></row>
+       </tbody>
+      </tgroup>
+     </informaltable>
+    </para>
+    <para>
+     This is a comma seperated string of formats for which the compiler
+     needs to be called multiple times in order to get cross-references,
+     citations etc right. See the <link
+      linkend="compiling-multiple">Compiling multiple times</link> section
+     for details.
     </para>
    </section>
    <section id="Tex_IgnoredWarnings">
