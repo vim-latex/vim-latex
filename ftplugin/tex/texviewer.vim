@@ -8,14 +8,22 @@
 " ============================================================================
 
 if exists("g:Tex_Completion")
+	call Tex_SetTexViewerMaps()
 	finish
 endif
+let g:Tex_Completion = 1
 
-inoremap <silent> <Plug>Tex_Completion <Esc>:call Tex_completion("default","text")<CR>
+" Tex_SetTexViewerMaps: sets maps for this ftplugin {{{
+function! Tex_SetTexViewerMaps()
+	inoremap <silent> <Plug>Tex_Completion <Esc>:call Tex_completion("default","text")<CR>
+	if !hasmapto('<Plug>Tex_Completion', 'i')
+		imap <buffer> <silent> <F9> <Plug>Tex_Completion
+	endif
+endfunction
 
-if !hasmapto('<Plug>Tex_Completion', 'i')
-	imap <buffer> <silent> <F9> <Plug>Tex_Completion
-endif
+" call this function the first time
+call Tex_SetTexViewerMaps()
+" }}}
 
 command -nargs=1 TLook call <SID>Tex_look(<q-args>)
 command -nargs=1 TLookAll call <SID>Tex_lookall(<q-args>)
@@ -559,7 +567,6 @@ function! s:Tex_RelPath(explfilename,texfilename)
 	return relpath
 endfunction " }}}
 
-let g:Tex_Completion = 1
 " this statement has to be at the end.
 let s:doneOnce = 1
 
