@@ -395,7 +395,7 @@ endfunction
 "       prepending the preamble and \end{document} and then asks Tex_RunLaTeX() to
 "       compile it.
 function! Tex_PartCompile() range
-	call Tex_Debug('getting to Tex_PartCompile', 'comp')
+	call Tex_Debug('+Tex_PartCompile', 'comp')
 	" Save position
 	let pos = line('.').' | normal! '.virtcol('.').'|'
 
@@ -425,7 +425,7 @@ function! Tex_PartCompile() range
 
 	" If mainfile exists open it in tiny window and extract preamble there,
 	" otherwise do it from current file
-	let mainfile = Tex_GetMainFileName(":p:r")
+	let mainfile = Tex_GetMainFileName(":p")
 	exe 'bot 1 split '.escape(mainfile, ' ')
 	exe '1,/\s*\\begin{document}/w '.tmpfile
 	wincmd q
