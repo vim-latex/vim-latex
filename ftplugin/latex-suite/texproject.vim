@@ -22,8 +22,9 @@ command! -nargs=0 TProject      :call <SID>Tex_Project()
 function! s:Tex_ProjectEdit()
 
 	let file = expand("%:p")
-	if Tex_GetMainFileName() != ''
-		exe 'split '.Tex_GetMainFileName(":p")
+	let mainfname = Tex_GetMainFileName()
+	if glob(mainfname.'.latexmain') != ''
+		exe 'split '.mainfname.'.latexmain'
 	else
 		exe 'split '.escape(s:path.'/projecttemplate.vim', ' ')
 		exe 'saveas '.escape(file.'.latexmain', ' ')
@@ -36,9 +37,9 @@ endfunction " }}}
 "
 function! s:Tex_ProjectWrite()
 
-	if expand("%") =~ 'latexmain$'
+	if expand("%:e") =~ 'latexmain$'
 		write!
-		exe 'source '.Tex_GetMainFileName(":p")
+		source %
 		q
 	else
 		echoerr "Sorry, this is not project file"
@@ -63,8 +64,8 @@ function! s:Tex_Project()
 endfunction " }}}
 
 " Load project file if exists
-if Tex_GetMainFileName() != '' && Tex_GetMainFileName(':e') == 'latexmain'
-	exe 'source '.Tex_GetMainFileName(":p")
+if glob(Tex_GetMainFileName().'.latexmain') != ''
+	exe 'source '.Tex_GetMainFileName().'.latexmain'
 	let g:Tex_ProjectExists = 1
 else
 	let g:Tex_ProjectExists = 0
