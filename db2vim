@@ -413,7 +413,7 @@ def calculateColumnWidths(rows, alloc_widths):
 # calculateColumnWidthsDoublePass(rows, width): {{{
 def calculateColumnWidthsDoublePass(rows, width):
     maxwidths, text = calculateColumnWidths(rows, [width])
-    if sum(maxwidths.values()) <= width:
+    if reduce(lambda x, y: x+y, maxwidths.values()) <= width:
         return maxwidths, text
 
     # now find out how many columns exceed the maximum permitted width.
