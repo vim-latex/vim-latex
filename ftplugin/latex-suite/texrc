@@ -414,8 +414,11 @@ TexLet g:Tex_SmartKeyDot = 1
 " TeX Viewer: {{{
 " Options for preview window for ref/cite completion.
 
+" Height of cwindow
+TexLet g:Tex_ViewerCwindowHeight = 5 
+
 " Height of preview window
-TexLet g:Tex_PreviewHeight = 10
+TexLet g:Tex_ViewerPreviewHeight = 10 
 
 " }}}
 
