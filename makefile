@@ -13,6 +13,7 @@ latexs:
 	zip latexSuite.zip plugin/libList.vim
 	# ftplugins
 	zip latexSuite.zip ftplugin/tex_latexSuite.vim
+	zip latexSuite.zip ftplugin/tex/*.vim
 	# files in the latex-suite directory. Skip the CVS files.
 	zip -R latexSuite.zip `find ftplugin/latex-suite -name '*' | grep -v CVS`
 	# documentation
