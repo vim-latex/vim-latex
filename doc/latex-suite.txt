@@ -1,6 +1,6 @@
 *latex-suite*   Tools for an enhanced LaTeX environment in Vim
                         For Vim version 6.0 and above.
-                  Last Change: Tue Dec 31 01:00 AM 2002 PST
+                  Last Change: Sat Apr 12 06:00 PM 2003 
 
                  By Srinath Avadhanula <srinath@fastmail.fm>,
                       Mikolaj Machowski <mikmach@wp.pl>,
@@ -48,12 +48,12 @@ file:  >
     " of indentation.
 <   set sw=2 >
     " TIP: if you write your \label's as \label{fig:something}, then if you
-    " type in \ref{fig: and press <C-n> you will automatically cycle through 
+    " type in \ref{fig: and press <C-n> you will automatically cycle through
     " all the figure labels. Very useful!
 <   set iskeyword+=: >
     " IMPORTANT: If you are a win32 user, then the following setting is
     " necessary in order to have latex called correctly from within Vim.
-<   set shellslash 
+<   set shellslash
 
 
 The tools which are included in LaTeX suite can be grouped together into the
@@ -64,7 +64,7 @@ complete list of variables which can be customized.
 }}}
 ===========================================================================
 TABLE OF CONTENTS                           *latex-suite-toc* {{{
-                                                          
+
 Editing
 =======
     |latex-macros|
@@ -75,9 +75,9 @@ Editing
         Mappings of some common keys like <BS> to make editing faster.
 
     |latex-completion|
-        Fast access to important data. Most notable are bibliography keys and
-        labels, also fast inserting of file names in proper manner depending
-        on context. Everything with one key!
+        Easily insert references to labels, bibliographic entries. The same
+        key also works to insert file names for things such as
+        \includegraphics{}.
 
     |latex-bracketing-macros|
         A streamlined way of entering all the \left's and \right's while
@@ -95,7 +95,7 @@ Editing
 
 Compiling/Viewing/Searching
 ===========================
-    |latex-compiling|     
+    |latex-compiling|
         A customizable compiler which can be dynamically reconfigured to
         change what kinds of warnings/errors to ignore.
 
@@ -114,7 +114,7 @@ Compiling/Viewing/Searching
 
 Folding
 =======
-    |latex-folding|       
+    |latex-folding|
         Manual folding based on LaTeX syntax elements.
 
 Package Support
@@ -125,12 +125,12 @@ Package Support
 
 Miscelleneous Stuff
 ===================
-    |latex-help|          
+    |latex-help|
         LaTeX's tex-info file translated into a Vim help file.
-    
-    |latex-dictionary|   
+
+    |latex-dictionary|
         A dictionary of standard LaTeX terms.
-    
+
     |latex-tools|
         This version of latex-suite also ships with an external tools:
         2. |ltags| A script to generate a tags file. It recognizes files being
@@ -140,7 +140,7 @@ Miscelleneous Stuff
 LATEX MACROS                                   *latex-macros* {{{
 
 Latex-Suite ships with a very comprehensive set of insert mode and visual mode
-mappings and menu items to typeset most of the LaTeX elements. 
+mappings and menu items to typeset most of the LaTeX elements.
 
                                               *placeholders* *placeholder*
                                               *place-holder* *place-holders*
@@ -203,9 +203,9 @@ Method 4:
     Environments can also be inserted by pressing a 3 capital letter sequence
     starting with an E. The following subsection describes this in detail. The
     sequence of 3 letters generally tries to follow the following rules:
-    
+
     1. All environment mappings begin with 'E'
-    
+
     2. If the environment can be broken up into 2 distinct words, such as
        flushright (flush + right), then the next 2 letters are the first
        letters of the 2 words.
@@ -213,13 +213,13 @@ Method 4:
             flushleft  (_f_lush + _l_eft)  ---> EFL
             flushright (_f_lush + _r_ight) ---> EFR
             eqnarray   (_e_qn + _a_rray)   ---> EEA
-    
+
 <      If on the other hand, the environment name cannot be broken up into 2
        distinct words, then the next 2 letters are the first 2 letters of the name
        of the environment.
        Example: >
             equation (_eq_uation)          ---> EEQ
-    
+
 <      Of course, not every last one of the environments can follow this rule
        because of ambiguities. In case of doubt, pull down the
        Tex-Environments menu. The menu item should give the hint for the map.
@@ -264,7 +264,7 @@ depending on character-wise or line-wise selection.
 
 }}}
 ---------------------------------------------------------------------------
-Section Mappings: {{{ 
+Section Mappings: {{{
 
 Inserts LaTeX sections: >
       \section
@@ -294,7 +294,7 @@ Example:
 
 }}}
 ---------------------------------------------------------------------------
-AUC-TEX key bindings: {{{ 
+AUC-TEX key bindings: {{{
 
 These are simple 2 key expansions for some very commonly used LaTeX elements.
    Examples: >
@@ -325,7 +325,7 @@ These are simple 2 key expansions for some very commonly used LaTeX elements.
 	`2   expands to   \sqrt{<++>}<++>
 	`|   expands to   \Big|
 	`I   expands to   \int_{<++>}^{<++>}<++>"
-<   
+<
     (again, notice the convenient place-holders)
 
 In addition the visual mode macros are provided:
@@ -349,8 +349,8 @@ Diacritics speed up typing European languages.
     =<l>     expands to \'{<l>}
 <   where <l> is a letter ('a' to 'z' and 'A' to 'Z')
 >
-    +}       expands to \"{a} 
-    +:       expands to \^{o} 
+    +}       expands to \"{a}
+    +:       expands to \^{o}
 <
 Latex-Suite also ships with a function SmartBS(), which offers another
 convinience, i.e diacritic characters are treated as a single character for
@@ -419,58 +419,87 @@ Smart Dots
 ===========================================================================
 LATEX COMPLETION                            *latex-completion* {{{
 
-After pressing "<magic_key>" (default <F9>) Latex-suite will try to complete
-argument of command (part between {}). Now available is support for \cite,
-\ref and their cousins. Also for \includegraphics and \bibliography
-(|latex-completion-explorer|). More to come.
+This module provides an easy way to insert references to labels and
+bibliographic entries. Suppose you want to refer to an equation which is
+labelled as "eqn:eq-1" using the \label{eqn:eq-1} command. Somewhere in the
+text, you write "\ref{" with the cursor after the {. Now if you press <F9>,
+Latex-suite will try to search through all the .tex files in the present
+directory for lines beginning with "\label{". It will provide you with a list
+of all such matches in two small windows.
 
-After you insert \cite{, you can press <F9> key (still in Insert mode). Two
-small windows will open.  Just below your main window will be list of
-bibliography keys completed from all .bib files in directory of .tex file.
-Name this window as cwindow.  Third window is context window to show next few
-lines of current entry (usually the most important info like author, title
-etc.).
++========================================================+
+| I want to insert a reference to equation 1. Therefore  |
+| I will write \ref{                                     |
+|                                                        |
+|                                                        |
+|                                                        |
+|                                                        |
+|                                                        |
++--------------------------------------------------------+
++file1.tex                                               +
++========================================================+
+|file1.tex|100| \label{eqn:eq-1}                         |
+|file1.tex|110| \label{eqn:eq-2}                         |
+|file2.tex|178| \label{tab:table1}                       |
++--------------------------------------------------------+
++[Error List]                                            +
++========================================================+
+|\begin{equation}                                        |
+|  e^{j*pi} + 1 = 0 \label{eqn:eq-1}                     |
+|\end{equation}                                          |
+|And there was some text after this. I dont remember     |
++--------------------------------------------------------+
++file1.tex [Preview]                                     +
++========================================================+
 
-In cwindow you can move with j and k keys. Contex window will be automatically
-updated. Current line will be highlighted. Note: first line is still
-highlighted. This is normal line of |quickfix|. You can use instead j and k
-|:cnext| and |:cprev| commands.
+The first window (shown as "[Error List]" above) is a |cwindow| containing a
+list of matches and you will be left in it. The window beneath it is a
+|preview-window| showing the context of the match. When you move up and down
+in the "[Error List]" window, the preview window will be scrolled to keep in
+sync with the label. Pressing the "J" and "K" keys in the "[Error List]"
+window scrolls the preview window enabling you to see more context if you
+desire. After positioning yourself on a label which you want to insert, press
+<CR>. This will automatically close all the new windows, take you back to the
+file being edited and insert the chosen label in place. Pressing "q" in the
+"[Error List]" window closes all windows without inserting anything.
 
-If information visible in context window is not enough you can use
-J and K keys to move content of context window (without leaving cwindow).
-After you choose correct bibentry press <cr>. Additional windows will close
-and \cite{ will be completed to \cite{bibentry}. q returns to main window and
-closes additional windows.
+As can be seen above, the matches include everything which begins with \label.
+If you have the habit of prefixing all equation labels with "eqn:" or
+something similar, then you can restrict the matches to only equations by
+first typing "\ref{eqn:" and then pressing <F9>. This only brings up matches
+starting with "\label{eqn:" thus allowing you to skip table and figure labels.
 
-If you remember beginning of desired key enter \cite{be. In cwindow will be
-shown only bibkeys beginning with "be".
+The same mechanism also works with citations by pressing <F9> after typing
+"\cite{". In the case of citations, Latex-suite automatically displays a list
+of bibliographic entries found in .bib files in the present directory. 
 
-Very similar thing you can do with \ref{, after <F9> in cwindow will be
-visible all lines containing \label{...}. Also here use of prefix is possible.
-
-This works with all commads with "ref" or "cite" in them. Thus you will get
-bib completion with \citen, \citenum or \pageref. If you want to create your
-own command which use cite or ref mechanism make sure proper word is inside
-it. Example: >
+This mechanism in fact works with all commands with "ref" or "cite" in them.
+Thus you will get completion with \citen, \citenum or \pageref.  If you want
+to create your own command which uses cite or ref mechanism make sure proper
+word is inside it. Example: >
 
         \newcommand{\pref}[1]{~(p.~\pageref{#1})}
 <
-<F9> works also with normal words. You can use it here: "Its name is
-tetr<F9>". Now Latex-suite will look in all .tex files in directory of edited
-file word which is beginning with "tetr". Note: <cr> has here different
-behavior. It does not try to complete word but moves you to location chosen in
-cwindow.
+
+<F9> works also with normal words. You can use it as: "Its name is tetr<F9>".
+Now Latex-suite will look in all .tex files in directory of edited file word
+which is beginning with "tetr". Note: <cr> has here different behavior. It
+does not try to complete word but moves you to location chosen in cwindow.
 
 Under MS-Windows you may need to make additional configuration of 'grepgrg'
 option. If you have grep program default value "grep -n" doesn't show file
-names if there is only one matching file. Place 'set grepprg=grep\ -Hn' in
-your _vimrc.
+names if there is only one matching file. Place >
 
-Viewer module provides also three command-line utilities: |TLook|, |TLookBib|
-and |TLookAll|.
+    set grepprg=grep\ -Hn
 
-Through g:Tex_ViewerCwindowHeight and g:Tex_ViewerPreviewHeight options in 
-texrc you can configure height of these windows.
+in your _vimrc.
+
+The functionality in this module is also available via three command-line
+utilities: |TLook|, |TLookBib| and |TLookAll|.
+
+You can use the g:Tex_ViewerCwindowHeight and g:Tex_ViewerPreviewHeight
+options in texrc to configure the heights of the "[Error List]" and preview
+window.
 
                                             *latex-completion-explorer*
 Latex-suite is distributed with slightly changed explorer.vim. This
@@ -505,7 +534,7 @@ current file.
 When latex-suite first starts up, it scans the latex-suite/templates/ directory
 and creates menu items based on the files found there. When you select a
 template from this menu, the file will be read in above the first line of the
-current file. 
+current file.
 
 A template file can use |placeholders| for easy cursor movement. In addition,
 you can use lines such as the following for inserting dates, names
@@ -549,13 +578,13 @@ user is prompted to choose one of them).
 There are some other tools provided in this menu, namely:
 
 {New}            Creates a new (unnamed) buffer in the latex-suite/macros/
-                 directory. 
+                 directory.
                  Use the command :TexMacroNew in non-gui mode.
 
 {Edit}           Opens up the corresponding macro file for editing.
                  Use :TexMacroEdit in non-gui mode.
 
-{Delete}         Deletes the corresponding macro. 
+{Delete}         Deletes the corresponding macro.
                  Use the prefixed numbers for fast navigation of menus.
                  Use :TexMacroDelete in non-gui mode.
 
@@ -563,12 +592,12 @@ There are some other tools provided in this menu, namely:
 
 }}}
 ===========================================================================
-LATEX COMPILING                             *latex-compiling* {{{ 
+LATEX COMPILING                             *latex-compiling* {{{
 
 This functionality is available via the TeX-Suite menu.
 
 Latex-suite ships with a set of tools to compile LaTeX files into various
-formats and view them. 
+formats and view them.
 
 If you are using commonly used LaTeX tools, then you should be all set as soon
 as you download and install latex-suite.  In order to compile a LaTeX file,
@@ -587,6 +616,7 @@ window.
                                   instead of file being edited.
 |latex-compiler-customization|  : customizing the output of the
                                   latex-compiler.
+|latex-part-compiling|          : compiling only a part of a file.
 
                                                      *latex-compiler-target*
 In order to effectively use latex-suite to compile and view formats other than
@@ -608,7 +638,7 @@ Once a ``rule'' has been set up for a format, you can set the target format by
 using the {TeX-Suite.Target Format} menu item. Alternatively, you can use the
 |:TTarget| command. You can also set the viewer and compiler to different
 formats, by using the menu items or using the commands |:TCTarget| and
-|:TVTarget|. 
+|:TVTarget|.
 
 NOTE: If you try choosing a format for which a rule is not defined, you
 will get a short warning message and no action will be taken.
@@ -634,9 +664,9 @@ do not exist, it defaults to "latex"'' (from |compiler-tex|)
 
 NOTE: For win32 users user MikTeX, sometimes the latex compiler's output has a
 bug where a single number is split across different lines. In this case, put
-the included vim-latexSuite somewhere in your $PATH, make it executable and
-point g:tex_flavor to it. This is not always necessary, and you
-might want to try it without vim-latexSuite till you first notice any problem.
+the included vim-latex somewhere in your $PATH, make it executable and point
+g:tex_flavor to it. This is not always necessary, and you might want to try it
+without vim-latexSuite till you first notice any problem.
 
                                                         *latex-master-file*
 Often times the file you are currently editing is only a fragment being
@@ -649,8 +679,8 @@ the form:
 In other words, if the current file is ~/thesis/chapter.tex, where
 chapter.tex is being \input'ed into ~/thesis/main.tex, then create a file
 called >
-    main.tex.latexmain 
-< 
+    main.tex.latexmain
+<
 in the ~/thesis directory. This will then run "latex main.tex"
 NOTE: Here main.tex.latexmain is a different file from main.tex itself.
 main.tex need not be renamed. The contents of main.tex.latexmain are not used.
@@ -660,7 +690,7 @@ This ofcourse restricts each directory to have a single master file.
 Latex-suite ships with a modified (enhanced ?) version of the standard tex
 compiler plugin maintained by Artem Chuprina. The modifications allow this
 version to be customizable. i.e the user can set a verbosity level for the
-compiler. 
+compiler.
 
 By default it is set up in a "non-verbose", "ignore-common-warnings" mode,
 which means that irrelevant lines from the compilers output will be
@@ -670,17 +700,17 @@ Depending on the "ignore-level", (which can be set with the command TCLevel as
 described below) the following kinds of messages are ignored.  An ignore level
 of 3 for instance means that messages of type 1-3 will be ignored. By default,
 the ignore level is set to 4. (You can change this by setting
-g:Tex_IgnoreLevel in your .vimrc). 
+g:Tex_IgnoreLevel in your .vimrc).
 
 1. LaTeX Warning: Underfull box ...
 2. LaTeX Warning: Overfull box ...
    both these warnings (very common) are due to \hbox settings not being
    satisfied nicely.
-3. LaTeX Warning: Specifier 'h' changed to 't'. 
+3. LaTeX Warning: Specifier 'h' changed to 't'.
    This errors occurs when TeX is not able to correctly place a floating
    object at a specified location, because of which it defaulted to the
    top of the page.
-4. LaTeX Warning: You have requested ..., 
+4. LaTeX Warning: You have requested ...,
    This warning occurs in slitex when using the xypic package.
 5. Missing number error:
    Usually, when the name of an included eps file is spelled incorrectly,
@@ -717,8 +747,8 @@ Its default value is: >
 		\'Missing number, treated as zero.'
 <
                                               *latex-part-compiling*
-You can compile only fragment of document. It can be useful to work on one
-sophisticated equation or one chapter.
+You can compile only fragment of document. This can be useful while working on
+one sophisticated equation or one chapter.
 
 Mark fragment in Visual mode and press <F10> (or choose this option from
 TeX-Suite menu). This fragment will be saved to temporary file with preamble
@@ -743,9 +773,9 @@ Like in the case of the compiler, you can specify the master file for the
 current file (see |latex-master-file|)
 
                                                        *latex-searching*
-Yap for windows, some versions of xdvi for windows and xdvi for unices provide 
-the ability to do "forward searching" on the .dvi file. This means that you 
-can have the DVI viewer jump to a specified location. 
+Yap for windows, some versions of xdvi for windows and xdvi for unices provide
+the ability to do "forward searching" on the .dvi file. This means that you
+can have the DVI viewer jump to a specified location.
 
 Pressing \ls while viewing a LaTeX file will perform this function, i.e the
 viewer will jump to the location under the cursor.
@@ -811,16 +841,16 @@ scans the |latex-master-file| for >
 lines and if the corresponding package is found in the latex-suite/packages/
 directory, then creates a sub-menu based on the specification found in that
 file.
-Often preamble is too long and you can put whole stuff into your own package 
-and place it somewhere. Most obvious place is directory of edited file. But 
-LaTeX looks for this such packages in places pointed in $TEXINPUTS environment 
-variable. You can copy this variable to your texrc file in g:Tex_TEXINPUTS 
+Often preamble is too long and you can put whole stuff into your own package
+and place it somewhere. Most obvious place is directory of edited file. But
+LaTeX looks for this such packages in places pointed in $TEXINPUTS environment
+variable. You can copy this variable to your texrc file in g:Tex_TEXINPUTS
 variable. Example: >
     TexLet g:Tex_TEXINPUTS = '.:~/texmf//:'
-Short explanation. '.' means looking in current directory, '~/texmf//' in 
-~/texmf directory and its all subdirectories. Last ':' means looking in normal 
-TeX directories. Alas, Vim cannot (yet :) look in all subdirectories. Thus it 
-find only '~/texmf/mypack.sty' and '~/texmf/sty/mypack.sty' but not 
+Short explanation. '.' means looking in current directory, '~/texmf//' in
+~/texmf directory and its all subdirectories. Last ':' means looking in normal
+TeX directories. Alas, Vim cannot (yet :) look in all subdirectories. Thus it
+find only '~/texmf/mypack.sty' and '~/texmf/sty/mypack.sty' but not
 '~texmf/tex/sty/mypack.sty'.
 
                                                   *latex-package-dictionary*
@@ -839,10 +869,10 @@ package file.
 If you do make a package file for latex-suite, please consider contacting the
 |latex-suite-maintainer|.
 
-Example: 
+Example:
 
 From the packages menu, choose the >
-    Tex-Packages.Supported.SIunits 
+    Tex-Packages.Supported.SIunits
 option. This will insert a line of form: >
     \usepackage[<++>]<++>{SIunits}<++>
 at the beginning of the file (with the cursor placed at the first
@@ -850,7 +880,7 @@ at the beginning of the file (with the cursor placed at the first
 sub-menu called SIunits, which contains the commands and options for the
 SIunits package.You can use this sub-menu to insert commands from the package,
 add options to the package etc.
-    
+
 NOTE: Since the package file is a Vim script, you could define custom
 functions there, add mappings etc.
 
@@ -864,7 +894,7 @@ You can perform the following actions via the packages menu:
 {UpdateAll}        This function reads the preamble of the document for
                    \usepackage lines and if latexSuite supports the detected
                    packages, then sub-menus containing the package options and
-                   commands is created. 
+                   commands is created.
                    A |latex-package-dictionary| might also be created.
 
 {Supported}        This sub-menu contains a list of all the package files stored in
@@ -902,7 +932,7 @@ Here is short summary of prefixes which can be used in package files:
 
 {env:command}  Environment: creates simple environment template >
             \begin{command}
-                x 
+                x
             \end{command}<<>>
 {eno:command}  Environment with option: >
             \begin[x]{command}
@@ -944,7 +974,7 @@ format. Now you can seek for help for specific LaTeX item without exiting Vim.
 
 Example: >
     :help \kill
-gives help for the LaTeX \kill command. 
+gives help for the LaTeX \kill command.
 
 You can also place cursor on LaTeX \item and press <F1>. If in latexhelp.txt
 is something about this you would be immediately taken there.
@@ -959,7 +989,7 @@ LATEX DICTIONARY                           *latex-dictionary* {{{
 Latex-suite ships with a dictionary of over 600 commands from LaTeX and
 popular packages. When latex-suite starts up, it automatically adds this
 dictionary to Vim's 'dictionary' option for use with Vim's |i_CTRL-X_CTRL-K|
-command. 
+command.
 
 It is also possible to load custom dictionaries automatically when packages
 load. This will happen if a package definition file >
@@ -1074,10 +1104,10 @@ taking care about Macros, Templates and Packages.
 
                 Command accepts also latexSuite mappings (|latex-macros|)
                 without preceding S and in lowercase: >
-                        :TSection pa 
+                        :TSection pa
 <               will result in \part{}. It is possible to use full names of
                 sections: >
-                        :TSection part 
+                        :TSection part
 <
 :TSectionAdvanced                      *TSectionAdvanced*
                 Accepts the same arguments as |TSection| but leads to a couple
@@ -1087,27 +1117,27 @@ taking care about Macros, Templates and Packages.
                 template.
 
 :TLook                                 *TLook*
-                Accepts one argument. Will look through .tex files in 
-                directory of edited file for argument. It can be regexp. You 
-                don't have to enclose argument in "". <cr> takes you to 
+                Accepts one argument. Will look through .tex files in
+                directory of edited file for argument. It can be regexp. You
+                don't have to enclose argument in "". <cr> takes you to
                 location. Other keys work as described in |latex-viewer|.
-                Note: TLook uses :grep command and is using 'grepprg'. Its 
+                Note: TLook uses :grep command and is using 'grepprg'. Its
                 regular expressions can be different from those of Vim.
 
 :TLookBib                              *TLookBib*
-                Accepts one argument. Will look through .bib files in 
-                directory of edited file for argument. It can be regexp. You 
-                don't have to enclose argument in "". <cr> takes you to 
+                Accepts one argument. Will look through .bib files in
+                directory of edited file for argument. It can be regexp. You
+                don't have to enclose argument in "". <cr> takes you to
                 location. Other keys work as described in |latex-viewer|.
-                Note: TLookBib uses :grep command and is using 'grepprg'.  Its 
+                Note: TLookBib uses :grep command and is using 'grepprg'.  Its
                 regular expressions can be different from those of Vim.
 
 :TLookAll                              *TLookAll*
-                Accepts one argument. Will look through all files in directory 
-                of edited file for argument. It can be regexp. You don't have 
-                to enclose argument in "". <cr> takes you to location. Other 
+                Accepts one argument. Will look through all files in directory
+                of edited file for argument. It can be regexp. You don't have
+                to enclose argument in "". <cr> takes you to location. Other
                 keys work as described in |latex-viewer|.
-                Note: TLookuses :grep command and is using 'grepprg'.  Its 
+                Note: TLookuses :grep command and is using 'grepprg'.  Its
                 regular expressions can be different from those of Vim.
 
 :TPartComp                             *TPartComp*
