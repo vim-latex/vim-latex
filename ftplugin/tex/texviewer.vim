@@ -58,7 +58,7 @@ function! Tex_Complete(what, where)
 		" What to do after <F9> depending on context
 		let s:curfile = expand("%:p")
 		let s:curline = strpart(getline('.'), col('.') - 40, 40)
-		let s:prefix = matchstr(s:curline, '.*{\zs.\{-}$')
+		let s:prefix = matchstr(s:curline, '.*{\zs.\{-}\(}\|$\)')
 		" a command is of the type
 		" \psfig[option=value]{figure=}
 		" Thus
@@ -86,12 +86,12 @@ function! Tex_Complete(what, where)
 			" help-docs say. This was expected. So use something improbable.
 			" TODO: Is there a way to clear the search-history w/o making a
 			"       useless, inefficient search?
-			let s:prefix = matchstr(s:prefix, '\([^,]\+,\)\+\zs\([^,]\+\)\ze$')
+			let s:prefix = matchstr(s:prefix, '\([^,]\+,\)*\zs\([^,]\+\)\ze$')
 			silent! grep! ____HIGHLY_IMPROBABLE___ %
 			if g:Tex_RememberCiteSearch && exists('s:citeSearchHistory')
 				call <SID>Tex_SetupCWindow(s:citeSearchHistory)
 			else
-				call Tex_Debug('calling Tex_GrepForBibItems', 'bib')
+				call Tex_Debug('calling Tex_GrepForBibItems', 'view')
 				call Tex_GrepForBibItems(s:prefix)
 				redraw!
 				call <SID>Tex_SetupCWindow()
@@ -168,7 +168,9 @@ function! Tex_Complete(what, where)
 endfunction " }}}
 
 " Tex_CompleteWord: inserts a word at the chosen location {{{
-" Description: 
+" Description: This function is meant to be called when the user press
+" 	``<enter>`` in one of the [Error List] windows which shows the list of
+" 	matches. completeword is the rest of the word which needs to be inserted.
 function! Tex_CompleteWord(completeword)
 	exe s:pos
 
@@ -345,6 +347,7 @@ function! s:Tex_CompleteRefCiteCustom(type)
 	endif
 
 	call Tex_CloseSmallWindows()
+	call Tex_Debug(":Tex_CompleteRefCiteCustom: completing with ".completeword, "view")
 	call Tex_CompleteWord(completeword)
 endfunction " }}}
 " Tex_SyncPreviewWindow: synchronize quickfix and preview window {{{
@@ -494,7 +497,7 @@ endfunction " }}}
 " steps 1 and 2 for every file \input'ed into this file. Abort any searching
 " as soon as the first \bibliography or \begin{thebibliography} is found.
 function! Tex_ScanFileForCite(prefix)
-	call Tex_Debug('searching for bibkeys in '.bufname('%').' (buffer #'.bufnr('%').')', 'bib')
+	call Tex_Debug('searching for bibkeys in '.bufname('%').' (buffer #'.bufnr('%').')', 'view')
 	let presBufNum = bufnr('%')
 
 	let foundCiteFile = 0
@@ -502,7 +505,7 @@ function! Tex_ScanFileForCite(prefix)
 	" assume that this is the only file in the project which defines a
 	" bibliography.
 	if search('\\bibliography{', 'w')
-		call Tex_Debug('found bibliography command in '.bufname('%'), 'bib')
+		call Tex_Debug('found bibliography command in '.bufname('%'), 'view')
 		" convey that we have found a bibliography command. we do not need to
 		" proceed any further.
 		let foundCiteFile = 1
@@ -511,7 +514,7 @@ function! Tex_ScanFileForCite(prefix)
 		let bibnames = matchstr(getline('.'), '\\bibliography{\zs.\{-}\ze}')
 		let bibnames = substitute(bibnames, '\s', '', 'g')
 
-		call Tex_Debug('trying to search through ['.bibnames.']', 'bib')
+		call Tex_Debug('trying to search through ['.bibnames.']', 'view')
 		
 		let i = 1
 		while Tex_Strntok(bibnames, ',', i) != ''
@@ -523,19 +526,20 @@ function! Tex_ScanFileForCite(prefix)
 			" split a new window so we do not screw with the current buffer.
 			split
 			let thisbufnum = bufnr('%')
-			call Tex_Debug('silent! find '.Tex_Strntok(bibnames, ',', i).'.bib', 'bib')
+			call Tex_Debug('silent! find '.Tex_Strntok(bibnames, ',', i).'.bib', 'view')
 			exec 'silent! find '.Tex_Strntok(bibnames, ',', i).'.bib'
 			if bufnr('%') != thisbufnum
-				call Tex_Debug('finding .bib file ['.bufname('%').']', 'bib')
+				call Tex_Debug('finding .bib file ['.bufname('%').']', 'view')
+				call Tex_Debug('using pattern '.Tex_EscapeForGrep('@.*{'.a:prefix), 'view')
 				lcd %:p:h
 				" use the appropriate syntax for the .bib file.
 				exec "silent! grepadd ".Tex_EscapeForGrep('@.*{'.a:prefix)." %"
 			else
 				let thisbufnum = bufnr('%')
 				exec 'silent! find '.Tex_Strntok(bibnames, ',', i).'.bbl'
-				call Tex_Debug('now in bufnum#'.bufnr('%'), 'bib')
+				call Tex_Debug('now in bufnum#'.bufnr('%'), 'view')
 				if bufnr('%') != thisbufnum
-					call Tex_Debug('finding .bbl file ['.bufname('.').']', 'bib')
+					call Tex_Debug('finding .bbl file ['.bufname('.').']', 'view')
 					lcd %:p:h
 					exec "silent! grepadd ".Tex_EscapeForGrep('\\bibitem{'.a:prefix)." %"
 				endif
@@ -555,7 +559,7 @@ function! Tex_ScanFileForCite(prefix)
 	" the only file which defines the bib-keys. Aand convey this information
 	" upwards by returning 1.
 	if search('^\s*\\begin{thebibliography}', 'w')
-		call Tex_Debug('got a thebibliography environment in '.bufname('%'), 'bib')
+		call Tex_Debug('got a thebibliography environment in '.bufname('%'), 'view')
 		
 		let foundCiteFile = 1
 
@@ -584,7 +588,7 @@ function! Tex_ScanFileForCite(prefix)
 		exec 'silent! find '.filename
 		if bufnr('%') != thisbufnum
 			" DANGER! recursive call.
-			call Tex_Debug('scanning recursively in ['.bufname('%').']', 'bib')
+			call Tex_Debug('scanning recursively in ['.bufname('%').']', 'view')
 			let foundCiteFile = Tex_ScanFileForCite(a:prefix)
 		endif
 		q
