@@ -2,7 +2,7 @@
 " 	     File: envmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
-" Last Change: czw lis 14 01:00  2002 C
+" Last Change: pi± lis 15 12:00  2002 C
 " 
 "  Description: mappings/menus for environments. 
 "=============================================================================
@@ -442,6 +442,7 @@ endfunction
 " menu 
 inoremap <buffer> <F5> <C-0>:call Tex_DoEnvironment("asdf")<CR>
 noremap  <buffer> <F5> :call Tex_DoEnvironment("asdf")<CR>
+
 function! Tex_DoEnvironment(env) " {{{
 	let l = getline(".")
 	if a:env == "asdf"
@@ -489,43 +490,60 @@ function! Tex_AmsLatex() " {{{
 endfunction " }}}
 
 "let b:searchmax = 100
+let s:math_environment = 'eqnarray,eqnarray*,align,align*,equation,equation*,[,$$'
+let s:item_environment = 'list,trivlist,enumerate,itemize,theindex'
 function Tex_change_environment() " {{{
     let env_line = searchpair("\\[\\|begin{", "", "\\]\\|end{", "bn")
 	if env_line != 0
 		if getline(env_line) =~ "\\["
 			let env_name = "["
 		else
-			let env_name = matchstr(getline(line), 'begin{\zs.\{-}\ze}')
+			let env_name = matchstr(getline(env_line), 'begin{\zs.\{-}\ze}')
 		endif
 	endif
 	if !exists("env_name")
 		echomsg "You are not inside environment"
 		return 0
 	endif
-	exe "let change_env = input('You are within a \"".env_name."\" environment.\n".
-			\ "Do you want to change it to?\n".
-			\ "(1) eqnarray  (2) eqnarray*\n".
-			\ "(3) align     (4) align*\n".
-			\ "(5) equation* (6) leave unchanged\n".
-			\ "Enter number: ')"
-	if change_env == 1
-		call <SID>Change('eqnarray', 1, '', 1)
-	elseif change_env == 2
-		call <SID>Change('eqnarray*', 0, '\\nonumber', 0)
-	elseif change_env == 3
-		call <SID>Change('align', 1, '', 1)
-	elseif change_env == 4
-		call <SID>Change('align*', 0, '\\nonumber', 0)
-	elseif change_env == 5
-		call <SID>Change('equation*', 0, '&\|\\lefteqn{\|\\nonumber\|\\\\', 0)
-	elseif change_env == 6
-		return 0
+	if s:math_environment =~ env_name
+		exe "let change_env = input('You are within a \"".env_name."\" environment.\n".
+				\ "Do you want to change it to?\n".
+				\ "(1) eqnarray  (2) eqnarray*\n".
+				\ "(3) align     (4) align*\n".
+				\ "(5) equation* (6) other\n".
+				\ "(7) leave unchanged\n".
+				\ "Enter number: ')"
+		if change_env == 1
+			call <SID>Change('eqnarray', 1, '', 1)
+		elseif change_env == 2
+			call <SID>Change('eqnarray*', 0, '\\nonumber', 0)
+		elseif change_env == 3
+			call <SID>Change('align', 1, '', 1)
+		elseif change_env == 4
+			call <SID>Change('align*', 0, '\\nonumber', 0)
+		elseif change_env == 5
+			call <SID>Change('equation*', 0, '&\|\\lefteqn{\|\\nonumber\|\\\\', 0)
+		elseif change_env == 6
+			call <SID>Change(input('Environment? '), 0, '', '')
+		elseif change_env == 7
+			return 0
+		else
+			echomsg "Wrong argument"
+			return 0
+		endif
 	else
-		echomsg "Wrong argument"
-		return 0
+		exe "let change_env = input('You are within a \"".env_name."\" environment.\n".
+					\ "You want to change it for (<cr> to abandon): ')"
+		if change_env == ''
+			return 0
+		else
+			call <SID>Change(change_env, 0, '', '')
+		endif
 	endif
 endfunction " }}}
 function! s:Change(env, label, delete, putInNonumber) " {{{
+	let start_line = line('.')
+	let start_col = virtcol('.')
 	if a:env == '['
 		if b:DoubleDollars == 0
 			let first = '\\['
@@ -563,11 +581,19 @@ function! s:Change(env, label, delete, putInNonumber) " {{{
 	if a:label == 1
 		exe top
 		if getline(top+1) !~ '.*label.*'
-			put ='\label{}'
+			let local_label = input('Label? ')
+			if local_label != ''
+				put = '\label{'.local_label.'}'
+			endif
 			normal $
 		endif
 	else
 		exe 'silent '.top . ',' . bottom . ' g/\\label/delete'
+	endif
+	if exists("local_label") && local_label != ''
+		exe start_line + 1.' | normal! '.start_col.'|'
+	else
+		exe start_line.' | normal! '.start_col.'|'
 	endif
 endfunction " }}}
 
