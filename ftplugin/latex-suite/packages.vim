@@ -2,7 +2,7 @@
 " 	     File: packages.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: Thu Dec 19 03:00 AM 2002 PST
+" Last Change: Fri Dec 27 02:00 PM 2002 PST
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -13,15 +13,16 @@ if !g:Tex_PackagesMenu || exists('s:doneOnce')
 endif
 let s:doneOnce = 1
 
-" Level of Packages menu: 
-let s:p_menu_lev = g:Tex_PackagesMenuLocation
-
 let s:path = expand("<sfile>:p:h")
+
 let s:menu_div = 20
 
-com! -nargs=* TPackage call Tex_pack_one(<f-args>)
+com! -nargs=* TPackage :normal! i<C-r>=Tex_pack_one(<f-args>)<CR>
 com! -nargs=0 TPackageUpdate :silent! call Tex_pack_updateall()
 com! -nargs=0 TPackageUpdateAll :silent! call Tex_pack_updateall()
+
+imap <silent> <plug> <Nop>
+nmap <silent> <plug> i
 
 let g:Tex_package_supported = ''
 let g:Tex_package_detected = ''
@@ -39,6 +40,7 @@ function! Tex_pack_check(package)
 	if filereadable(s:path.'/dictionaries/'.a:package)
 		exe 'setlocal dict+='.s:path.'/dictionaries/'.a:package
 		if !has("gui_running") && filereadable(s:path.'/dictionaries/'.a:package)
+				\ && g:Tex_package_supported !~ a:package
 			let g:Tex_package_supported = g:Tex_package_supported.','.a:package
 		endif
 	endif
@@ -49,7 +51,9 @@ endfunction
 " Tex_pack_uncheck: removes package from menu and 'dict' settings. {{{
 function! Tex_pack_uncheck(package)
 	if has("gui_running") && filereadable(s:path.'/packages/'.a:package)
-		exe 'silent! aunmenu '.s:p_menu_lev.'&'.a:package
+		exe 'silent! aunmenu '.g:Tex_PackagesMenuLocation.'-sep'.a:package.'-'
+		exe 'silent! aunmenu '.g:Tex_PackagesMenuLocation.a:package.'\ Options'
+		exe 'silent! aunmenu '.g:Tex_PackagesMenuLocation.a:package.'\ Commands'
 	endif
 	if filereadable(s:path.'/dictionaries/'.a:package)
 		exe 'setlocal dict-='.s:path.'/dictionaries/'.a:package
@@ -57,7 +61,7 @@ function! Tex_pack_uncheck(package)
 endfunction
 
 " }}}
-" Tex_pack_updateall: {{{
+" Tex_pack_updateall: updates the TeX-Packages menu {{{
 function! Tex_pack_updateall()
 	if exists('g:Tex_package_supported')
 		let i = 1
@@ -78,51 +82,55 @@ function! Tex_pack_updateall()
 endfunction
 
 " }}}
-" Tex_pack_one: {{{
-" Reads command-line and adds appropriate \usepackage lines 
+" Tex_pack_one: supports each package in the argument list.{{{
+" Description:
+"   If no arguments are supplied, then the user is asked to choose from the
+"   packages found in the packages/ directory
 function! Tex_pack_one(...)
-	if a:0 == 0
+	if a:0 == 0 || (a:0 > 0 && a:1 == '')
 		let pwd = getcwd()
 		exe 'cd '.s:path.'/packages'
 		let packname = Tex_ChooseFile('Choose a package: ')
 		exe 'cd '.pwd
-		call Tex_pack_check(packname)
-		return Tex_pack_supp(packname)
-	elseif a:0 == 1
-		if filereadable(s:path.'/packages/'.a:1)
-			return Tex_pack_supp(a:1)
+		if packname != ''
+			return Tex_pack_one(packname)
+		else
+			return ''
 		endif
 	else
-		let i = a:0
+		" Support the packages supplied. This function can be called with
+		" multiple arguments in which case, support each of them in turn.
+		let retVal = ''
 		let omega = 1
-		while omega <= i
-			exe 'let packname = a:'.omega
+		while omega <= a:0
+			let packname = a:{omega}
 			if filereadable(s:path.'/packages/'.packname)
 				call Tex_pack_check(packname)
-				exe 'normal ko\usepackage{'.packname."}\<Esc>"
-				let omega = omega + 1
+				if exists('g:TeX_package_option_'.packname)
+						\ && g:TeX_package_option_{packname} != ''
+					let retVal = retVal.'\usepackage[<++>]{'.packname.'}<++>'
+				else
+					let retVal = retVal.'\usepackage{'.packname.'}'."\<CR>"
+				endif
+			else
+				let retVal = retVal.'\usepackage{'.packname.'}'."\<CR>"
 			endif
+			let omega = omega + 1
 		endwhile
+		return IMAP_PutTextWithMovement(substitute(retVal, "\<CR>$", '', ''), '<+', '+>')
 	endif
 endfunction
 " }}}
-" Tex_pack_all: scans the current file for \\usepackage{ lines {{{
-"               and loads the corresponding package options as menus.
+" Tex_pack_all: scans the current file for \usepackage{} lines {{{
+"   and if supported, loads the options and commands found in the
+"   corresponding package file.
 function! Tex_pack_all()
 
 	let pos = line('.').' | normal! '.virtcol('.').'|'
 	let currfile = expand('%:p')
 
 	if Tex_GetMainFileName() != ''
-		let cwd = getcwd()
-		let fname = Tex_GetMainFileName()
-		if glob(fname.'.tex') != ''
-			let fname = fname.'.tex'
-		elseif glob(fname) != ''
-			let fname = ''
-		else
-			let fname = currfile
-		endif
+		let fname = Tex_GetMainFileName(':p:r')
 	else
 		let fname = currfile
 	endif
@@ -157,12 +165,12 @@ function! Tex_pack_all()
 					break
 				endif
 				let g:Tex_package_detected = g:Tex_package_detected.' '.pname
-				call Tex_pack_check(pname)
+				call Tex_pack_one(pname)
 				let i = i + 1
 			endwhile
 		elseif oldpack != packname
 			let g:Tex_package_detected = g:Tex_package_detected.' '.packname
-			call Tex_pack_check(packname)
+			call Tex_pack_one(packname)
 		endif
 		let oldpack = packname
 	endwhile
@@ -174,222 +182,207 @@ function! Tex_pack_all()
 endfunction
    
 " }}}
-" Tex_pack_supp_menu: sets up a menu for packages found in packages/ {{{
-"                     groups the packages thus found into groups of 20...
+" Tex_pack_supp_menu: sets up a menu for package files {{{
+"   found in the packages directory groups the packages thus found into groups
+"   of 20...
 function! Tex_pack_supp_menu()
-	let g:suplist = glob(s:path."/packages/*")
-	let g:suplist = substitute(g:suplist, "\n", ',', 'g')
-	let nu_s_list = GetListCount(g:suplist)
-		if nu_s_list <= s:menu_div
-			let SupMenu = ''
-			let NotSupMenu = 1
-		endif
-	let basic_nu_s_list = 0
-	let OptMenu = ''
-	while basic_nu_s_list < nu_s_list
-		let s_item = GetListItem(g:suplist, basic_nu_s_list)
-		let fptr = fnamemodify(s_item, ':p:t:r')
-		let fpt = fnamemodify(s_item, ':p:t')
-		if !exists('NotSupMenu') && basic_nu_s_list % s:menu_div == 0 
-			let s_index = strpart(fptr, 0, 5)
-			if strlen(s_item) > 5
-				let OptMenu = '.'.s_index.'\.\.\.\ -'
-			else
-				let OptMenu = '.'.s_index.'\ -' 
-			endif
-		endif
-		exe 'amenu '.s:p_menu_lev.'&Supported'.OptMenu.'.&'.fptr." :call Tex_pack_supp('".fpt."')<CR>"
-		let basic_nu_s_list = basic_nu_s_list + 1
-	endwhile
+
+	let pwd = getcwd()
+	exec 'cd '.s:path.'/packages'
+	let suplist = glob("*")
+	exec 'cd '.pwd
+
+	let suplist = substitute(suplist, "\n", ',', 'g').','
+
+	call Tex_MakeSubmenu(suplist, g:Tex_PackagesMenuLocation.'Supported.', 
+		\ '<plug><C-r>=Tex_pack_one("', '")<CR>')
 endfunction 
 
 " }}}
 " Tex_pack: loads the options (and commands) for the given package {{{
 function! Tex_pack(pack)
-	let basic_nu_p_list = ''
-	let nu_p_list = '' 
-	let g:p_file = s:path . '/packages/' . a:pack
-	if filereadable(g:p_file)
-		"exe 'source ' . g:p_file
-		exe 'let g:p_list = g:TeX_package_' . a:pack 
-		exe 'let g:p_o_list = g:TeX_package_option_' . a:pack 
+	if exists('g:TeX_package_'.a:pack)
 
-		" Creating package.Option menu {{{
-		if exists('g:p_o_list') && g:p_o_list != ''
-			let nu_p_o_list = GetListCount(g:p_o_list)
-			if nu_p_o_list <= s:menu_div
-				let OptMenu = ''
-				let NotOptMenu = 1
-			endif
-			if nu_p_o_list == 1
-				let p_o_delimiter = ''
-			else
-				let p_o_delimiter = ','
-			endif
-			let basic_nu_p_o_list = 0
-			let o_loop_nu = 0
-			while basic_nu_p_o_list < nu_p_o_list
-				let p_o_item = GetListItem(g:p_o_list, basic_nu_p_o_list)
-				let p_o_item_def = strpart(p_o_item, 0, 3)
-				let p_o_item_name = substitute(p_o_item, '^...:', '', '')
-				if !exists('NotOptMenu') && (o_loop_nu % s:menu_div == 0 || p_o_item_def == 'sbr')
-					if p_o_item_def == 'sbr'
-						let OptMenu = '.&'.p_o_item_name
-						let o_loop_nu = 1
-						let basic_nu_p_o_list = basic_nu_p_o_list + 1
-						let p_o_item = GetListItem(g:p_o_list, basic_nu_p_o_list)
-					else
-						let ost_index = strpart(p_o_item_name, 0, 4)
-						if strlen(p_o_item_name) > 5
-							let OptMenu = '.'.ost_index.'\.\.\.\ -'
-						else
-							let OptMenu = '.'.ost_index.'\ -' 
-						endif
-					endif
-				endif
-				let l_m_p_o_item = '&'.substitute(p_o_item, '<++>', '', '')
-				let p_o_end = p_o_item[strlen(p_o_item) - 1]
-				if p_o_end !~ "[a-zA-Z}]"
-					let r_m_p_o_item = "<plug><C-r>=IMAP_PutTextWithMovement('".p_o_item.'<++>'.p_o_delimiter."<++>')<cr>"
-				elseif p_o_end == '}'
-					let r_m_p_o_item = "<plug><C-r>=IMAP_PutTextWithMovement('".p_o_item.p_o_delimiter."<++>')<cr>"
-				else
-					let r_m_p_o_item = '<plug>'.p_o_item.p_o_delimiter
-				endif
-				exe 'amenu '.s:p_menu_lev.'&'.a:pack.'.&Options'.OptMenu.'.'.l_m_p_o_item.' '.r_m_p_o_item
-				let basic_nu_p_o_list = basic_nu_p_o_list + 1
-				let o_loop_nu = o_loop_nu + 1
-			endwhile
-		endif  " }}}
-		" Creating package.Command menu {{{
-		let nu_p_list = GetListCount(g:p_list)
-		if nu_p_list <= s:menu_div
-			let ComMenu = ''
-			let NotComMenu = 1
+		exec 'amenu '.g:Tex_PackagesMenuLocation.'-sep'.a:pack.'- <Nop>'
+		let optionList = g:TeX_package_option_{a:pack}.','
+
+		if optionList != ''
+
+			let mainMenuName = g:Tex_PackagesMenuLocation.a:pack.'\ Options.'
+			call s:GroupPackageMenuItems(optionList, mainMenuName, 
+				\ '<plug><C-r>=IMAP_PutTextWithMovement("', ',")<CR>')
+
 		endif
-		let basic_nu_p_list = 0
-		let loop_nu = 0
-		while basic_nu_p_list < nu_p_list
-			let p_item = GetListItem(g:p_list, basic_nu_p_list)
-			let p_item_def = strpart(p_item, 0, 3)
-			let p_item_name = substitute(p_item, '^...:', '', '')
-			if !exists('NotComMenu') && p_item_def == 'sbr'
-				let ComMenu = '.&'.p_item_name
-				let loop_nu = 1
-				let basic_nu_p_list = basic_nu_p_list + 1
-				let p_item = GetListItem(g:p_list, basic_nu_p_list)
-				let p_item_def = strpart(p_item, 0, 3)
-				let p_item_name = substitute(p_item, '^...:', '', '')
-			endif
-			" testing command type {{{
-			if p_item_def == 'bra'
-				let com_type = '{}'
-				let l_m_item = '\\&'.p_item_name.'{}'
-				let r_m_item = "<plug><C-r>=IMAP_PutTextWithMovement('\\".p_item_name."{<++>}<++>')<cr>"
-			elseif p_item_def == 'brs' 
-				let com_type = '{}'
-				let l_m_item = '\\&'.substitute(p_item_name, "[<++><++>]", '', 'g')
-				let r_m_item = "<plug><C-r>=IMAP_PutTextWithMovement('\\".p_item_name."<++>')<cr>"
-			elseif p_item_def == 'brd'
-				let com_type = '{}{}'
-				let l_m_item = '\\&'.p_item_name.'{}{}'
-				let r_m_item = "<plug><C-r>=IMAP_PutTextWithMovement('\\".p_item_name."{<++>}{<++>}<++>')<cr>"
-			elseif p_item_def == 'sep'
-				let com_type = ''
-				let l_m_item = '-packsep'.basic_nu_p_list.'-'
-				let r_m_item = ':'
-			elseif p_item_def == 'env'
-				let com_type = '(E)'
-				let l_m_item = '&'.p_item_name.'(E)'
-				let r_m_item = '<plug>\begin{'.p_item_name.'}<cr> <cr>\end{'.p_item_name.'}<++><Up><Left>'
-			elseif p_item_def == 'ens'
-				let com_type = '(E)'
-				let p_env_spec = substitute(p_item_name, '.*:', '', '')
-				let p_env_name = matchstr(p_item_name, '^[^:]*')
-				let l_m_item = '&'.p_env_name.'(E)'
-				let r_m_item = '<plug>\begin{'.p_env_name.'}'.p_env_spec.'<cr><++><cr>\end{'.p_env_name.'}<++><Up><Up><C-j>'
-			elseif p_item_def == 'eno'
-				let com_type = '(E)'
-				let l_m_item = '&'.p_item_name.'(E)'
-				let r_m_item = '<plug>\begin[<++>]{'.p_item_name.'}<cr><++><cr>\end{'.p_item_name.'}<++><Up><Up><C-j>'
-			elseif p_item_def == 'nor'
-				let com_type = "\\\\'"
-				let l_m_item = '\\&'.p_item_name."'"
-				let r_m_item = "<plug>\\".p_item_name.' '
-			elseif p_item_def == 'noo'
-				let com_type = '\\[]'
-				let l_m_item = '\\&'.p_item_name.'[]'
-				let r_m_item = "<plug><C-r>=IMAP_PutTextWithMovement('\\".p_item_name."[<++>]<++>')<cr>"
-			elseif p_item_def == 'nob'
-				let com_type = '[]{}'
-				let l_m_item = '\\&'.p_item_name.'[]{}'
-				let r_m_item = "<plug><C-r>=IMAP_PutTextWithMovement('\\".p_item_name."[<++>]{<++>}<++>')<cr>"
-			elseif p_item_def == 'pla'
-				let com_type = '(p)'
-				let l_m_item = '&'.p_item_name."'"
-				let r_m_item = '<plug>'.p_item_name.' '
-			elseif p_item_def == 'spe'
-				let com_type = '(s)'
-				let l_m_item = '&'.p_item_name
-				let r_m_item = '<plug>'.p_item_name
-			else
-				let com_type = '\\'
-				let l_m_item = '\\&'.p_item_name
-				let r_m_item = "<plug>\\".p_item_name
-			endif " }}}
-			if !exists('NotComMenu') && loop_nu % s:menu_div == 0
-				let st_index = strpart(p_item_name, 0, 4)
-				if strlen(p_item_name) > 4
-					let ComMenu = '.'.com_type.'&'.st_index.'\.\.\.\ -'
-				else
-					let ComMenu = '.'.com_type.'&'.st_index.'\ -' 
-				endif
-			endif
-			exe 'amenu '.s:p_menu_lev.'&'.a:pack.ComMenu.'.'.l_m_item.' '.r_m_item 
-			let basic_nu_p_list = basic_nu_p_list + 1 
-			let loop_nu = loop_nu + 1
-		endwhile " }}}
 
+		let commandList = g:TeX_package_{a:pack}
+		if commandList != ''
+
+			let mainMenuName = g:Tex_PackagesMenuLocation.a:pack.'\ Commands.'
+			call s:GroupPackageMenuItems(commandList, mainMenuName, 
+				\ '<plug><C-r>=Tex_ProcessPackageCommand("', '")<CR>',
+				\ '<SID>FilterPackageMenuLHS')
+		endif
 	endif
 endfunction 
 
 " }}}
-" Tex_pack_supp: "supports" the package... {{{
-function! Tex_pack_supp(supp_pack)
-	call Tex_pack_check(a:supp_pack)
-	exe 'let g:s_p_o = g:TeX_package_option_'.a:supp_pack 
-	if exists('g:s_p_o') && g:s_p_o != ''
-		exe 'normal i\usepackage{'.a:supp_pack.'}<++>'
-		exe 'normal F{i[]'."\<Right>"
-	else
-		exe 'normal i\usepackage{'.a:supp_pack."}\<cr>"
-	endif
-	if g:Tex_package_supported == ''
-		let g:Tex_package_supported = a:supp_pack
-	else
-		let g:Tex_package_supported = g:Tex_package_supported.','.a:supp_pack
-	endif
-endfunction
+
+" ==============================================================================
+" Menu Functions
+" Creating menu items for the all the package files found in the packages/
+" directory as well as creating menus for each supported package found in the
+" preamble.
+" ============================================================================== 
+" Tex_MakeSubmenu: makes a submenu given a list of items {{{
+" Description: 
+"   This function takes a comma seperated list of menu items and creates a
+"   'grouped' menu. i.e, it groups the items into s:menu_div items each and
+"   puts them in submenus of the given mainMenu.
+"   Each menu item is linked to the HandlerFunc.
+"   If an additional argument is supplied, then it is used to filter each of
+"   the menu items to generate better names for the menu display.
+"
+function! Tex_MakeSubmenu(menuList, mainMenuName, 
+				\ handlerFuncLHS, handlerFuncRHS, ...)
+
+	let extractFunction = (a:0 > 0 ? a:1 : '' )
+	let menuList = substitute(a:menuList, '[^,]$', ',', '')
+
+	let doneMenuSubmenu = 0
+
+	while menuList != ''
+
+		" Extract upto s:menu_div menus at once.
+		let menuBunch = matchstr(menuList, '\v(.{-},){,'.s:menu_div.'}')
+
+		" The remaining menus go into the list.
+		let menuList = strpart(menuList, strlen(menuBunch))
+
+		let submenu = ''
+		" If there is something remaining, then we got s:menu_div items.
+		" therefore put these menu items into a submenu.
+		if strlen(menuList) || doneMenuSubmenu
+			exec 'let firstMenu = '.extractFunction."(matchstr(menuBunch, '\\v^.{-}\\ze,'))"
+			exec 'let lastMenu = '.extractFunction."(matchstr(menuBunch, '\\v[^,]{-}\\ze,$'))"
+
+			let submenu = firstMenu.'\ \-\ '.lastMenu.'.'
+
+			let doneMenuSubmenu = 1
+		endif
+
+		" Now for each menu create a menu under the submenu
+		let i = 1
+		let menuName = Tex_Strntok(menuBunch, ',', i)
+		while menuName != ''
+			exec 'let menuItem = '.extractFunction.'(menuName)'
+			execute 'amenu '.a:mainMenuName.submenu.menuItem
+				\ '       '.a:handlerFuncLHS.menuName.a:handlerFuncRHS
+
+			let i = i + 1
+			let menuName = Tex_Strntok(menuBunch, ',', i)
+		endwhile
+	endwhile
+endfunction 
 
 " }}}
-" Tex_PutPackage: inserts package from line {{{
-" (see Tex_package_from_line in envmacros.vim)
-function! Tex_PutPackage(package)
-	if filereadable(s:path.'/packages/'.a:package)
-		call Tex_pack_supp(a:package)
+" GroupPackageMenuItems: uses the sbr: to split menus into groups {{{
+" Description: 
+"   This function first splits up the menuList into groups based on the
+"   special sbr: tag and then calls Tex_MakeSubmenu 
+" 
+function! <SID>GroupPackageMenuItems(menuList, menuName, 
+					\ handlerFuncLHS, handlerFuncRHS,...)
+
+	if a:0 > 0
+		let extractFunction = a:1
 	else
-		exe 'normal i\usepackage{'.a:package."}\<Esc>$"
+		let extractFunction = ''
 	endif
-		call Tex_pack_updateall()
-endfunction	" }}}
+	let menuList = a:menuList
+
+	while matchstr(menuList, 'sbr:') != ''
+		let groupName = matchstr(menuList, '\v^sbr:\zs.{-}\ze,')
+		let menuList = strpart(menuList, strlen('sbr:'.groupName.','))
+		if matchstr(menuList, 'sbr:') != ''
+			let menuGroup = matchstr(menuList, '\v^.{-},\zesbr:')
+		else
+			let menuGroup = menuList
+		endif
+
+		call Tex_MakeSubmenu(menuGroup, a:menuName.groupName.'.', 
+			\ a:handlerFuncLHS, a:handlerFuncRHS, extractFunction)
+
+		let menuList = strpart(menuList, strlen(menuGroup))
+	endwhile
+
+	call Tex_MakeSubmenu(menuList, a:menuName,
+		\ a:handlerFuncLHS, a:handlerFuncRHS, extractFunction)
+
+endfunction " }}}
+" Definition of what to do for various package commands {{{
+let s:CommandSpec_bra = '\<+replace+>{<++>}<++>'
+let s:CommandSpec_brs = '\<+replace+><++>'
+let s:CommandSpec_brd = '\<+replace+>{<++>}{<++>}<++>'
+let s:CommandSpec_env = '\begin{<+replace+>}'."\<CR><++>\<CR>".'\end{<+replace+>}<++>'
+let s:CommandSpec_ens = '\begin{<+replace+>}<+extra+>'."\<CR><++>\<CR>".'\end{<+replace+>}<++>'
+let s:CommandSpec_eno = '\begin[<++>]{<+replace+>}'."\<CR><++>\<CR>".'\end{<+replace+>}'
+let s:CommandSpec_nor = '\<+replace+>'
+let s:CommandSpec_noo = '\<+replace+>[<++>]'
+let s:CommandSpec_nob = '\<+replace+>[<++>]{<++>}{<++>}<++>'
+let s:CommandSpec_spe = '<+replace+>'
+let s:CommandSpec_    = '\<+replace+>'
+
+let s:MenuLHS_bra = '\\&<+replace+>{}'
+let s:MenuLHS_brs = '\\&<+replace+>{}'
+let s:MenuLHS_brd = '\\&<+replace+>{}{}'
+let s:MenuLHS_env = '&<+replace+>\ (E)'
+let s:MenuLHS_ens = '&<+replace+>\ (E)'
+let s:MenuLHS_eno = '&<+replace+>\ (E)'
+let s:MenuLHS_nor = '\\&<+replace+>'
+let s:MenuLHS_noo = '\\&<+replace+>[]'
+let s:MenuLHS_nob = '\\&<+replace+>[]{}{}'
+let s:MenuLHS_spe = '&<+replace+>'
+let s:MenuLHS_sep = '-sep<+replace+>-'
+let s:MenuLHS_    = '\\&<+replace+>'
+" }}}
+" Tex_ProcessPackageCommand: processes a command from the package menu {{{
+" Description: 
+function! Tex_ProcessPackageCommand(command)
+	if a:command =~ ':'
+		let commandType = matchstr(a:command, '^\w\+\ze:')
+		let commandName = matchstr(a:command, '^\w\+:\zs[^:]\+\ze:\?')
+		let extrapart = strpart(a:command, strlen(commandType.':'.commandName.':'))
+	else
+		let commandType = ''
+		let commandName = a:command
+		let extrapart = ''
+	endif
+
+	let command = s:CommandSpec_{commandType}
+	let command = substitute(command, '<+replace+>', commandName, 'g')
+	let command = substitute(command, '<+extra+>', extrapart, 'g')
+	return IMAP_PutTextWithMovement(command)
+endfunction 
+" }}}
+" FilterPackageMenuLHS: filters the command description to provide a better menu item {{{
+" Description: 
+function! <SID>FilterPackageMenuLHS(command)
+	let commandType = matchstr(a:command, '^\w\+\ze:')
+	if commandType != ''
+		let commandName = strpart(a:command, strlen(commandType.':'))
+	else
+		let commandName = a:command
+	endif
+
+	return substitute(s:MenuLHS_{commandType}, '<+replace+>', commandName, 'g')
+endfunction " }}}
 
 if g:Tex_Menus
+	exe 'amenu '.g:Tex_PackagesMenuLocation.'&UpdatePackage :call Tex_pack(expand("<cword>"))<cr>'
+	exe 'amenu '.g:Tex_PackagesMenuLocation.'&UpdateAll :call Tex_pack_updateall()<cr>'
 
-	exe 'amenu '.s:p_menu_lev.'&UpdatePackage :call Tex_pack(expand("<cword>"))<cr>'
-	exe 'amenu '.s:p_menu_lev.'&UpdateAll :call Tex_pack_updateall()<cr>'
-
-	call Tex_pack_supp_menu()
-	call Tex_pack_all()
+ 	call Tex_pack_supp_menu()
+ 	call Tex_pack_all()
 
 endif
 
