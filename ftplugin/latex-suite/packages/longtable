@@ -27,4 +27,4 @@ let g:TeX_package_longtable =
 \.'bra:caption*,'
 \.'nor:newpage'
 
-" vim:ft=vim:ts=4:sw=4:noet
+" vim:ft=vim:ts=4:sw=4:noet:ff=unix:

@@ -12,3 +12,5 @@ let g:TeX_package_ulem =
 \.'bra:xout,'
 \.'ULthickness,'
 \.'ULdepth'
+
+" vim:ft=vim:ff=unix:

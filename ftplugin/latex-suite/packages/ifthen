@@ -13,4 +13,4 @@ let g:TeX_package_ifthen =
 \.'nor:or,'
 \.'nor:not'
 
-" vim:ft=vim:ff=unix
+" vim:ft=vim:ff=unix:

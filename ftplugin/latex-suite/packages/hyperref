@@ -1,6 +1,3 @@
-" Maintainer: Mikolaj Machowski <mikmach@wp.pl>
-" LastUpdate: 27.04.2002
-
 let g:TeX_package_option_hyperref =
 \ '4=,'
 \.'a4paper,'
@@ -161,3 +158,5 @@ let g:TeX_package_hyperref =
 \.'spe:tabkey,'
 \.'spe:value,'
 \.'spe:width'
+
+" vim:ft=vim:ff=unix:

@@ -355,3 +355,5 @@ let g:TeX_package_tipa =
 \.'bra:finpartvoice,'
 \.'bra:sublptr,'
 \.'bra:subrptr'
+
+" vim:ft=vim:ff=unix:

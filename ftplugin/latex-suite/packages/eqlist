@@ -10,3 +10,5 @@ let g:TeX_package_eqlist =
 \.'eqliststarinit,'
 \.'eqlistinitpar,'
 \.'eqlistlabel'
+
+" vim:ft=vim:ff=unix:

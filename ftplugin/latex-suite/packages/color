@@ -35,4 +35,4 @@ let g:TeX_package_color =
 \.'brd:pagecolor,'
 \.'nob:pagecolor'
 
-" vim:ft=vim:ff=unix
+" vim:ft=vim:ff=unix:

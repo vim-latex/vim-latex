@@ -8,4 +8,4 @@ let g:TeX_package_float =
 \.'bra:restylefloat,'
 \.'brd:floatplacement'
 
-" vim:ft=vim:ff=unix
+" vim:ft=vim:ff=unix:

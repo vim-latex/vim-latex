@@ -16,3 +16,4 @@ let g:TeX_package_chapterbib =
 \.'bra:citemid,'
 \.'bra:citedash'
 
+" vim:ft=vim:ff=unix:

@@ -1,6 +1,6 @@
-let g:TeX_package_option_moreverbatim = ''
+let g:TeX_package_option_moreverb = ''
 
-let g:TeX_package_moreverbatim = 
+let g:TeX_package_moreverb = 
 \ 'ens:verbatimwrite:{<++>},'
 \.'ens:verbatimtab:[<++>],'
 \.'ens:listing:[<+step+>]{<+number+>},'

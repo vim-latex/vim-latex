@@ -1,7 +1,7 @@
 " Author: Mikolaj Machowski <mikmach@wp.pl>
 " (c) Copyright by Mikolaj Machowski 2002
-" Last Change: Thu Dec 19 03:00 AM 2002 PST
 " License: Vim Charityware
+" Version: 1.5 
 "
 " Plik jest w kodowaniu iso-8859-2. Je¶li chcesz go uzywac w MS-Windows musisz
 " go przekonwertowac na cp-1250. 
@@ -151,4 +151,4 @@ function! s:Tex_polish_space()
 	return " "
 endfunction 
 
-" vim:ft=vim:ff=unix
+" vim:ft=vim:ff=unix:

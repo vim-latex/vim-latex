@@ -10,3 +10,5 @@ let g:TeX_package_outliner =
 \.'bra:OutlineLevelStart,'
 \.'bra:OutlineLevelCont,'
 \.'bra:OutlineLevelEnd'
+
+" vim:ft=vim:ff=unix:

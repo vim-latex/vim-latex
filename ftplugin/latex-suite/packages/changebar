@@ -26,3 +26,5 @@ let g:TeX_package_changebar =
 \.'changebarsep,'
 \.'spe:changebargrey,'
 \.'nochangebars'
+
+" vim:ft=vim:ff=unix:

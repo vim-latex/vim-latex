@@ -95,4 +95,5 @@ let g:TeX_package_amsmath =
 \.'bra:boxed,'
 \.'brs:DeclareMathSymbol{<++>}{<++>}{<++>}{<++>},'
 \.'bra:eqref'
-" vim:ft=vim
+
+" vim:ft=vim:ff=unix:

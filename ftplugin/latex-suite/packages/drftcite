@@ -1,4 +1,4 @@
-let g:TeX_package_option_cite = 
+let g:TeX_package_option_drftcite = 
 \ 'verbose,'
 \.'nospace,'
 \.'space,'
@@ -8,7 +8,7 @@ let g:TeX_package_option_cite =
 \.'shownumbers,'
 \.'nocitecount'
 
-let g:TeX_package_cite = 
+let g:TeX_package_drftcite = 
 \ 'bra:cite,'
 \.'bra:citen,'
 \.'sep:redefine,'
@@ -19,3 +19,4 @@ let g:TeX_package_cite =
 \.'bra:citemid,'
 \.'bra:citedash'
 
+" vim:ft=vim:ff=unix:

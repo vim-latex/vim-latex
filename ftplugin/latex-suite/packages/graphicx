@@ -61,4 +61,4 @@ let g:TeX_package_graphicx =
 \.'brs:DeclareGraphicsRule{<++>}{<++>}{<++>}{<++>},'
 \.'bra:graphicspath'
 
-" vim:ft=vim:ff=unix
+" vim:ft=vim:ff=unix:

@@ -20,3 +20,4 @@ let g:TeX_package_cite =
 \.'bra:citemid,'
 \.'bra:citedash'
 
+" vim:ft=vim:ff=unix:

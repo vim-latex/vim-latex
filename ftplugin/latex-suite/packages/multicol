@@ -1,4 +1,5 @@
 let g:TeX_package_option_multicol = ''
+
 let g:TeX_package_multicol =
 \ 'ens:multicols:{<+cols+>}[<+text+>][<+sep+>],'
 \.'columnbreak,'
@@ -11,3 +12,5 @@ let g:TeX_package_multicol =
 \.'flushcolumnt,'
 \.'raggedcolumns,'
 \.'unbalanced'
+
+" vim:ft=vim:ff=unix:

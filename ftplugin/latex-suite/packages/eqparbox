@@ -4,3 +4,4 @@ let g:TeX_package_eqparbox =
 \ 'brs:eqparbox[<+pos+>][<+height+>][<+inner-pos+>]{<+tag+>}{<+text+>},'
 \.'bra:eqboxwidth'
 
+" vim:ft=vim:ff=unix:

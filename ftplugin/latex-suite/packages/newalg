@@ -17,3 +17,5 @@ let g:TeX_package_newalg =
 \.'nor:=,'
 \.'bra:item,'
 \.'nor:algkey'
+
+" vim:ft=vim:ff=unix:

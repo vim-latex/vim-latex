@@ -35,4 +35,4 @@ let g:TeX_package_caption2 =
 \.'bra:setcaptionmargin,'
 \.'bra:setcaptionwidth'
 
-" vim:ft=vim:ff=unix
+" vim:ft=vim:ff=unix:

@@ -6,3 +6,5 @@ let g:TeX_package_parallel =
 \.'bra:ParallelRText,'
 \.'nor:ParallelPar,'
 \.'nor:tolerance'
+
+" vim:ft=vim:ff=unix:

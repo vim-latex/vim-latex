@@ -18,6 +18,6 @@ let g:TeX_package_accents =
 \.'bra:ddddot,'
 \.'bra:vec,'
 \.'brd:accentset,'
-\.'brd:underaccent,'
+\.'brd:underaccent'
 
-" vim:ft=vim:ff=unix
+" vim:ft=vim:ff=unix:

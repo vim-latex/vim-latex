@@ -20,3 +20,5 @@ let g:TeX_package_option_inputenc =
 
 let g:TeX_package_inputenc = 
 \ 'bra:inputencoding'
+
+" vim:ft=vim:ff=unix:

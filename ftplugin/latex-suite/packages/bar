@@ -1,4 +1,5 @@
 let g:TeX_package_option_bar = ''
+
 let g:TeX_package_bar =
 \ 'env:barenv,'
 \.'brs:bar{<+height+>}{<+index+>}[<+desc+>],'
@@ -17,3 +18,5 @@ let g:TeX_package_bar =
 \.'brs:setxname[<+lrbt+>]{<+etiquette+>},'
 \.'brs:setyname[<+lrbt+>]{<+etiquette+>},'
 \.'brs:setxvaluetyp{<+day-month+>}'
+
+" vim:ft=vim:ff=unix:

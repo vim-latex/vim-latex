@@ -1,4 +1,4 @@
-let g:TeX_package_option_cite = 
+let g:TeX_package_option_overcite = 
 \ 'verbose,'
 \.'ref,'
 \.'nospace,'
@@ -8,7 +8,7 @@ let g:TeX_package_option_cite =
 \.'nomove,'
 \.'noadjust'
 
-let g:TeX_package_cite = 
+let g:TeX_package_overcite = 
 \ 'bra:cite,'
 \.'bra:citen,'
 \.'bra:citenum,'
@@ -22,3 +22,4 @@ let g:TeX_package_cite =
 \.'bra:citemid,'
 \.'bra:citedash'
 
+" vim:ft=vim:ff=unix:

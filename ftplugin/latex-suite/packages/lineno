@@ -52,4 +52,4 @@ let g:TeX_package_lineno =
 \.'nob:linerefr,'
 \.'nob:lineref'
 
-" vim:ft=vim
+" vim:ft=vim:ff=unix:

@@ -84,4 +84,5 @@ let g:TeX_package_option_geometry =
 
 let g:TeX_package_geometry = 
 \ 'bra:geometry'
-" vim:ft=vim
+
+" vim:ft=vim:ff=unix:

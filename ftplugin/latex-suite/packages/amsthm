@@ -1,4 +1,5 @@
 let TeX_package_option_amsthm = ''
+
 let TeX_package_amsthm = 
 \ 'env:proof,'
 \.'nor:swapnumbers,'
@@ -11,3 +12,5 @@ let TeX_package_amsthm =
 \.'nor:qedsymbol,'
 \.'nor:qed,'
 \.'nor:qedhere'
+
+" vim:ft=vim:ff=unix:
