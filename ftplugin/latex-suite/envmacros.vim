@@ -563,7 +563,8 @@ function! Tex_PutEnvironment(env)
 		endif
 		return VEnclose('\begin{'.a:env.'}', '\end{'.a:env.'}', '\begin{'.a:env.'}', '\end{'.a:env.'}')
 	else
-		if a:env =~ "equation*\\|eqnarray*\\|align*\\|theorem\\|lemma\\|equation\\|eqnarray\\|align\\|multline"
+		if a:env =~ 'equation*\|eqnarray*\|theorem\|lemma\|equation\|eqnarray\|align\*\|align\>\|multline'
+			let g:aa = a:env
 			return Tex_eqnarray(a:env)
 		elseif a:env =~ "enumerate\\|itemize\\|theindex\\|trivlist"
 			return Tex_itemize(a:env)
@@ -578,7 +579,27 @@ function! Tex_PutEnvironment(env)
 		elseif a:env == '\['
 			return IMAP_PutTextWithMovement("\\[\<CR><++>\<CR>\\]<++>")
 		else
-			return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr><++>\<cr>\\end{".a:env."}<++>")
+			" Look in supported packages if exists template for environment
+			" given in the line
+			if exists('g:Tex_package_supported') && g:Tex_package_supported != ''
+				let i = 1
+				while Tex_Strntok(g:Tex_package_supported, ',', i) != ''
+					let checkpack = Tex_Strntok(g:Tex_package_supported, ',', i)
+					if g:TeX_package_{checkpack} =~ 'e..:'.a:env
+						if a:env =~ '*'
+							" Don't allow * to be treated as wildcard
+							let aenv = substitute(a:env, '*', '\\*', '')
+						else
+							let aenv = a:env
+						endif
+						let envcommand = matchstr(g:TeX_package_{checkpack}, '\zse..:'.aenv.'[^,]\{-}\ze,')
+						return Tex_ProcessPackageCommand(envcommand)
+					endif
+					let i = i + 1
+				endwhile
+			else
+				return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr><++>\<cr>\\end{".a:env."}<++>")
+			endif
 		endif
 	endif
 endfunction " }}}
