@@ -291,5 +291,105 @@ function! Tex_PartCompilation(fline,lline,mode) range
 
 endfunction " }}}
 
+" ==============================================================================
+" Tables of shortcuts
+" ============================================================================== 
 "
+command! -nargs=? Tshortcuts call Tex_shortcuts(<f-args>)<CR>
+
+" Tex_shortcuts: Show shortcuts in terminal after : command {{{
+function! Tex_shortcuts(...)
+	if a:0 == 0
+		let shorts = input( " Allowed arguments are:"
+		\."\n g     General"
+		\."\n e     Environments"
+		\."\n f     Fonts"
+		\."\n s     Sections"
+		\."\n a     All"
+		\."\n Enter your choice : ")
+		call Tex_shortcuts(shorts)
+	elseif a:1 == 'g'
+		echo g:generalshortcuts
+	elseif a:1 == 'e'
+		echo g:environmentshortcuts
+	elseif a:1 == 'f'
+		echo g:fontshortcuts
+	elseif a:1 == 's'
+		echo g:sectionshortcuts
+	elseif a:1 == 'a'
+		echo g:generalshortcuts
+		echo g:environmentshortcuts
+		echo g:fontshortcuts
+		echo g:sectionshortcuts
+	endif
+
+endfunction
+" }}}
+
+" General shortcuts {{{
+let g:generalshortcuts = ''
+\."\n General shortcuts"
+\."\n <mapleader> is a value of g:Tex_Leader"
+\."\n ".g:Tex_Leader.'ll	compile whole document'
+\."\n ".g:Tex_Leader.'lv	view compiled document'
+\."\n ".g:Tex_Leader.'lp	view last compiled part of document'
+\."\n ".g:Tex_Leader.'ls	make forward searching if possible'
+\."\n ".g:Tex_Leader.'rf	refresh folds'
+" }}}
+" Environment shortcuts {{{
+let g:environmentshortcuts = ''
+\."\n Environment shortcuts"
+\."\n <mapleader> is a value of g:Tex_Leader2"
+\."\n I     v&V                       I     v&V"
+\."\n ELI   ".g:Tex_Leader2."li   list                EQN   ".g:Tex_Leader2."qn   quotation"
+\."\n EDE   ".g:Tex_Leader2."de   description         ESB   ".g:Tex_Leader2."sb   sloppybar"
+\."\n EEN   ".g:Tex_Leader2."en   enumerate           ETI   ".g:Tex_Leader2."ti   theindex"
+\."\n EIT   ".g:Tex_Leader2."it   itemize             ETP   ".g:Tex_Leader2."tp   titlepage"
+\."\n ETI   ".g:Tex_Leader2."ti   theindex            EVM   ".g:Tex_Leader2."vm   verbatim"
+\."\n ETL   ".g:Tex_Leader2."tl   trivlist            EVE   ".g:Tex_Leader2."ve   verse"
+\."\n ETE   ".g:Tex_Leader2."te   table               ETB   ".g:Tex_Leader2."tb   thebibliography"
+\."\n ETG   ".g:Tex_Leader2."tg   tabbing             ENO   ".g:Tex_Leader2."no   note"
+\."\n ETR   ".g:Tex_Leader2."tr   tabular             EOV   ".g:Tex_Leader2."ov   overlay"
+\."\n EAR   ".g:Tex_Leader2."ar   array               ESL   ".g:Tex_Leader2."sl   slide"
+\."\n EDM   ".g:Tex_Leader2."dm   displaymath         EAB   ".g:Tex_Leader2."ab   abstract"
+\."\n EEA   ".g:Tex_Leader2."ea   eqnarray            EAP   ".g:Tex_Leader2."ap   appendix"
+\."\n EEQ   ".g:Tex_Leader2."eq   equation            ECE   ".g:Tex_Leader2."ce   center"
+\."\n EDO   ".g:Tex_Leader2."do   document            EPI   ".g:Tex_Leader2."fi   figure"
+\."\n EFC   ".g:Tex_Leader2."fc   filecontents        ELR   ".g:Tex_Leader2."lr   lrbox"
+\."\n EFL   ".g:Tex_Leader2."fl   flushleft           EMP   ".g:Tex_Leader2."mp   minipage"
+\."\n EFR   ".g:Tex_Leader2."fr   flushright          EPI   ".g:Tex_Leader2."pi   picture"
+\."\n EMA   ".g:Tex_Leader2."ma   math                EQE   ".g:Tex_Leader2."qe   quote"
+" }}}
+" Font shortcuts {{{
+let g:fontshortcuts = ''
+\."\n Font shortcuts"
+\."\n <mapleader> is a value of g:Tex_Leader"
+\."\n Shortcuts         Effects"
+\."\n I        v&V      I&v               V"
+\."\n FBF      ".g:Tex_Leader."bf      \\textbf{}         {\\bfseries }"
+\."\n FMD      ".g:Tex_Leader."md      \\textmd{}         {\\mdseries }"
+\."\n"
+\."\n FTT      ".g:Tex_Leader."tt      \\texttt{}         {\\ttfamily }"
+\."\n FSF      ".g:Tex_Leader."sf      \\textsf{}         {\\sffamily }"
+\."\n FRM      ".g:Tex_Leader."rm      \\textrm{}         {\\rmfamily }"
+\."\n"
+\."\n FUP      ".g:Tex_Leader."up      \\textup{}         {\\upshape }"
+\."\n FSL      ".g:Tex_Leader."sl      \\textsl{}         {\\slshape }"
+\."\n FSC      ".g:Tex_Leader."sc      \\textsc{}         {\\scshape }"
+\."\n FIT      ".g:Tex_Leader."it      \\textit{}         {\\itshape }"
+" }}}
+" Section shortcuts {{{
+let g:sectionshortcuts = ''
+\."\n Section shortcuts"
+\."\n <mapleader> is a value of g:Tex_Leader2"
+\."\n I     v&V"
+\."\n SPA   ".g:Tex_Leader2."pa   part"
+\."\n SCH   ".g:Tex_Leader2."ch   chapter"
+\."\n SSE   ".g:Tex_Leader2."se   section"
+\."\n SSS   ".g:Tex_Leader2."ss   subsection"
+\."\n SS2   ".g:Tex_Leader2."s2   subsubsection"
+\."\n SPG   ".g:Tex_Leader2."pg   paragraph"
+\."\n SSP   ".g:Tex_Leader2."sp   subparagraph"
+" }}}
+
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4
