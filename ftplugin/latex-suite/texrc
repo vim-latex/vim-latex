@@ -13,12 +13,10 @@
 "              of latex-suite. 
 "
 "              You can do one of the following:
-"              1. Copy this file into $VIMFILES/ftplugin/latex-suite/tex/texrc
+"              1. Copy this file into $VIMFILES/ftplugin/tex/texrc
 "                 and edit the values in that file.
 "                 $VIMFILES is ~/.vim for UNIX systems and ~/vimfiles for
-"                 WINDOWS systems.  Copying it to some arbitrary location even
-"                 within some other location in your 'runtimepath' will not
-"                 work.
+"                 WINDOWS systems.
 "
 "              2. Just set values of each setting individually in your
 "                 $VIMFILES/ftplugin/tex.vim file. (See above for what
