@@ -2727,1117 +2727,638 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
   <title>Customizing &ls;</title>
   <para>
    Customizing &ls; is done by defining certain global variables in
-   <literal>$VIM/ftplugin/tex/texrc.vim</literal>, where
-   <literal>$VIM</literal> corresponds to <literal>~/.vim</literal> for *nix
-   machines and <literal>~/vimfiles</literal> for windows machines. This file
-   is not part of the &ls; distribution. You will need to create this file if
-   you need to change any default settinngs. Since this file is not
-   included as part of the &ls; distribution, it will not be over-written in
-   subsequent updates.
-  </para>
-  <note>
-   <para>It is also possible to define any customization in the
+   <literal>$VIM/ftplugin/tex/texrc</literal>, where
+   <literal>$VIM</literal> corresponds to <literal>~/.vim</literal> for
+   *nix machines and <literal>~/vimfiles</literal> for windows machines.
+   This file is not part of the &ls; distribution. You will need to
+   create this file by copying texrc included in Latex-Suite
+   distribution, if you need to change any default settinngs.  Since
+   this file is not included as part of the &ls; distribution, it will
+   not be over-written in subsequent updates.  </para> <note> <para>It
+    is also possible to define any customization in the
     <literal>$VIM/ftplugin/tex.vim</literal> file, but for the sake of
-    clarity, you might want to use the <literal>texrc.vim</literal> file
-    described above
-   </para>
-  </note>
-  <para>
-   The default settings in &ls; are defined in
-   <literal>$VIM/ftplugin/latex-suite/texrc</literal>. Please take a look at
-   this file if you find this documentation incomplete or confusing. That file
-   is also well documented.
-  </para>
-  <para>
-   This chapter describes the various settings which effect &ls; and their
-   default values. The settings are broken up into sections according to the
-   behavior which they influence. 
-  </para>
-  <section id="ls-general-purpose-settings">
-   <title>General Settings</title>
-   <section id="Tex_Debug">
-    <title>Tex_Debug</title>
-    <para>
-     <informaltable frame="all">
-      <tgroup cols="2">
-       <tbody>
+    clarity, you might want to use the <literal>texrc</literal> file
+    described above </para> </note> <para> The default settings in &ls;
+   are defined in <literal>$VIM/ftplugin/latex-suite/texrc</literal>.
+   Please take a look at this file if you find this documentation
+   incomplete or confusing. That file is also well documented.  </para>
+  <para> This chapter describes the various settings which effect &ls;
+   and their default values. The settings are broken up into sections
+   according to the behavior which they influence.  </para> <section
+   id="ls-general-purpose-settings"> <title>General Settings</title>
+   <section id="Tex_Debug"> <title>Tex_Debug</title> <para>
+     <informaltable frame="all"> <tgroup cols="2"> <tbody>
         <row><entry>Type</entry><entry>boolean</entry></row>
         <row><entry>Default Value</entry>
-         <entry><literal>0</literal></entry></row>
-       </tbody>
-      </tgroup>
-     </informaltable>
-     <para>
-      If set to 1, then latex-suite will create certain global debug
-      statements which can be printed by doing
-      <programlisting>:call Tex_PrintDebug()</programlisting>
-     </para>
-    </para>
-   </section>
-   <section id="Tex_UsePython">
-    <title>Tex_UsePython</title>
-    <para>
-     <informaltable frame="all">
-      <tgroup cols="2">
-       <tbody>
+         <entry><literal>0</literal></entry></row> </tbody> </tgroup>
+      </informaltable> <para> If set to 1, then latex-suite will create
+      certain global debug statements which can be printed by doing
+      <programlisting>:call Tex_PrintDebug()</programlisting> </para>
+    </para> </section> <section id="Tex_UsePython">
+    <title>Tex_UsePython</title> <para> <informaltable frame="all">
+      <tgroup cols="2"> <tbody>
         <row><entry>Type</entry><entry>boolean</entry></row>
         <row><entry>Default Value</entry>
-         <entry><literal>1</literal></entry></row>
-       </tbody>
-      </tgroup>
-     </informaltable>
-     <para>
-      If &ls; detects that your vim is python enabled (using
-      <literal>has('python')</literal>), then it tries to use python in
-      certain places to speed things up. If this misbehaves, you can set
-      this to zero, in which case, &ls; will use vimscript to accomplish
-      the same.
-     </para>
-    </para>
-   </section>
-  </section>
-  <section id="customizing-place-holders">
-   <title>Place-Holder Customization</title>
-   <para>
-    &ls; uses <link linkend="place-holders">place-holders</link> to minimize
-    using the movement keys while typing. The following settings affect how
-    place-holders are used.
-   </para>
-   <note>
-    <para>
-     These setting need to be set in your <literal>~/.vimrc</literal>, not
-     <literal>$VIM/ftplugin/tex.vim</literal> because these settings affect
-     the behavior of <literal>imaps.vim</literal>, which is a global plugin,
-     not a file-type plugin.
-    </para>
-   </note>
-   <section id="Imap_UsePlaceHolders">
-    <title>g:Imap_UsePlaceHolders</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>Boolean</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>1</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     Setting this to zero completeley disables using place-holders.
-    </para>
-   </section>
-   <section id="Imap_PlaceHolderStart">
-    <anchor id="Imap_PlaceHolderEnd"></anchor>
-    <title>g:Imap_PlaceHolderStart &amp; g:Imap_PlaceHolderEnd</title>
-    <informaltable frame="all">
-     <tgroup cols="3">
-      <thead>
-       <row>
-        <entry>Setting</entry>
-        <entry>Type</entry>
-        <entry>Value</entry>
-       </row>
-      </thead>
-      <tbody>
-       <row>
-        <entry><literal>Imap_PlaceHolderStart</literal></entry>
-        <entry>String</entry>
-        <entry><literal>'&lt;+'</literal></entry>
-       </row>
-       <row>
-        <entry><literal>Imap_PlaceHolderEnd</literal></entry>
-        <entry>String</entry>
-        <entry><literal>'+&gt;'</literal></entry>
-       </row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     These settings affect the strings displayed at the beginning and end of
-     the place-holder string. Set these strings to a value different than a
-     commonly ocurring sequence of characters. 
-    </para>
-    <note>
-     <title>TIP</title>
-     <para>
-      If you use the <literal>latin1</literal> encoding and do not type in
-      french, then you can set these strings to the <literal>\xab</literal>
-      and <literal>\xbb</literal> characters (the french quotation marks).
-     </para>
-    </note>
-   </section>
-   <section id="Imap_DeleteEmptyPlaceHolders">
-    <title>g:Imap_DeleteEmptyPlaceHolders</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>Boolean</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>1</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     When set to one, non-descriptive or empty place-holders are deleted on
-     pressing <literal>&lt;Ctrl-J&gt;</literal>.
-    </para>
-   </section>
-   <section id="Imap_StickyPlaceHolders">
-    <title>g:Imap_StickyPlaceHolders</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>Boolean</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>1</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     When set to 1, in visual mode, <literal>&lt;Ctrl-J&gt;</literal> takes
-     you to the next placeholder without deleting the current placeholder.
-    </para>
-   </section>
-  </section>
-  <section id="customizing-macros">
-   <title>Macro Customization</title>
-   <para>
-    The following variables disable various parts of the macro functionality
-    of &ls;. See the links to the relevant sections to see what functionality
-    setting each of the variables to zero will take away.
-   </para>
-   <anchor id="Tex_EnvironmentMaps" />
-   <anchor id="Tex_EnvironmentMenus" />
-   <anchor id="Tex_FontMaps" />
-   <anchor id="Tex_FontMenus" />
-   <anchor id="Tex_SectionMaps" />
-   <anchor id="Tex_SectionMenus" />
-   <informaltable frame="all">
-    <tgroup cols="3">
-     <thead>
-      <row><entry>Setting</entry><entry>Link to relevant section</entry><entry>Default Value</entry></row>
-     </thead>
-     <tbody>
-      <row><entry><literal>g:Tex_EnvironmentMaps </literal></entry><entry><link linkend="insert-mode-environment-mappings">Environment Mappings</link></entry><entry>1</entry></row>
-      <row><entry><literal>g:Tex_EnvironmentMenus</literal></entry><entry></entry><entry>1</entry></row>
-      <row><entry><literal>g:Tex_FontMaps        </literal></entry><entry><link linkend="font-maps">Font Mappings</link></entry><entry>1</entry></row>
-      <row><entry><literal>g:Tex_FontMenus       </literal></entry><entry></entry><entry>1</entry></row>
-      <row><entry><literal>g:Tex_SectionMaps     </literal></entry><entry><link linkend="section-mappings">Section Mappings</link></entry><entry>1</entry></row>
-      <row><entry><literal>g:Tex_SectionMenus    </literal></entry><entry></entry><entry>1</entry></row>
-     </tbody>
-    </tgroup>
-   </informaltable>
-   <section id="Tex_UseMenuWizard">
-    <title>g:Tex_UseMenuWizard</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>Boolean</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>0</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     If this variable is set to 1, then when an enviroment is chosen from the
-     menu then for selected environments, latex-suite asks a series of
-     questions on the command line and inserts a template with the
-     corresponding fields already filled in.  Setting this to zero will insert
-     a template with <link linkend="place-holders">place-holders</link>
-     marking off the places where fields need to be filled.
-    </para>
-   </section>
-   <section id="Tex_CatchVisMapErrors">
-    <title>g:Tex_CatchVisMapErrors</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>Boolean</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>1</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     With so many visual maps, its helpful to have a way of catching typing
-     errors made in visual mode. What this does is to prompt you to correct
-     your visual mode mapping if you start out with <literal><link
-       linkend="Tex_Leader">g:Tex_Leader</link></literal> and then type some
-     illegal keys. It basically maps just the <literal>g:Tex_Leader</literal>
-     character to a function.
-    </para>
-   </section>
-   <section id="Tex_Diacritics">
-    <title>g:Tex_Diacritics</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>Boolean</entry></row>
-       <row><entry>Default Value</entry> <entry><literal>0</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     Whether or not you want to use <link
-      linkend="diacritic-mappings">diacritics</link>.
-    </para>
-   </section>
-   <section id="Tex_Leader">
-    <title>g:Tex_Leader</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>String</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>'`'</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     The mappings in latex-suite are by default prefixed with the back-tick
-     character. For example, <literal>`/</literal> inserts
-     <literal>\frac{&ph;}{&ph;}&ph;</literal> etc. You can change the
-     prefix with the following setting.
-     <literal>','</literal>, <literal>'/'</literal>,
-     <literal>'`'</literal> are preferred values. <literal>''</literal> or
-     <literal>'\'</literal> will lead to a <emphasis>lot</emphasis> of
-     trouble.
-    </para>
-    <para>
-     g:Tex_Leader is also used for visual mode mappings for fonts.
-    </para>
-   </section>
-   <section id="Tex_Leader2">
-    <title>g:Tex_Leader2</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>String</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>','</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     In order to avoid clashes between the large number of visual mode macros
-     provided, the <link linkend="visual-mode-environment-mapings">visual mode
-      macros for environments</link> and sections start with a character
-     different from <literal>g:Tex_Leade</literal>.
-    </para>
-   </section>
-   <section id="Tex_PromptedEnvironments">
-    <title>g:Tex_PromptedEnvironments</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>String</entry></row>
-       <row><entry>Default Value</entry> <entry><literal>'eqnarray*,eqnarray,equation,equation*,\[,$$,align,align*'</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     This string represents a comma seperated list of fields corresponding to
-     environments. Pressing <literal>&lt;F5&gt;</literal> in insert-mode in
-     the body of the document asks you to choose from one of these
-     environments to insert.
-    </para>
-    <para>
-     Leaving this string empty will leave the <literal>&lt;F5&gt;</literal>
-     key unmapped
-    </para>
-   </section>
-   <section id="Tex_HotKeyMappings">
-    <title>g:Tex_HotKeyMappings</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>String</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>'eqnarray*,eqnarray,bmatrix'</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     This string represents a comma seperated list of environments which are
-     mapped to <literal>&lt;Shift-F-1&gt;</literal> through
-     <literal>&lt;Shift-F-4&gt;</literal>. For example, pressing
-     <literal>&lt;Shift-F-2&gt;</literal> with this setting inserts the
-     <literal>eqnarray</literal> environment.
-    </para>
-    <para>
-     Leaving this string empty will leave <literal>&lt;Shift-F-1&gt;</literal> through
-     <literal>&lt;Shift-F-4&gt;</literal> unmapped.
-    </para>
-    <note>
-     <para>
-      Only the first four fields of this list are used. The rest are silently
-      ignored.
-     </para>
-    </note>
-   </section>
-   <section id="Tex_PromptedCommands">
-    <title>g:Tex_PromptedCommands</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>String</entry></row>
-       <row><entry>Default Value</entry> 
-        <entry>
-         <literal>'footnote,cite,pageref,label'</literal>
-        </entry>
-       </row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     This string represents a comma seperated list of &latex; commands
-     which &ls; uses for the <literal>&lt;F7&gt;</literal> and
-     <literal>&lt;S-F7&gt;</literal> maps as described <link
-      linkend="latex-command-maps">here</link>.
-    </para>
-    <para>
-     Leaving this string empty will leave the <literal>&lt;F7&gt;</literal>
-     key unmapped.
-    </para>
-   </section>
-   <section id="Tex_Env_name">
-    <title>Tex_Env_name</title>
-     <para>
-      If you wish to wish to expand certain environments differently from
-      the way &ls; does it, you can define custom expansions using global
-      variables of the form <literal>Tex_Env_{name}</literal> where
-      <literal>name</literal> corresponds to the environment. This
-      over-riding setting only works for Methods 1-3 described in the
-      section <link linkend="insert-mode-environment-mappings"
-       endterm="insert-mode-environment-mappings.title"></link>.
-      In the future, it will work with the fourth method too.
-     </para>
-     <para>
-      For example, if you press <literal>&lt;F5&gt;</literal> after typing
-      <literal>theorem</literal>, &ls; will by default expand it to
-      <programlisting>\begin{theorem}
-     \label{&ph;}&ph;
-\end{theorem}&ph;</programlisting>
-       However, if you wish change this to
-      <programlisting>\begin{theorem}
-     &ph;
-\end{theorem}&ph;</programlisting>
-       then define the following variable
-      <programlisting>let g:Tex_Env_theorem = "\\begin{theorem}\&lt;CR&gt;&ph;\&lt;CR&gt;\\end{theorem}"</programlisting>
-      </para>
-     <para>
-      If the expaniosn uses special keys such as carriage return etc, then
-      use double-quotes and use the <literal>"\&lt;key&gt;"</literal>
-      notation for special keys. Backslashes have to be doubled.
-     </para>
-     <para>
-      You could even use strings returned by functions as the expansion by
-      using the <link
-       linkend="IMAP_PutTextWithMovement">IMAP_PutTextWithMovement()</link>
-      function.
-     </para>
-     <para>
-      If the name of the environment contains special characters (for
-      example, the <literal>eqnarray*</literal> environment), then use the
-      following form:
-      <programlisting>let g:Tex_Env_{'eqnarray*'} = 
-        \ "\\begin{eqnarray*}\&lt;CR&gt;&ph; &amp;=&amp; &ph;\&lt;CR&gt;\\end{eqnarray*}&ph;"</programlisting>
-       This will make pressing <literal>&lt;F5&gt;</literal> after
-       <literal>eqnarray*</literal> expand to
-       <programlisting>\begin{eqnarray*}
-	&ph; &amp;=&amp; &ph;
-\end{eqnarray*}&ph;</programlisting>
-     </para>
-   </section>
-   <section id="Tex_Com_name">
-    <title>Tex_Com_name</title>
-    <para>
-     If you wish to define new expansions for fast command insertion as
-     described <link linkend="latex-command-maps">here</link>, or redefine
-     expansios from the default values in &ls;, you will need to define
-     variables of the form <literal>g:Tex_Com_{name}</literal> where
-     <literal>name</literal> is a command name. For example, with the
-     setting
-     <programlisting>let g:Tex_Com_frac = "\\frac{&ph;}{&ph;}&ph;"</programlisting>
-     pressing <literal>&lt;F7&gt;</literal> after typing
-     <literal>frac</literal> will change it to <literal>\frac{&ph;}{&ph;}&ph;</literal>
-    </para>
-    <para>
-     See <link linkend="Tex_Env_name">Tex_Env_name</link> for additional
-     details on how to create this setting in various special
-     circumstances.
-    </para>
-   </section>
-  </section>
-  <section id="customizing-smart-keys">
-   <title>Smart Key Customization</title>
-   <para>
-    These settings affect the smart key functionality as described <link
-     linkend="smart-keys">here</link>.
-   </para>
-   <section id="Tex_SmartKeyBS">
-    <title>g:Tex_SmartKeyBS</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>Boolean</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>1</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     Whether or not <literal>&lt;Backspace&gt;</literal> deletes diacritics.
-    </para>
-   </section>
-   <section id="Tex_SmartKeyQuote">
-    <title>g:Tex_SmartKeyQuote</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>Boolean</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>1</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     Whether or not the <link linkend="smart-keys">smart quotes</link>
-     functionality is available.
-    </para>
-    <para>
-     If enabled, the quote characters can be customized by setting the
-     following variables:
-    </para>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <thead>
-       <row>
-        <entry>Setting</entry>
-        <entry>Value</entry>
-       </row>
-      </thead>
-      <tbody>
-       <row>
-        <entry><literal>g:Tex_SmartQuoteOpen</literal></entry>
-        <entry><literal>"``"</literal></entry>
-       </row>
-       <row>
-        <entry><literal>g:Tex_SmartQuoteClose</literal></entry>
-        <entry><literal>"''"</literal></entry>
-       </row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     Non-english users will want to change these settings to their locale.
-     These global variables will be ignored if there are buffer-local
-     variables (with the same name), which may be set in the language specific
-     package files, such as
-     <literal>$VIM/ftplugin/latex-suite/packages/german</literal>.
-    </para>
-   </section>
-  </section>
-  <section id="customizing-latex-completion">
-   <title>Latex Completion Customization</title>
-   <para>
-    The following settings affect the <link linkend="latex-completion">
-     completion</link> functionality in &ls;.
-   </para>
-   <section id="completion-window-preferences">
-    <title>Window size settings</title>
-    <para>
-     These three settings affect the aesthetics of the completion
-     functionality.
-    </para>
-    <anchor id="Tex_ViewerCwindowHeight" />
-    <anchor id="Tex_ViewerPreviewHeight" />
-    <anchor id="Tex_ExplorerHeight" />
-    <anchor id="Tex_ImageDir" />
-    <informaltable frame="all">
-     <tgroup cols="3">
-      <thead>
-       <row>
-        <entry>Setting</entry>
-        <entry>Explanation</entry>
-        <entry>Default Value</entry>
-       </row>
-      </thead>
-      <tbody>
-       <row>
-        <entry><literal>g:Tex_ViewerCwindowHeight</literal></entry>
-        <entry>The height of the <literal>cwindow</literal> which displays the
-         list of <literal>\label</literal>s etc.</entry>
-        <entry>5</entry>
-       </row>
-       <row>
-        <entry><literal>g:Tex_ViewerPreviewHeight</literal></entry>
-        <entry>The height of the preview window which shows the context of a
-         <literal>\label</literal> etc.</entry>
-        <entry>10 </entry>
-       </row>
-       <row>
-        <entry><literal>g:Tex_ExplorerHeight</literal></entry>
-        <entry>The height of the explorer window which lists the files from
-         which to choose an image file.</entry>
-        <entry>10</entry>
-       </row>
-       <row>
-        <entry><literal>g:Tex_ImageDir</literal></entry>
-        <entry>The directory to scan for images</entry>
-        <entry>''</entry>
-       </row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-   </section>
-   <section id="Tex_BIBINPUTS">
-    <title>g:Tex_BIBINPUTS</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>string</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>''</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     This string describes the directories which are scanned while trying
-     to search for <literal>.bib</literal> and <literal>.bbl</literal>
-     files.  See the <link linkend="latex-completion-cite">cite completion
-      section</link> for more details.
-    </para>
-    <para>
-     This string should be set in the syntax accepted by &vim;'s native
-     <literal>'path'</literal> setting. Do not include the present
-     directory <literal>'.'</literal>. While searching for
-     <literal>bibliography</literal> files, the present directory will be
-     prepended to this variable.
-    </para>
-   </section>
-   <section id="Tex_RememberCiteSearch">
-    <title>g:Tex_RememberCiteSearch</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>Boolean</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>0</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     When this variable is non-zero, then &ls; will try to remember results
-     from the <literal>\cite</literal> completion as described in <link
-      linkend="cite-search-caching">this section</link>.
-    </para>
-   </section>
-  </section>
-  <section id="compiler-customization">
-   <title>Compiler Customization</title>
-   <para>
-    The following settings affect &ls;'s compilation functionality
-   </para>
-   <section id="Tex_DefaultTargetFormat">
-    <title>g:Tex_DefaultTargetFormat</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>String</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>dvi</literal> for windows/*nix and
-         <literal>pdf</literal> for mac</entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     Use this setting to choose the default target format. For example,
-     setting this to <literal>pdf</literal> makes &ls; compile a pdf file
-     when you press <literal>\ll</literal> and fire up the
-     <literal>pdf</literal> viewer on pressing <literal>\lv</literal>. Make
-     sure that a rules for compiling and viewing have been defined for this
-     target format as described <link
-      linkend="Tex_CompileRule_format">here</link> and <link
-      linkend="Tex_ViewRule_format">here</link>.
-    </para>
-   </section>
-   <section id="Tex_CompileRule_format">
-    <title>g:Tex_CompileRule_&lt;format&gt;</title>
-    <para>
-     Here <literal>&lt;format&gt;</literal> refers to the target format for
-     which this rule is defined. &ls; supports compiling into
-     <literal>dvi</literal>, <literal>ps</literal> and <literal>pdf</literal>
-     by default. All these rules are strings defined by default as follows:
-    </para>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row>
-        <entry><literal>g:Tex_CompileRule_dvi</literal></entry>
-        <entry><literal>'latex -interaction=nonstopmode $*'</literal></entry>
-       </row>
-       <row>
-        <entry><literal>g:Tex_CompileRule_ps</literal></entry>
-        <entry><literal>'ps2pdf $*'</literal></entry>
-       </row>
-       <row>
-        <entry><literal>g:Tex_CompileRule_pdf</literal></entry>
-        <entry><literal>'pdflatex -interaction=nonstopmode $*'</literal></entry>
-       </row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     If you desire forward and inverse searching via &ls;, you will need to
-     change <literal>g:Tex_CompileRule_dvi</literal> to include
-     <literal>-src-specials</literal>. However, this has been known to cause
-     problems with the output file. Therefore, use this with care.
-    </para>
-   </section>
-   <section fd="Tex_FormatDependency_format">
-    <title>g:Tex_FormatDependency_&lt;format&gt;</title>
-    <para>
-     <informaltable frame="all">
-      <tgroup cols="2">
-       <tbody>
-        <row><entry>Type</entry><entry>string</entry></row>
+         <entry><literal>1</literal></entry></row> </tbody> </tgroup>
+      </informaltable> <para> If &ls; detects that your vim is python
+      enabled (using <literal>has('python')</literal>), then it tries to
+      use python in certain places to speed things up. If this
+      misbehaves, you can set this to zero, in which case, &ls; will use
+      vimscript to accomplish the same.  </para> </para> </section>
+    </section> <section id="customizing-place-holders">
+    <title>Place-Holder Customization</title> <para> &ls; uses <link
+      linkend="place-holders">place-holders</link> to minimize using the
+     movement keys while typing. The following settings affect how
+     place-holders are used.  </para> <note> <para> These setting need
+      to be set in your <literal>~/.vimrc</literal>, not
+      <literal>$VIM/ftplugin/tex.vim</literal> because these settings
+      affect the behavior of <literal>imaps.vim</literal>, which is
+      a global plugin, not a file-type plugin.  </para> </note> <section
+     id="Imap_UsePlaceHolders"> <title>g:Imap_UsePlaceHolders</title>
+     <informaltable frame="all"> <tgroup cols="2"> <tbody>
+        <row><entry>Type</entry><entry>Boolean</entry></row>
         <row><entry>Default Value</entry>
-         <entry><literal>''</literal></entry></row>
-       </tbody>
-      </tgroup>
-     </informaltable>
-     By default, there are no format dependencies defined. Each definition
-     is of the form above where <literal>&lt;format&gt;</literal> is a
-     string such as <literal>'dvi'</literal> etc.
-    </para>
-    <para>
-     The value of each string is a comma seperated string such as 'dvi,ps'.
-     See the <link linkend="compiler-dependency">Compiler dependency</link>
-     section to see how to use/specify this setting
-    </para>
-   </section>
-   <section id="Tex_MultipleCompileFormats">
-    <title>g:Tex_MultipleCompileFormats</title>
-    <para>
-     <informaltable frame="all">
-      <tgroup cols="2">
-       <tbody>
-        <row><entry>Type</entry><entry>string</entry></row>
-        <row><entry>Default Value</entry>
-         <entry><literal>'dvi'</literal></entry></row>
-       </tbody>
-      </tgroup>
-     </informaltable>
-    </para>
-    <para>
-     This is a comma seperated string of formats for which the compiler
-     needs to be called multiple times in order to get cross-references,
-     citations etc right. See the <link
-      linkend="compiling-multiple">Compiling multiple times</link> section
-     for details.
-    </para>
-   </section>
-   <section id="Tex_IgnoredWarnings">
-    <title>g:Tex_IgnoredWarnings</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>String</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>a new-line seperated list of patterns as described
-          below</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     The default value of this setting is
-     <programlisting>\"Underfull\n".
-\"Overfull\n".
-\"specifier changed to\n".
-\"You have requested\n".
-\"Missing number, treated as zero.\n".
-\"There were undefined references\n"
-\"Citation %.%# undefined"</programlisting>
-     This setting defines a set of patterns which will be filtered out when
-     displaying the output from the latex compiler. This is to aid in
-     filtering out very common warnings/errors.
-    </para>
-    <note>
-     <para>
-      Remember to check the value of <link
-       linkend="Tex_IgnoreLevel"><literal>g:Tex_IgnoreLevel</literal></link>
-      when you change this setting. For example, if you append a new pattern
-      which you would like to ignore by default, increase the value of
-      <literal>g:Tex_IgnoreLevel</literal>.
-     </para>
-    </note>
-   </section>
-   <section id="Tex_IgnoreLevel">
-    <title>g:Tex_IgnoreLevel</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>Integer</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>7</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     This setting defines a "filter level" or an "ignore level". A value of 7
-     for instance means that any warning/error matching with any of the first
-     7 fields of <link
-      linkend="Tex_IgnoredWarnings"><literal>g:Tex_IgnoredWarnings</literal></link>
-     will be ignored. Setting this value to zero will mean that no
-     error/warning is ignored. However, even with a value of zero, &ls; will
-     filter out most of the text which a &latex; compiler typically produces.
-     Use
-     <programlisting>TCLevel strict</programlisting>
-     from within &vim; in order to see all the lines from the compiler's
-     output.
-    </para>
-   </section>
-   <section id="Tex_UseMakefile">
-    <title>Tex_UseMakefile</title>
-    <para>
-     <informaltable frame="all">
-      <tgroup cols="2">
-       <tbody>
-        <row><entry>Type</entry><entry>boolean</entry></row>
-        <row><entry>Default Value</entry>
-         <entry><literal>1</literal></entry></row>
-       </tbody>
-      </tgroup>
-     </informaltable>
-     <para>
-      When set to 1, then if a <literal>makefile</literal> or
-      <literal>Makefile</literal> is present in the current directory, then
-      &ls; sets the <literal>makeprg</literal> option to just
-      <literal>"make &lt;target&gt;"</literal>, where
-      <literal>&lt;target&gt;</literal> is the target format chosen using
-      the <literal>TCTarget</literal> or <literal>TTarget</literal>
-      commands.
-     </para>
-     <para>
-      When set to 0, then &ls; will set the <literal>makeprg</literal>
-      setting to whatever is defined by the <link
-       linkend="Tex_CompileRule_format">g:Tex_CompileRule_target</link>
-      setting.
-     </para>
-    </para>
-   </section>
-   <section id="Tex_GotoError">
-    <title>g:Tex_GotoError</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>boolean</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>1</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     If set to 1, then pressing <literal>\ll</literal> will take you to
-     the location of the first warning/error, otherwise you will remain in
-     the original location but the errors/warnings will be listed in the
-     preview window.
-    </para>
-   </section>
-  </section>
-  <section id="viewer-customization">
-   <title>Viewer Customization</title>
-   <para>
-    The following settings affect how &ls; will display compiled files.
-   </para>
-   <section id="Tex_ViewRule_format">
-    <title>g:Tex_ViewRule_&lt;format&gt;</title>
-    <para>
-     Here <literal>&lt;format&gt;</literal> refers to a format such as
-     <literal>dvi</literal>, <literal>ps</literal>, etc. This variable defines
-     the program which will be called to display a file of that format.
-    </para>
-    <para>
-     By default, &ls; defines viewer programs for viewing DVI, PS and PDF
-     formats as follows:
-    </para>
-    <informaltable frame="all">
-     <tgroup cols="3">
-      <thead>
-       <row>
-        <entry></entry>
-        <entry>Windows</entry>
-        <entry>Unix</entry>
-       </row>
-      </thead>
-      <tbody>
-       <row>
-        <entry><literal>g:Tex_ViewRule_dvi</literal></entry>
-        <entry><literal>'yap -1'</literal></entry>
-        <entry><literal>'xdvi'</literal></entry>
-       </row>
-       <row>
-        <entry><literal>g:Tex_ViewRule_ps</literal></entry>
-        <entry><literal>'gsview32'</literal></entry>
-        <entry><literal>'ghostview'</literal></entry>
-       </row>
-       <row>
-        <entry><literal>g:Tex_ViewRule_pdf</literal></entry>
-        <entry><literal>'AcroRd32'</literal></entry>
-        <entry><literal>'xpdf'</literal></entry>
-       </row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     For Macintosh systems, these strings are left empty by default. This lets
-     the system pick the program for each format. If you define these variables
-     for Mac, the system choice will be over-ridden.
-    </para>
-    <note>
-     <para>
-      For windows, you will need to set the <literal>$PATH</literal> variable
-      to include the paths to <literal>yap</literal>,
-      <literal>AcroRd32</literal>, <literal>gsview32</literal> and any other
-      programs. See your system documentation for how to do this.
-     </para>
-    </note>
-    <note>
-     <title>Default Viewing Format</title>
-     <para>
-      To change the default format for viewing files, set the <link
-       linkend="Tex_DefaultTargetFormat">g:Tex_DefaultTargetFormat</link>
-      variable.
-     </para>
-    </note>
-   </section>
-  </section>
-  <section id="customizing-menus">
-   <title>Menu Customization</title>
-   <para>
-    In addition to using the variables defined in this section to affect
-    the menu-layout permanently (i.e, the layout &ls; will start with), you
-    can also use the <literal>TeX-Suite > Configure Menu</literal> menu to
-    dynamically configure the menu layout after &ls; has started.
-   </para>
-   <section id="Tex_Menus">
-    <title>g:Tex_Menus</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
+         <entry><literal>1</literal></entry></row> </tbody> </tgroup>
+      </informaltable> <para> Setting this to zero completeley disables
+      using place-holders.  </para> </section> <section
+     id="Imap_PlaceHolderStart"> <anchor
+      id="Imap_PlaceHolderEnd"></anchor> <title>g:Imap_PlaceHolderStart
+      &amp; g:Imap_PlaceHolderEnd</title> <informaltable frame="all">
+      <tgroup cols="3"> <thead> <row> <entry>Setting</entry>
+         <entry>Type</entry> <entry>Value</entry> </row> </thead>
+       <tbody> <row>
+         <entry><literal>Imap_PlaceHolderStart</literal></entry>
+         <entry>String</entry> <entry><literal>'&lt;+'</literal></entry>
+         </row> <row>
+         <entry><literal>Imap_PlaceHolderEnd</literal></entry>
+         <entry>String</entry> <entry><literal>'+&gt;'</literal></entry>
+      </row> </tbody> </tgroup> </informaltable> <para> These settings
+      affect the strings displayed at the beginning and end of the
+      place-holder string.  Set these strings to a value different than
+      a commonly ocurring sequence of characters.  </para> <note>
+      <title>TIP</title> <para> If you use the <literal>latin1</literal>
+       encoding and do not type in french, then you can set these
+       strings to the <literal>\xab</literal> and
+       <literal>\xbb</literal> characters (the french quotation marks).
+        </para> </note> </section> <section
+        id="Imap_DeleteEmptyPlaceHolders">
+        <title>g:Imap_DeleteEmptyPlaceHolders</title> <informaltable
+         frame="all"> <tgroup cols="2"> <tbody>
+           <row><entry>Type</entry><entry>Boolean</entry></row>
+           <row><entry>Default Value</entry>
+            <entry><literal>1</literal></entry></row> </tbody> </tgroup>
+         </informaltable> <para> When set to one, non-descriptive or
+         empty place-holders are deleted on pressing
+         <literal>&lt;Ctrl-J&gt;</literal>.  </para> </section> <section
+        id="Imap_StickyPlaceHolders">
+        <title>g:Imap_StickyPlaceHolders</title> <informaltable
+         frame="all"> <tgroup cols="2"> <tbody>
+           <row><entry>Type</entry><entry>Boolean</entry></row>
+           <row><entry>Default Value</entry>
+            <entry><literal>1</literal></entry></row> </tbody> </tgroup>
+        </informaltable> <para> When set to 1, in visual mode,
+        <literal>&lt;Ctrl-J&gt;</literal> takes you to the next
+        placeholder without deleting the current placeholder.  </para>
+       </section> </section> <section id="customizing-macros">
+       <title>Macro Customization</title> <para> The following variables
+        disable various parts of the macro functionality of &ls;. See
+        the links to the relevant sections to see what functionality
+        setting each of the variables to zero will take away.  </para>
+       <anchor id="Tex_EnvironmentMaps" /> <anchor
+        id="Tex_EnvironmentMenus" /> <anchor id="Tex_FontMaps" />
+       <anchor id="Tex_FontMenus" /> <anchor id="Tex_SectionMaps" />
+       <anchor id="Tex_SectionMenus" /> <informaltable frame="all">
+        <tgroup cols="3"> <thead> <row><entry>Setting</entry><entry>Link
+            to relevant section</entry><entry>Default
+            Value</entry></row> </thead> <tbody>
+          <row><entry><literal>g:Tex_EnvironmentMaps
+          </literal></entry><entry><link
+          linkend="insert-mode-environment-mappings">Environment
+          Mappings</link></entry><entry>1</entry></row>
+       <row><entry><literal>g:Tex_EnvironmentMenus</literal></entry><entry></entry><entry>1</entry></row>
+       <row><entry><literal>g:Tex_FontMaps
+       </literal></entry><entry><link linkend="font-maps">Font
+       Mappings</link></entry><entry>1</entry></row>
+    <row><entry><literal>g:Tex_FontMenus
+       </literal></entry><entry></entry><entry>1</entry></row>
+       <row><entry><literal>g:Tex_SectionMaps
+          </literal></entry><entry><link
+          linkend="section-mappings">Section
+          Mappings</link></entry><entry>1</entry></row>
+       <row><entry><literal>g:Tex_SectionMenus
+     </literal></entry><entry></entry><entry>1</entry></row> </tbody>
+    </tgroup> </informaltable> <section id="Tex_UseMenuWizard">
+    <title>g:Tex_UseMenuWizard</title> <informaltable frame="all">
+     <tgroup cols="2"> <tbody>
        <row><entry>Type</entry><entry>Boolean</entry></row>
        <row><entry>Default Value</entry>
-        <entry><literal>1</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     If set to 0, &ls; will suppress showing all menus. Useful if you mostly
-     work in terminals.
-    </para>
-   </section>
-   <section id="Tex_MainMenuLocation">
-    <title><literal>g:Tex_MainMenuLocation</literal></title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>number</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>80</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     This setting decides the location of the first top-level latex-suite
-     menu. You can for example shift all the menus created by latex-suite
-     to the very end by setting this value to a large number like 990.
-    </para>
-   </section>
-   <section id="Tex_MathMenus">
-    <title>g:Tex_MathMenus</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
+        <entry><literal>0</literal></entry></row> </tbody> </tgroup>
+     </informaltable> <para> If this variable is set to 1, then when an
+     enviroment is chosen from the menu then for selected environments,
+     latex-suite asks a series of questions on the command line and
+     inserts a template with the corresponding fields already filled in.
+     Setting this to zero will insert a template with <link
+      linkend="place-holders">place-holders</link> marking off the
+     places where fields need to be filled.  </para> </section> <section
+    id="Tex_CatchVisMapErrors"> <title>g:Tex_CatchVisMapErrors</title>
+    <informaltable frame="all"> <tgroup cols="2"> <tbody>
        <row><entry>Type</entry><entry>Boolean</entry></row>
        <row><entry>Default Value</entry>
-        <entry><literal>1</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     The <literal>Tex-Math</literal> menu consists of hundreds of mathematical
-     symbols used in &latex;. This menu comprises about 75% of the menus.
-    </para>
-   </section>
-   <section id="Tex_NestElementMenus">
-    <title>g:Tex_NestElementMenus</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
+        <entry><literal>1</literal></entry></row> </tbody> </tgroup>
+     </informaltable> <para> With so many visual maps, its helpful to
+     have a way of catching typing errors made in visual mode. What this
+     does is to prompt you to correct your visual mode mapping if you
+     start out with <literal><link
+       linkend="Tex_Leader">g:Tex_Leader</link></literal> and then type
+     some illegal keys. It basically maps just the
+     <literal>g:Tex_Leader</literal> character to a function.  </para>
+       </section> <section id="Tex_Diacritics">
+       <title>g:Tex_Diacritics</title> <informaltable frame="all">
+        <tgroup cols="2"> <tbody>
+          <row><entry>Type</entry><entry>Boolean</entry></row>
+          <row><entry>Default Value</entry>
+           <entry><literal>0</literal></entry></row> </tbody> </tgroup>
+         </informaltable> <para> Whether or not you want to use <link
+         linkend="diacritic-mappings">diacritics</link>.  </para>
+        </section> <section id="Tex_Leader"> <title>g:Tex_Leader</title>
+        <informaltable frame="all"> <tgroup cols="2"> <tbody>
+           <row><entry>Type</entry><entry>String</entry></row>
+           <row><entry>Default Value</entry>
+            <entry><literal>'`'</literal></entry></row> </tbody>
+         </tgroup> </informaltable> <para> The mappings in latex-suite
+         are by default prefixed with the back-tick character. For
+         example, <literal>`/</literal> inserts
+         <literal>\frac{&ph;}{&ph;}&ph;</literal> etc. You can change
+         the prefix with the following setting.  <literal>','</literal>,
+         <literal>'/'</literal>, <literal>'`'</literal> are preferred
+         values.  <literal>''</literal> or <literal>'\'</literal> will
+         lead to a <emphasis>lot</emphasis> of trouble.  </para> <para>
+         g:Tex_Leader is also used for visual mode mappings for fonts.
+         </para> </section> <section id="Tex_Leader2">
+         <title>g:Tex_Leader2</title> <informaltable frame="all">
+          <tgroup cols="2"> <tbody>
+            <row><entry>Type</entry><entry>String</entry></row>
+            <row><entry>Default Value</entry>
+             <entry><literal>','</literal></entry></row> </tbody>
+           </tgroup> </informaltable> <para> In order to avoid clashes
+           between the large number of visual mode macros provided, the
+           <link linkend="visual-mode-environment-mapings">visual mode
+            macros for environments</link> and sections start with
+           a character different from <literal>g:Tex_Leade</literal>.
+          </para> </section> <section id="Tex_PromptedEnvironments">
+          <title>g:Tex_PromptedEnvironments</title> <informaltable
+           frame="all"> <tgroup cols="2"> <tbody>
+             <row><entry>Type</entry><entry>String</entry></row>
+             <row><entry>Default Value</entry>
+              <entry><literal>'eqnarray*,eqnarray,equation,equation*,\[,$$,align,align*'</literal></entry></row>
+           </tbody> </tgroup> </informaltable> <para> This string
+           represents a comma seperated list of fields corresponding to
+           environments.  Pressing <literal>&lt;F5&gt;</literal> in
+           insert-mode in the body of the document asks you to choose
+           from one of these environments to insert.  </para> <para>
+           Leaving this string empty will leave the
+           <literal>&lt;F5&gt;</literal> key unmapped </para> </section>
+         <section id="Tex_HotKeyMappings">
+          <title>g:Tex_HotKeyMappings</title> <informaltable
+           frame="all"> <tgroup cols="2"> <tbody>
+             <row><entry>Type</entry><entry>String</entry></row>
+             <row><entry>Default Value</entry>
+              <entry><literal>'eqnarray*,eqnarray,bmatrix'</literal></entry></row>
+           </tbody> </tgroup> </informaltable> <para> This string
+           represents a comma seperated list of environments which are
+           mapped to <literal>&lt;Shift-F-1&gt;</literal> through
+           <literal>&lt;Shift-F-4&gt;</literal>. For example, pressing
+           <literal>&lt;Shift-F-2&gt;</literal> with this setting
+           inserts the <literal>eqnarray</literal> environment.  </para>
+          <para> Leaving this string empty will leave
+           <literal>&lt;Shift-F-1&gt;</literal> through
+           <literal>&lt;Shift-F-4&gt;</literal> unmapped.  </para>
+          <note> <para> Only the first four fields of this list are
+            used. The rest are silently ignored.  </para> </note>
+          </section> <section id="Tex_PromptedCommands">
+          <title>g:Tex_PromptedCommands</title> <informaltable
+           frame="all"> <tgroup cols="2"> <tbody>
+             <row><entry>Type</entry><entry>String</entry></row>
+             <row><entry>Default Value</entry> <entry>
+               <literal>'footnote,cite,pageref,label'</literal> </entry>
+           </row> </tbody> </tgroup> </informaltable> <para> This string
+           represents a comma seperated list of &latex; commands which
+           &ls; uses for the <literal>&lt;F7&gt;</literal> and
+           <literal>&lt;S-F7&gt;</literal> maps as described <link
+            linkend="latex-command-maps">here</link>.  </para> <para>
+           Leaving this string empty will leave the
+           <literal>&lt;F7&gt;</literal> key unmapped.  </para>
+           </section> <section id="Tex_Env_name">
+           <title>Tex_Env_name</title> <para> If you wish to wish to
+            expand certain environments differently from the way &ls;
+            does it, you can define custom expansions using global
+            variables of the form <literal>Tex_Env_{name}</literal>
+            where <literal>name</literal> corresponds to the
+            environment.  This over-riding setting only works for
+            Methods 1-3 described in the section <link
+             linkend="insert-mode-environment-mappings"
+             endterm="insert-mode-environment-mappings.title"></link>.
+            In the future, it will work with the fourth method too.
+             </para> <para> For example, if you press
+             <literal>&lt;F5&gt;</literal> after typing
+             <literal>theorem</literal>, &ls; will by default expand it
+             to <programlisting>\begin{theorem} \label{&ph;}&ph;
+              \end{theorem}&ph;</programlisting> However, if you wish
+             change this to <programlisting>\begin{theorem} &ph;
+              \end{theorem}&ph;</programlisting> then define the
+             following variable <programlisting>let g:Tex_Env_theorem
+              = "\\begin{theorem}\&lt;CR&gt;&ph;\&lt;CR&gt;\\end{theorem}"</programlisting>
+             </para> <para> If the expaniosn uses special keys such as
+             carriage return etc, then use double-quotes and use the
+             <literal>"\&lt;key&gt;"</literal> notation for special
+             keys.  Backslashes have to be doubled.  </para> <para> You
+             could even use strings returned by functions as the
+             expansion by using the <link
+              linkend="IMAP_PutTextWithMovement">IMAP_PutTextWithMovement()</link>
+             function.  </para> <para> If the name of the environment
+             contains special characters (for example, the
+             <literal>eqnarray*</literal> environment), then use the
+             following form: <programlisting>let g:Tex_Env_{'eqnarray*'}
+              = \ "\\begin{eqnarray*}\&lt;CR&gt;&ph; &amp;=&amp;
+              &ph;\&lt;CR&gt;\\end{eqnarray*}&ph;"</programlisting> This
+             will make pressing <literal>&lt;F5&gt;</literal> after
+             <literal>eqnarray*</literal> expand to
+             <programlisting>\begin{eqnarray*} &ph; &amp;=&amp; &ph;
+              \end{eqnarray*}&ph;</programlisting> </para> </section>
+           <section id="Tex_Com_name"> <title>Tex_Com_name</title>
+            <para> If you wish to define new expansions for fast command
+             insertion as described <link
+              linkend="latex-command-maps">here</link>, or redefine
+             expansios from the default values in &ls;, you will need to
+             define variables of the form
+             <literal>g:Tex_Com_{name}</literal> where
+             <literal>name</literal> is a command name. For example,
+             with the setting <programlisting>let g:Tex_Com_frac
+              = "\\frac{&ph;}{&ph;}&ph;"</programlisting> pressing
+             <literal>&lt;F7&gt;</literal> after typing
+             <literal>frac</literal> will change it to
+             <literal>\frac{&ph;}{&ph;}&ph;</literal> </para> <para> See
+             <link linkend="Tex_Env_name">Tex_Env_name</link> for
+             additional details on how to create this setting in various
+             special circumstances.  </para> </section> </section>
+          <section id="customizing-smart-keys"> <title>Smart Key
+            Customization</title> <para> These settings affect the smart
+            key functionality as described <link
+             linkend="smart-keys">here</link>.  </para> <section
+            id="Tex_SmartKeyBS"> <title>g:Tex_SmartKeyBS</title>
+            <informaltable frame="all"> <tgroup cols="2"> <tbody>
+               <row><entry>Type</entry><entry>Boolean</entry></row>
+               <row><entry>Default Value</entry>
+                <entry><literal>1</literal></entry></row> </tbody>
+            </tgroup> </informaltable> <para> Whether or not
+            <literal>&lt;Backspace&gt;</literal> deletes diacritics.
+           </para> </section> <section id="Tex_SmartKeyQuote">
+           <title>g:Tex_SmartKeyQuote</title> <informaltable
+            frame="all"> <tgroup cols="2"> <tbody>
+              <row><entry>Type</entry><entry>Boolean</entry></row>
+              <row><entry>Default Value</entry>
+               <entry><literal>1</literal></entry></row> </tbody>
+            </tgroup> </informaltable> <para> Whether or not the <link
+            linkend="smart-keys">smart quotes</link> functionality is
+           available.  </para> <para> If enabled, the quote characters
+           can be customized by setting the following variables: </para>
+          <informaltable frame="all"> <tgroup cols="2"> <thead> <row>
+              <entry>Setting</entry> <entry>Value</entry> </row>
+              </thead> <tbody> <row>
+              <entry><literal>g:Tex_SmartQuoteOpen</literal></entry>
+              <entry><literal>"``"</literal></entry> </row> <row>
+              <entry><literal>g:Tex_SmartQuoteClose</literal></entry>
+              <entry><literal>"''"</literal></entry> </row> </tbody>
+           </tgroup> </informaltable> <para> Non-english users will want
+           to change these settings to their locale.  These global
+           variables will be ignored if there are buffer-local variables
+           (with the same name), which may be set in the language
+           specific package files, such as
+           <literal>$VIM/ftplugin/latex-suite/packages/german</literal>.
+          </para> </section> </section> <section
+          id="customizing-latex-completion"> <title>Latex Completion
+           Customization</title> <para> The following settings affect
+           the <link linkend="latex-completion"> completion</link>
+           functionality in &ls;.  </para> <section
+           id="completion-window-preferences"> <title>Window size
+settings</title> <para> These three settings affect the aesthetics of
+the completion functionality.  </para> <anchor
+id="Tex_ViewerCwindowHeight" /> <anchor id="Tex_ViewerPreviewHeight" />
+<anchor id="Tex_ExplorerHeight" /> <anchor id="Tex_ImageDir" />
+<informaltable frame="all"> <tgroup cols="3"> <thead> <row>
+    <entry>Setting</entry> <entry>Explanation</entry> <entry>Default
+     Value</entry> </row> </thead> <tbody> <row>
+    <entry><literal>g:Tex_ViewerCwindowHeight</literal></entry>
+    <entry>The height of the <literal>cwindow</literal> which displays
+     the list of <literal>\label</literal>s etc.</entry>
+    <entry>5</entry> </row> <row>
+    <entry><literal>g:Tex_ViewerPreviewHeight</literal></entry>
+    <entry>The height of the preview window which shows the context of
+     a <literal>\label</literal> etc.</entry> <entry>10 </entry> </row>
+   <row> <entry><literal>g:Tex_ExplorerHeight</literal></entry>
+    <entry>The height of the explorer window which lists the files from
+     which to choose an image file.</entry> <entry>10</entry> </row>
+   <row> <entry><literal>g:Tex_ImageDir</literal></entry> <entry>The
+     directory to scan for images</entry> <entry>''</entry> </row>
+</tbody> </tgroup> </informaltable> </section> <section
+id="Tex_BIBINPUTS"> <title>g:Tex_BIBINPUTS</title> <informaltable
+ frame="all"> <tgroup cols="2"> <tbody>
+   <row><entry>Type</entry><entry>string</entry></row>
+   <row><entry>Default Value</entry>
+    <entry><literal>''</literal></entry></row> </tbody> </tgroup>
+ </informaltable> <para> This string describes the directories which are
+ scanned while trying to search for <literal>.bib</literal> and
+ <literal>.bbl</literal> files.  See the <link
+  linkend="latex-completion-cite">cite completion section</link> for
+ more details.  </para> <para> This string should be set in the syntax
+ accepted by &vim;'s native <literal>'path'</literal> setting.  Do not
+ include the present directory <literal>'.'</literal>. While searching
+ for <literal>bibliography</literal> files, the present directory will
+ be prepended to this variable.  </para> </section> <section
+id="Tex_RememberCiteSearch"> <title>g:Tex_RememberCiteSearch</title>
+<informaltable frame="all"> <tgroup cols="2"> <tbody>
+   <row><entry>Type</entry><entry>Boolean</entry></row>
+   <row><entry>Default Value</entry>
+    <entry><literal>0</literal></entry></row> </tbody> </tgroup>
+ </informaltable> <para> When this variable is non-zero, then &ls; will
+ try to remember results from the <literal>\cite</literal> completion as
+ described in <link linkend="cite-search-caching">this section</link>.
+</para> </section> </section> <section id="compiler-customization">
+<title>Compiler Customization</title> <para> The following settings
+ affect &ls;'s compilation functionality </para> <section
+ id="Tex_DefaultTargetFormat"> <title>g:Tex_DefaultTargetFormat</title>
+ <informaltable frame="all"> <tgroup cols="2"> <tbody>
+    <row><entry>Type</entry><entry>String</entry></row>
+    <row><entry>Default Value</entry> <entry><literal>dvi</literal> for
+      windows/*nix and <literal>pdf</literal> for mac</entry></row>
+  </tbody> </tgroup> </informaltable> <para> Use this setting to choose
+  the default target format. For example, setting this to
+  <literal>pdf</literal> makes &ls; compile a pdf file when you press
+  <literal>\ll</literal> and fire up the <literal>pdf</literal> viewer
+  on pressing <literal>\lv</literal>.  Make sure that a rules for
+  compiling and viewing have been defined for this target format as
+  described <link linkend="Tex_CompileRule_format">here</link> and <link
+   linkend="Tex_ViewRule_format">here</link>.  </para> </section>
+<section id="Tex_CompileRule_format">
+ <title>g:Tex_CompileRule_&lt;format&gt;</title> <para> Here
+  <literal>&lt;format&gt;</literal> refers to the target format for
+  which this rule is defined. &ls; supports compiling into
+  <literal>dvi</literal>, <literal>ps</literal> and
+  <literal>pdf</literal> by default. All these rules are strings defined
+  by default as follows: </para> <informaltable frame="all"> <tgroup
+   cols="2"> <tbody> <row>
+     <entry><literal>g:Tex_CompileRule_dvi</literal></entry>
+     <entry><literal>'latex -interaction=nonstopmode
+       $*'</literal></entry> </row> <row>
+     <entry><literal>g:Tex_CompileRule_ps</literal></entry>
+     <entry><literal>'ps2pdf $*'</literal></entry> </row> <row>
+     <entry><literal>g:Tex_CompileRule_pdf</literal></entry>
+     <entry><literal>'pdflatex -interaction=nonstopmode
+       $*'</literal></entry> </row> </tbody> </tgroup> </informaltable>
+ <para> If you desire forward and inverse searching via &ls;, you will
+  need to change <literal>g:Tex_CompileRule_dvi</literal> to include
+  <literal>-src-specials</literal>.  However, this has been known to
+  cause problems with the output file. Therefore, use this with care.
+ </para> </section> <section fd="Tex_FormatDependency_format">
+ <title>g:Tex_FormatDependency_&lt;format&gt;</title> <para>
+  <informaltable frame="all"> <tgroup cols="2"> <tbody>
+     <row><entry>Type</entry><entry>string</entry></row>
+     <row><entry>Default Value</entry>
+      <entry><literal>''</literal></entry></row> </tbody> </tgroup>
+  </informaltable> By default, there are no format dependencies defined.
+  Each definition is of the form above where
+  <literal>&lt;format&gt;</literal> is a string such as
+  <literal>'dvi'</literal> etc.  </para> <para> The value of each string
+  is a comma seperated string such as 'dvi,ps'.  See the <link
+   linkend="compiler-dependency">Compiler dependency</link> section to
+  see how to use/specify this setting </para> </section> <section
+ id="Tex_MultipleCompileFormats">
+ <title>g:Tex_MultipleCompileFormats</title> <para> <informaltable
+   frame="all"> <tgroup cols="2"> <tbody>
+     <row><entry>Type</entry><entry>string</entry></row>
+     <row><entry>Default Value</entry>
+      <entry><literal>'dvi'</literal></entry></row> </tbody> </tgroup>
+  </informaltable> </para> <para> This is a comma seperated string of
+  formats for which the compiler needs to be called multiple times in
+  order to get cross-references, citations etc right. See the <link
+   linkend="compiling-multiple">Compiling multiple times</link> section
+  for details.  </para> </section> <section id="Tex_IgnoredWarnings">
+ <title>g:Tex_IgnoredWarnings</title> <informaltable frame="all">
+  <tgroup cols="2"> <tbody>
+    <row><entry>Type</entry><entry>String</entry></row>
+    <row><entry>Default Value</entry> <entry><literal>a new-line
+       seperated list of patterns as described
+       below</literal></entry></row> </tbody> </tgroup> </informaltable>
+ <para> The default value of this setting is
+  <programlisting>\"Underfull\n".  \"Overfull\n".  \"specifier changed
+   to\n".  \"You have requested\n".  \"Missing number, treated as
+   zero.\n".  \"There were undefined references\n" \"Citation %.%#
+   undefined"</programlisting> This setting defines a set of patterns
+  which will be filtered out when displaying the output from the latex
+  compiler. This is to aid in filtering out very common warnings/errors.
+   </para> <note> <para> Remember to check the value of <link
+   linkend="Tex_IgnoreLevel"><literal>g:Tex_IgnoreLevel</literal></link>
+  when you change this setting. For example, if you append a new pattern
+  which you would like to ignore by default, increase the value of
+  <literal>g:Tex_IgnoreLevel</literal>.  </para> </note> </section>
+<section id="Tex_IgnoreLevel"> <title>g:Tex_IgnoreLevel</title>
+ <informaltable frame="all"> <tgroup cols="2"> <tbody>
+    <row><entry>Type</entry><entry>Integer</entry></row>
+    <row><entry>Default Value</entry>
+     <entry><literal>7</literal></entry></row> </tbody> </tgroup>
+  </informaltable> <para> This setting defines a "filter level" or an
+  "ignore level". A value of 7 for instance means that any warning/error
+  matching with any of the first 7 fields of <link
+   linkend="Tex_IgnoredWarnings"><literal>g:Tex_IgnoredWarnings</literal></link>
+  will be ignored. Setting this value to zero will mean that no
+  error/warning is ignored.  However, even with a value of zero, &ls;
+  will filter out most of the text which a &latex; compiler typically
+  produces.  Use <programlisting>TCLevel strict</programlisting> from
+  within &vim; in order to see all the lines from the compiler's output.
+ </para> </section> <section id="Tex_UseMakefile">
+ <title>Tex_UseMakefile</title> <para> <informaltable frame="all">
+   <tgroup cols="2"> <tbody>
+     <row><entry>Type</entry><entry>boolean</entry></row>
+     <row><entry>Default Value</entry>
+      <entry><literal>1</literal></entry></row> </tbody> </tgroup>
+   </informaltable> <para> When set to 1, then if
+   a <literal>makefile</literal> or <literal>Makefile</literal> is
+   present in the current directory, then &ls; sets the
+   <literal>makeprg</literal> option to just <literal>"make
+    &lt;target&gt;"</literal>, where <literal>&lt;target&gt;</literal>
+   is the target format chosen using the <literal>TCTarget</literal> or
+   <literal>TTarget</literal> commands.  </para> <para> When set to 0,
+   then &ls; will set the <literal>makeprg</literal> setting to whatever
+   is defined by the <link
+    linkend="Tex_CompileRule_format">g:Tex_CompileRule_target</link>
+   setting.  </para> </para> </section> <section id="Tex_GotoError">
+ <title>g:Tex_GotoError</title> <informaltable frame="all"> <tgroup
+   cols="2"> <tbody>
+    <row><entry>Type</entry><entry>boolean</entry></row>
+    <row><entry>Default Value</entry>
+     <entry><literal>1</literal></entry></row> </tbody> </tgroup>
+  </informaltable> <para> If set to 1, then pressing
+  <literal>\ll</literal> will take you to the location of the first
+  warning/error, otherwise you will remain in the original location but
+  the errors/warnings will be listed in the preview window.  </para>
+</section> </section> <section id="viewer-customization"> <title>Viewer
+Customization</title> <para> The following settings affect how &ls; will
+display compiled files.  </para> <section id="Tex_ViewRule_format">
+<title>g:Tex_ViewRule_&lt;format&gt;</title> <para> Here
+ <literal>&lt;format&gt;</literal> refers to a format such as
+ <literal>dvi</literal>, <literal>ps</literal>, etc. This variable
+ defines the program which will be called to display a file of that
+ format.  </para> <para> By default, &ls; defines viewer programs for
+ viewing DVI, PS and PDF formats as follows: </para> <informaltable
+ frame="all"> <tgroup cols="3"> <thead> <row> <entry></entry>
+    <entry>Windows</entry> <entry>Unix</entry> </row> </thead> <tbody>
+   <row> <entry><literal>g:Tex_ViewRule_dvi</literal></entry>
+    <entry><literal>'yap -1'</literal></entry>
+    <entry><literal>'xdvi'</literal></entry> </row> <row>
+    <entry><literal>g:Tex_ViewRule_ps</literal></entry>
+    <entry><literal>'gsview32'</literal></entry>
+    <entry><literal>'ghostview'</literal></entry> </row> <row>
+    <entry><literal>g:Tex_ViewRule_pdf</literal></entry>
+    <entry><literal>'AcroRd32'</literal></entry>
+    <entry><literal>'xpdf'</literal></entry> </row> </tbody> </tgroup>
+</informaltable> <para> For Macintosh systems, these strings are left
+empty by default. This lets the system pick the program for each format.
+If you define these variables for Mac, the system choice will be
+over-ridden.  </para> <note> <para> For windows, you will need to set
+ the <literal>$PATH</literal> variable to include the paths to
+ <literal>yap</literal>, <literal>AcroRd32</literal>,
+ <literal>gsview32</literal> and any other programs. See your system
+ documentation for how to do this.  </para> </note> <note>
+<title>Default Viewing Format</title> <para> To change the default
+ format for viewing files, set the <link
+  linkend="Tex_DefaultTargetFormat">g:Tex_DefaultTargetFormat</link>
+ variable.  </para> </note> </section> </section> <section
+id="customizing-menus"> <title>Menu Customization</title> <para> In
+ addition to using the variables defined in this section to affect the
+ menu-layout permanently (i.e, the layout &ls; will start with), you can
+ also use the <literal>TeX-Suite
+          > Configure Menu</literal> menu to dynamically configure the
+         > menu layout after &ls; has started.  </para> <section
+         > id="Tex_Menus"> <title>g:Tex_Menus</title> <informaltable
+          > frame="all"> <tgroup cols="2"> <tbody>
+            > <row><entry>Type</entry><entry>Boolean</entry></row>
+            > <row><entry>Default Value</entry>
+             > <entry><literal>1</literal></entry></row> </tbody>
+           > </tgroup> </informaltable> <para> If set to 0, &ls; will
+          > suppress showing all menus. Useful if you mostly work in
+          > terminals.  </para> </section> <section
+         > id="Tex_MainMenuLocation">
+         > <title><literal>g:Tex_MainMenuLocation</literal></title>
+         > <informaltable frame="all"> <tgroup cols="2"> <tbody>
+            > <row><entry>Type</entry><entry>number</entry></row>
+            > <row><entry>Default Value</entry>
+             > <entry><literal>80</literal></entry></row> </tbody>
+           > </tgroup> </informaltable> <para> This setting decides the
+          > location of the first top-level latex-suite menu. You can
+          > for example shift all the menus created by latex-suite to
+          > the very end by setting this value to a large number like
+          > 990.  </para> </section> <section id="Tex_MathMenus">
+         > <title>g:Tex_MathMenus</title> <informaltable frame="all">
+          > <tgroup cols="2"> <tbody>
+            > <row><entry>Type</entry><entry>Boolean</entry></row>
+            > <row><entry>Default Value</entry>
+             > <entry><literal>1</literal></entry></row> </tbody>
+           > </tgroup> </informaltable> <para> The
+          > <literal>Tex-Math</literal> menu consists of hundreds of
+          > mathematical symbols used in &latex;. This menu comprises
+          > about 75% of the menus.  </para> </section> <section
+         > id="Tex_NestElementMenus">
+         > <title>g:Tex_NestElementMenus</title> <informaltable
+          > frame="all"> <tgroup cols="2"> <tbody>
+            > <row><entry>Type</entry><entry>Boolean</entry></row>
+            > <row><entry>Default Value</entry>
+             > <entry><literal>1</literal></entry></row> </tbody>
+           > </tgroup> </informaltable> <para> This setting controls the
+          > "compactness" of the menus. If set to 1, then the Font,
+          > Counter and Dimensioning menus are collected together in
+          > a single menu called <literal>Tex-Elements</literal>,
+          > otherwise, they will each get a seperate menu.  </para>
+         > </section> <section id="Tex_PackagesMenu">
+         > <title>g:Tex_PackagesMenu</title> <informaltable frame="all">
+          > <tgroup cols="2"> <tbody>
+            > <row><entry>Type</entry><entry>Boolean</entry></row>
+            > <row><entry>Default Value</entry>
+             > <entry><literal>1</literal></entry></row> </tbody>
+           > </tgroup> </informaltable> <para> Setting this to zero will
+          > stop &ls; from automatically creating the <literal>TeX-Suite
+           > > Packages
+   > Supported</literal> menu at startup. You can still create the menu
+  after startup by going to <literal>TeX-Suite > Configure
+   Menu</literal>.  </para> </section> <section
+ id="Tex_NestPackagesMenu"> <title>g:Tex_NestPackagesMenu</title>
+ <informaltable frame="all"> <tgroup cols="2"> <tbody>
+    <row><entry>Type</entry><entry>String</entry></row>
+    <row><entry>Default Value</entry>
+     <entry><literal>'TeX-'</literal></entry></row> </tbody> </tgroup>
+  </informaltable> <para> This string is the prefix added to all the
+  menus created by &ls;. If you define this variable with a dot
+  (<literal>'.'</literal>) as the last character, then all the menus
+  created by &ls; will be nested under a single master menu. For
+  example, set this to <literal>'&amp;LaTeX-Suite.'</literal> to nest
+  all menus under a menu called <literal>&amp;LaTeX-Suite</literal>.
+    </para> </section> <section id="Tex_UseUtfMenus">
+    <title>g:Tex_UseUtfMenus</title> <informaltable frame="all"> <tgroup
+      cols="2"> <tbody>
        <row><entry>Type</entry><entry>Boolean</entry></row>
        <row><entry>Default Value</entry>
-        <entry><literal>1</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     This setting controls the "compactness" of the menus. If set to 1, then the
-     Font, Counter and Dimensioning menus are collected together in a single
-     menu called <literal>Tex-Elements</literal>, otherwise, they will each get
-     a seperate menu.
-    </para>
-   </section>
-   <section id="Tex_PackagesMenu">
-    <title>g:Tex_PackagesMenu</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>Boolean</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>1</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     Setting this to zero will stop &ls; from automatically creating the
-     <literal>TeX-Suite > Packages > Supported</literal> menu at startup. You
-     can still create the menu after startup by going to
-     <literal>TeX-Suite > Configure Menu</literal>.
-    </para>
-   </section>
-   <section id="Tex_NestPackagesMenu">
-    <title>g:Tex_NestPackagesMenu</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>String</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>'TeX-'</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     This string is the prefix added to all the menus created by &ls;. If you
-     define this variable with a dot (<literal>'.'</literal>) as the last
-     character, then all the menus created by &ls; will be nested under a
-     single master menu. For example, set this to
-     <literal>'&amp;LaTeX-Suite.'</literal> to nest all menus under a menu
-     called <literal>&amp;LaTeX-Suite</literal>.
-    </para>
-   </section>
-   <section id="Tex_UseUtfMenus">
-    <title>g:Tex_UseUtfMenus</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>Boolean</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>0</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     This setting controls whether &ls; uses utf-8 symbols to display some of
-     the mathematical symbols in the <literal>TeX-Math</literal> menu. It is
-     necessary for your system/GUI to support utf-8. Setting this to 1 has the
-     side-effect of setting the <literal>'encoding'</literal> option of &vim;
-     to 'utf-8'.
-    </para>
-   </section>
-  </section>
-  <section id="customizing-folding">
-   <title>Folding Customization</title>
-   <para>
+        <entry><literal>0</literal></entry></row> </tbody> </tgroup>
+     </informaltable> <para> This setting controls whether &ls; uses
+     utf-8 symbols to display some of the mathematical symbols in the
+     <literal>TeX-Math</literal> menu. It is necessary for your
+     system/GUI to support utf-8. Setting this to 1 has the side-effect
+     of setting the <literal>'encoding'</literal> option of &vim; to
+     'utf-8'.  </para> </section> </section> <section
+   id="customizing-folding"> <title>Folding Customization</title> <para>
     The following settings control the <link
      linkend="latex-folding">folding</link> functionality of &ls;.
-   </para>
-   <section id="Tex_Folding">
-    <title>g:Tex_Folding</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>Boolean</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>1</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     Setting this to zero completely disables &ls;'s folding functionality.
-     However, the <literal>TexFoldTextFunction()</literal> is still available
-     in case you want to use another folding scheme but still want to continue
-     using the fold text function.
-    </para>
-   </section>
-   <section id="Tex_AutoFolding">
-    <title>g:Tex_AutoFolding</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>Boolean</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>1</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     This setting controls whether &ls; automatically creates manual folds for
-     a file when it is opened. You can still use the <literal>\rf</literal>
-     mapping to refresh/create folds even when this variable is set to zero.
-    </para>
-   </section>
-  </section>
-  <section id="customizing-packages">
-   <title>Package Handling Customization</title>
-   <para> 
-    These settings affect the <link linkend="custom-packages">custom
-     packages</link> functionality in &ls;
-   </para>
-   <section id="Tex_TEXINPUTS">
-    <title>g:Tex_TEXINPUTS</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
+      </para> <section id="Tex_Folding"> <title>g:Tex_Folding</title>
+      <informaltable frame="all"> <tgroup cols="2"> <tbody>
+         <row><entry>Type</entry><entry>Boolean</entry></row>
+         <row><entry>Default Value</entry>
+          <entry><literal>1</literal></entry></row> </tbody> </tgroup>
+      </informaltable> <para> Setting this to zero completely disables
+      &ls;'s folding functionality.  However, the
+      <literal>TexFoldTextFunction()</literal> is still available in
+      case you want to use another folding scheme but still want to
+      continue using the fold text function.  </para> </section>
+    <section id="Tex_AutoFolding"> <title>g:Tex_AutoFolding</title>
+     <informaltable frame="all"> <tgroup cols="2"> <tbody>
+        <row><entry>Type</entry><entry>Boolean</entry></row>
+        <row><entry>Default Value</entry>
+         <entry><literal>1</literal></entry></row> </tbody> </tgroup>
+      </informaltable> <para> This setting controls whether &ls;
+      automatically creates manual folds for a file when it is opened.
+      You can still use the <literal>\rf</literal> mapping to
+      refresh/create folds even when this variable is set to zero.
+   </para> </section> </section> <section id="customizing-packages">
+   <title>Package Handling Customization</title> <para> These settings
+    affect the <link linkend="custom-packages">custom packages</link>
+    functionality in &ls; </para> <section id="Tex_TEXINPUTS">
+    <title>g:Tex_TEXINPUTS</title> <informaltable frame="all"> <tgroup
+      cols="2"> <tbody>
        <row><entry>Type</entry><entry>string</entry></row>
        <row><entry>Default Value</entry>
-        <entry><literal>''</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     This setting describes the directories scanned by &ls; while searching
-     for custom user packages as desribed in the <link
-      linkend="custom-packages">custom packages</link> section. Do not
-     include the present directory in this setting. The present directory
-     is always scanned for custom packages.
-    </para>
-    <para>
-     This string should be set in the syntax accepted by &vim;'s native
-     <literal>'path'</literal> setting.
-    </para>
-   </section>
-  </section>
- </section>
- <section id="latex-suite-credits">
-  <title>Credits</title>
-  <para>
-   And finally, the credits:
-  </para>
-  <informaltable frame="none">
-   <tgroup cols="2">
-    <tbody>
-     <row>
-      <entry>Artur R. Czechowski</entry>
-      <entry>maintains the BSD package of latex-suite. Lots of valuable
-       feedback.</entry>
-     </row>
-     <row>
-      <entry>
-       Lubomir Host      
-      </entry>
-      <entry>
-       provided the diacritics and also helped in development.
+        <entry><literal>''</literal></entry></row> </tbody> </tgroup>
+      </informaltable> <para> This setting describes the directories
+      scanned by &ls; while searching for custom user packages as
+      desribed in the <link linkend="custom-packages">custom
+       packages</link> section. Do not include the present directory in
+      this setting. The present directory is always scanned for custom
+      packages.  </para> <para> This string should be set in the syntax
+      accepted by &vim;'s native <literal>'path'</literal> setting.
+    </para> </section> </section> </section> <section
+    id="latex-suite-credits"> <title>Credits</title> <para> And finally,
+     the credits: </para> <informaltable frame="none"> <tgroup cols="2">
+      <tbody> <row> <entry>Artur R. Czechowski</entry> <entry>maintains
+         the BSD package of latex-suite. Lots of valuable
+         feedback.</entry> </row> <row> <entry> Lubomir Host
+         </entry> <entry> provided the diacritics and also helped in
+         development.
        
       </entry>
      </row>
