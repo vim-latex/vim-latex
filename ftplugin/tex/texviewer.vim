@@ -11,7 +11,7 @@ if exists("g:Tex_Viewer")
 	finish
 endif
 
-inoremap <silent> <Plug>Tex_Viewer <Esc>:call <SID>Tex_viewer("default","text")<CR>
+inoremap <silent> <Plug>Tex_Viewer <Esc>:call Tex_viewer("default","text")<CR>
 
 if !hasmapto('<Plug>Tex_Viewer', 'i')
 	imap <buffer> <silent> <buffer> <F9> <Plug>Tex_Viewer
@@ -22,15 +22,15 @@ command -nargs=1 TLookAll call <SID>Tex_lookall(<q-args>)
 command -nargs=1 TLookBib call <SID>Tex_lookbib(<q-args>)
 
 function! s:Tex_lookall(what)
-	call <SID>Tex_viewer(a:what, "all")
+	call Tex_viewer(a:what, "all")
 endfunction
 
 function! s:Tex_lookbib(what)
-	call <SID>Tex_viewer(a:what, "bib")
+	call Tex_viewer(a:what, "bib")
 endfunction
 
 function! s:Tex_look(what)
-	call <SID>Tex_viewer(a:what, "tex")
+	call Tex_viewer(a:what, "tex")
 endfunction
 
 if getcwd() != expand("%:p:h")
@@ -42,7 +42,7 @@ endif
 " Tex_viewer: main function {{{
 " Description:
 "
-function! s:Tex_viewer(what, where)
+function! Tex_viewer(what, where)
 
 	" Get info about current window and position of cursor in file
 	let s:winnum = winnr()
@@ -55,41 +55,37 @@ function! s:Tex_viewer(what, where)
 		let s:prefix = matchstr(s:curline, '{\zs.\{-}$')
 		let s:type = matchstr(s:curline, '\\\zs.\{-}\ze{.\{-}$')
 
-		" It is necessary to open window and there process grep because Vim
-		" automatically jumps to first error in clist.
-		bot 1 split
-
 		if exists("s:type") && s:type =~ 'ref'
-			exe 'silent! grep "\\label{'.s:prefix.'" '.s:search_directory.'*.tex'
+			exe 'silent! grep! "\\label{'.s:prefix.'" '.s:search_directory.'*.tex'
 			call <SID>Tex_c_window_setup()
 
 		elseif exists("s:type") && s:type =~ 'cite'
-			exe 'silent! grep "@.*{'.s:prefix.'" '.s:search_directory.'*.bib'
+			exe 'silent! grep! "@.*{'.s:prefix.'" '.s:search_directory.'*.bib'
+			exe 'silent! grepadd! "bibitem{'.s:prefix.'" '.s:search_directory.'*.bbl'
+			exe 'silent! grepadd! "bibitem{'.s:prefix.'" %'
 			call <SID>Tex_c_window_setup()
 
 		else
 			let s:word = matchstr(s:curline, '\zs\k\{-}$')
-			exe 'silent! grep "\<' . s:word . '" '.s:search_directory.'*.tex'
+			exe 'silent! grep! "\<' . s:word . '" '.s:search_directory.'*.tex'
 			call <SID>Tex_c_window_setup()
 
 		endif
 		
 	elseif a:where == 'tex'
 		" Process :TLook command
-		bot 1 split 
-		exe 'silent! grep "'. a:what .'" '.s:search_directory.'*.tex'
+		exe 'silent! grep! "'.a:what.'" '.s:search_directory.'*.tex'
 		call <SID>Tex_c_window_setup()
 
 	elseif a:where == 'bib'
 		" Process :TLookBib command
-		bot 1 split 
-		exe 'silent! grep "'. a:what .'" '.s:search_directory.'*.bib'
+		exe 'silent! grep! "'.a:what.'" '.s:search_directory.'*.bib'
+		exe 'silent! grepadd! "'.a:what.'" '.s:search_directory.'*.bbl'
 		call <SID>Tex_c_window_setup()
 
 	elseif a:where == "all"
 		" Process :TLookAll command
-		bot 1 split
-		exe 'silent! grep "'. a:what .'" '.s:search_directory.'*'
+		exe 'silent! grep! "'.a:what.'" '.s:search_directory.'*'
 		call <SID>Tex_c_window_setup()
 
 	endif
@@ -100,8 +96,6 @@ endfunction " }}}
 "
 function! s:Tex_c_window_setup()
 
-	wincmd q
-	
 	cclose
 	copen 5
 	setlocal nonumber
@@ -153,7 +147,7 @@ function! s:UpdateViewerWindow()
 	exe 'silent! bot pedit +'.viewline.' '.viewfile
 	
 	" Handle situation if there is no item beginning with s:prefix.
-	" Unfortunately, because we know it late we have to close everthing and
+	" Unfortunately, because we know it late we have to close everything and
 	" return as in complete process 
 	if v:errmsg =~ 'E32\>'
 		exe s:winnum.' wincmd w'
@@ -176,10 +170,18 @@ function! s:UpdateViewerWindow()
 	wincmd j
 
 	" Settings of preview window
-	5 wincmd _
+	exe g:Tex_PreviewHeight.' wincmd _'
 	setlocal foldlevel=10
-	setlocal scrolloff=0
-	normal! zt
+
+	if s:type =~ 'cite'
+		" In cite context place bibkey at the top of preview window.
+		setlocal scrolloff=0
+		normal! zt
+	else
+		" In other contexts in the middle. Highlight this line?
+		setlocal scrolloff=100
+		normal! z.
+	endif
 
 	" Return to cwindow
 	wincmd p
@@ -190,8 +192,12 @@ endfunction " }}}
 "
 function! s:CompleteName()
 
-	if s:curline =~ 'cite'
-		let bibkey = matchstr(getline('.'), '{\zs.\{-}\ze,')
+	if s:type =~ 'cite'
+		if getline('.') =~ '\\bibitem{'
+			let bibkey = matchstr(getline('.'), '\\bibitem{\zs.\{-}\ze}')
+		else
+			let bibkey = matchstr(getline('.'), '{\zs.\{-}\ze,')
+		endif
 		exe s:winnum.' wincmd w'
 		pclose!
 		cclose
@@ -199,7 +205,7 @@ function! s:CompleteName()
 		let bibkey2 = strpart(bibkey, strlen(s:prefix))
 		exe 'normal! a'.bibkey2."}\<Esc>"
 
-	elseif s:curline =~ 'ref'
+	elseif s:type =~ 'ref'
 		let s:label = matchstr(getline('.'), '\\label{\zs.\{-}\ze}')
 		exe s:winnum.' wincmd w'
 		pclose!
