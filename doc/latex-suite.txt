@@ -1,6 +1,6 @@
 *latex-suite*   Tools for an enhanced LaTeX environment in Vim
                         For Vim version 6.0 and above.
-                  Last Change: Sat Nov 02 02:00 AM 2002 PST
+                  Last Change: wto lis 26 10:00  2002 C
 
                  By Srinath Avadhanula <srinath@fastmail.fm>,
                       Mikolaj Machowski <mikmach@wp.pl>,
@@ -521,16 +521,16 @@ Like in the case of the compiler, you can specify the master file for the
 current file (see |latex-master-file|)
 
                                                        *latex-searching*
-Yap for windows and some versions of xdvi for windows provide the ability to
-do "forward searching" on the .dvi file. This means that you can have the DVI
-viewer jump to a specified location. 
+Yap for windows, some versions of xdvi for windows and xdvi for unices provide 
+the ability to do "forward searching" on the .dvi file. This means that you 
+can have the DVI viewer jump to a specified location. 
 
 Pressing \ls while viewing a LaTeX file will perform this function, i.e the
 viewer will jump to the location under the cursor.
 
-NOTE: MikTeX requires that the dvi file be generated using the --src-specials
-flag in order to enable forward/reverse searching. By default, latex-suite
-will call LaTeX with this argument on windows (where yap is assumed).
+NOTE: MikTeX and xdvi require that the dvi file be generated using the
+--src-specials flag in order to enable forward/reverse searching. By default,
+latex-suite will call LaTeX with this argument.
 
 These functions were added after a tip from Dimitri Antoniou on vim.sf.net.
 See >
@@ -951,6 +951,7 @@ The current maintainer(s) of latex-suite is(are)
 
 Srinath Avadhanula <srinath@fastmail.fm>
 Mikolaj Machowski <mikmach@wp.pl>
+Benji Fisher <benji@member.AMS.org>
 
 }}}
 ===========================================================================
