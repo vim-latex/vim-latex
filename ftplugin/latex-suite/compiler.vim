@@ -37,7 +37,7 @@ function! SetTeXCompilerTarget(type, target)
 					\"&ok", 1, 'Warning')
 			else
 				call input( 
-					\'No compilation rule defined for target '.target."\n".
+					\'No '.a:type.' rule defined for target '.target."\n".
 					\'Please specify a rule in texrc.vim'."\n".
 					\'     :help latex-compiler-target'."\n".
 					\'for more information'
@@ -126,13 +126,13 @@ function! RunLaTeX()
 		exe 'nnoremap <buffer> <silent> k k:call UpdatePreviewWindow("'.mainfname.'")<CR>'
 		exe 'nnoremap <buffer> <silent> <up> <up>:call UpdatePreviewWindow("'.mainfname.'")<CR>'
 		exe 'nnoremap <buffer> <silent> <down> <down>:call UpdatePreviewWindow("'.mainfname.'")<CR>'
-		exe 'nnoremap <buffer> <silent> <enter> <enter>:call GotoErrorLocation("'.mainfname.'", '.winnum.')<CR>'
+		exe 'nnoremap <buffer> <silent> <enter> :call GotoErrorLocation("'.mainfname.'")<CR>'
 
 		setlocal nowrap
 
 		" resize the window to just fit in with the number of lines.
 		exec ( line('$') < 4 ? line('$') : 4 ).' wincmd _'
-		call GotoErrorLocation(mainfname, winnum)
+		call GotoErrorLocation(mainfname)
 	endif
 
 	exec 'cd '.curd
@@ -236,6 +236,14 @@ function! ForwardSearchLaTeX()
 endfunction
 
 " }}}
+
+" ==============================================================================
+" Helper functions for 
+" . viewing the log file in preview mode.
+" . syncing the display between the quickfix window and preview window
+" . going to the correct line _and column_ number from from the quick fix
+"   window.
+" ============================================================================== 
 " PositionPreviewWindow: positions the preview window correctly. {{{
 " Description: 
 " 	The purpose of this function is to count the number of times an error
@@ -243,18 +251,21 @@ endfunction
 " 	something like |10 error|, then we want to count the number of
 " 	lines in the quickfix window before this line which also contain lines
 " 	like |10 error|. 
+"
 function! PositionPreviewWindow(filename)
 
 	if getline('.') !~ '|\d\+ \(error\|warning\)|'
 		if !search('|\d\+ \(error\|warning\)|')
+			echomsg "not finding error pattern anywhere in quickfix window :".bufname(bufnr('%'))
 			pclose!
 			return
 		endif
 	endif
 
-	" extract the error pattern (something like '|10 error|') on the current
-	" line.
-	let errpat = matchstr(getline('.'), '\zs|\d\+ \(error\|warning\)|\ze')
+	" extract the error pattern (something like 'file.tex|10 error|') on the
+	" current line.
+	let errpat = matchstr(getline('.'), '^\f*|\d\+ \(error\|warning\)|\ze')
+	let errfile = matchstr(getline('.'), '^\f*\ze|\d\+ \(error\|warning\)|')
 	" extract the line number from the error pattern.
 	let linenum = matchstr(getline('.'), '|\zs\d\+\ze \(error\|warning\)|')
 
@@ -295,18 +306,27 @@ function! PositionPreviewWindow(filename)
 		let searchpat = 'l.'.linenum
 	endif
 
-	exec 'bot pedit +/'.searchpat.'/ '.a:filename.'.log'
+	" We first need to be in the scope of the correct file in the .log file.
+	" This is important for example, when a.tex and b.tex both have errors on
+	" line 9 of the file and we want to go to the error of b.tex. Merely
+	" searching forward from the beginning of the log file for l.9 will always
+	" land us on the error in a.tex.
+	if errfile != ''
+		exec 'bot pedit +/(\(\f\|\[\|\]\)*'.errfile.'/ '.a:filename.'.log'
+	else
+		exec 'bot pedit +0 '.a:filename.'.log'
+	endif
+	" Goto the preview window
 	" TODO: This is not robust enough. Check that a wincmd j actually takes
-	" us to the preview window. Moreover, the resizing should be done only the
-	" first time around.
+	" us to the preview window.
 	wincmd j
 	if searchpat =~ 'l.\d\+' && numrep > 1
-		while numrep > 1
+		while numrep > 0
 			call search(searchpat, 'W')
-			normal! z.
 			let numrep = numrep - 1
 		endwhile
 	endif
+	normal! z.
 
 endfunction " }}}
 " UpdatePreviewWindow: updates the view of the log file {{{
@@ -319,8 +339,11 @@ endfunction " }}}
 "
 function! UpdatePreviewWindow(filename)
 	call PositionPreviewWindow(a:filename)
-	6 wincmd _
-	wincmd k
+
+	if &previewwindow
+		6 wincmd _
+		wincmd k
+	endif
 endfunction " }}}
 " GotoErrorLocation: goes to the correct location of error in the tex file {{{
 " Description: 
@@ -334,8 +357,17 @@ endfunction " }}}
 "
 " TODO: When there are multiple errors on the same line, this only takes you
 "       to the very first error every time. 
-function! GotoErrorLocation(filename, winnum)
+function! GotoErrorLocation(filename)
 
+	" first use vim's functionality to take us to the location of the error
+	" accurate to the line (not column). This lets us go to the correct file
+	" without applying any logic.
+	exec "normal! \<enter>"
+	let winnum = winnr()
+	" then come back to the quickfix window
+	wincmd w
+
+	" find out where in the file we had the error.
 	let linenum = matchstr(getline('.'), '|\zs\d\+\ze \(warning\|error\)|')
 	call PositionPreviewWindow(a:filename)
 
@@ -367,7 +399,8 @@ function! GotoErrorLocation(filename, winnum)
 
 	endif
 
-	exec a:winnum.' wincmd w'
+	" go back to the window where we came from.
+	exec winnum.' wincmd w'
 	exec 'silent! '.linenum.' | normal! '.normcmd
 
 endfunction " }}}
