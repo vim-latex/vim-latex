@@ -2,7 +2,7 @@
 " 	     File: envmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
-" Last Change: Mon Dec 30 12:00 AM 2002 PST
+" Last Change: Mon Dec 30 03:00 AM 2002 PST
 " 
 "  Description: mappings/menus for environments. 
 "=============================================================================
@@ -554,6 +554,8 @@ function! Tex_DoEnvironment(...)
 			let env = PromptForEnvironment('Choose which environment to insert: ')
 			if env != ''
 				return Tex_PutEnvironment(env)
+			else
+				return ''
 			endif
 		else
 			" delete the word on the line into the blackhole register.
