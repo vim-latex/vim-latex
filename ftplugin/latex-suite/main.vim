@@ -591,9 +591,11 @@ function! Tex_Debug(str, ...)
 	let s:debugString_ = (exists('s:debugString_') ? s:debugString_ : '')
 		\ . pattern.' : '.a:str."\n"
 
-	redir! >> /tmp/ls.log
-	silent! echo pattern.' : '.a:str
-	redir END
+	if Tex_GetVarValue('Tex_DebugLog', '') != ''
+		exec 'redir! >> '.Tex_GetVarValue('Tex_DebugLog', '')
+		silent! echo pattern.' : '.a:str
+		redir END
+	endif
 endfunction " }}}
 " Tex_PrintDebug: prings s:debugString {{{
 " Description: 
