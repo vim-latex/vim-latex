@@ -24,6 +24,7 @@
 "                 in this case.
 "
 "        NOTE: This file is best viewed with Vim-6.0+ with folding turned on.
+"         CVS: $Id$
 "=============================================================================
 
 " ==============================================================================
@@ -56,6 +57,19 @@ com! -nargs=+ TexLet :call <SID>SafeLet(<q-args>)
 " ============================================================================== 
 
 " ==============================================================================
+" General settings {{{
+
+TexLet g:Tex_UsePython = 1
+
+" the system command which pulls in a file.
+if &shell =~ 'sh'
+	TexLet g:Tex_CatCmd = 'cat'
+else
+	TexLet g:Tex_CatCmd = 'type'
+endif
+
+" }}}
+" ==============================================================================
 " Rules: specifications of programs for compiling and viewing {{{
 "
 
@@ -69,6 +83,13 @@ else
 	TexLet g:Tex_DefaultTargetFormat = 'dvi'
 endif
 
+" A comma seperated list of formats which need multiple compilations to be
+" correctly compiled.
+TexLet g:Tex_MultipleCompileFormats = 'dvi'
+
+" Uncomment this line if you compile ps files via dvi files.
+" TexLet g:Tex_FormatDependency_ps = 'dvi,ps'
+
 " ------------------------------------------------------------------------------
 " Compiler rules {{{
 " This is the first thing you should customize. It is set up for most common
@@ -76,10 +97,8 @@ endif
 " As CompileFlags value you'd perhaps like to use, e.g., '-src-specials',
 " but it is known that it can sometimes give different results in the output,
 " so use it with care.
-let s:CompileFlags = ''
+TexLet g:Tex_CompileRule_dvi = 'latex -interaction=nonstopmode $*'
 TexLet g:Tex_EscapeChars = '{}\'
-TexLet g:Tex_CompileRule_dvi = 'latex ' . s:CompileFlags .
-                        \ ' -interaction=nonstopmode $*'
 
 TexLet g:Tex_CompileRule_ps = 'dvips -Ppdf -o $*.ps $*.dvi'
 
@@ -93,6 +112,8 @@ TexLet g:Tex_CompileRule_pdf = 'pdflatex -interaction=nonstopmode $*'
 " TexLet g:Tex_CompileRule_pdf = 'dvipdf $*.dvi'
 
 TexLet g:Tex_CompileRule_html = 'latex2html $*.tex'
+
+TexLet g:Tex_CompileRule_bib = 'bibtex $*'
 
 " }}}
 " ------------------------------------------------------------------------------ 
