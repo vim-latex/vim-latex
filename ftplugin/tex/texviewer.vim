@@ -62,9 +62,17 @@ function! Tex_completion(what, where)
 		let s:curfile = expand("%:p")
 		let s:curline = strpart(getline('.'), col('.') - 40, 40)
 		let s:prefix = matchstr(s:curline, '.*{\zs.\{-}$')
-		let s:type = matchstr(s:curline, '.*\\\zs.\{-}\ze{.\{-}$')
-		let s:typeoption = matchstr(s:type, '\zs[.*]\ze')
-		let s:type = substitute(s:type, '[.*', '', 'e')
+		" a command is of the type
+		" \includegraphics[0.8\columnwidth]{}
+		" Thus
+		" 	s:curline = '\includegraphics[0.8\columnwidth]{'
+		" (with possibly some junk before \includegraphics)
+		" from which we need to extract
+		" 	s:type = 'includegraphics'
+		" 	s:typeoption = '[0.8\columnwidth]'
+		let pattern = '.*\\\(\w\{-}\)\(\[.\{-}\]\)\?{$'
+		let s:type = substitute(s:curline, pattern, '\1', 'e')
+		let s:typeoption = substitute(s:curline, pattern, '\2', 'e')
 
 		if exists("s:type") && s:type =~ 'ref'
 			exe "silent! grep! '\\label{".s:prefix."' ".s:search_directory.'*.tex'
@@ -331,10 +339,11 @@ function! s:CompleteName(type)
 		pclose!
 		cclose
 	elseif a:type =~ 'expl_ext\|expl_noext'
-		wincmd q
+		q
 	endif
 
 	exe s:pos
+
 
 	" Complete word, check if add closing }
 	exe 'normal! a'.completeword."\<Esc>"
