@@ -2191,7 +2191,7 @@ endif</programlisting>
      This entry defines which sections will be folded. This
      setting is a comma seperated list of section names. 
      The default value is:
-     <programlisting>slide,part,chapter,section,%%fakesection,
+     <programlisting>part,chapter,section,%%fakesection,
 subsection,subsubsection,paragraph</programlisting>
      Each of the entries in the list will fold up a section of the
      corresponding name. The <literal>%%fakesection</literal> section is
