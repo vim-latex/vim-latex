@@ -216,6 +216,7 @@ function BibT(type, options, prompt)
 	let i = 0
 	while i < strlen(fields)
 		let field = strpart(fields, i, 1)
+
 		if exists('s:'.field.'_standsfor')
 			let field_name = s:{field}_standsfor
 			let retval = retval.field_name." = {<++>},\n"
@@ -223,6 +224,26 @@ function BibT(type, options, prompt)
 
 		let i = i + 1
 	endwhile
+	
+	" If the user wants even more fine-tuning...
+	if Tex_GetVarValue('Bib_'.choosetype.'_extrafields') != ''
+
+		let extrafields = Tex_GetVarValue('Bib_'.choosetype.'_extrafields')
+		
+		let i = 1
+		while 1
+			let field_name = Tex_Strntok(extrafields, "\n", i)
+			if field_name == ''
+				break
+			endif
+
+			let retval = retval.field_name." = {<++>},\n"
+
+			let i = i + 1
+		endwhile
+
+	endif
+
 	let retval = retval.'otherinfo = {<++>}'."\n"
 	let retval = retval."}<++>"."\n"
 
