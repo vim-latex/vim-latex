@@ -128,7 +128,6 @@ function! RunLaTeX()
 		exe 'lcd '.curdir
 		redraw!
     else 
-        let mainfname = Tex_GetMainFileName()
         " if a makefile and no *.latexmain exists, just use the make utility
         " this also sets mainfname for the rest of the function
         if (glob('makefile') != '' || glob('Makefile') != '')
@@ -145,7 +144,7 @@ function! RunLaTeX()
             " otherwise, if a *.latexmain file is found, then use that file to
             " construct a main file.
             if mainfname == ''
-                let mainfname = expand("%:t")
+                let mainfname = expand("%:t:r")
             endif
             exec 'make '.mainfname
         endif
