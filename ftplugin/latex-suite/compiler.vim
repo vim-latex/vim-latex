@@ -22,6 +22,7 @@ function! Tex_SetTeXCompilerTarget(type, target)
 	endif
 
 	let targetRule = Tex_GetVarValue('Tex_'.a:type.'Rule_'.target)
+
 	if targetRule != ''
 		if a:type == 'Compile'
 			let &l:makeprg = escape(targetRule, Tex_GetVarValue('Tex_EscapeChars'))
@@ -29,6 +30,10 @@ function! Tex_SetTeXCompilerTarget(type, target)
 			let s:viewer = targetRule
 		endif
 		let s:target = target
+
+	elseif Tex_GetVarValue('Tex_'.a:type.'RuleComplete_'.target) != ''
+		let s:target = target
+
 	else
 		let curd = getcwd()
 		exe 'cd '.expand('%:p:h')
@@ -36,15 +41,15 @@ function! Tex_SetTeXCompilerTarget(type, target)
 			if has('gui_running')
 				call confirm(
 					\'No '.a:type.' rule defined for target '.target."\n".
-					\'Please specify a rule in texrc.vim'."\n".
-					\'     :help Tex_CompileRule_format'."\n".
+					\'Please specify a rule in $VIMRUNTIME/ftplugin/tex/texrc'."\n".
+					\'     :help Tex_'.a:type.'Rule_format'."\n".
 					\'for more information',
 					\"&ok", 1, 'Warning')
 			else
 				call input( 
 					\'No '.a:type.' rule defined for target '.target."\n".
-					\'Please specify a rule in texrc.vim'."\n".
-					\'     :help Tex_ViewRule_format'."\n".
+					\'Please specify a rule in $VIMRUNTIME/ftplugin/tex/texrc'."\n".
+					\'     :help Tex_'.a:type.'Rule_format'."\n".
 					\'for more information'
 					\)
 			endif
@@ -238,7 +243,7 @@ function! Tex_ViewLaTeX()
 		" unfortunately, yap does not allow the specification of an external
 		" editor from the command line. that would have really helped ensure
 		" that this particular vim and yap are connected.
-		let execString = 'start '.s:viewer.' "$*"'
+		let execString = 'start '.s:viewer.' "$*.'.s:target.'"'
 
 	elseif has('macunix')
 		if strlen(s:viewer)
