@@ -38,8 +38,10 @@ Homepage: http://vim-latex.sourceforge.net
     |ls_3_10| Alt Key Macros
     |ls_3_11| Custom Macros
 |ls_4| Package Handling
-    |ls_4_1| Custom Packages
-    |ls_4_2| Supporting a package
+    |ls_4_1| Inserting package commands
+    |ls_4_2| Actions taken for supported packages
+    |ls_4_3| Automatic Package detection
+    |ls_4_4| Writing supporting for a package
 |ls_5| Latex Completion
     |ls_5_1| Latex-Suite \cite completion
 |ls_6| Compiling LaTeX files via Latex-Suite
@@ -200,12 +202,17 @@ with it.
 
 
 
-Method 1                                                              *ls_3_1_1*
+Method 1                                                            *ls_3_1_1*
+                                                                    *ls-imap-f5*
 
 If you press <F5> in the insert mode while on an empty line, latex-suite prompts
 you with a list of environments you might want to insert. You can either choose
-one from the list or type in a new environment name. This list can be
-customized. See the 'Macros' section of the |texrc| file for details.
+one from the list or type in a new environment name. This list can be customized
+via the g:Tex_PromptedEnvironments [|Tex_PromptedEnvironments|] setting.
+
+In addition to the Tex_PromptedEnvironments variable, Latex-Suite also lists
+envionments found in custom packages as described in the section Package
+actions. [|package-actions|]
 
 
 Method 2                                                              *ls_3_1_2*
@@ -218,7 +225,8 @@ Method 3                                                              *ls_3_1_3*
 
 The shifted function keys, <S-F1> to <S-F4>can also be optionally mapped to some
 common environments which you insert most often. The environments mapped to each
-key can also be customized. See the |texrc| file for details.
+key can also be customized via the g:Tex_HotKeyMappings [|Tex_HotKeyMappings|]
+setting.
 
 
 Method 4                                                              *ls_3_1_4*
@@ -551,9 +559,9 @@ mode.
 --------------------------------------------------------------------------------
 Alt Key Macros                                               *ls_3_10*
                                                              *bracketing-macros*
-|ls_3_10_1| <Alt-M>
-|ls_3_10_2| <Alt-C>
-|ls_3_10_3| <Alt-L>
+|ls_3_10_1| <Alt-L>
+|ls_3_10_2| <Alt-M>
+|ls_3_10_3| <Alt-C>
 
 Latex-Suite utilizes a set of macros originally created by Carl Mueller in
 auctex.vim to make inserting all the \left ... \right stuff very easy. The
@@ -561,24 +569,7 @@ following maps are provided:
 
 
 
-<Alt-M>                                                      *ls_3_10_1* *Alt-M*
-
-This insert-mode mapping encloses the previous character in \mathbf{}.
-
-
-<Alt-C>                                                      *ls_3_10_2* *Alt-C*
-
-In insert mode, this key is polymorphic as follows:
-
-
-1. If the previous character is a letter or number, then capitalize it and
-   enclose it in \mathcal{}.
-
-2. otherwise insert \cite{}.
-In visual mode, it will simply enclose the selection in \mathcal{}
-
-
-<Alt-L>                                                      *ls_3_10_3* *Alt-L*
+<Alt-L>                                                      *ls_3_10_1* *Alt-L*
 
 This is a polymorphic insert-mode mapping which expands to one of the following
 depending on the character just before the cursor location.
@@ -593,18 +584,35 @@ q                          \lefteqn{<++>}<++>
 
 If the character before the cursor is none of the above, then it will simply
 insert a \label{<++>}<++>.
+
+
+<Alt-M>                                                      *ls_3_10_2* *Alt-M*
+
+This insert-mode mapping encloses the previous character in \mathbf{}.
+
+
+<Alt-C>                                                      *ls_3_10_3* *Alt-C*
+
+In insert mode, this key is polymorphic as follows:
+
+
+1. If the previous character is a letter or number, then capitalize it and
+   enclose it in \mathcal{}.
+
+2. otherwise insert \cite{}.
+In visual mode, it will simply enclose the selection in \mathcal{}
 NOTE: By default, typing Alt-<key> in Vim takes focus to the menu bar if a menu
       with the hotkey <key> exists. If in your case, there are conflicts due to
       this behavior, you will need to set >
-          set nowinaltkeys
+          set winaltkeys=no
 <     in your $VIM/ftplugin/tex.vim in order to use these maps.
       
       
 NOTE: Customizing the maps
       --------------------
       You can also customize the keys which trigger this functionality by
-      remapping certain <Plug> mappings as described in
-      |customizing-latex-suite-mappings|.
+      remapping certain <Plug> mappings as described in Customizing Alt-key maps
+      [|customize-alt-key-maps|].
       
       
 
@@ -642,11 +650,20 @@ There are some other tools provided in this menu, namely:
 Package Handling                                                *ls_4*
                                                                 *latex-packages*
 
-|ls_4_1| Custom Packages
-|ls_4_2| Supporting a package
+|ls_4_1| Inserting package commands
+|ls_4_2| Actions taken for supported packages
+|ls_4_3| Automatic Package detection
+|ls_4_4| Writing supporting for a package
 
 
-This functionality is avaiable via the Tex-Packages menu.
+Latex-Suite has a lot of functionality written to ease working with packages.
+Packages here refers to files which you include into the LaTeX document using
+the \usepackage command.
+
+
+--------------------------------------------------------------------------------
+Inserting package commands                                  *ls_4_1*
+                                                            *inserting-packages*
 
 When you first invoke Latex-Suite, it scans the
 $VIM/ftplugin/latex-suite/packages directory for package script files and
@@ -664,15 +681,31 @@ you do not find the package you want to insert in the list, you can type in a
 package-name and it will use that. Pressing <F5> in the preamble on a line
 containing a single word will construct a \usepackage line from that word.
 
-Once a \usepackage line has been constructed in one of the above methods, if
-possible, the following sub-menus will be created
+Once you have inserted a \usepackage line, for supported packages, you can use
+the Options and Commands menus described in the next section
+[|package-actions|].
+
+--------------------------------------------------------------------------------
+Actions taken for supported packages                           *ls_4_2*
+                                                               *package-actions*
+
+Once a \usepackage line has been constructed using one of the methods described
+in the previous section, if possible, the following sub-menus will be created
 
 
 TeX-Suite > Packages > <package> Options
 
 TeX-Suite > Packages > <package> Commands
-where <package> is the package you just inserted.
+where <package> is the package you just inserted. You can use these menus to
+insert commands, environments and options which Latex-Suite recognizes as
+belonging to this package.
 
+NOTE: While inserting an option, you need to position yourself in the
+      appropritate place in the document, most commonly inside the square braces
+      in the \usepackage[]{packname} command. Latex-Suite will not navigate to
+      that location.
+      
+      
 In addition to creating these sub-meuns, Latex-Suite will also scan the
 $VIM/ftplugin/latex-suite/dictionaries directory and if a dictionary file
 corresponding to the package file is found, then it will add the file to the
@@ -681,15 +714,13 @@ from that file.
 
 For example, the SIUnits package has a custom dictionary.
 
+If a package detected at startup is found by Latex-Suite in the current
+directory or in a location specified by the g:Tex_TEXINPUTS [|Tex_TEXINPUTS|]
+variable, Latex-Suite will scan the package for \newenvironment and newcommand
+lines and also append any commands and environments found to the list of
+commands and environments which you are prompted with when you press <F5>
+[|ls-imap-f5|] or <F7> [|ls-imap-f7|] in insert mode.
                                                         *latex-package-scanning*
-Whenever Latex-Suite begins editing a new LaTeX file, it scans it for
-\usepackage{name} lines, and if a supported package is found, then it will
-create sub-menus and add to the 'dict' setting as described above.
-
-If a master-file [|latex-master-file|] has been specified, then it will scan
-that file instead of the current file. See the section Custom Packages
-[|custom-packages|] to see which files Latex-Suite will scan in more detail.
-
 In addition, the TeX-Suite > Packages menu also contains the following submenus
 
 Update
@@ -706,7 +737,24 @@ package options and commands are created.
 
 
 --------------------------------------------------------------------------------
-Custom Packages                                                *ls_4_1*
+Automatic Package detection                        *ls_4_3*
+                                                   *automatic-package-detection*
+|ls_4_3_1| Custom Packages
+
+Whenever Latex-Suite begins editing a new LaTeX file, it scans it for
+\usepackage{name} lines, and if a supported package is found, then it will
+create sub-menus and add to the 'dict' setting as described above.
+
+If a master-file [|latex-master-file|] has been specified, then it will scan
+that file instead of the current file. See the section Custom Packages
+[|custom-packages|] to see which files Latex-Suite will scan in more detail.
+
+For all the packages detected in this manner, Latex-Suite will take certain
+actions as described in the section package support. [|package-actions|].
+
+
+
+Custom Packages                                                *ls_4_3_1*
                                                                *custom-packages*
 
 Often times, the preamble can become too long, and some people prefer to put
@@ -731,8 +779,9 @@ Therefore the value of g:Tex_TEXINPUTS will most probably be different from
 $TEXINPUTS which your native LaTeX distribution uses.
 
 Example: >
-    let g:Tex_TEXINPUTS = '~/texmf/mypackages/**;./**'
-Note that directories are delimited by ';'.
+    let g:Tex_TEXINPUTS = '~/texmf/mypackages/**,./**'
+The ** indicates that all directories below the directory ~/texmf/mypackages and
+./ are to be scanned for custom packages.
 
 NOTE: The present directory '.' is always searched. You need not incude that in
       g:Tex_TEXINPUTS.
@@ -740,10 +789,10 @@ NOTE: The present directory '.' is always searched. You need not incude that in
       
 
 --------------------------------------------------------------------------------
-Supporting a package                                       *ls_4_2*
+Writing supporting for a package                           *ls_4_4*
                                                            *supporting-packages*
-|ls_4_2_1| g:Tex_package_option_<package>
-|ls_4_2_2| g:Tex_package_<package>
+|ls_4_4_1| g:Tex_package_option_<package>
+|ls_4_4_2| g:Tex_package_<package>
 
 Supporting a package is easy and consists of writing a vim script with the same
 name as the package and placing it in the $VIM/ftplugin/latex-suite/packages
@@ -752,7 +801,7 @@ two sections.
 
 
 
-g:Tex_package_option_<package>                                        *ls_4_2_1*
+g:Tex_package_option_<package>                                        *ls_4_4_1*
 
 This setting is a string containing a comma seperated list of options supported
 by this package.
@@ -764,7 +813,7 @@ options into sub-menus. All successive options will be clubbed into the group1
 sub-menu till the next sbr: option is encountered.
 
 
-g:Tex_package_<package>                                               *ls_4_2_2*
+g:Tex_package_<package>                                               *ls_4_4_2*
 
  >
     
@@ -819,54 +868,78 @@ Latex Completion                                              *ls_5*
 
 
 This module provides an easy way to insert references to labels and
-bibliographic entries. Suppose you want to refer to an equation which is
-labelled as "eqn:eq-1" using the \label{eqn:eq-1} command. Somewhere in the
-text, you write "\ref{" with the cursor after the {. Now if you press <F9>,
-Latex-suite will try to search through all the .tex files in the present
-directory for lines beginning with "\label{". It will provide you with a list of
-all such matches in two small windows.
+bibliographic entries.
+
+Consider the situation where you are editing a file with two equations labelled
+eqn:euler and eqn:einstein. Now you want to insert a reference to one of these
+equations. To do this, you type the \ref{eqn:} command and with the cursor
+placed after eqn:, press <F9>. This will bring up two new windows beneath the
+main window you were working in as shown in the figure below.
 
  >
-    +========================================================+
-    | I want to insert a reference to equation 1. Therefore  |
-    | I will write \ref{                                     |
-    |                                                        |
-    |                                                        |
-    |                                                        |
-    |                                                        |
-    |                                                        |
-    +--------------------------------------------------------+
-    +file1.tex                                               +
-    +========================================================+
-    |file1.tex|100| \label{eqn:eq-1}                         |
-    |file1.tex|110| \label{eqn:eq-2}                         |
-    |file2.tex|178| \label{tab:table1}                       |
-    +--------------------------------------------------------+
-    +[Error List]                                            +
-    +========================================================+
-    |\begin{equation}                                        |
-    |  e^{j*pi} + 1 = 0 \label{eqn:eq-1}                     |
-    |\end{equation}                                          |
-    |And there was some text after this. I dont remember     |
-    +--------------------------------------------------------+
-    +file1.tex [Preview]                                     +
-    +========================================================+
-The first window (shown as "[Error List]" above) is a |cwindow| containing a
-list of matches and you will be left in it. The window beneath it is a
-|preview-window| showing the context of the match. When you move up and down in
-the "[Error List]" window, the preview window will be scrolled to keep in sync
-with the label. Pressing the "J" and "K" keys in the "[Error List]" window
-scrolls the preview window enabling you to see more context if you desire. After
-positioning yourself on a label which you want to insert, press CR>. This will
-automatically close all the new windows, take you back to the file being edited
-and insert the chosen label in place. Pressing "q" in the "[Error List]" window
-closes all windows without inserting anything.
+    
+          7
+          8 These are a couple of equations:
+          9 +--  4 lines: eqnarray (eqn:euler) :   e^{j\pi} + 1 &=& 0---------------
+         13 +--  4 lines: equation (eqn:einstein) :   E = m c^2---------------------
+         17
+         18 These are a couple of figures:
+         19 +--  7 lines: figure (fig:monkeys) : Monkeys can Type-------------------
+         26 +--  7 lines: figure (fig:shakespeare) : Shakespeare could not type-----
+         33
+         34 This is a reference to \ref{eqn:}<++>
+         35
+         36
+         37 \end{document}
+         38
+    ~
+    ~
+    ~
+    ~
+    ~
+    ~
+    ~
+    newfile.tex                                                   34,32          Bot
+    newfile.tex|11| \label{eqn:euler}
+    newfile.tex|15| \label{eqn:einstein}
+    ~
+    ~
+    ~
+    [Error List]                                                  1,1            All
+          7
+          8 These are a couple of equations:
+          9 \begin{eqnarray}
+         10   e^{j\pi} + 1 &=& 0
+         11   \label{eqn:euler}
+         12 \end{eqnarray}
+         13 \begin{equation}
+         14   E = m c^2
+         15   \label{eqn:einstein}
+         16 \end{equation}
+    newfile.tex [Preview]                                         11,3           21%
+      
+The first window (shown as [ErrorList] above) is a |cwindow| containing a list
+of possible matches for the reference. The cursor will be located in the first
+line of this window. The bottom window is a preview-window showing the context
+of the \label. Moving around in the [ErrorList] window automatically scrolls the
+preview window so as to always keep showing the context of the \label being
+viewed in the [ErrorList] window. You can also press J and K in the [ErrorList]
+window to scroll the preview window up and down.
 
-As can be seen above, the matches include everything which begins with \label.
-If you have the habit of prefixing all equation labels with "eqn:" or something
-similar, then you can restrict the matches to only equations by first typing
-"\ref{eqn:" and then pressing <F9>. This only brings up matches starting with
-"\label{eqn:" thus allowing you to skip table and figure labels.
+To insert one of the labels, simply position the cursor in the correct line in
+the [ErrorList] window and press <enter>. This will immediately close the two
+newly opened windows, get back to the correct location in the original file
+being edited and insert the label into the \ref command.
+
+If you notice carefully in the example above, the [ErrorList] window only showed
+the matches for the equations and did not list any of the figure labels. This is
+because we pressed <F9> after \ref{eqn: instead of simply after \ref{. This
+caused Latex-Suite to search only for those labels which started with the string
+eqn:. If you had pressed <F9> after a \ref{, you would have been shown matches
+from all labels, not just those starting with eqn:.
+
+Thus prefixing all your labels with eqn:, fig:, tab: etc. depending on what you
+are labelling will lead to an easier time completing references.
 
 The same mechanism also works with citations by pressing <F9> after typing
 "\cite{". In the case of citations, Latex-suite automatically displays a list of
@@ -1386,39 +1459,83 @@ care about Macros, Templates and Packages.
 --------------------------------------------------------------------------------
 Latex-Suite Maps                                              *ls_9_1*
                                                               *latex-suite-maps*
-|ls_9_1_1| <Plug>IMAP_JumpForward
-|ls_9_1_2| <Plug>IMAP_JumpBack
-|ls_9_1_3| <Plug>IMAP_DeleteAndJumpForward
+|ls_9_1_1| IMAP mappings
+|ls_9_1_2| Alt-Key mappings
 
-Normal usage of Latex-Suite will typically involve using a fairly large number
-of mappings. It should be noted that many of the mappings can be changed to a
-different set of characters according to your particular needs.
-
-<Plug>IMAP_JumpForward                                    *ls_9_1_1*
-                                                          *Plug_IMAPJumpForward*
-
-Default Key assigned : <Ctrl-J>
-
-This map takes you to the location of the next place-holder [|place-holders|].
-
-
-<Plug>IMAP_JumpBack                                          *ls_9_1_2*
-                                                             *Plug_IMAPJumpBack*
-
-Default Key assigned : NONE
-
-This map takes you to the previous place-holder [|place-holders|].
+                                                    *remapping-latex-suite-keys*
+Most of the mappings used in Latex-Suite can be mapped to a different key
+combination to suit your particular needs. An example best explains the
+procedure for doing this. Suppose you want to remap the <C-j> key which
+Latex-Suite (actually imaps.vim) uses to jump to the next placeholder. To do
+this, you first need to find out which <Plug> mapping <C-j> is derived from. You
+will need to look at the relevant section of this manual to do this. For
+example, the section IMAP mappings [|customize-imap-maps|] has the information
+that the <C-j> key is derived from <Plug>IMAP_JumpForward. Therefore to remap
+the <C-j> key to say <C-space>, you will need to put a statement like the
+following in your ~/.vimrc. >
+    imap <C-space> <Plug>IMAP_JumpForward
 
 
-<Plug>IMAP_DeleteAndJumpForward                 *ls_9_1_3*
+NOTE: To change the IMAP mappings which affect jumping between placeholders, the
+      map statement above has to be placed in your ~/.vimrc. For other mappings
+      you can place the map statement in your $VIM/ftplugin/tex.vim file.
+      
+      The reason for this is that the <C-j> maps are created in
+      plugin/imaps.vim, which is sourced as soon as Vim starts before sourcing
+      any ftplugin files.
+      
+      
+
+
+IMAP mappings                                              *ls_9_1_1*
+                                                           *customize-imap-maps*
+
+These mappings are utlilized for jumping between placeholders as described here
+[|place-holders|]. See the parent section [|latex-suite-maps|] to find out how
+to use this information to change the default maps.
+
+                                                         *Plug_IMAP_JumpForward*
+                                                            *Plug_IMAP_JumpBack*
                                                 *Plug_IMAP_DeleteAndJumpForward*
+                                                    *Plug_IMAP_DeleteAndJumBack*
+Plug map                           Default Key~
+<Plug>IMAP_JumpForward             <C-j>
+<Plug>IMAP_JumpBack                (none)
+<Plug>IMAP_DeleteAndJumpForward    (none)
+<Plug>IMAP_DeleteAndJumpBack       (none)
 
-Default Key assigned : NONE
+<Plug>IMAP_JumpForward takes you to the location of the next place-holder
+[|place-holders|].
 
-This map deletes the presently selected place-holder irrespective of whether the
-present placeholder is empty or not and ignoring the value of place-holder
-settings like g:Imap_DeleteEmptyPlaceHolders [|Imap_DeleteEmptyPlaceHolders|]
-and g:Imap_StickyPlaceHolders [|Imap_StickyPlaceHolders|]
+<Plug>IMAP_JumpBack takes you to the previous place-holder [|place-holders|].
+
+<Plug>IMAP_DeleteAndJumpForward deletes the presently selected place-holder and
+jumps to the next place-holder irrespective of whether the present placeholder
+is empty or not and ignoring the value of place-holder settings like
+g:Imap_DeleteEmptyPlaceHolders [|Imap_DeleteEmptyPlaceHolders|] and
+g:Imap_StickyPlaceHolders [|Imap_StickyPlaceHolders|]
+
+<Plug>IMAP_DeleteAndJumpBack deletes the presently selected place-holder and
+jumps to the previous place-holder irrespective of whether the present
+placeholder is empty or not and ignoring the value of place-holder settings like
+g:Imap_DeleteEmptyPlaceHolders [|Imap_DeleteEmptyPlaceHolders|] and
+g:Imap_StickyPlaceHolders [|Imap_StickyPlaceHolders|]
+
+
+Alt-Key mappings                                        *ls_9_1_2*
+                                                        *customize-alt-key-maps*
+
+These mappings are are described in the section Alt key macros
+[|bracketing-macros|]. See the parent section [|remapping-latex-suite-keys|] to
+see how to use the following information to remap keys.
+
+                                                               *Plug_Tex_MathBF*
+                                                              *Plug_Tex_MathCal*
+                                                            *Plug_Tex_LeftRight*
+Plug Mapping           Default Key~
+<Plug>Tex_MathBF       <Alt-B>
+<Plug>Tex_MathCal      <Alt-C>
+<Plug>Tex_LeftRight    <Alt-L>
 
 --------------------------------------------------------------------------------
 Latex Suite Commands                                      *ls_9_2*

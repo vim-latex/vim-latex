@@ -175,15 +175,22 @@ set shellslash</programlisting>
     the environment is a standard latex environment, then latex suite
     might also include common fields associated with it.
    </para>
-   <section>
+   <section id="ls-imap-f5">
     <title>Method 1</title>
     <para>
      If you press <literal>&lt;F5&gt;</literal> in the
      insert mode while on an empty line, latex-suite prompts you
      with a list of environments you might want to insert. You can
      either choose one from the list or type in a new environment
-     name. This list can be customized. See the 'Macros' section
-     of the |texrc| file for details.
+     name. This list can be customized via the <link
+      linkend="Tex_PromptedEnvironments"><literal>g:Tex_PromptedEnvironments</literal></link>
+     setting.
+    </para>
+    <para>
+     In addition to the <literal>Tex_PromptedEnvironments</literal>
+     variable, &ls; also lists envionments found in custom packages as
+     described in the section <link linkend="package-actions">Package
+      actions.</link>
     </para>
    </section>
    <section>
@@ -200,8 +207,8 @@ set shellslash</programlisting>
      The shifted function keys, <literal>&lt;S-F1&gt;</literal> to
      <literal>&lt;S-F4&gt;</literal>can also be optionally mapped
      to some common environments which you insert most often. The
-     environments mapped to each key can also be customized. See
-     the |texrc| file for details.
+     environments mapped to each key can also be customized via the <link
+      linkend="Tex_HotKeyMappings">g:Tex_HotKeyMappings</link> setting.
     </para>
    </section>
    <section>
@@ -592,32 +599,6 @@ otherinfo = {&ph;}
     auctex.vim to make inserting all the <literal>\left ... \right</literal>
     stuff very easy. The following maps are provided:
    </para>
-   <section id="Alt-M">
-    <title><literal>&lt;Alt-M&gt;</literal></title> 
-    <para>
-     This insert-mode mapping encloses the previous character in
-     <literal>\mathbf{}</literal>.
-    </para>
-   </section>
-   <section id="Alt-C">
-     <title><literal>&lt;Alt-C&gt;</literal></title>
-     <para>
-      In insert mode, this key is polymorphic as follows:
-     </para>
-     <orderedlist>
-      <listitem>
-       If the previous character is a letter or number, then capitalize it and
-       enclose it in <literal>\mathcal{}</literal>.
-      </listitem>
-      <listitem>
-       otherwise insert <literal>\cite{}</literal>.
-      </listitem>
-     </orderedlist>
-     <para>
-      In visual mode, it will simply enclose the selection in
-      <literal>\mathcal{}</literal>
-     </para>
-   </section>
    <section id="Alt-L">
     <title><literal>&lt;Alt-L&gt;</literal></title>
     <para>
@@ -649,22 +630,50 @@ otherinfo = {&ph;}
      simply insert a <literal>\label{&ph;}&ph;</literal>.
     </para>
    </section>
+   <section id="Alt-M">
+    <title><literal>&lt;Alt-M&gt;</literal></title> 
+    <para>
+     This insert-mode mapping encloses the previous character in
+     <literal>\mathbf{}</literal>.
+    </para>
+   </section>
+   <section id="Alt-C">
+     <title><literal>&lt;Alt-C&gt;</literal></title>
+     <para>
+      In insert mode, this key is polymorphic as follows:
+     </para>
+     <orderedlist>
+      <listitem>
+       If the previous character is a letter or number, then capitalize it and
+       enclose it in <literal>\mathcal{}</literal>.
+      </listitem>
+      <listitem>
+       otherwise insert <literal>\cite{}</literal>.
+      </listitem>
+     </orderedlist>
+     <para>
+      In visual mode, it will simply enclose the selection in
+      <literal>\mathcal{}</literal>
+     </para>
+   </section>
    <note>
     <para>
      By default, typing <literal>Alt-&lt;key&gt;</literal> in &vim; takes
      focus to the menu bar if a menu with the hotkey
      <literal>&lt;key&gt;</literal> exists. If in your case, there are
      conflicts due to this behavior, you will need to set
-     <programlisting>set nowinaltkeys</programlisting>
+     <programlisting>set winaltkeys=no</programlisting>
      in your <literal>$VIM/ftplugin/tex.vim</literal> in order to use these
      maps.
     </para>
    </note>
    <note>
     <title>Customizing the maps</title>
-    <para>You can also customize the keys which trigger this functionality by
-     remapping certain <literal>&lt;Plug&gt;</literal> mappings as described
-     in |customizing-latex-suite-mappings|.</para>
+    <para>You can also customize the keys which trigger this functionality
+     by remapping certain <literal>&lt;Plug&gt;</literal> mappings as
+     described in <link linkend="customize-alt-key-maps">Customizing
+      Alt-key maps</link>.
+    </para>
    </note>
   </section>
   <section id="custom-macros-menu">
@@ -735,69 +744,91 @@ otherinfo = {&ph;}
  <section id="latex-packages">
   <title>Package Handling</title>
   <para>
-   This functionality is avaiable via the Tex-Packages menu.
+   &ls; has a lot of functionality written to ease working with packages.
+   Packages here refers to files which you include into the &latex;
+   document using the <literal>\usepackage</literal> command.
   </para>
-  <para>
-   When you first invoke &ls;, it scans the
-   <literal>$VIM/ftplugin/latex-suite/packages</literal> directory for
-   package script files and creates a menu from all the files found there.
-   This menu is created under <literal>TeX-Suite > Packages >
-    Supported</literal>. This menu contains a list of packages "supported"
-   by &ls;. When you choose one of the packages from this menu (for example
-   the <literal>amsmath</literal> package), then a line of
-   the form
-   <programlisting>\usepackage[&ph;]{amsmath}&ph;</programlisting>
-   will be inserted into the current file.
-  </para>
-  <para>
-   The <literal>\usepackage</literal> line can also be inserted in an easy
-   manner in the current file by pressing <literal>&lt;F5&gt;</literal>
-   while in the preamble of the current document. This will set up a prompt
-   from the supported packages and ask you to choose from one of them. If
-   you do not find the package you want to insert in the list, you can type
-   in a package-name and it will use that. Pressing
-   <literal>&lt;F5&gt;</literal> in the preamble on a line containing a
-   single word will construct a <literal>\usepackage</literal> line from
-   that word.
-  </para>
-  <para>
-   Once a <literal>\usepackage</literal> line has been constructed in one
-   of the above methods, if possible, the following sub-menus will be
-   created
-  </para>
+  <section id="inserting-packages">
+   <title>Inserting package commands</title>
+   <para>
+    When you first invoke &ls;, it scans the
+    <literal>$VIM/ftplugin/latex-suite/packages</literal> directory for
+    package script files and creates a menu from all the files found there.
+    This menu is created under <literal>TeX-Suite > Packages >
+     Supported</literal>. This menu contains a list of packages "supported"
+    by &ls;. When you choose one of the packages from this menu (for example
+    the <literal>amsmath</literal> package), then a line of
+    the form
+    <programlisting>\usepackage[&ph;]{amsmath}&ph;</programlisting>
+    will be inserted into the current file.
+   </para>
+   <para>
+    The <literal>\usepackage</literal> line can also be inserted in an easy
+    manner in the current file by pressing <literal>&lt;F5&gt;</literal>
+    while in the preamble of the current document. This will set up a prompt
+    from the supported packages and ask you to choose from one of them. If
+    you do not find the package you want to insert in the list, you can type
+    in a package-name and it will use that. Pressing
+    <literal>&lt;F5&gt;</literal> in the preamble on a line containing a
+    single word will construct a <literal>\usepackage</literal> line from
+    that word.
+   </para>
+   <para>
+    Once you have inserted a <literal>\usepackage</literal> line, for
+    supported packages, you can use the Options and Commands menus
+    described in the <link linkend="package-actions">next section</link>.
+   </para>
+  </section>
+  <section id="package-actions">
+   <title>Actions taken for supported packages</title>
+   <para>
+    Once a <literal>\usepackage</literal> line has been constructed using
+    one of the methods described in the previous section, if possible, the
+    following sub-menus will be created
+   </para>
    <simplelist>
     <member><literal>TeX-Suite > Packages > &lt;package&gt; Options</literal></member>
     <member><literal>TeX-Suite > Packages > &lt;package&gt; Commands</literal></member>
    </simplelist>
    <para>
     where <literal>&lt;package&gt;</literal> is the package you just
-    inserted.
+    inserted. You can use these menus to insert commands, environments and
+    options which &ls; recognizes as belonging to this package.
    </para>
-  <para>
-   In addition to creating these sub-meuns, &ls; will also scan the
-   <literal>$VIM/ftplugin/latex-suite/dictionaries</literal> directory and
-   if a dictionary file corresponding to the package file is found, then
-   it will add the file to the <literal>'dict'</literal> setting in &vim;
-   so you can use the <literal>&lt;C-X&gt;&lt;C-K&gt;</literal> command to
-   complete words from that file.
-  </para>
-  <para>
-   For example, the <literal>SIUnits</literal> package has a custom
-   dictionary.
-  </para>
+   <note>
+    <para>
+     While inserting an option, you need to position yourself in the
+     appropritate place in the document, most commonly inside the square
+     braces in the <literal>\usepackage[]{packname}</literal> command. &ls;
+     will not navigate to that location.
+    </para>
+   </note>
+   <para>
+    In addition to creating these sub-meuns, &ls; will also scan the
+    <literal>$VIM/ftplugin/latex-suite/dictionaries</literal> directory and
+    if a dictionary file corresponding to the package file is found, then
+    it will add the file to the <literal>'dict'</literal> setting in &vim;
+    so you can use the <literal>&lt;C-X&gt;&lt;C-K&gt;</literal> command to
+    complete words from that file.
+   </para>
+   <para>
+    For example, the <literal>SIUnits</literal> package has a custom
+    dictionary.
+   </para>
+   <para>
+    If a package detected at startup is found by &ls; in the current
+    directory or in a location specified by the <link
+     linkend="Tex_TEXINPUTS">g:Tex_TEXINPUTS</link> variable, &ls; will
+    scan the package for <literal>\newenvironment</literal> and
+    <literal>newcommand</literal> lines and also append any commands and
+    environments found to the list of commands and environments which you
+    are prompted with when you press <link
+     linkend="ls-imap-f5"><literal>&lt;F5&gt;</literal></link> or <link
+     linkend="ls-imap-f7"><literal>&lt;F7&gt;</literal></link> in insert
+    mode.
+   </para>
+  </section>
   <anchor id="latex-package-scanning" />
-  <para>
-   Whenever &ls; begins editing a new &latex; file, it scans it for
-   <literal>\usepackage{name}</literal> lines, and if a supported package
-   is found, then it will create sub-menus and add to the
-   <literal>'dict'</literal> setting as described above.
-  </para>
-  <para>
-   If a <link linkend="latex-master-file">master-file</link> has been specified,
-   then it will scan that file instead of the current file. See the section
-   <link linkend="custom-packages">Custom Packages</link>
-   to see which files &ls; will scan in more detail.
-  </para>
   <para>
    In addition, the <literal>TeX-Suite > Packages</literal> menu also
    contains the following submenus
@@ -815,53 +846,75 @@ otherinfo = {&ph;}
    packages, then sub-menus containing the package options and commands
    are created.
   </formalpara>
-  <section id="custom-packages">
-   <title>Custom Packages</title>
+  <section id="automatic-package-detection">
+   <title>Automatic Package detection</title>
    <para>
-    Often times, the preamble can become too long, and some people prefer
-    to put most of their personalization in a custom package and include
-    that using a <literal>\usepackage</literal> line. &ls; tries to search
-    such customs package for other <literal>\usepackage</literal> lines, so
-    that supported packages included in this indirect manner can also be
-    used to create sub-menus, extend the <literal>'dict'</literal> setting
-    etc. The most obvious place to place such custom packages is in the
-    same directory as the edited file. In addition, &latex; also supports
-    placing custom packages in places pointed to by the
-    <literal>$TEXINPUTS</literal> environment variable.
+    Whenever &ls; begins editing a new &latex; file, it scans it for
+    <literal>\usepackage{name}</literal> lines, and if a supported package
+    is found, then it will create sub-menus and add to the
+    <literal>'dict'</literal> setting as described above.
    </para>
    <para>
-    If you use the <literal>$TEXINPUTS</literal> variable in &latex;, and
-    you wish &ls; to search these custom packages for
-    <literal>\usepackage</literal> lines, then you need to initialize the
-    <link linkend="Tex_TEXINPUTS"><literal>g:Tex_TEXINPUTS</literal></link>
-    variable.
+    If a <link linkend="latex-master-file">master-file</link> has been specified,
+    then it will scan that file instead of the current file. See the section
+    <link linkend="custom-packages">Custom Packages</link>
+    to see which files &ls; will scan in more detail.
    </para>
    <para>
-    The <literal>g:Tex_TEXINPUTS</literal> variable needs to be set in the
-    same format which &vim; uses for the <literal>'path'</literal> setting.
-    This format is explained in detail if you do 
-    <programlisting>:help file-searching</programlisting>
-    from within &vim;.
+    For all the packages detected in this manner, &ls; will take certain
+    actions as described in the section <link
+     linkend="package-actions">package support.</link>.
    </para>
-   <para>
-    Therefore the value of <literal>g:Tex_TEXINPUTS</literal> will most
-    probably be different from <literal>$TEXINPUTS</literal> which your
-    native &latex; distribution uses.
-   </para>
-   <para>
-    Example:
-    <programlisting>let g:Tex_TEXINPUTS = '~/texmf/mypackages/**;./**'</programlisting>
-    Note that directories are delimited by <literal>';'</literal>.
-   </para>
-   <note>
+   <section id="custom-packages">
+    <title>Custom Packages</title>
     <para>
-     The present directory <literal>'.'</literal> is always searched. You
-     need not incude that in <literal>g:Tex_TEXINPUTS</literal>.
+     Often times, the preamble can become too long, and some people prefer
+     to put most of their personalization in a custom package and include
+     that using a <literal>\usepackage</literal> line. &ls; tries to search
+     such customs package for other <literal>\usepackage</literal> lines, so
+     that supported packages included in this indirect manner can also be
+     used to create sub-menus, extend the <literal>'dict'</literal> setting
+     etc. The most obvious place to place such custom packages is in the
+     same directory as the edited file. In addition, &latex; also supports
+     placing custom packages in places pointed to by the
+     <literal>$TEXINPUTS</literal> environment variable.
     </para>
-   </note>
+    <para>
+     If you use the <literal>$TEXINPUTS</literal> variable in &latex;, and
+     you wish &ls; to search these custom packages for
+     <literal>\usepackage</literal> lines, then you need to initialize the
+     <link linkend="Tex_TEXINPUTS"><literal>g:Tex_TEXINPUTS</literal></link>
+     variable.
+    </para>
+    <para>
+     The <literal>g:Tex_TEXINPUTS</literal> variable needs to be set in the
+     same format which &vim; uses for the <literal>'path'</literal> setting.
+     This format is explained in detail if you do 
+     <programlisting>:help file-searching</programlisting>
+     from within &vim;.
+    </para>
+    <para>
+     Therefore the value of <literal>g:Tex_TEXINPUTS</literal> will most
+     probably be different from <literal>$TEXINPUTS</literal> which your
+     native &latex; distribution uses.
+    </para>
+    <para>
+     Example:
+     <programlisting>let g:Tex_TEXINPUTS = '~/texmf/mypackages/**,./**'</programlisting>
+     The <literal>**</literal> indicates that all directories below the
+     directory <literal>~/texmf/mypackages</literal> and
+     <literal>./</literal> are to be scanned for custom packages.
+    </para>
+    <note>
+     <para>
+      The present directory <literal>'.'</literal> is always searched. You
+      need not incude that in <literal>g:Tex_TEXINPUTS</literal>.
+     </para>
+    </note>
+   </section>
   </section>
   <section id="supporting-packages">
-   <title>Supporting a package</title>
+   <title>Writing supporting for a package</title>
    <para>
     Supporting a package is easy and consists of writing a vim script with
     the same name as the package and placing it in the
@@ -887,7 +940,7 @@ otherinfo = {&ph;}
    </section>
    <section>
     <title><literal>g:Tex_package_&lt;package&gt;</literal></title>
-<programlisting>
+    <programlisting>
     g:TeX_package_&lt;package&gt; = "pre:Command,pre:Command1"
 More detailed example is in latex-suite/packages/exmpl file (slightly
 outdated).
@@ -936,55 +989,95 @@ Command can be also given without prefix:. The result is
   <title>Latex Completion</title>
   <para>
    This module provides an easy way to insert references to labels and
-   bibliographic entries. Suppose you want to refer to an equation which is
-   labelled as "eqn:eq-1" using the \label{eqn:eq-1} command. Somewhere in the
-   text, you write "\ref{" with the cursor after the {. Now if you press &lt;F9&gt;,
-   Latex-suite will try to search through all the .tex files in the present
-   directory for lines beginning with "\label{". It will provide you with a list
-   of all such matches in two small windows.
-  </para>
-  <programlisting>+========================================================+
-| I want to insert a reference to equation 1. Therefore  |
-| I will write \ref{                                     |
-|                                                        |
-|                                                        |
-|                                                        |
-|                                                        |
-|                                                        |
-+--------------------------------------------------------+
-+file1.tex                                               +
-+========================================================+
-|file1.tex|100| \label{eqn:eq-1}                         |
-|file1.tex|110| \label{eqn:eq-2}                         |
-|file2.tex|178| \label{tab:table1}                       |
-+--------------------------------------------------------+
-+[Error List]                                            +
-+========================================================+
-|\begin{equation}                                        |
-|  e^{j*pi} + 1 = 0 \label{eqn:eq-1}                     |
-|\end{equation}                                          |
-|And there was some text after this. I dont remember     |
-+--------------------------------------------------------+
-+file1.tex [Preview]                                     +
-+========================================================+</programlisting>
-  <para>
-   The first window (shown as "[Error List]" above) is a |cwindow| containing a
-   list of matches and you will be left in it. The window beneath it is a
-   |preview-window| showing the context of the match. When you move up and down
-   in the "[Error List]" window, the preview window will be scrolled to keep in
-   sync with the label. Pressing the "J" and "K" keys in the "[Error List]"
-   window scrolls the preview window enabling you to see more context if you
-   desire. After positioning yourself on a label which you want to insert, press
-   CR&gt;. This will automatically close all the new windows, take you back to the
-   file being edited and insert the chosen label in place. Pressing "q" in the
-   "[Error List]" window closes all windows without inserting anything.
+   bibliographic entries. 
   </para>
   <para>
-   As can be seen above, the matches include everything which begins with \label.
-   If you have the habit of prefixing all equation labels with "eqn:" or
-   something similar, then you can restrict the matches to only equations by
-   first typing "\ref{eqn:" and then pressing &lt;F9&gt;. This only brings up matches
-   starting with "\label{eqn:" thus allowing you to skip table and figure labels.
+   Consider the situation where you are editing a file with two equations
+   labelled <literal>eqn:euler</literal> and <literal>eqn:einstein</literal>.
+   Now you want to insert a reference to one of these equations. To do this,
+   you type the <literal>\ref{eqn:}</literal> command and with the cursor
+   placed after <literal>eqn:</literal>, press <literal>&lt;F9&gt;</literal>.
+   This will bring up two new windows beneath the main window you were working
+   in as shown in the figure below. 
+  </para>
+  <programlisting>
+      7
+      8 These are a couple of equations:
+      9 +--  4 lines: eqnarray (eqn:euler) :   e^{j\pi} + 1 &amp;=&amp; 0---------------
+     13 +--  4 lines: equation (eqn:einstein) :   E = m c^2---------------------
+     17
+     18 These are a couple of figures:
+     19 +--  7 lines: figure (fig:monkeys) : Monkeys can Type-------------------
+     26 +--  7 lines: figure (fig:shakespeare) : Shakespeare could not type-----
+     33
+     34 This is a reference to \ref{eqn:}&ph;
+     35
+     36
+     37 \end{document}
+     38
+~
+~
+~
+~
+~
+~
+~
+newfile.tex                                                   34,32          Bot
+newfile.tex|11| \label{eqn:euler}
+newfile.tex|15| \label{eqn:einstein}
+~
+~
+~
+[Error List]                                                  1,1            All
+      7
+      8 These are a couple of equations:
+      9 \begin{eqnarray}
+     10   e^{j\pi} + 1 &amp;=&amp; 0
+     11   \label{eqn:euler}
+     12 \end{eqnarray}
+     13 \begin{equation}
+     14   E = m c^2
+     15   \label{eqn:einstein}
+     16 \end{equation}
+newfile.tex [Preview]                                         11,3           21%
+  </programlisting>
+  <para>
+   The first window (shown as <literal>[Error&nbsp;List]</literal> above) is a
+   <literal>|cwindow|</literal> containing a list of possible matches for the
+   reference. The cursor will be located in the first line of this window. The
+   bottom window is a <literal>preview-window</literal> showing the context of
+   the <literal>\label</literal>. Moving around in the
+   <literal>[Error&nbsp;List]</literal> window automatically scrolls the
+   preview window so as to always keep showing the context of the
+   <literal>\label</literal> being viewed in the
+   <literal>[Error&nbsp;List]</literal> window. You can also press
+   <literal>J</literal> and <literal>K</literal> in the
+   <literal>[ErrorList]</literal> window to scroll the preview window up and
+   down.
+  </para>
+  <para>
+   To insert one of the labels, simply position the cursor in the correct line
+   in the <literal>[Error&nbsp;List]</literal> window and press
+   <literal>&lt;enter&gt;</literal>. This will immediately close the two newly
+   opened windows, get back to the correct location in the original file being
+   edited and insert the label into the <literal>\ref</literal> command. 
+  </para>
+  <para>
+   If you notice carefully in the example above, the
+   <literal>[Error&nbsp;List]</literal> window only showed the matches for the
+   equations and did not list any of the figure labels. This is because we
+   pressed <literal>&lt;F9&gt;</literal> after <literal>\ref{eqn:</literal>
+   instead of simply after <literal>\ref{</literal>. This caused &ls; to
+   search only for those labels which started with the string
+   <literal>eqn:</literal>. If you had pressed
+   <literal>&lt;F9&gt;</literal> after a <literal>\ref{</literal>, you would
+   have been shown matches from <emphasis>all</emphasis> labels, not just
+   those starting with <literal>eqn:</literal>.
+  </para>
+  <para>
+   Thus prefixing all your labels with <literal>eqn:</literal>,
+   <literal>fig:</literal>, <literal>tab:</literal> etc. depending on what you
+   are labelling will lead to an easier time completing references.
   </para>
   <para>
    The same mechanism also works with citations by pressing &lt;F9&gt;
@@ -1626,42 +1719,141 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
   </para>
   <section id="latex-suite-maps">
    <title>&ls; Maps</title>
-   Normal usage of &ls; will typically involve using a fairly large number
-   of mappings. It should be noted that many of the mappings can be changed
-   to a different set of characters according to your particular needs.
-   <section id="Plug_IMAPJumpForward">
-    <title>&lt;Plug&gt;IMAP_JumpForward</title>
+   <anchor id="remapping-latex-suite-keys" />
+   <para>
+    Most of the mappings used in &ls; can be mapped to a different key
+    combination to suit your particular needs. An example best explains the
+    procedure for doing this. Suppose you want to remap the
+    <literal>&lt;C-j&gt;</literal> key which &ls; (actually imaps.vim) uses
+    to jump to the next placeholder. To do this, you first need to find out
+    which <literal>&lt;Plug&gt;</literal> mapping
+    <literal>&lt;C-j&gt;</literal> is derived from. You will need to look
+    at the relevant section of this manual to do this. For example, the
+    section <link linkend="customize-imap-maps">IMAP mappings</link> has
+    the information that the <literal>&lt;C-j&gt;</literal> key is derived
+    from <literal>&lt;Plug&gt;IMAP_JumpForward</literal>. Therefore to
+    remap the <literal>&lt;C-j&gt;</literal> key to say
+    <literal>&lt;C-space&gt;</literal>, you will need to put a
+    statement like the following in your <literal>~/.vimrc</literal>.
+    <programlisting>imap &lt;C-space&gt; &lt;Plug&gt;IMAP_JumpForward</programlisting>
+   </para>
+   <note>
     <para>
-     Default Key assigned : <literal>&lt;Ctrl-J&gt;</literal>
+     To change the <literal>IMAP</literal> mappings which affect jumping
+     between placeholders, the <literal>map</literal> statement above has
+     to be placed in your <literal>~/.vimrc</literal>. For other mappings
+     you can place the <literal>map</literal> statement in your
+     <literal>$VIM/ftplugin/tex.vim</literal> file.
     </para>
     <para>
-     This map takes you to the location of the next <link
+     The reason for this is that the <literal>&lt;C-j&gt;</literal> maps
+     are created in <literal>plugin/imaps.vim</literal>, which is sourced
+     as soon as &vim; starts before sourcing any ftplugin files.
+    </para>
+   </note>
+   <section id="customize-imap-maps">
+    <title>IMAP mappings</title>
+    <para>
+     These mappings are utlilized for jumping between placeholders as
+     described <link linkend="place-holders">here</link>. See the <link
+      linkend="latex-suite-maps">parent section</link> to find out how to
+     use this information to change the default maps.
+    </para>
+    <anchor id="Plug_IMAP_JumpForward" />
+    <anchor id="Plug_IMAP_JumpBack" />
+    <anchor id="Plug_IMAP_DeleteAndJumpForward" />
+    <anchor id="Plug_IMAP_DeleteAndJumBack" />
+    <informaltable frame="all">
+     <tgroup cols="2">
+      <thead>
+       <row>
+        <entry>Plug map</entry>
+        <entry>Default Key</entry>
+       </row>
+      </thead>
+      <tbody>
+       <row>
+        <entry><literal>&lt;Plug&gt;IMAP_JumpForward</literal></entry>
+        <entry><literal>&lt;C-j&gt;</literal></entry>
+       </row>
+       <row>
+        <entry><literal>&lt;Plug&gt;IMAP_JumpBack</literal></entry>
+        <entry>(none)</entry>
+       </row>
+       <row>
+        <entry><literal>&lt;Plug&gt;IMAP_DeleteAndJumpForward</literal></entry>
+        <entry>(none)</entry>
+       </row>
+       <row>
+        <entry><literal>&lt;Plug&gt;IMAP_DeleteAndJumpBack</literal></entry>
+        <entry>(none)</entry>
+       </row>
+      </tbody>
+     </tgroup>
+    </informaltable>
+    <para>
+     <literal>&lt;Plug&gt;IMAP_JumpForward</literal> takes you to the
+     location of the next <link
       linkend="place-holders">place-holder</link>.
     </para>
-   </section>
-   <section id="Plug_IMAPJumpBack">
-    <title>&lt;Plug&gt;IMAP_JumpBack</title>
     <para>
-     Default Key assigned : NONE
+     <literal>&lt;Plug&gt;IMAP_JumpBack</literal> takes you to the previous
+     <link linkend="place-holders">place-holder</link>.
     </para>
     <para>
-     This map takes you to the previous <link
-      linkend="place-holders">place-holder</link>.
-    </para>
-   </section>
-   <section id="Plug_IMAP_DeleteAndJumpForward">
-    <title>&lt;Plug&gt;IMAP_DeleteAndJumpForward</title>
-    <para>
-     Default Key assigned : NONE
-    </para>
-    <para>
-     This map deletes the presently selected place-holder irrespective of
-     whether the present placeholder is empty or not and ignoring the value
-     of place-holder settings like <link
+     <literal>&lt;Plug&gt;IMAP_DeleteAndJumpForward</literal> deletes the
+     presently selected place-holder and jumps to the next place-holder
+     irrespective of whether the present placeholder is empty or not and
+     ignoring the value of place-holder settings like <link
       linkend="Imap_DeleteEmptyPlaceHolders"><literal>g:Imap_DeleteEmptyPlaceHolders</literal></link>
      and <link
       linkend="Imap_StickyPlaceHolders"><literal>g:Imap_StickyPlaceHolders</literal></link>
     </para>
+    <para>
+     <literal>&lt;Plug&gt;IMAP_DeleteAndJumpBack</literal> deletes the
+     presently selected place-holder and jumps to the previous place-holder
+     irrespective of whether the present placeholder is empty or not and
+     ignoring the value of place-holder settings like <link
+      linkend="Imap_DeleteEmptyPlaceHolders"><literal>g:Imap_DeleteEmptyPlaceHolders</literal></link>
+     and <link
+      linkend="Imap_StickyPlaceHolders"><literal>g:Imap_StickyPlaceHolders</literal></link>
+    </para>
+   </section>
+   <section id="customize-alt-key-maps">
+    <title>Alt-Key mappings</title>
+    <para>
+     These mappings are are described in the section <link
+      linkend="bracketing-macros">Alt key macros</link>. See <link
+      linkend="remapping-latex-suite-keys">the parent section</link> to see
+     how to use the following information to remap keys.
+    </para>
+    <anchor id="Plug_Tex_MathBF" />
+    <anchor id="Plug_Tex_MathCal" />
+    <anchor id="Plug_Tex_LeftRight" />
+    <informaltable frame="all">
+     <tgroup cols="2">
+      <thead>
+       <row>
+        <entry>Plug Mapping</entry>
+        <entry>Default Key</entry>
+       </row>
+      </thead>
+      <tbody>
+       <row>
+        <entry><literal>&lt;Plug&gt;Tex_MathBF</literal></entry>
+        <entry><literal>&lt;Alt-B&gt;</literal></entry>
+       </row>
+       <row>
+        <entry><literal>&lt;Plug&gt;Tex_MathCal</literal></entry>
+        <entry><literal>&lt;Alt-C&gt;</literal></entry>
+       </row>
+       <row>
+        <entry><literal>&lt;Plug&gt;Tex_LeftRight</literal></entry>
+        <entry><literal>&lt;Alt-L&gt;</literal></entry>
+       </row>
+      </tbody>
+     </tgroup>
+    </informaltable>
    </section>
   </section>
   <section id="latex-suite-commands">
@@ -2894,5 +3086,5 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
 </article>
 
 <!--
-vim: fdm=syntax:et:sw=1:sts=4
+vim: et:sw=1:sts=4
 -->
