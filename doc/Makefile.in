@@ -1,0 +1,13 @@
+ls-flat:
+	java com.icl.saxon.StyleSheet latex-suite.xml latex-suite.xsl > latex-suite.html
+
+ls-chunk:
+	( \
+		cd latex-suite && \
+		java com.icl.saxon.StyleSheet ../latex-suite.xml ../latex-suite-chunk.xsl \
+	)
+
+ls-txt:
+	db2vim latex-suite.xml > latex-suite.txt
+
+# vim:nowrap
