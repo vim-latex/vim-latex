@@ -1,5 +1,6 @@
 "        File: texwizards.vim
 "      Author: Mikolaj Machowski <mikmach@wp.pl>
+" Last Change: Sun Oct 27 01:00 AM 2002 PST
 " Description: 
 " 
 " Installation:
@@ -39,7 +40,7 @@ function! Tex_MenuWizard(submenu, env)
     elseif (a:env=="thebibliography")
         return Tex_thebibliography(a:env)
     else
-        return "\\begin{".a:env."}\<cr> \<cr>\\end{".a:env."}«»\<Up>\<Left>"
+        return IMAP_PutTextWithMovement("\\begin{".a:env."}\<cr>«»\<cr>\\end{".a:env."}«»")
     endif
 endfunction
 
@@ -60,7 +61,7 @@ function! Tex_description(env)
 	if (itlabel != "")
 		let itlabel = '['.itlabel.']'
 	endif
-	return "\\begin{description}\<cr>\\item".itlabel." \<cr>\\end{description}«»\<Up>"
+	return IMAP_PutTextWithMovement("\\begin{description}\<cr>\\item".itlabel." \<cr>\\end{description}«»\<Up>")
 endfunction
 
 " }}} 
@@ -155,7 +156,7 @@ function! Tex_tabular(env)
     if format != ""
       let format = '{'.format.'}'
     endif
-    return "\\begin{".a:env."}".pos.format."\<cr> \<cr>\\end{".a:env."}«»\<Up>\<Left>"
+    return IMAP_PutTextWithMovement("\\begin{".a:env."}".pos.format."\<cr> \<cr>\\end{".a:env."}«»\<Up>\<Left>")
 endfunction
 
 " }}} 
@@ -167,23 +168,23 @@ function! Tex_eqnarray(env)
       else
         let arrlabel = " "
     endif
-    return "\\begin{".a:env."}\<cr>".arrlabel."\<cr>\\end{".a:env."}«»\<Up>\<Left>"
+    return IMAP_PutTextWithMovement("\\begin{".a:env."}\<cr>".arrlabel."\<cr>\\end{".a:env."}«»\<Up>\<Left>")
 endfunction
 
 " }}} 
 " Tex_list: {{{
 function! Tex_list(env)
-  let label = input("Label (for \item)? ")
-  if (label != "")
-    let label = "{".label."}"
-    let addcmd = input("Additional commands? ")
-    if (addcmd != "")
-      let label = label . "{".addcmd."}"
-    endif
-  else
-    let label = ""
-  endif
-	return "\\begin{list}".label."\<cr>\\item \<cr>\\end{list}«»\<Up>"
+	let label = input("Label (for \item)? ")
+	if (label != "")
+		let label = "{".label."}"
+		let addcmd = input("Additional commands? ")
+		if (addcmd != "")
+			let label = label . "{".addcmd."}"
+		endif
+	else
+		let label = ""
+	endif
+	return IMAP_PutTextWithMovement("\\begin{list}".label."\<cr>\\item \<cr>\\end{list}«»\<Up>")
 endfunction
 
 " }}} 
@@ -197,7 +198,7 @@ function! Tex_document(env)
     else
         let foo = foo.'['.opts.']'.'{'.dstyle.'}'
     endif
-    return foo . "\<cr>\<cr>\\begin{document}\<cr>\<cr>\\end{document}\<Up>"
+    return IMAP_PutTextWithMovement(foo . "\<cr>\<cr>\\begin{document}\<cr>\<cr>\\end{document}\<Up>")
 endfunction
 
 " }}} 
@@ -211,7 +212,7 @@ function! Tex_minipage(env)
     else
         let  foo = foo.'['.pos.']{'.width.'}'
     endif
-    return foo . "\<cr> \<cr>\\end{minipage}\<Up>\<Left>"
+    return IMAP_PutTextWithMovement(foo . "\<cr> \<cr>\\end{minipage}\<Up>\<Left>")
 endfunction
 
 " }}} 
@@ -227,7 +228,7 @@ function! Tex_thebibliography()
         let bar = bar.'['.biblabel.']'
     endif
     let bar = bar.'{'.key.'}'
-    return "\\begin{thebibliography}".foo."\<cr>".bar." \<cr>\\end{thebibliography}\<Up>\<Left>"
+    return IMAP_PutTextWithMovement("\\begin{thebibliography}".foo."\<cr>".bar." \<cr>\\end{thebibliography}\<Up>\<Left>")
 endfunction
 
 " }}} 
@@ -244,7 +245,7 @@ function! Tex_VisSecAdv(section)
 	if shorttitle != ""
 		let shorttitle = '['.shorttitle.']'
 	endif
-	exe "normal `>a}\<cr>\<esc>`<i".sstructure.toc.shorttitle."{"
+	exe IMAP_PutTextWithMovement("normal `>a}\<cr>\<esc>`<i".sstructure.toc.shorttitle."{")
 endfunction 
 
 " }}}
