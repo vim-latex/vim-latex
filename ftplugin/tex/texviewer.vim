@@ -80,9 +80,14 @@ function! Tex_completion(what, where)
 		" 	s:type = 'psfig'
 		" 	s:typeoption = '[option=value]'
 		let pattern = '.*\\\(\w\{-}\)\(\[.\{-}\]\)\?{\(\a\+=\)\?$'
-		let s:type = substitute(s:curline, pattern, '\1', 'e')
-		let s:typeoption = substitute(s:curline, pattern, '\2', 'e')
-		call Tex_Debug('s:type = '.s:type.', typeoption = '.s:typeoption, 'view')
+		if s:curline =~ pattern
+			let s:type = substitute(s:curline, pattern, '\1', 'e')
+			let s:typeoption = substitute(s:curline, pattern, '\2', 'e')
+			call Tex_Debug('s:type = '.s:type.', typeoption = '.s:typeoption, 'view')
+		else
+			unlet! s:type
+			unlet! s:typeoption
+		endif
 
 		if exists("s:type") && s:type =~ 'ref'
 			call Tex_Debug("silent! grep! '\\label{".s:prefix."' ".s:search_directory.'*.tex', 'view')
@@ -151,7 +156,8 @@ function! Tex_completion(what, where)
 					return
 				endif
 			endif
-			exe "silent! grep! '\<".s:word."' ".s:search_directory.'*.tex'
+			call Tex_Debug("silent! grep! '\\<".s:word."' ".s:search_directory.'*.tex', 'view')
+			exe "silent! grep! '\\<".s:word."' ".s:search_directory.'*.tex'
 			call <SID>Tex_c_window_setup()
 
 		endif
@@ -190,6 +196,12 @@ function! s:Tex_c_window_setup(...)
 		silent! 0put!=a:1
 		$ d _
 	endif
+	setlocal nonumber
+	setlocal nowrap
+
+	let s:scrollOffVal = &scrolloff
+	call <SID>UpdateViewerWindow()
+
 	" If everything went well, then we should be situated in the quickfix
 	" window. If there were problems, (no matches etc), then we will not be.
 	" Therefore return.
@@ -197,12 +209,6 @@ function! s:Tex_c_window_setup(...)
 		call Tex_Debug('not in quickfix window, quitting', 'view')
 		return
 	endif
-
-	setlocal nonumber
-	setlocal nowrap
-
-	let s:scrollOffVal = &scrolloff
-	call <SID>UpdateViewerWindow()
 
     nnoremap <buffer> <silent> j j:call <SID>UpdateViewerWindow()<CR>
     nnoremap <buffer> <silent> k k:call <SID>UpdateViewerWindow()<CR>
@@ -406,8 +412,8 @@ endfunction " }}}
 "
 function! s:GoToLocation()
 
-	exe 'cc ' . line('.')
 	pclose!
+	exe 'cc ' . line('.')
 	cclose
 
 endfunction " }}}
@@ -532,10 +538,10 @@ function! Tex_ScanFileForCite(prefix)
 	" file includes.
 	exec 0
 	let wrap = 'w'
-	while search('^\s*\\input', wrap)
+	while search('^\s*\\\(input\|include\)', wrap)
 		let wrap = 'W'
 
-		let filename = matchstr(getline('.'), '\\input{\zs.\{-}\ze}')
+		let filename = matchstr(getline('.'), '\\\(input\|include\){\zs.\{-}\ze}')
 		let v:errmsg = ''
 		exec 'silent! find '.filename
 		if v:errmsg == ''
