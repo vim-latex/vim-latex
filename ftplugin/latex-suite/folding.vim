@@ -212,6 +212,19 @@ function! MakeTexFolds(force)
 	endif
 	" }}}
 
+	" {{{ items
+	if g:Tex_FoldedMisc =~ '\<item\>'
+		call AddSyntaxFoldItem (
+			\ '^\s*\\item',
+			\ '^\s*\\item\|^\s*\\end{\(enumerate\|itemize\|description\)}',
+			\ 0,
+			\ -1,
+			\ '^\s*\\begin{\(enumerate\|itemize\|description\)}',
+			\ '^\s*\\end{\(enumerate\|itemize\|description\)}'
+			\ )
+	endif
+	" }}}
+
 	" {{{ title
 	if g:Tex_FoldedMisc =~ '\<title\>'
 		call AddSyntaxFoldItem (
@@ -253,19 +266,6 @@ function! MakeTexFolds(force)
 	endwhile
 	" }}}
 
-	" {{{ items
-	if g:Tex_FoldedMisc =~ '\<item\>'
-		call AddSyntaxFoldItem (
-			\ '^\s*\\item',
-			\ '^\s*\\item\|^\s*\\end{\(enumerate\|itemize\|description\)}',
-			\ 0,
-			\ -1,
-			\ '^\s*\\begin{\(enumerate\|itemize\|description\)}',
-			\ '^\s*\\end{\(enumerate\|itemize\|description\)}'
-			\ )
-	endif
-	" }}}
-
 	" Sections {{{
 	if g:Tex_FoldedSections != '' 
 		call FoldSections(g:Tex_FoldedSections,
@@ -298,7 +298,7 @@ function! MakeTexFolds(force)
 	" }}}
 
 	" Manually folded regions {{{
-	if g:Tex_FoldedMisc = '\(^\|,\)<<<\(,\|$\)'
+	if g:Tex_FoldedMisc =~ '\(^\|,\)<<<\(,\|$\)'
 		call AddSyntaxFoldItem (
 			\ '<<<',
 			\ '>>>',
