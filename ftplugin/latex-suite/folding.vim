@@ -151,6 +151,30 @@ function! MakeTexFolds(force)
 		\ 0
 		\ )
 	" }}}
+	" {{{ intertext
+	call AddSyntaxFoldItem (
+		\ '^\s*\\intertext{',
+		\ '^\s*}',
+		\ 0,
+		\ 0
+		\ )
+	" }}}
+	" {{{ abstract
+	call AddSyntaxFoldItem (
+		\ '^\s*\\begin{abstract}',
+		\ '^\s*\\end{abstract}',
+		\ 0,
+		\ 0
+		\ )
+	" }}}
+	" {{{ keywords
+	call AddSyntaxFoldItem (
+		\ '^\s*\\begin{keywords}',
+		\ '^\s*\\end{keywords}',
+		\ 0,
+		\ 0
+		\ )
+	" }}}
 	" {{{ table
 	call AddSyntaxFoldItem (
 		\ '^\s*\\begin{table}',
@@ -163,6 +187,21 @@ function! MakeTexFolds(force)
 	call AddSyntaxFoldItem (
 		\ '^\s*\\begin{figure',
 		\ '^\s*\\end{figure}',
+		\ 0,
+		\ 0
+		\ )
+	" }}}
+	" {{{ align/alignat
+	call AddSyntaxFoldItem (
+		\ '^\s*\\begin{align',
+		\ '^\s*\\end{align',
+		\ 0,
+		\ 0
+		\ )
+	" }}}
+	call AddSyntaxFoldItem (
+		\ '^\s*\\begin{gather',
+		\ '^\s*\\end{gather',
 		\ 0,
 		\ 0
 		\ )
@@ -242,7 +281,7 @@ endfunction
 " TexFoldTextFunction: create fold text for folds {{{
 function! TexFoldTextFunction()
 	if getline(v:foldstart) =~ '^\s*\\begin{'
-		let header = matchstr(getline(v:foldstart), '^\s*\\begin{\zs\(figure\|table\|equation\|eqnarray\)[^}]*\ze}')
+		let header = matchstr(getline(v:foldstart), '^\s*\\begin{\zs\(figure\|table\|equation\|eqnarray\|gather\|align\|abstract\|keywords\)[^}]*\ze}')
 
 		let caption = ''
 		let label = ''
