@@ -17,11 +17,7 @@ latexs:
 	zip latexSuite.zip vimlatex
 	zip latexSuite.zip ltags
 clean:
-	rm -f winmanager.zip
-	rm -f flisttree.zip
 	rm -f latexSuite.zip
-	rm -f minibe.zip
-	rm -f all.zip
 ltt:
 	rm -rf /tmp/ltt/vimfiles/ftplugin
 	cp -f latexSuite.zip /tmp/ltt/vimfiles/
