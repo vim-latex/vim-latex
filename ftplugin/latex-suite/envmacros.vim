@@ -2,7 +2,7 @@
 " 	     File: envmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
-" Last Change: Mon Dec 30 03:00 AM 2002 PST
+" Last Change: Sun Jan 05 12:00 AM 2003 PST
 " 
 "  Description: mappings/menus for environments. 
 "=============================================================================
@@ -600,10 +600,11 @@ if g:Tex_PromptedEnvironments != ''
 
 	let b:DoubleDollars = 0
 
-	inoremap <F5>       <C-r>=Tex_FastEnvironmentInsert()<cr>
-	nnoremap <F5>       i<C-r>=Tex_FastEnvironmentInsert()<cr>
-	inoremap <buffer>   <S-F5> <C-O>:call Tex_ChangeEnvironments()<CR>
-	nnoremap <buffer>   <S-F5> :call Tex_ChangeEnvironments()<CR>
+	" Provide only <plug>s here. main.vim will create the actual maps.
+	inoremap <silent> <Plug>Tex_FastEnvironmentInsert  <C-r>=Tex_FastEnvironmentInsert()<cr>
+	nnoremap <silent> <Plug>Tex_FastEnvironmentInsert  i<C-r>=Tex_FastEnvironmentInsert()<cr>
+	inoremap <silent> <Plug>Tex_FastEnvironmentChange  <C-O>:call Tex_ChangeEnvironments()<CR>
+	nnoremap <silent> <Plug>Tex_FastEnvironmentChange  :call Tex_ChangeEnvironments()<CR>
 
 	" Tex_FastEnvironmentInsert: maps <F5> to prompt for env and insert it " {{{
 	" Description:
@@ -668,7 +669,9 @@ if g:Tex_PromptedEnvironments != ''
 		let pack = matchstr(l, '^\s*\zs.*')
 		normal!  0"_D
 		return Tex_pack_one(pack)
-	endfunction " }}}
+	endfunction 
+	
+	" }}}
 	" Tex_ChangeEnvironments: calls Change() to change the environment {{{
 	" Description:
 	"   Finds out which environment the cursor is positioned in and changes
@@ -806,7 +809,7 @@ if g:Tex_HotKeyMappings != ''
 		let envname = Tex_Strntok(g:Tex_HotKeyMappings, ',', i)
 		while  envname != ''
 
-			exec 'inoremap <S-F'.i.'> <C-r>=Tex_PutEnvironment("'.envname.'")<CR>'
+			exec 'inoremap <silent> <buffer> <S-F'.i.'> <C-r>=Tex_PutEnvironment("'.envname.'")<CR>'
 
 			let i = i + 1
 			let envname = Tex_Strntok(g:Tex_HotKeyMappings, ',', i)
@@ -815,11 +818,31 @@ if g:Tex_HotKeyMappings != ''
 
 	endfunction " }}}
 
-	call s:SetUpHotKeys()
-
 endif
 
 " }}}
+" Tex_SetFastEnvironmentMaps: function for setting up the <F5> and <S-F1>-<S-F4> keys {{{
+" Description: This function is made public so it can be called by the
+"              SetTeXOptions() function in main.vim
+function! Tex_SetFastEnvironmentMaps()
+	if g:Tex_PromptedEnvironments != ''
+		if !hasmapto('<Plug>Tex_FastEnvironmentInsert', 'i')
+			imap <silent> <buffer> <F5> <Plug>Tex_FastEnvironmentInsert
+		endif
+		if !hasmapto('<Plug>Tex_FastEnvironmentInsert', 'n')
+			nmap <silent> <buffer> <F5> <Plug>Tex_FastEnvironmentInsert
+		endif
+		if !hasmapto('<Plug>Tex_FastEnvironmentChange', 'i')
+			imap <silent> <buffer> <S-F5> <Plug>Tex_FastEnvironmentChange
+		endif
+		if !hasmapto('<Plug>Tex_FastEnvironmentChange', 'n')
+			nmap <silent> <buffer> <S-F5> <Plug>Tex_FastEnvironmentChange
+		endif
+	endif
+	if g:Tex_HotKeyMappings != ''
+		call s:SetUpHotKeys()
+	endif
+endfunction " }}}
 
 " this statement has to be at the end.
 let s:doneOnce = 1
