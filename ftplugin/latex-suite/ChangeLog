@@ -1,3 +1,24 @@
+29 Sep 2003
+    Changes
+    * custommacros.vim:
+        :TMacroNew command now requires name of new macro. It simplifies code
+        and make clearly visible where this buffer is. (MM)
+    Features
+    * custommacros.vim, templates.vim:
+        :TMacro family of commands and :TTemplate use custom completion. It
+        works only for Vim 6.2 or later. (MM)
+    * main.vim, texrc:
+        Support for taglist.vim plugin. (MM)
+    * compiler.vim, texrc:
+        Make jumping to warning/error configurable. (Preben Randhol, MM)
+    * packages.vim, templates.vim, custommacros.vim, main.vim:
+        New function, Tex_FileInRtp makes possible to use files from
+        system-wide directories and local. Appropriate changes in pluginable
+        features - packages, directories, templates, macros. (MM)
+    * packages directory:
+        Add to all package files preamble which allows to treat them like any
+        other plugin (order of sourcing and respectful treating). (MM)
+
 After 6 Jun 2003
 
 10 Aug 2003
