@@ -309,8 +309,8 @@ function! Tex_pack_all(fname)
 		q	
 	endif
 	 
-	" Check if one of declared packages isn't user package in current (TODO:
-	" or $TEXINPUTS or declared in texrc or ...)
+	" Check if one of declared packages isn't user package in current 
+	" Basing on TEXINPUTS. 
 	if !exists("s:Tex_up_check")
 		" Prevents endless loop
 		let s:Tex_up_check = 1
@@ -325,21 +325,99 @@ function! Tex_pack_all(fname)
 			let userpackage = Tex_Strntok(tpd_orig, ',', fn)
 			let stypath = expand("%:p:h").'/'.userpackage.'.sty'
 
-			" If package with given name exists in user space (not TeX space)
+			" If package with given name exists in current dir
 			" check if there are usepackage commands, newcommand etc.
 			if filereadable(stypath)
-				let g:path = stypath
 				call Tex_pack_all(stypath)
-
 				" Remove this file from list of buffers
 				exe 'bwipe '.stypath
-
 				" But add word completion - if such file exists probably there
 				" is huge collection of commands, <F7> doesn't solve
 				" everything
 				exe 'setlocal complete+=s'.stypath
-
 			endif
+
+			" Check list of locations from $TEXINPUTS variable. But before simple
+			" trick - add current directory to make everything in one loop
+			if g:Tex_TEXINPUTS != '' 
+				let inputdirs = g:Tex_TEXINPUTS
+
+				let id = 1
+				while Tex_Strntok(inputdirs, ':', id) != ''
+					let cur_input_dir = Tex_Strntok(inputdirs, ':', id)
+
+					" Skip current directory, we checked it already 
+					if cur_input_dir == "\\." || cur_input_dir == "\\./"
+						let g:cid1 = cur_input_dir
+						let id = id + 1
+						continue
+
+					" Deal with ./ entries
+					elseif cur_input_dir =~ "^\\./"
+						let g:cid2 = cur_input_dir
+
+						let cur_dir = expand("%:p:h")
+
+						if cur_input_dir == './/'
+							let stypath = globpath(cur_dir.'/*', userpackage.'.sty')
+							if filereadable(stypath)
+								call Tex_pack_all(stypath)
+								exe 'bwipe '.stypath
+								exe 'setlocal complete+=s'.stypath
+							endif
+
+						else
+							let cur_input_dir = substitute(cur_input_dir,'./','','e')
+							let stypath = cur_dir.'/'.cur_input_dir.'/'.userpackage.'.sty'
+							if filereadable(stypath)
+								call Tex_pack_all(stypath)
+								exe 'bwipe '.stypath
+								exe 'setlocal complete+=s'.stypath
+							endif
+
+						endif
+
+					" Check one-level directory item variable.
+					elseif cur_input_dir !~ '//$'
+						let cur_input_dir = substitute(cur_input_dir,'/*$','','ge')
+						let stypath = cur_input_dir.'/'.userpackage.'.sty'
+						let stypath = fnamemodify(stypath, ':p')
+						if filereadable(stypath)
+							call Tex_pack_all(stypath)
+							exe 'bwipe '.stypath
+							exe 'setlocal complete+=s'.stypath
+						endif
+
+					" Check the rest. Now this is fake because currently Vim
+					" doesn't accept ** in globpath(). Solution with '/*'
+					" provides only one level depth but ** in globpath() is on
+					" TODO list. In future versions of Vim we will only need
+					" to add one * in globpath.
+					else
+						let cur_input_dir = substitute(cur_input_dir,'/*$','','ge')
+						let stypath = fnamemodify(cur_input_dir, ':p:h')
+
+						let stypath2 = stypath.'/'.userpackage.'.sty'
+						if filereadable(stypath2)
+							call Tex_pack_all(stypath2)
+							exe 'bwipe '.stypath2
+							exe 'setlocal complete+=s'.stypath2
+						endif
+							
+						let stypathglob = globpath(stypath.'/*', userpackage.'.sty')
+						if filereadable(stypathglob)
+							call Tex_pack_all(stypathglob)
+							exe 'bwipe '.stypathglob
+							exe 'setlocal complete+=s'.stypathglob
+						endif
+
+					endif
+
+					let id = id + 1
+
+				endif
+
+			endwhile
 
 			let fn = fn + 1
 
