@@ -2,7 +2,7 @@
 " 	     File: envmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
-" Last Change: ¶ro lis 20 10:00  2002 C
+" Last Change: Thu Dec 05 10:00 PM 2002 PST
 " 
 "  Description: mappings/menus for environments. 
 "=============================================================================
@@ -25,7 +25,7 @@ let s:enumerate =  "\\begin{enumerate}{«label»}{«commands»}\<cr>\\item «»\<cr>\\
 let s:itemize =    "\\begin{itemize}{«label»}{«commands»}\<cr>\\item «»\<cr>\\end{itemize}«»"
 let s:theindex =   "\\begin{theindex}{«label»}{«commands»}\<cr>\\item «»\<cr>\\end{theindex}«»"
 let s:trivlist =   "\\begin{trivlist}{«label»}{«commands»}\<cr>\\item «»\<cr>\\end{trivlist}«»"
-let s:table =      "\\begin{table}\<cr>\\centering\<cr>\\caption{tab:ä}\<cr>\\begin{tabular}{«dimensions»}\<cr>«»\<cr>\\end{tabular}\<cr>\\label{tab:«label»}\<cr>\\end{table}«»"
+let s:table =      "\\begin{table}\<cr>\\centering\<cr>\\begin{tabular}{«dimensions»}\<cr>«»\<cr>\\end{tabular}\<cr>\\caption{«Caption text»}\<cr>\\label{tab:«label»}\<cr>\\end{table}«»"
 let s:array =      "\\leftä\<cr>\\begin{array}{«dimension»}\<cr>«elements»\<cr>\\end{array}\<cr>\\right«»"
 let s:description ="\\begin{description}\<cr>\\item[«label»]«»\<cr>\\end{description}«»"
 let s:document =   "\\documentclass[«options»]{«class»}\<cr>\<cr>\\begin{document}\<cr>«»\<cr>\\end{document}"
