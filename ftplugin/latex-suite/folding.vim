@@ -257,10 +257,10 @@ function! MakeTexFolds(force)
 		\ -1,
 		\ )
 	" }}}
-	" {{{ fakesection (for forcinga fold item manually)
+	" {{{ fakesection (for forcing a fold item manually)
 	call AddSyntaxFoldItem (
 		\ '^\s*%%fakesection',
-		\ '^\s*\\appendix\W\|^\s\\section\W\|^\s*%%fakesection\|^\s*\\bibliography\|^\s*\\chapter\W\|^\s*\\begin{slide\|^\s*\\begin{thebibliography\|^\s*\\end{document',
+		\ '^\s*\\appendix\W\|^\s*\\section\W\|^\s*%%fakesection\|^\s*\\bibliography\|^\s*\\chapter\W\|^\s*\\begin{slide\|^\s*\\begin{thebibliography\|^\s*\\end{document',
 		\ 0,
 		\ -1,
 		\ )
