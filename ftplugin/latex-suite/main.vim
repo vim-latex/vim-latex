@@ -3,7 +3,7 @@
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
 "		   URL: 
-"  Last Change: Fri Dec 27 02:00 PM 2002 PST
+"  Last Change: Fri Jan 03 04:00 PM 2003 PST
 "
 " Help: 
 " Changes: {{{
@@ -421,26 +421,49 @@ endfunction " }}}
 " Tex_Debug: appends the argument into s:debugString {{{
 " Description: 
 " 
-function! Tex_Debug(str)
-	if !exists('s:debugString')
-		let s:debugString = ''
+" Do not want a memory leak! Set this to zero so that latex-suite always
+" starts out in a non-debugging mode.
+if !exists('g:Tex_Debug')
+	let g:Tex_Debug = 0
+endif
+function! Tex_Debug(str, ...)
+	if !g:Tex_Debug
+		return
 	endif
-	let s:debugString = s:debugString.a:str."\n"
+	if a:0 > 0
+		let pattern = a:1
+	else
+		let pattern = ''
+	endif
+	if !exists('s:debugString_'.pattern)
+		let s:debugString_{pattern} = ''
+	endif
+	let s:debugString_{pattern} = s:debugString_{pattern}.a:str."\n"
 endfunction " }}}
 " Tex_PrintDebug: prings s:debugString {{{
 " Description: 
 " 
-function! Tex_PrintDebug()
-	if exists('s:debugString')
-		echo s:debugString
+function! Tex_PrintDebug(...)
+	if a:0 > 0
+		let pattern = a:1
+	else
+		let pattern = ''
+	endif
+	if exists('s:debugString_'.pattern)
+		echo s:debugString_{a:pattern}
 	endif
 endfunction " }}}
 " Tex_ClearDebug: clears the s:debugString string {{{
 " Description: 
 " 
-function! Tex_ClearDebug()
-	if exists('s:debugString')
-		let s:debugString = ''
+function! Tex_ClearDebug(...)
+	if a:0 > 0
+		let pattern = a:1
+	else
+		let pattern = ''
+	endif
+	if exists('s:debugString_'.pattern)
+		let s:debugString_{pattern} = ''
 	endif
 endfunction " }}}
 " }}}
