@@ -81,7 +81,7 @@ function! Tex_completion(what, where)
 		let pattern = '.*\\\(\w\{-}\)\(\[.\{-}\]\)\?{$'
 		let s:type = substitute(s:curline, pattern, '\1', 'e')
 		let s:typeoption = substitute(s:curline, pattern, '\2', 'e')
-		call Tex_Debug('s:type = '.s:type.', typeoption = '.s:typeoption)
+		call Tex_Debug('s:type = '.s:type.', typeoption = '.s:typeoption, 'view')
 
 		if exists("s:type") && s:type =~ 'ref'
 			call Tex_Debug("silent! grep! '\\label{".s:prefix."' ".s:search_directory.'*.tex', 'view')
@@ -93,12 +93,14 @@ function! Tex_completion(what, where)
 			let bibfiles = <SID>Tex_FindBibFiles()
 			let bblfiles = <SID>Tex_FindBblFiles()
 			if bibfiles != ''
-				exe "silent! grepadd! '@.*{".s:prefix."' ".bibfiles
-				let g:bbb = "silent! grepadd! '@.*{".s:prefix."' ".bibfiles
+				call Tex_Debug("silent! grepadd! '@.*{".s:prefix."' ".bibfiles, 'view')
+				exec "silent! grepadd! '@.*{".s:prefix."' ".bibfiles
 			endif
 			if bblfiles != ''
-				exe "silent! grepadd! 'bibitem{".s:prefix."' ".bblfiles
+				call Tex_Debug("silent! grepadd! 'bibitem{".s:prefix."' ".bblfiles, 'view')
+				exec "silent! grepadd! 'bibitem{".s:prefix."' ".bblfiles
 			endif
+			call Tex_Debug('returning', 'view')
 			call <SID>Tex_c_window_setup()
 
 		elseif exists("s:type") && s:type =~ 'includegraphics'
@@ -173,11 +175,20 @@ function! s:Tex_c_window_setup()
 
 	cclose
 	exe 'copen '. g:Tex_ViewerCwindowHeight
+
 	setlocal nonumber
 	setlocal nowrap
 
 	let s:scrollOffVal = &scrolloff
 	call <SID>UpdateViewerWindow()
+	" If everything went well, then we should be situated in the quickfix
+	" window. If there were problems, (no matches etc), then we will not be.
+	" Therefore return.
+	if &ft != 'qf'
+		call Tex_Debug('not in quickfix window, quitting', 'view')
+		return
+	endif
+
 
     nnoremap <buffer> <silent> j j:call <SID>UpdateViewerWindow()<CR>
     nnoremap <buffer> <silent> k k:call <SID>UpdateViewerWindow()<CR>
@@ -271,6 +282,7 @@ function! s:UpdateViewerWindow()
 			startinsert
 		endif
 		let v:errmsg = ''
+		call Tex_Debug('UpdateViewerWindow: got error E32, no matches found, quitting', 'view')
 		return 0
 	endif
 
@@ -389,6 +401,7 @@ endfunction " }}}
 "
 function! s:Tex_FindBibFiles()
 
+	let position = line('.').' | normal! '.virtcol('.').'|'
 	if g:projFiles != ''
 		let bibfiles = ''
 		let i = 1
@@ -402,6 +415,7 @@ function! s:Tex_FindBibFiles()
 		endwhile
 
 		let g:bibf = bibfiles
+		exec position
 		return bibfiles
 
 	else
@@ -414,12 +428,18 @@ function! s:Tex_FindBibFiles()
 			let bibnames = substitute(bibnames, '\(,\|$\)', '.bib ', 'ge')
 		endif
 
-		let dirs = expand("%:p:h") . ":" . expand("$BIBINPUTS")
-		let dirs = substitute(dirs, ':\+', ':', 'g')
+		if has('win32')
+			let sep = "\n"
+		else
+			let sep = ":"
+		endif
+
+		let dirs = expand("%:p:h") . sep . expand("$BIBINPUTS")
+		let dirs = substitute(dirs, sep.'\+', sep, 'g')
 
 		let i = 1
-		while Tex_Strntok(dirs, ':', i) != ''
-			let curdir = Tex_Strntok(dirs, ':', i) 
+		while Tex_Strntok(dirs, sep, i) != ''
+			let curdir = Tex_Strntok(dirs, sep, i) 
 			let curdir = substitute(curdir, ' ', "\\", 'ge')
 			let tmp = ''
 
@@ -441,11 +461,12 @@ function! s:Tex_FindBibFiles()
 			let i = i + 1
 		endwhile
 
-		if Tex_GetMainFileName() != ''
-			let mainfname = Tex_GetMainFileName()
+		if Tex_GetMainFileName() != '' && expand('%:p') != Tex_GetMainFileName(':p:r')
+			let mainfname = Tex_GetMainFileName(':p:r')
 			let mainfdir = fnamemodify(mainfname, ":p:h")
-                        let curdir = expand("%:p:h")
-                        let curdir = substitute(curdir, ' ', "\\", 'ge')
+			let curdir = expand("%:p:h")
+			let curdir = substitute(curdir, ' ', "\\", 'ge')
+
 			exe 'bot 1 split '.mainfname
 			if search('\\bibliography{', 'w')
 				let bibfiles2 = matchstr(getline('.'), '\\bibliography{\zs.\{-}\ze}')
@@ -453,11 +474,12 @@ function! s:Tex_FindBibFiles()
 				let bibfiles2 = substitute(bibfiles2, '\(^\| \)', ' '.curdir.'/', 'ge')
 			elseif mainfdir != curdir
 				let bibfiles2 = glob(mainfdir.'/*.bib')
-				let bibfiles2 = substitute(bibfiles2, '\n', ' ', 'ge')
+				let bibfiles2 = substitute(bibfiles2, "\n", ' ', 'ge')
 			endif
 			wincmd q
 		endif
 
+		exec position
 		return bibfiles.' '.bibfiles2
 	endif
 
@@ -487,7 +509,8 @@ function! s:Tex_FindBblFiles()
 		let curdir = expand("%:p:h")
 
 		let bblfiles = glob(curdir.'/*.tex')
-		let bblfiles = substitute(bblfiles, '\n', ' ', 'ge')
+		let bblfiles = substitute(bblfiles, "\n", ' ', 'ge')
+		call Tex_Debug('getting bblfiles = '.bblfiles)
 
 		if Tex_GetMainFileName() != ''
 			let mainfname = Tex_GetMainFileName()
@@ -495,7 +518,7 @@ function! s:Tex_FindBblFiles()
 
 			if mainfdir != curdir
 				let bblfiles = glob(mainfdir.'/*.tex')
-				let bblfiles = substitute(bblfiles, '\n', ' ', 'ge')
+				let bblfiles = substitute(bblfiles, "\n", ' ', 'ge')
 			endif
 
 		endif
