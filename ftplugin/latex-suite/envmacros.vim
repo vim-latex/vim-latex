@@ -2,7 +2,7 @@
 " 	     File: envmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
-" Last Change: Sat Nov 16 07:00 PM 2002 PST
+" Last Change: ¶ro lis 20 10:00  2002 C
 " 
 "  Description: mappings/menus for environments. 
 "=============================================================================
@@ -16,6 +16,21 @@ exe 'so '.expand('<sfile>:p:h').'/wizardfuncs.vim'
 nmap <silent> <script> <plug> i
 imap <silent> <script> <C-o><plug> <Nop>
 
+" Define environments for IMAP evaluation " {{{
+let s:figure =     "\\begin{figure}[«htpb»]\<cr>\\begin{center}\<cr>\\psfig{figure=«eps file»}\<cr>\\end{center}\<cr>\\caption{«caption text»}\<cr>\\label{fig:«label»}\<cr>\\end{figure}«»"
+let s:minipage =   "\\begin{minipage}[«tb»]{«width»}\<cr>«»\<cr>\\end{minipage}«»"
+let s:picture =    "\\begin{picture}(«width», «height»)(«xoff»,«yoff»)\<cr>\\put(«xoff»,«yoff»){\\framebox(«»,«»){«»}}\<cr>\\end{picture}«»"
+let s:list =       "\\begin{list}{«label»}{«commands»}\<cr>\\item «»\<cr>\\end{list}«»"
+let s:enumerate =  "\\begin{enumerate}{«label»}{«commands»}\<cr>\\item «»\<cr>\\end{enumerate}«»"
+let s:itemize =    "\\begin{itemize}{«label»}{«commands»}\<cr>\\item «»\<cr>\\end{itemize}«»"
+let s:theindex =   "\\begin{theindex}{«label»}{«commands»}\<cr>\\item «»\<cr>\\end{theindex}«»"
+let s:trivlist =   "\\begin{trivlist}{«label»}{«commands»}\<cr>\\item «»\<cr>\\end{trivlist}«»"
+let s:table =      "\\begin{table}\<cr>\\centering\<cr>\\caption{tab:ä}\<cr>\\begin{tabular}{«dimensions»}\<cr>«»\<cr>\\end{tabular}\<cr>\\label{tab:«label»}\<cr>\\end{table}«»"
+let s:array =      "\\leftä\<cr>\\begin{array}{«dimension»}\<cr>«elements»\<cr>\\end{array}\<cr>\\right«»"
+let s:description ="\\begin{description}\<cr>\\item[«label»]«»\<cr>\\end{description}«»"
+let s:document =   "\\documentclass[«options»]{«class»}\<cr>\<cr>\\begin{document}\<cr>«»\<cr>\\end{document}"
+
+" }}}
 " define environments with special behavior in line wise selection. {{{
 if !exists('s:vis_center_left')
 	let s:vis_center_left = '\centerline{'
@@ -190,14 +205,14 @@ call s:Tex_SpecialMacros('', 'EnvCommands.&Slides.', '&addtime', '\addtime', 0)
 call s:Tex_SpecialMacros('', '', '-sepenv0-', ' :', 0)
 " }}}
 " Lists {{{
-call s:Tex_SpecialMacros('ELI', '&Lists.',  'list', "\\begin{list}{«label»}{«commands»}\<cr>\\item «»\<cr>\\end{list}«»")
+call s:Tex_SpecialMacros('ELI', '&Lists.',  'list', s:list)
 call s:Tex_EnvMacros('EEN', '&Lists.', 'enumerate')
 call s:Tex_EnvMacros('EIT', '&Lists.', 'itemize')
 call s:Tex_EnvMacros('ETI', '&Lists.', 'theindex')
 call s:Tex_EnvMacros('ETL', '&Lists.', 'trivlist')
 " }}}
 " Tables {{{
-call s:Tex_SpecialMacros('ETE', '&Tables.', 'table', "\\begin{table}\<cr>\\centering\<cr>\\caption{tab:ä}\<cr>\\begin{tabular}{«dimensions»}\<cr>«»\<cr>\\end{tabular}\<cr>\\label{tab:«label»}\<cr>\\end{table}«»")
+call s:Tex_SpecialMacros('ETE', '&Tables.', 'table', s:table)
 call s:Tex_EnvMacros('ETG', '&Tables.', 'tabbing')
 call s:Tex_EnvMacros('',    '&Tables.', 'table*')
 call s:Tex_EnvMacros('',    '&Tables.', 'table2')
@@ -213,7 +228,7 @@ call s:Tex_EnvMacros('EEQ', '&Math.', 'equation')
 call s:Tex_EnvMacros('EMA', '&Math.', 'math')
 " }}}
 " Structure {{{
-call s:Tex_SpecialMacros('EAR', 'Math.', 'array', "\\leftä\<cr>\\begin{array}{«dimension»}\<cr>«elements»\<cr>\\end{array}\<cr>\\right«»")
+call s:Tex_SpecialMacros('EAR', 'Math.', 'array', s:array)
 call s:Tex_EnvMacros('EAB', '&Structure.', 'abstract')
 call s:Tex_EnvMacros('EAP', '&Structure.', 'appendix')
 call s:Tex_EnvMacros('ECE', '&Structure.', 'center')
@@ -247,11 +262,11 @@ call s:Tex_SectionMacros('SSP', 'subparagraph')
 " }}}
 " Miscellaneous {{{
 call s:Tex_SpecialMacros('', '', '-sepenv1-', ' :', 0)
-call s:Tex_SpecialMacros('EFI', '', 'figure', "\\begin{figure}[«htpb»]\<cr>\\centerline{\\psfig{figure=«eps file»}}\<cr>\\caption{«caption text»}\<cr>\\label{fig:«label»}\<cr>\\end{figure}«»")
+call s:Tex_SpecialMacros('EFI', '', 'figure', s:figure)
 call s:Tex_EnvMacros('', '', 'figure*')
 call s:Tex_EnvMacros('ELR', '', 'lrbox')
-call s:Tex_SpecialMacros('EMP', '', 'minipage', "\\begin{minipage}[«tb»]{«width»}\<cr>«»\<cr>\\end{minipage}«»")
-call s:Tex_SpecialMacros('EPI', '', 'picture', "\\begin{picture}(«width», «height»)(«xoff»,«yoff»)\<cr>\\put(«xoff»,«yoff»){\\framebox(«»,«»){«»}}\<cr>\\end{picture}«»")
+call s:Tex_SpecialMacros('EMP', '', 'minipage', s:minipage)
+call s:Tex_SpecialMacros('EPI', '', 'picture', s:picture)
 " }}}
 
 if g:Tex_CatchVisMapErrors
@@ -275,157 +290,198 @@ endfunction
 " }}} 
 " Tex_description: {{{
 function! Tex_description(env)
-	let itlabel = input('(Optional) Item label? ')
-	if itlabel != ''
-		let itlabel = '['.itlabel.']'
+	if g:Tex_UseMenuWizard == 1
+		let itlabel = input('(Optional) Item label? ')
+		if itlabel != ''
+			let itlabel = '['.itlabel.']'
+		endif
+		return IMAP_PutTextWithMovement("\\begin{description}\<cr>\\item".itlabel." «»\<cr>\\end{description}«»")
+	else
+		return IMAP_PutTextWithMovement(s:description)
 	endif
-	return IMAP_PutTextWithMovement("\\begin{description}\<cr>\\item".itlabel." «»\<cr>\\end{description}«»")
 endfunction
 " }}} 
 " Tex_figure: {{{
 function! Tex_figure(env)
-    let flto    = input('Float to (htbp)? ')
-    let caption = input('Caption? ')
-    let center  = input('Center ([y]/n)? ')
-    let label   = input('Label (for use with \ref)? ')
-    " additional to AUC Tex since my pics are usually external files
-    let pic = input('Name of Pic-File? ')
-    if flto != ''
-        let flto = '['.flto."]\<cr>"
-    else
-        let flto = "\<cr>"
-    endif
-    if pic != ''
-        let pic = '\input{'.pic."}\<cr>"
-    else
-        let pic = "ä\<cr>"
-    endif
-    if caption != ''
-        let caption = '\caption{'.caption."}\<cr>"
-    endif
-    if label != ''
-        let label = '\label{fig:'.label."}\<cr>"
-    endif
-    if (center == 'y' || center == '')
-      let centr = "\\begin{center}\<cr>"
-      let centr = centr . pic 
-      let centr = centr . caption
-      let centr = centr . label
-      let centr = centr . "\\end{center}\<cr>"
-    else
-      let centr = pic
-      let centr = centr . caption
-      let centr = centr . label
-    endif
-    let figure = '\begin{'.a:env.'}'.flto
-    let figure = figure . centr
-    let figure = figure . '\end{'.a:env.'}'
-	return IMAP_PutTextWithMovement(figure)
+	if g:Tex_UseMenuWizard == 1
+		let flto    = input('Float to (htbp)? ')
+		let caption = input('Caption? ')
+		let center  = input('Center ([y]/n)? ')
+		let label   = input('Label (for use with \ref)? ')
+		" additional to AUC Tex since my pics are usually external files
+		let pic = input('Name of Pic-File? ')
+		if flto != ''
+			let flto = '['.flto."]\<cr>"
+		else
+			let flto = "\<cr>"
+		endif
+		if pic != ''
+			let pic = '\input{'.pic."}\<cr>"
+		else
+			let pic = "ä\<cr>"
+		endif
+		if caption != ''
+			let caption = '\caption{'.caption."}\<cr>"
+		endif
+		if label != ''
+			let label = '\label{fig:'.label."}\<cr>"
+		endif
+		if center == 'y'
+		  let centr = '\begin{center}' . "\<cr>"
+		  let centr = centr . pic 
+		  let centr = centr . caption
+		  let centr = centr . label
+		  let centr = centr . '\end{center}' . "\<cr>"
+		else
+		  let centr = pic
+		  let centr = centr . caption
+		  let centr = centr . label
+		endif
+		let figure = '\begin{'.a:env.'}'.flto
+		let figure = figure . centr
+		let figure = figure . '\end{'.a:env.'}'
+		return IMAP_PutTextWithMovement(figure)
+	else
+		return IMAP_PutTextWithMovement(s:figure)
+	endif
 endfunction
 " }}} 
 " Tex_table: {{{
 function! Tex_table(env)
-    let flto    = input('Float to (htbp)? ')
-    let caption = input('Caption? ')
-    let center  = input('Center (y/n)? ')
-    let label   = input('Label? ')
-    if flto != ''
-        let flto ='['.flto."]\<cr>"
-    else
-        let flto = ''
-    endif
-    let ret='\begin{table}'.flto
-    if center == 'y'
-        let ret=ret."\\begin{center}\<cr>"
-    endif
-    let foo = '\begin{tabular}'
-    let pos = input('(Optional) Position (t b)? ')
-    if pos != ''
-        let foo = foo.'['.pos.']'
+	if g:Tex_UseMenuWizard == 1
+		let flto    = input('Float to (htbp)? ')
+		let caption = input('Caption? ')
+		let center  = input('Center (y/n)? ')
+		let label   = input('Label? ')
+		if flto != ''
+			let flto ='['.flto."]\<cr>"
+		else
+			let flto = ''
+		endif
+		let ret='\begin{table}'.flto
+		if center == 'y'
+			let ret=ret."\\begin{center}\<cr>"
+		endif
+		let foo = '\begin{tabular}'
+		let pos = input('(Optional) Position (t b)? ')
+		if pos != ''
+			let foo = foo.'['.pos.']'
+		else
+			let foo = foo."\<cr>"
+		endif
+		let format = input("Format  ( l r c p{width} | @{text} )? ")
+		if format == ''
+			let format = '«»'
+		endif
+		let ret = ret.foo.'{'.format."}\<cr>ä\<cr>\\end{tabular}«»\<cr>"
+		if center == 'y'
+			let ret=ret."\\end{center}\<cr>"
+		endif
+		if caption != ''
+			let ret=ret.'\caption{'.caption."}\<cr>"
+		endif
+		if label != ''
+			let ret=ret.'\label{tab:'.label."}\<cr>"
+		endif
+		let ret=ret.'\end{table}«»'
+		return IMAP_PutTextWithMovement(ret)
 	else
-		let foo = foo."\<cr>"
-    endif
-    let format = input("Format  ( l r c p{width} | @{text} )? ")
-	if format == ''
-		let format = '«»'
+		return IMAP_PutTextWithMovement(s:table)
 	endif
-    let ret = ret.foo.'{'.format."}\<cr>ä\<cr>\\end{tabular}«»\<cr>"
-    if center == 'y'
-        let ret=ret."\\end{center}\<cr>"
-    endif
-    if caption != ''
-        let ret=ret.'\caption{'.caption."}\<cr>"
-    endif
-    if label != ''
-        let ret=ret.'\label{tab:'.label."}\<cr>"
-    endif
-    let ret=ret.'\end{table}«»'
-	return IMAP_PutTextWithMovement(ret)
 endfunction
 " }}} 
 " Tex_tabular: {{{
 function! Tex_tabular(env)
-    let pos    = input('(Optional) Position (t b)? ')
-    let format = input("Format  ( l r c p{width} | @{text} )? ")
-    if pos != ''
-      let pos = '['.pos.']'
-    endif
-    if format != ''
-      let format = '{'.format.'}'
-    endif
-    return IMAP_PutTextWithMovement('\begin{'.a:env.'}'.pos.format."\<cr> \<cr>\\end{".a:env."}«»")
+	if Tex_UseMenuWizard == 1
+		let pos    = input('(Optional) Position (t b)? ')
+		let format = input("Format  ( l r c p{width} | @{text} )? ")
+		if pos != ''
+		  let pos = '['.pos.']'
+		endif
+		if format != ''
+		  let format = '{'.format.'}'
+		endif
+		return IMAP_PutTextWithMovement('\begin{'.a:env.'}'.pos.format."\<cr> \<cr>\\end{".a:env.'}«»')
+	else
+		return IMAP_PutTextWithMovement('\begin{'.a:env.'}[«position»]{«format»}'."\<cr>«»\<cr>\\end{".a:env.'}«»')
+	endif
 endfunction
 " }}} 
 " Tex_eqnarray: {{{
 function! Tex_eqnarray(env)
-    let label = input('Label?  ')
-    if label != ''
-        let arrlabel = '\label{'.label."}\<cr> "
-      else
-        let arrlabel = ''
-    endif
-    return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr>".arrlabel."«»\<cr>\\end{".a:env."}«»")
+	if g:Tex_UseMenuWizard == 1
+		if a:env !~ '\*'
+			let label = input('Label?  ')
+			if label != ''
+				let arrlabel = '\label{'.label."}\<cr> "
+			  else
+				let arrlabel = ''
+			endif
+		else
+			let arrlabel = ''
+		endif
+		return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr>".arrlabel."«»\<cr>\\end{".a:env."}«»")
+	else
+		if a:env !~ '\*'
+			let arrlabel = '\label{«»}«»'
+		else
+			let arrlabel = '«»'
+		endif
+		return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr>".arrlabel."\<cr>".'\end{'.a:env.'}«»')
+	endif
 endfunction
 " }}} 
 " Tex_list: {{{
 function! Tex_list(env)
-	let label = input('Label (for \item)? ')
-	if label != ''
-		let label = '{'.label.'}'
-		let addcmd = input('Additional commands? ')
-		if addcmd != ''
-			let label = label . '{'.addcmd.'}'
+	if g:Tex_UseMenuWizard == 1
+		let label = input('Label (for \item)? ')
+		if label != ''
+			let label = '{'.label.'}'
+			let addcmd = input('Additional commands? ')
+			if addcmd != ''
+				let label = label . '{'.addcmd.'}'
+			endif
+		else
+			let label = ''
 		endif
+		return IMAP_PutTextWithMovement('\begin{list}'.label."\<cr>\\item \<cr>\\end{list}«»")
 	else
-		let label = ''
+		return IMAP_PutTextWithMovement(s:list)
 	endif
-	return IMAP_PutTextWithMovement('\begin{list}'.label."\<cr>\\item \<cr>\\end{list}«»")
 endfunction
 " }}} 
 " Tex_document: {{{
 function! Tex_document(env)
-    let dstyle = input('Document style? ')
-    let opts = input('(Optional) Options? ')
-    let foo = '\documentclass'
-    if opts == ''
-        let foo = foo.'{'.dstyle.'}'
-    else
-        let foo = foo.'['.opts.']'.'{'.dstyle.'}'
-    endif
-    return IMAP_PutTextWithMovement(foo."\<cr>\<cr>\\begin{document}\<cr>«»\<cr>\\end{document}")
+	if g:Tex_UseMenuWizard == 1
+		let dstyle = input('Document style? ')
+		let opts = input('(Optional) Options? ')
+		let foo = '\documentclass'
+		if opts == ''
+			let foo = foo.'{'.dstyle.'}'
+		else
+			let foo = foo.'['.opts.']'.'{'.dstyle.'}'
+		endif
+		return IMAP_PutTextWithMovement(foo."\<cr>\<cr>\\begin{document}\<cr>«»\<cr>\\end{document}")
+	else
+		return IMAP_PutTextWithMovement(s:document)
+	endif
 endfunction
 " }}} 
 " Tex_minipage: {{{
 function! Tex_minipage(env)
-    let foo = '\begin{minipage}'
-    let pos = input('(Optional) Position (t b)? ')
-    let width = input('Width? ')
-    if pos == ''
-        let foo = foo.'{'.width.'}'
-    else
-        let  foo = foo.'['.pos.']{'.width.'}'
-    endif
-    return IMAP_PutTextWithMovement(foo."\<cr>«»\<cr>\\end{minipage}«»")
+	if g:Tex_UseMenuWizard == 1
+		let foo = '\begin{minipage}'
+		let pos = input('(Optional) Position (t b)? ')
+		let width = input('Width? ')
+		if pos == ''
+			let foo = foo.'{'.width.'}'
+		else
+			let  foo = foo.'['.pos.']{'.width.'}'
+		endif
+		return IMAP_PutTextWithMovement(foo."\<cr>«»\<cr>\\end{minipage}«»")
+	else
+		return IMAP_PutTextWithMovement(s:minipage)
+	endif
 endfunction
 " }}} 
 " Tex_thebibliography: {{{
@@ -447,7 +503,7 @@ endfunction
 " ==============================================================================
 " Contributions / suggestions from Carl Mueller (auctex.vim)
 " ============================================================================== 
-let s:common_environments = 'equation,equation*,eqnarray,eqnarray*,[,$$,align,align*'
+let s:common_environments = 'equation,equation*,eqnarray,eqnarray*,\[,$$,align,align*'
 
 " SetUpEnvironmentsPrompt: sets up a prompt string using s:common_environments {{{
 " Description: 
@@ -463,11 +519,11 @@ function! SetUpEnvironmentsPrompt()
 		let env1 = Tex_Strntok(s:common_environments, ',', i)
 		let env2 = Tex_Strntok(s:common_environments, ',', i + 1)
 
-		let s:common_env_prompt = s:common_env_prompt."(".i.") ".env1."\t".( strlen(env1) < 4 ? "\t" : "" )."(".(i+1).") ".env2."\n"
+		let s:common_env_prompt = s:common_env_prompt.'('.i.') '.env1."\t".( strlen(env1) < 4 ? "\t" : '' ).'('.(i+1).') '.env2."\n"
 
 		let i = i + 2
 	endwhile
-	let s:common_env_prompt = s:common_env_prompt."\n".'Enter number or name of environment :'
+	let s:common_env_prompt = s:common_env_prompt.'Enter number or name of environment: '
 endfunction " }}}
 " PromptForEnvironment: prompts for an environment {{{
 " Description: 
@@ -497,7 +553,7 @@ function! Tex_DoEnvironment(...)
 	if a:0 < 1
 		let env = matchstr(getline('.'), '^\s*\zs\w*\*\=\ze\s*$')
 		if env == ''
-			let env = PromptForEnvironment('Choose which environment to insert :')
+			let env = PromptForEnvironment('Choose which environment to insert: ')
 			if env != ''
 				return Tex_PutEnvironment(env)
 			endif
@@ -513,7 +569,7 @@ endfunction " }}}
 " Description: 
 "   Based on input argument, it calls various specialized functions.
 function! Tex_PutEnvironment(env)
-	if a:env =~ "theorem\\|lemma\\|equation\\|eqnarray\\|align\\|multline"
+	if a:env =~ "equation*\\|eqnarray*\\|align*\\|theorem\\|lemma\\|equation\\|eqnarray\\|align\\|multline"
 		return Tex_eqnarray(a:env)
 	elseif a:env =~ "enumerate\\|itemize\\|theindex\\|trivlist"
 		return Tex_itemize(a:env)
@@ -603,44 +659,23 @@ function! Tex_change_environment() " {{{
 		echomsg "You are not inside environment"
 		return 0
 	endif
-	if s:math_environment =~ env_name
-		exe "let change_env = input('You are within a \"".env_name."\" environment.\n".
-				\ "Do you want to change it to?\n".
-				\ "(1) eqnarray  (2) eqnarray*\n".
-				\ "(3) align     (4) align*\n".
-				\ "(5) equation* (6) other\n".
-				\ "<cr>  leave unchanged\n".
-				\ "Enter number: ')"
-		if change_env == 1
-			call <SID>Change('eqnarray', 1, '', 1)
-		elseif change_env == 2
-			call <SID>Change('eqnarray*', 0, '\\nonumber', 0)
-		elseif change_env == 3
-			call <SID>Change('align', 1, '', 1)
-		elseif change_env == 4
-			call <SID>Change('align*', 0, '\\nonumber', 0)
-		elseif change_env == 5
-			call <SID>Change('equation*', 0, '&\|\\lefteqn{\|\\nonumber\|\\\\', 0)
-		elseif change_env == 6
-			let env = input('Environment? ')
-			if env != ''
-				call <SID>Change(env, 0, '', '')
-			endif
-			return 0
-		elseif change_env == ''
-			return 0
-		else
-			echomsg 'Wrong argument'
-			return 0
-		endif
+	exe 'echomsg "You are within a '.env_name.' environment."'
+	let s:change_env = PromptForEnvironment('Do you want to change it to (number or name)? ')
+	if s:change_env == 'eqnarray'
+		call <SID>Change('eqnarray', 1, '', 1)
+	elseif s:change_env == 'eqnarray*'
+		call <SID>Change('eqnarray*', 0, '\\nonumber', 0)
+	elseif s:change_env == 'align'
+		call <SID>Change('align', 1, '', 1)
+	elseif s:change_env == 'align*'
+		call <SID>Change('align*', 0, '\\nonumber', 0)
+	elseif s:change_env == 'equation*'
+		call <SID>Change('equation*', 0, '&\|\\lefteqn{\|\\nonumber\|\\\\', 0)
+	elseif s:change_env == ''
+		return 0
 	else
-		exe "let change_env = input('You are within a \"".env_name."\" environment.\n".
-					\ "You want to change it for (<cr> to abandon): ')"
-		if change_env == ''
-			return 0
-		else
-			call <SID>Change(change_env, 0, '', '')
-		endif
+		call <SID>Change(s:change_env, 0, '', '')
+		return 0
 	endif
 endfunction " }}}
 function! s:Change(env, label, delete, putInNonumber) " {{{
