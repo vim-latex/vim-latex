@@ -3,7 +3,7 @@
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
 "		   URL: 
-"  Last Change: czw lis 07 01:00  2002 C
+"  Last Change: Thu Nov 07 06:00 PM 2002 PST
 "
 " Help: 
 " Changes: {{{
@@ -50,12 +50,10 @@ let s:doneFunctionDefinitions = 1
 " get the place where this plugin resides for setting cpt and dict options.
 " these lines need to be outside the function.
 let s:path = expand('<sfile>:p:h')
-
- 
 " set up personal defaults.
-let s:up_path = substitute(s:path, "latex-suite", "", "")
-if filereadable(s:up_path.'tex/texrc')
-	exe "so ".s:up_path.'tex/texrc'
+let s:up_path = expand('<sfile>:p:h:h')
+if filereadable(s:up_path.'/tex/texrc')
+	exe "so ".s:up_path.'/tex/texrc'
 else
 " set up global defaults.
 	exe "so ".s:path.'/texrc'

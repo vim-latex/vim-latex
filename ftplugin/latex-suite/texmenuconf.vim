@@ -4,13 +4,13 @@
 " Description: 
 " 
 " Installation:
-"  Last Change: czw lis 07 11:00  2002 C
+"  Last Change: Thu Nov 07 06:00 PM 2002 PST
 "         TODO:
 "=============================================================================
 
 " Paths, crucial for functions
 let s:path = expand("<sfile>:p:h")
-let s:up_path = substitute(s:path, "latex-suite", "", "")
+let s:up_path = expand("<sfile>:p:h:h")
 let s:mainmenuname = 'Te&X-Suite.'
 
 if g:Tex_NestPackagesMenu
@@ -70,8 +70,9 @@ endif
 " ============================================================================== 
 command! -nargs=0 Ttexrc :call Tex_texrc()
 function! Tex_texrc()
-	if filereadable(s:up_path.'tex/texrc')
-		exec 'split '.s:up_path.'tex/texrc'
+	echomsg 's:path = '.s:path.', s:up_path = '.s:up_path
+	if filereadable(s:up_path.'/tex/texrc')
+		exec 'split '.s:up_path.'/tex/texrc'
 		lcd
 	else
 		echomsg "Please, create your own texrc by copying system texrc"
