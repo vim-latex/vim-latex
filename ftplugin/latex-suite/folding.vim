@@ -30,9 +30,9 @@ function! Tex_SetFoldOptions()
 		call MakeTexFolds(0)
 	endif
 
-	if g:Tex_Folding && !hasmapto('<Plug>Tex_RefreshFolds')
-		nmap <silent> <buffer> <Leader>rf  <Plug>Tex_RefreshFolds
-	endif
+	let s:ml = exists('g:mapleader') ? g:mapleader : "\\"
+
+	call Tex_MakeMap(s:ml."rf", "<Plug>Tex_RefreshFolds", 'n', '<silent> <buffer>')
 
 endfunction " }}}
 " FoldSections: creates section folds {{{
