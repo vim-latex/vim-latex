@@ -30,6 +30,7 @@ function! Tex_CompileMultipleTimes()
 		let idxlinesBefore = Tex_CatFile(idxFileName)
 
 		" first run latex once.
+		echomsg "latex run number : ".(runCount+1)
 		silent! call Tex_CompileLatex()
 
 		let idxlinesAfter = Tex_CatFile(idxFileName)
@@ -37,7 +38,7 @@ function! Tex_CompileMultipleTimes()
 		" If .idx file changed, then run makeindex to generate the new .ind
 		" file and remember to rerun latex.
 		if runCount == 0 && glob(idxFileName) != '' && idxlinesAfter != idxlinesAfter
-			echomsg "running makeindex..."
+			echomsg "Running makeindex..."
 			let temp_mp = &mp | let &mp='makeindex $*.idx'
 			exec 'silent! make '.mainFileName_root
 			let &mp = temp_mp
@@ -50,38 +51,45 @@ function! Tex_CompileMultipleTimes()
 			let bibFileName = mainFileName_root . '.bbl'
 
 			let biblinesBefore = Tex_CatFile(bibFileName)
+			call Tex_Debug('bibbefore = ['.biblinesBefore.']', 'comp')
 
-			echomsg "running bibtex..."
+			echomsg "Running bibtex..."
 			let temp_mp = &mp | let &mp='bibtex'
 			exec 'silent! make '.mainFileName_root
 			let &mp = temp_mp
 
 			let biblinesAfter = Tex_CatFile(bibFileName)
+			call Tex_Debug('bibafter = ['.biblinesAfter.']', 'comp')
 
 			" If the .bbl file changed after running bibtex, we need to
 			" latex again.
 			if biblinesAfter != biblinesBefore
-				echomsg 'need to rerun because bibliography file changed...'
+				echomsg 'Need to rerun because bibliography file changed...'
 				let needToRerun = 1
 			endif
 		endif
 
 		" check if latex asks us to rerun
 		if Tex_IsPresentInFile('Rerun to get cross-references right', mainFileName_root.'.log')
-			echomsg "need to rerun to get cross-references right..."
+			echomsg "Need to rerun to get cross-references right..."
 			let needToRerun = 1
 		endif
 
 		let runCount = runCount + 1
 	endwhile
 
-	" finally set up the error window and the preview of the log
-	silent! call Tex_SetupErrorWindow()
+	echomsg "Ran latex ".runCount." time(s)"
+
+	" After all compiler calls are done, reparse the .log file for
+	" errors/warnings to handle the situation where the clist might have been
+	" emptied because of bibtex/makeindex being run as the last step.
+	exec 'silent! cfile '.mainFileName_root.'.log'
 endfunction " }}}
 
 " Various helper functions used by Tex_CompileMultipleTimes(). These functions
 " use python where available (and allowed) otherwise do it in native vim at
-" the cost of some slowdown and some new temporary buffers being opened.
+" the cost of some slowdown and a new temporary buffer being added to the
+" buffer list.
 " Tex_GotoTempFile: open a temp file. reuse from next time on {{{
 " Description: 
 function! Tex_GotoTempFile()
@@ -160,7 +168,7 @@ import string, vim, re
 # catFile: assigns a local variable retval to the contents of a file {{{
 def catFile(filename):
 	try:
-		file = open(fname)
+		file = open(filename)
 		lines = ''.join(file.readlines())
 		file.close()
 	except:
