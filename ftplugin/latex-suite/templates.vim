@@ -48,7 +48,8 @@ function! <SID>ReadTemplate(...)
 					\ filelist, ',')
 	endif
 
-	let fname = Tex_FindInRtp(filename, 'templates')
+	let fname = Tex_FindInRtp(filename.'.tex', 'templates', ':p')
+	call Tex_Debug("0read ".fname, 'templates')
 	silent! exe "0read ".fname
 	" The first line of the file contains the specifications of what the
 	" placeholder characters and the other special characters are.
@@ -59,7 +60,7 @@ function! <SID>ReadTemplate(...)
 	let s:exeTemp = substitute(getline(1), pattern, '\3', '')
 	let s:comTemp = substitute(getline(1), pattern, '\4', '')
 
-	call Tex_Debug('phs = '.s:phsTemp.', phe = '.s:pheTemp.', exe = '.s:exeTemp.', com = '.s:comTemp)
+	call Tex_Debug('phs = '.s:phsTemp.', phe = '.s:pheTemp.', exe = '.s:exeTemp.', com = '.s:comTemp, 'templates')
 
 	" delete the first line into ze blackhole.
 	0 d _

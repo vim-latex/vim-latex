@@ -64,9 +64,12 @@ TexLet g:Tex_UsePython = 1
 " the system command which pulls in a file.
 if &shell =~ 'sh'
 	TexLet g:Tex_CatCmd = 'cat'
+	TexLet g:Tex_RmCmd = 'rm'
 else
 	TexLet g:Tex_CatCmd = 'type'
+	TexLet g:Tex_RmCmd = 'del'
 endif
+
 
 " }}}
 " ==============================================================================
@@ -194,6 +197,9 @@ TexLet g:Tex_BibtexFlavor = 'bibtex'
 " If disabled (set to 0) LaTeX-Suite doesn't go immediately to warnings or
 " errors after compilation
 TexLet g:Tex_GotoError = 1
+
+" Remove temp files created during part compilations when vim exits.
+TexLet g:Tex_RemoveTempFiles = 1
 
 " }}}
 " ============================================================================== 

@@ -55,17 +55,17 @@ if has('gui_running') && g:Tex_Menus
 
 	" menus for compiling / viewing etc.
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.30 '.s:mainmenuname.'&Compile<tab>'.s:mapleader.'ll'.
-		\'   :silent! call RunLaTeX()<CR>'
+		\'   :silent! call Tex_RunLaTeX()<CR>'
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.40 '.s:mainmenuname.'&View<tab>'.s:mapleader.'lv'.
-		\'   :silent! call ViewLaTeX()<CR>'
+		\'   :silent! call Tex_ViewLaTeX()<CR>'
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.50 '.s:mainmenuname.'&Search<tab>'.s:mapleader.'ls'.
 		\'   :silent! call ForwardSearchLaTeX()<CR>'
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.60 '.s:mainmenuname.'&Target\ Format<tab>:TTarget'.
 		\'   :call SetTeXTarget()<CR>'
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.70 '.s:mainmenuname.'&Compiler\ Target<tab>:TCTarget'.
-		\'   :call SetTeXCompilerTarget("Compile", "")<CR>'
+		\'   :call Tex_SetTeXCompilerTarget("Compile", "")<CR>'
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.80 '.s:mainmenuname.'&Viewer\ Target<tab>:TVTarget'.
-		\'   :call SetTeXCompilerTarget("View", "")<CR>'
+		\'   :call Tex_SetTeXCompilerTarget("View", "")<CR>'
 	exec 'anoremenu '.g:Tex_MainMenuLocation.'.90 '.s:mainmenuname.'Set\ &Ignore\ Level<tab>:TCLevel'.
 		\'   :TCLevel<CR>'
 	exec 'imenu '.g:Tex_MainMenuLocation.'.100 '.s:mainmenuname.'C&omplete\ Ref/Cite'.

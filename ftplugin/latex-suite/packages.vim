@@ -74,7 +74,7 @@ function! Tex_pack_check(package)
 		endif
 	endif
 	" Return full list of dictionaries (separated with ,) for package in &rtp
-	let dictname = Tex_FindInRtp(a:package, 'dictionaries')
+	let dictname = Tex_FindInRtp(a:package, 'dictionaries', ':p')
 	if dictname != ''
 		exe 'setlocal dict+=' . dictname
 		if g:Tex_package_supported !~ a:package
@@ -458,12 +458,8 @@ endfunction
 "   found in the packages directory groups the packages thus found into groups
 "   of 20...
 function! Tex_pack_supp_menu()
-
-	" Get list of packages in all rtp directories. 
-	" TODO: sort it and get rid of duplicate entries.
-	let suplist = globpath(&rtp, "ftplugin/latex-suite/packages/*")
-	let suplist = substitute(suplist,'\n',',','g')
-	let suplist = substitute(suplist,'^\|,[^,]*/',',','g').","
+	let suplist = Tex_FindInRtp('', 'packages')
+	call Tex_Debug("suplist = [".suplist.']', "pack")
 
 	call Tex_MakeSubmenu(suplist, g:Tex_PackagesMenuLocation.'Supported.', 
 		\ '<plug><C-r>=Tex_pack_one("', '")<CR>')

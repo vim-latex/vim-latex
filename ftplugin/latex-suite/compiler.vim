@@ -7,8 +7,8 @@
 "          CVS: $Id$
 "=============================================================================
 
-" SetTeXCompilerTarget: sets the 'target' for the next call to RunLaTeX() {{{
-function! SetTeXCompilerTarget(type, target)
+" Tex_SetTeXCompilerTarget: sets the 'target' for the next call to Tex_RunLaTeX() {{{
+function! Tex_SetTeXCompilerTarget(type, target)
 	if a:target == ''
 		if g:Tex_DefaultTargetFormat == 'dvi'
 			let target = input('Enter the target ([dvi]/ps/pdf/...) for '.a:type.'r: ')
@@ -76,12 +76,12 @@ function! SetTeXTarget(...)
 	if target == ''
 		let target = 'dvi'
 	endif
-	call SetTeXCompilerTarget('Compile', target)
-	call SetTeXCompilerTarget('View', target)
+	call Tex_SetTeXCompilerTarget('Compile', target)
+	call Tex_SetTeXCompilerTarget('View', target)
 endfunction
 
-com! -nargs=1 TCTarget :call SetTeXCompilerTarget('Compile', <f-args>)
-com! -nargs=1 TVTarget :call SetTeXCompilerTarget('View', <f-args>)
+com! -nargs=1 TCTarget :call Tex_SetTeXCompilerTarget('Compile', <f-args>)
+com! -nargs=1 TVTarget :call Tex_SetTeXCompilerTarget('View', <f-args>)
 com! -nargs=? TTarget :call SetTeXTarget(<f-args>)
 
 " }}}
@@ -89,7 +89,7 @@ com! -nargs=? TTarget :call SetTeXTarget(<f-args>)
 " Description: 
 function! Tex_CompileLatex()
 	if &ft != 'tex'
-		echo "calling RunLaTeX from a non-tex file"
+		echo "calling Tex_RunLaTeX from a non-tex file"
 		return
 	end
 
@@ -105,7 +105,7 @@ function! Tex_CompileLatex()
 	" 	use that
 	" else use current file
 	"
-	" if mainfname exists, then it means it was supplied to RunLaTeX().
+	" if mainfname exists, then it means it was supplied to Tex_RunLaTeX().
 	" Extract the complete file name including the extension.
 	let mainfname = Tex_GetMainFileName(':r')
 	call Tex_Debug('Tex_CompileLatex: getting mainfname = ['.mainfname.'] from Tex_GetMainFileName', 'comp')
@@ -178,7 +178,7 @@ function! Tex_SetupErrorWindow()
 	endif
 
 endfunction " }}}
-" RunLaTeX: compilation function {{{
+" Tex_RunLaTeX: compilation function {{{
 " this function runs the latex command on the currently open file. often times
 " the file being currently edited is only a fragment being \input'ed into some
 " master tex file. in this case, make a file called mainfile.latexmain in the
@@ -187,9 +187,9 @@ endfunction " }}}
 " so that doing "latex chapter.tex" doesnt make sense, then make a file called 
 " main.tex.latexmain 
 " in the ~/thesis directory. this will then run "latex main.tex" when
-" RunLaTeX() is called.
-function! RunLaTeX()
-	call Tex_Debug('getting to RunLaTeX, b:fragmentFile = '.exists('b:fragmentFile'), 'comp')
+" Tex_RunLaTeX() is called.
+function! Tex_RunLaTeX()
+	call Tex_Debug('getting to Tex_RunLaTeX, b:fragmentFile = '.exists('b:fragmentFile'), 'comp')
 
 	let dir = expand("%:p:h").'/'
 	let curd = getcwd()
@@ -211,7 +211,7 @@ function! RunLaTeX()
 	let i = 1
 	while Tex_Strntok(dependency, ',', i) != ''
 		let s:target = Tex_Strntok(dependency, ',', i)
-		call SetTeXCompilerTarget('Compile', s:target)
+		call Tex_SetTeXCompilerTarget('Compile', s:target)
 		call Tex_Debug('setting target to '.s:target, 'comp')
 
 		if g:Tex_MultipleCompileFormats =~ '\<'.s:target.'\>'
@@ -235,16 +235,16 @@ function! RunLaTeX()
 endfunction
 
 " }}}
-" ViewLaTeX: opens viewer {{{
+" Tex_ViewLaTeX: opens viewer {{{
 " Description: opens the DVI viewer for the file being currently edited.
 " Again, if the current file is a \input in a master file, see text above
-" RunLaTeX() to see how to set this information.
-" If ViewLaTeX was called with argument "part" show file which name is stored 
+" Tex_RunLaTeX() to see how to set this information.
+" If Tex_ViewLaTeX was called with argument "part" show file which name is stored 
 " in g:tfile variable. If g:tfile doesnt exist, no problem. Function is called 
 " as silent. 
-function! ViewLaTeX()
+function! Tex_ViewLaTeX()
 	if &ft != 'tex'
-		echo "calling ViewLaTeX from a non-tex file"
+		echo "calling Tex_ViewLaTeX from a non-tex file"
 		return
 	end
 	
@@ -303,7 +303,7 @@ endfunction
 " }}}
 " Tex_ForwardSearchLaTeX: searches for current location in dvi file. {{{
 " Description: if the DVI viewr is compatible, then take the viewer to that
-"              position in the dvi file. see docs for RunLaTeX() to set a
+"              position in the dvi file. see docs for Tex_RunLaTeX() to set a
 "              master file if this is an \input'ed file. 
 " Tip: With YAP on Windows, it is possible to do forward and inverse searches
 "      on DVI files. to do forward search, you'll have to compile the file
@@ -314,7 +314,7 @@ endfunction
 "      will work.
 function! Tex_ForwardSearchLaTeX()
 	if &ft != 'tex'
-		echo "calling ViewLaTeX from a non-tex file"
+		echo "calling Tex_ViewLaTeX from a non-tex file"
 		return
 	end
 	" only know how to do forward search for yap on windows and xdvik (and
@@ -358,19 +358,42 @@ function! Tex_ForwardSearchLaTeX()
 endfunction
 
 " }}}
+
+" ==============================================================================
+" Functions for compiling parts of a file. 
+" ============================================================================== 
 " Tex_PartCompile: compiles selected fragment {{{
 " Description: creates a temporary file from the selected fragment of text
-"       prepending the preamble and \end{document} and then asks RunLaTeX() to
+"       prepending the preamble and \end{document} and then asks Tex_RunLaTeX() to
 "       compile it.
 function! Tex_PartCompile() range
-
 	call Tex_Debug('getting to Tex_PartCompile', 'comp')
 	" Save position
 	let pos = line('.').' | normal! '.virtcol('.').'|'
 
-	" Create temporary file and save its name into global variable to use in
-	" compiler.vim
-	let tmpfile = tempname().'.tex'
+	" Get a temporary file in the same directory as the file from which
+	" fragment is being extracted. This is to enable the use of relative path
+	" names in the fragment.
+	let tmpfile = Tex_GetTempName(expand('%:p:h'))
+
+	" Remember all the temp files and for each temp file created, remember
+	" where the temp file came from.
+	let g:Tex_NumTempFiles = (exists('g:Tex_NumTempFiles') ? g:Tex_NumTempFiles + 1 : 1)
+	let g:Tex_TempFiles = (exists('g:Tex_TempFiles') ? g:Tex_TempFiles : '')
+		\ . tmpfile."\n"
+	let g:Tex_TempFile_{g:Tex_NumTempFiles} = tmpfile
+	" TODO: For a function Tex_RestoreFragment which restores a temp file to
+	"       its original location.
+	let g:Tex_TempFileOrig_{g:Tex_NumTempFiles} = expand('%:p')
+	let g:Tex_TempFileRange_{g:Tex_NumTempFiles} = a:firstline.','.a:lastline
+
+	" Set up an autocmd to clean up the temp files when Vim exits.
+	if g:Tex_RemoveTempFiles
+		augroup RemoveTmpFiles
+			au!
+			au VimLeave * :call Tex_RemoveTempFiles()
+		augroup END
+	endif
 
 	" If mainfile exists open it in tiny window and extract preamble there,
 	" otherwise do it from current file
@@ -395,7 +418,128 @@ function! Tex_PartCompile() range
 	" set this as a fragment file.
 	let b:fragmentFile = 1
 
-	silent! call RunLaTeX()
+	silent! call Tex_RunLaTeX()
+endfunction " }}}
+" Tex_RemoveTempFiles: cleans up temporary files created during part compilation {{{
+" Description: During part compilation, temporary files containing the
+"              visually selected text are created. These files need to be
+"              removed when Vim exits to avoid "file leakage".
+function! Tex_RemoveTempFiles()
+	if !exists('g:Tex_NumTempFiles') || !g:Tex_RemoveTempFiles
+		return
+	endif
+	let i = 1
+	while i <= g:Tex_NumTempFiles
+		let tmpfile = g:Tex_TempFile_{i}
+		" Remove the tmp file and all other associated files such as the
+		" .log files etc.
+		call Tex_DeleteFile(fnamemodify(tmpfile, ':p:r').'.*')
+		let i = i + 1
+	endwhile
+endfunction " }}}
+
+" ==============================================================================
+" Compiling a file multiple times to resolve references/citations etc.
+" ============================================================================== 
+" Tex_CompileMultipleTimes: The main function {{{
+" Description: compiles a file multiple times to get cross-references right.
+function! Tex_CompileMultipleTimes()
+	let mainFileName_root = Tex_GetMainFileName(':p:t:r:r')
+
+	if mainFileName_root == ''
+		let mainFileName_root = expand("%:p:t:r")
+	endif
+
+	" First ignore undefined references and the 
+	" "rerun to get cross-references right" message from 
+	" the compiler output.
+	let origlevel = g:Tex_IgnoreLevel
+	let origpats = g:Tex_IgnoredWarnings
+
+	let g:Tex_IgnoredWarnings = g:Tex_IgnoredWarnings."\n"
+		\ . 'Reference %.%# undefined'."\n"
+		\ . 'Rerun to get cross-references right'
+	TCLevel 1000
+
+	let idxFileName = mainFileName_root.'.idx'
+
+	let runCount = 0
+	let needToRerun = 1
+	while needToRerun == 1 && runCount < 5
+		" assume we need to run only once.
+		let needToRerun = 0
+
+		let idxlinesBefore = Tex_CatFile(idxFileName)
+
+		" first run latex.
+		echomsg "latex run number : ".(runCount+1)
+		silent! call Tex_CompileLatex()
+		
+		" If there are errors in any latex compilation step, immediately
+		" return. For now, do not bother with warnings because those might go
+		" away after compiling again or after bibtex is run etc.
+		let errlist = Tex_GetErrorList()
+		call Tex_Debug("errors = [".errlist."]", "err")
+
+		if errlist =~ '\d\+\s\f\+:\d\+\serror'
+			let g:Tex_IgnoredWarnings = origpats
+			exec 'TCLevel '.origlevel
+
+			return
+		endif
+
+		let idxlinesAfter = Tex_CatFile(idxFileName)
+
+		" If .idx file changed, then run makeindex to generate the new .ind
+		" file and remember to rerun latex.
+		if runCount == 0 && glob(idxFileName) != '' && idxlinesBefore != idxlinesAfter
+			echomsg "Running makeindex..."
+			let temp_mp = &mp | let &mp='makeindex $*.idx'
+			exec 'silent! make '.mainFileName_root
+			let &mp = temp_mp
+
+			let needToRerun = 1
+		endif
+
+		" The first time we see if we need to run bibtex and if the .bbl file
+		" changes, we will rerun latex.
+		if runCount == 0 && Tex_IsPresentInFile('\\bibdata', mainFileName_root.'.aux')
+			let bibFileName = mainFileName_root . '.bbl'
+
+			let biblinesBefore = Tex_CatFile(bibFileName)
+
+			echomsg "Running '" . g:Tex_BibtexFlavor . "' ..."
+			let temp_mp = &mp | let &mp = g:Tex_BibtexFlavor
+			exec 'silent! make '.mainFileName_root
+			let &mp = temp_mp
+
+			let biblinesAfter = Tex_CatFile(bibFileName)
+
+			" If the .bbl file changed after running bibtex, we need to
+			" latex again.
+			if biblinesAfter != biblinesBefore
+				echomsg 'Need to rerun because bibliography file changed...'
+				let needToRerun = 1
+			endif
+		endif
+
+		" check if latex asks us to rerun
+		if Tex_IsPresentInFile('Rerun to get cross-references right', mainFileName_root.'.log')
+			echomsg "Need to rerun to get cross-references right..."
+			let needToRerun = 1
+		endif
+
+		let runCount = runCount + 1
+	endwhile
+
+	echomsg "Ran latex ".runCount." time(s)"
+
+	let g:Tex_IgnoredWarnings = origpats
+	exec 'TCLevel '.origlevel
+	" After all compiler calls are done, reparse the .log file for
+	" errors/warnings to handle the situation where the clist might have been
+	" emptied because of bibtex/makeindex being run as the last step.
+	exec 'silent! cfile '.mainFileName_root.'.log'
 endfunction " }}}
 
 " ==============================================================================
@@ -576,11 +720,10 @@ function! <SID>SetCompilerMaps()
 	if exists('b:Tex_doneCompilerMaps')
 		return
 	endif
-	nnoremap <buffer> <Leader>ll :call RunLaTeX()<cr>
+	nnoremap <buffer> <Leader>ll :call Tex_RunLaTeX()<cr>
 	vnoremap <buffer> <Leader>ll :call Tex_PartCompile()<cr>
-	nnoremap <buffer> <Leader>lv :call ViewLaTeX()<cr>
+	nnoremap <buffer> <Leader>lv :call Tex_ViewLaTeX()<cr>
 	nnoremap <buffer> <Leader>ls :call Tex_ForwardSearchLaTeX()<cr>
-endif
 
 endfunction 
 " }}}
@@ -592,5 +735,9 @@ augroup LatexSuite
 augroup END
 
 command! -nargs=0 -range=% TPartCompile :<line1>, <line2> silent! call Tex_PartCompile()
+" Setting b:fragmentFile = 1 makes Tex_CompileLatex consider the present file
+" the _main_ file irrespective of the presence of a .latexmain file.
+command! -nargs=0 TCompileThis let b:fragmentFile = 1
+command! -nargs=0 TCompileMainFile let b:fragmentFile = 0
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4

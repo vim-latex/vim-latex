@@ -554,7 +554,9 @@ function! Tex_Debug(str, ...)
 		let s:debugString_{pattern} = ''
 	endif
 	let s:debugString_{pattern} = s:debugString_{pattern}.a:str."\n"
-	let s:debugString_ = s:debugString_.pattern.' : '.a:str."\n"
+
+	let s:debugString_ = (exists('s:debugString_') ? s:debugString_ : '')
+		\ . a:str."\n"
 endfunction " }}}
 " Tex_PrintDebug: prings s:debugString {{{
 " Description: 
@@ -586,50 +588,55 @@ endfunction " }}}
 " Tex_FindInRtp: check if file exists in &rtp {{{
 " Description:	Checks if file exists in globpath(&rtp, ...) and cuts off the
 " 				rest of returned names. This guarantees that sourced file is
-" 				from $HOME. Drawback: doesn't respect special after directory.
-" 				If first argument == '' return list of files separated with \n	
-function! Tex_FindInRtp(filename, directory)
-	" We need different behavior for each special subdirectory:
-	if a:directory == 'packages'
-		if a:filename != ''
-			let filepath = globpath(&rtp, "ftplugin/latex-suite/packages/".a:filename)
-			"if filepath != '' && filepath =~ '\n'
-				"let filepath = substitute(filepath, '\n.*', '', '')
-			"endif
-			return filepath
-		else
-			" Return list of packages separated with ,
-			let list = globpath(&rtp, "ftplugin/latex-suite/packages/*")
-			let list = substitute(list,'\n',',','g')
-			let list = substitute(list,'^\|,[^,]*/',',','g')
-			return list
-		endif
-	elseif a:directory == 'dictionaries'
-		if a:filename != ''
-			" Return list of dictionaries separated with ,
-			let filepath = globpath(&rtp, "ftplugin/latex-suite/dictionaries/".a:filename)
-			let filepath = substitute(filepath, '\n', ',', 'g')
-			return filepath
-		endif
-	elseif a:directory =~ 'macros\|templates'
-		if a:filename != ''
-			" Return first file extracted from &rtp
-			let filepath = globpath(&rtp, "ftplugin/latex-suite/".a:directory."/".a:filename)
-			if filepath != '' && filepath =~ '\n'
-				let filepath = substitute(filepath, '\n.*', '', '')
-			endif
-			return filepath
-		else
-			" Return list of macros/templates separated with ,
-			let list = globpath(&rtp, "ftplugin/latex-suite/".a:directory."/*")
-			let list = substitute(list,'\.tex', '', 'ge')
-			let list = substitute(list,'^\|\n',',','g')
-			let list = substitute(list,',[^,]*/',',','g')
-			let list = substitute(list,'^,', '', '')
-			return list
-		endif
+" 				from $HOME.
+"               If an optional argument is given, it specifies how to expand
+"               each filename found. For example, '%:p' will return a list of
+"               the complete paths to the files. By default returns trailing
+"               path-names without extenions.
+"               NOTE: This function is very slow when a large number of
+"                     matches are found because of a while loop which modifies
+"                     each filename found. Some speedup was acheived by using
+"                     a tokenizer approach rather than using Tex_Strntok which
+"                     would have been more obvious.
+function! Tex_FindInRtp(filename, directory, ...)
+	" how to expand each filename. ':p:t:r' modifies each filename to its
+	" trailing part without extension.
+	let expand = (a:0 > 0 ? a:1 : ':p:t:r')
+	" The pattern used... An empty filename should be regarded as '*'
+	let pattern = (a:filename != '' ? a:filename : '*')
+
+	let filelist = globpath(&rtp, 'ftplugin/latex-suite/'.a:directory.'/'.pattern)."\n"
+	call Tex_Debug("filelist = ".filelist, "main")
+	if filelist == ''
+		return ''
 	endif
 
+	if a:filename != ''
+		return fnamemodify(Tex_Strntok(filelist, "\n", 1), expand)
+	endif
+
+	" Now cycle through the files modifying each filename in the desired
+	" manner.
+	let retfilelist = ''
+	let i = 1
+	while 1
+		" Extract the portion till the next newline. Then shorten the filelist
+		" by removing till the newline.
+		let nextnewline = stridx(filelist, "\n")
+		if nextnewline == -1
+			break
+		endif
+		let filename = strpart(filelist, 0, nextnewline)
+		let filelist = strpart(filelist, nextnewline+1)
+
+		" The actual modification.
+		if fnamemodify(filename, expand) != ''
+			let retfilelist = retfilelist.fnamemodify(filename, expand).","
+		endif
+		let i = i + 1
+	endwhile
+
+	return substitute(retfilelist, ',$', '', '')
 endfunction
 
 " }}}
@@ -644,6 +651,24 @@ function! Tex_GetErrorList()
 
 	return errlist
 endfunction " }}}
+" Tex_GetTempName: get the name of a temporary file in specified directory {{{
+" Description: Unlike vim's native tempname(), this function returns the name
+"              of a temporary file in the directory specified. This enables
+"              us to create temporary files in a specified directory.
+function! Tex_GetTempName(dirname)
+	let prefix = 'latexSuiteTemp'
+	let slash = (a:dirname =~ '\\\|/$' ? '' : '/')
+	let i = 0
+	while filereadable(a:dirname.slash.prefix.i.'.tex') && i < 1000
+		let i = i + 1
+	endwhile
+	if filereadable(a:dirname.slash.prefix.i.'.tex')
+		echoerr "Temporary file could not be created in ".a:dirname
+		return ''
+	endif
+	return expand(a:dirname.slash.prefix.i.'.tex', ':p')
+endfunction
+" }}}
 
 " source texproject.vim before other files
 exe 'source '.s:path.'/texproject.vim'
@@ -753,9 +778,116 @@ endif
 let g:Tex_completion_explorer = ','
 
 " Mappings defined in package files will overwrite all other
-
 exe 'source '.s:path.'/packages.vim'
 
+" ==============================================================================
+" These functions are used to immitate certain operating system type functions
+" (like reading the contents of a file), which are not available in vim. For
+" example, in Vim, its not possible to read the contents of a file without
+" opening a buffer on it, which means that over time, lots of buffers can open
+" up needlessly.
+"
+" If python is available (and allowed), then these functions utilize python
+" library functions without making calls to external programs.
+" ============================================================================== 
+" Tex_GotoTempFile: open a temp file. reuse from next time on {{{
+function! Tex_GotoTempFile()
+	if !exists('s:tempFileName')
+		let s:tempFileName = tempname()
+	endif
+	exec 'silent! split '.s:tempFileName
+endfunction " }}}
+" Tex_IsPresentInFile: finds if a string str, is present in filename {{{
+if has('python') && g:Tex_UsePython
+	function! Tex_IsPresentInFile(regexp, filename)
+		exec 'python isPresentInFile(r"'.a:regexp.'", r"'.a:filename.'")'
+
+		return retval
+	endfunction
+else
+	function! Tex_IsPresentInFile(regexp, filename)
+		call Tex_GotoTempFile()
+
+		silent! 1,$ d _
+		let _report = &report
+		let _sc = &sc
+		set report=9999999 nosc
+		exec 'silent! 0r! '.g:Tex_CatCmd.' '.a:filename
+		set nomod
+		let &report = _report
+		let &sc = _sc
+
+		if search(a:regexp, 'w')
+			let retval = 1
+		else
+			let retval = 0
+		endif
+		silent! bd
+		return retval
+	endfunction
+endif " }}}
+" Tex_CatFile: returns the contents of a file in a <NL> seperated string {{{
+if has('python') && g:Tex_UsePython
+	function! Tex_CatFile(filename)
+		" catFile assigns a value to retval
+		exec 'python catFile("'.a:filename.'")'
+
+		return retval
+	endfunction
+else
+	function! Tex_CatFile(filename)
+		if glob(a:filename) == ''
+			return ''
+		endif
+
+		call Tex_GotoTempFile()
+
+		silent! 1,$ d _
+
+		let _report = &report
+		let _sc = &sc
+		set report=9999999 nosc
+		exec 'silent! 0r! '.g:Tex_CatCmd.' '.a:filename
+
+		set nomod
+		let _a = @a
+		silent! normal! ggVG"ay
+		let retval = @a
+		let @a = _a
+
+		silent! bd
+		let &report = _report
+		let &sc = _sc
+		return retval
+	endfunction
+endif
+" }}}
+" Tex_DeleteFile: removes a file if present {{{
+" Description: 
+if has('python') && g:Tex_UsePython
+	function! Tex_DeleteFile(filename)
+		exec 'python deleteFile(r"'.a:filename.'")'
+		
+		if exists('retval')
+			return retval
+		endif
+	endfunction 
+else
+	function! Tex_DeleteFile(filename)
+		if filereadable(a:filename)
+			exec '! '.g:Tex_RmCmd.' '.a:filename
+		endif
+	endfunction
+endif
+" }}}
+
 let &cpo = s:save_cpo
+
+" Define the functions in python if available.
+if !has('python') || !g:Tex_UsePython
+	finish
+endif
+
+exec 'pyfile '.expand('<sfile>:p:h').'/pytools.py'
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4:nowrap
