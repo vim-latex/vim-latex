@@ -275,7 +275,7 @@ function! ForwardSearchLaTeX()
 		if exists('g:Tex_UseEditorSettingInDVIViewer') &&
 					\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
 					\ exists('v:servername') &&
-					\ (viewer == "xdvi" || viewer == "xdvik") &&
+					\ (viewer == "xdvi" || viewer == "xdvik") 
 			exec '!'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.mainfname.'.dvi &'
 		else
 			exec '!'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').' '.mainfname.'.dvi &'
