@@ -1,3 +1,4 @@
+# Manual files
 ls-flat:
 	java com.icl.saxon.StyleSheet latex-suite.xml latex-suite.xsl > latex-suite.html
 
@@ -8,6 +9,19 @@ ls-chunk:
 	)
 
 ls-txt:
-	db2vim latex-suite.xml > latex-suite.txt
+	db2vim --prefix=ls_ latex-suite.xml > latex-suite.txt
+
+# Quickstart files
+lsq-flat:
+	java com.icl.saxon.StyleSheet latex-suite-quickstart.xml latex-suite.xsl > latex-suite-quickstart.html
+
+lsq-chunk:
+	( \
+		cd latex-suite-quickstart && \
+		java com.icl.saxon.StyleSheet ../latex-suite-quickstart.xml ../latex-suite-chunk.xsl \
+	)
+
+lsq-txt:
+	db2vim --prefix=lq_ latex-suite-quickstart.xml > latex-suite.txt
 
 # vim:nowrap
