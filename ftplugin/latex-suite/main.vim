@@ -3,7 +3,7 @@
 "	Maintainer: Srinath Avadhanula
 "		 Email: srinath@fastmail.fm
 "		   URL: 
-"  Last Change: Sun Dec 22 05:00 PM 2002 PST
+"  Last Change: Thu Dec 26 03:00 PM 2002 PST
 "
 " Help: 
 " Changes: {{{
@@ -113,26 +113,6 @@ if !exists('s:doneMappings')
 	call IMAP (g:Tex_Leader.'2', '\sqrt{<++>}<++>', "tex")
 	call IMAP (g:Tex_Leader.'|', '\Big|', "tex")
 	call IMAP (g:Tex_Leader.'I', "\\int_{<++>}^{<++>}<++>", 'tex')
-	" }}}
-	" other miscellaneous stuff taken from imaps.vim. {{{
-	call IMAP ("vb".s:ml, "\\verb|<++>|<++>", "tex")
-	call IMAP ("bf".s:ml, "{\\bf <++>}<++>", "tex")
-	call IMAP ("em".s:ml, "{\\em <++>}<++>", "tex")
-	call IMAP ("it".s:ml, "{\\it <++>}<++>", "tex")
-	call IMAP ("mb".s:ml, "\\mbox{<++>}<++>", "tex")
-	call IMAP ("frac".s:ml, "\\frac{<++>}{<++>}<++>", "tex")
-	call IMAP ("sq".s:ml, "\\sqrt{<++>}<++>", "tex")
-	call IMAP ("eps".s:ml, "\\psfig{figure=<++>.eps}<++>", "tex")
-	call IMAP ("sum".s:ml, "\\sum{<++>}{<++>}<++>", "tex")
-	call IMAP ("suml".s:ml, "\\sum\\limits_{<++>}^{<++>}<++>", "tex")
-	call IMAP ("int".s:ml, "\\int_{<++>}^{<++>}<++>", "tex")
-	call IMAP ("intl".s:ml, "\\int\\limits_{<++>}^{<++>}<++>", "tex")
-	call IMAP ("bbr".s:ml, "\\left( <++> \\right)<++>", "tex")
-	call IMAP ("bbc".s:ml, "\\left\\{ <++> \\right\\}<++>", "tex")
-	call IMAP ("bbs".s:ml, "\\left[ <++> \\right]<++>", "tex")
-	call IMAP ("rr".s:ml, "\\right", "tex")
-	call IMAP ("ll".s:ml, "\\left", "tex")
-	call IMAP ("part".s:ml, "\\partial", "tex")
 	" }}}
 	" Greek Letters {{{
 	let s:greek_a = "\\alpha" " {{{
