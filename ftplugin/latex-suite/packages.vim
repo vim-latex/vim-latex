@@ -2,7 +2,7 @@
 " 	     File: packages.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: Fri Dec 27 02:00 PM 2002 PST
+" Last Change: Sun Dec 29 04:00 PM 2002 PST
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -17,7 +17,7 @@ let s:path = expand("<sfile>:p:h")
 
 let s:menu_div = 20
 
-com! -nargs=* TPackage :normal! i<C-r>=Tex_pack_one(<f-args>)<CR>
+com! -nargs=* TPackage let s:retVal = Tex_pack_one(<f-args>) <bar> normal! i<C-r>=s:retVal<CR>
 com! -nargs=0 TPackageUpdate :silent! call Tex_pack_updateall()
 com! -nargs=0 TPackageUpdateAll :silent! call Tex_pack_updateall()
 
