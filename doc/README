@@ -25,10 +25,10 @@ soft-linking.
    stylesheets should already be installed on your system. Soft-linking
    will thus work more simply. On a typical Debian box, just do::
    
-        ln -s /usr/share/sgml/docbook/dtd/xml/4.2 docbook-xsl
+        ln -s  /usr/share/sgml/docbook/stylesheet/xsl/nwalsh docbook-xsl
 
    The docbook-xsl stylesheets can be installed via the docbook-xsl
-   package. (Just use apt-get).
+   package on Debian. (Just use apt-get).
 
 2. Download the Docbook DTD from
 
@@ -53,7 +53,8 @@ soft-linking.
 
         ln -s /usr/share/sgml/docbook/dtd/xml/4.2 docbook-xml
 
-   On debian, you need the docbook-xml package. (Just use apt-get).
+   On debian, you need the docbook-xml package on Debian. (Just use
+   apt-get).
 
 3. Download saxon.jar from
 
