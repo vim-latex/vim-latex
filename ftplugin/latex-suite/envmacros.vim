@@ -530,7 +530,7 @@ function! PromptForEnvironment(ask)
 	endif
 
 	let inp = input(a:ask.s:common_env_prompt)
-	if inp =~ '^[0-9][0-9]$'
+	if inp =~ '^[0-9]\+$'
 		let env = Tex_Strntok(g:Tex_PromptedEnvironments, ',', inp)
 	else
 		let env = inp
@@ -899,7 +899,7 @@ function! PromptForCommand(ask)
 	endif
 
 	let inp = input(a:ask.s:common_com_prompt)
-	if inp =~ '^[0-9][0-9]$'
+	if inp =~ '^[0-9]\+$'
 		let com = Tex_Strntok(g:Tex_PromptedCommands, ',', inp)
 	else
 		let com = inp
@@ -995,15 +995,11 @@ if g:Tex_PromptedCommands != ''
 
 		let s:pos_com = line('.').' | normal! '.virtcol('.').'|'
 
-		let com_line = searchpair('$\|\\(\|\\\k\{-}{', '', '$\|\\)\|}', 'b')
+		let com_line = searchpair('\\\k\{-}{', '', '}', 'b')
 
 		if com_line != 0
-			if getline(com_line) !~ '\\\k\{-}{'
-				let com_name = '$'
-			else
-				normal l
-				let com_name = expand('<cword>')
-			endif
+			normal l
+			let com_name = expand('<cword>')
 		endif
 		
 		if !exists('com_name')
@@ -1014,11 +1010,7 @@ if g:Tex_PromptedCommands != ''
 		exe 'echomsg "You are within a '.com_name.' command."'
 		let s:change_com = PromptForCommand('Do you want to change it to (number or name)? ')
 
-		if s:change_com == '$'
-			call <SID>ChangeCommand('$')
-		elseif s:change_com == '\\('
-			call <SID>ChangeCommand('\\(')
-		elseif s:change_com == ''
+		if s:change_com == ''
 			return 0
 		else
 			call <SID>ChangeCommand(s:change_com)
@@ -1032,16 +1024,8 @@ if g:Tex_PromptedCommands != ''
 	"
 	function! s:ChangeCommand(newcom)
 
-		" For now no special treatment form math commands, left loose ends for
-		" future.
-		if a:newcom == '$'
-			return 0
-		elseif a:newcom == '\\('
-			return 0
-		else
-			exe 'normal ct{'.a:newcom."\<Esc>"
-			exe s:pos_com
-		endif
+		exe 'normal ct{'.a:newcom."\<Esc>"
+		exe s:pos_com
 		
 	endfunction
 	" }}}
