@@ -408,17 +408,26 @@ function! Tex_GetVarValue(varname, default)
 		return a:default
 	endif
 endfunction " }}}
-" Tex_GetMainFileName: gets the name (without extension) of the main file being compiled. {{{
-" Description:  returns '' if .latexmain doesnt exist.
-"               i.e if main.tex.latexmain exists, then returns:
-"                   d:/path/to/main
-"               if a:1 is supplied, then it is used to modify the *.latexmain
-"               file instead of using ':p:r:r'.
+" Tex_GetMainFileName: gets the name of the main file being compiled. {{{
+" Description:  returns the full path name of the main file.
+"               This function checks for the existence of a .latexmain file
+"               which might point to the location of a "main" latex file.
+"               If .latexmain exists, then return the full path name of the
+"               file being pointed to by it.
+"
+"               Otherwise, return the full path name of the current buffer.
+"
+"               You can supply an optional "modifier" argument to the
+"               function, which will optionally modify the file name before
+"               returning.
+"               NOTE: From version 1.6 onwards, this function always trims
+"               away the .latexmain part of the file name before applying the
+"               modifier argument.
 function! Tex_GetMainFileName(...)
 	if a:0 > 0
 		let modifier = a:1
 	else
-		let modifier = ':p:r:r'
+		let modifier = ':p'
 	endif
 
 	" If the user wants to use his own way to specify the main file name, then
@@ -432,8 +441,7 @@ function! Tex_GetMainFileName(...)
 
 	let dirmodifier = '%:p:h'
 	let dirLast = expand(dirmodifier)
-	" escape spaces whenever we use cd (diego Caraffini)
-	exe 'cd '.escape(dirLast, ' ')
+	call Tex_CD(dirLast)
 
 	" move up the directory tree until we find a .latexmain file.
 	" TODO: Should we be doing this recursion by default, or should there be a
@@ -445,17 +453,27 @@ function! Tex_GetMainFileName(...)
 			break
 		endif
 		let dirLast = expand(dirmodifier)
-		exec 'cd '.escape(dirLast, ' ')
+		call Tex_CD(dirLast)
 	endwhile
 
 	let lheadfile = glob('*.latexmain')
 	if lheadfile != ''
-		let lheadfile = fnamemodify(lheadfile, modifier)
+		" Remove the trailing .latexmain part of the filename... We never want
+		" that.
+		let lheadfile = fnamemodify(substitute(lheadfile, '\.latexmain$', '', ''), modifier)
+	else
+		" If we cannot find any main file, just modify the filename of the
+		" current buffer.
+		let lheadfile = expand('%'.modifier)
 	endif
 
-	exe 'cd '.escape(curd, ' ')
+	call Tex_CD(curd)
 
-	return escape(lheadfile, ' ')
+	" NOTE: The caller of this function needs to escape spaces in the
+	"       file name as appropriate. The reason its not done here is that
+	"       escaping spaces is not safe if this file is to be used as part of
+	"       an external command on certain platforms.
+	return lheadfile
 endfunction 
 
 " }}}
@@ -524,9 +542,10 @@ function! Tex_EscapeForGrep(string)
 	" we want to search for a string like '\bibitem'.
 	let retVal = escape(a:string, "\\")
 	" The next escape is because when the shellxquote is ", then the grep
-	" commad is usually called as bash -c "grep pattern filename" which means
-	" that we need to escape backslashes (because they get halved) and also
-	" double quotes.
+	" commad is usually called as 
+	" 	bash -c "grep pattern filename" 
+	" which means that we need to escape backslashes (because they get halved)
+	" and also double quotes.
 	if &shellxquote == '"'
 		let retVal = escape(retVal, "\"\\")
 	endif
@@ -556,7 +575,9 @@ function! Tex_Debug(str, ...)
 	let s:debugString_{pattern} = s:debugString_{pattern}.a:str."\n"
 
 	let s:debugString_ = (exists('s:debugString_') ? s:debugString_ : '')
-		\ . a:str."\n"
+		\ . pattern.' : '.a:str."\n"
+
+	" exec '!echo '.pattern.' : '.a:str.' >> /tmp/ls.log'
 endfunction " }}}
 " Tex_PrintDebug: prings s:debugString {{{
 " Description: 
@@ -607,7 +628,8 @@ function! Tex_FindInRtp(filename, directory, ...)
 
 	let filelist = globpath(&rtp, 'ftplugin/latex-suite/'.a:directory.'/'.pattern)."\n"
 	call Tex_Debug("filelist = ".filelist, "main")
-	if filelist == ''
+
+	if filelist == "\n"
 		return ''
 	endif
 
@@ -676,6 +698,11 @@ function! Tex_MakeMap(lhs, rhs, mode, extraargs)
 		exec a:mode.'map '.a:extraargs.' '.a:lhs.' '.a:rhs
 	endif
 endfunction " }}}
+" Tex_CD: cds to given directory escaping spaces if necessary {{{
+" " Description: 
+function! Tex_CD(dirname)
+	exec 'cd '.escape(a:dirname, ' ')
+endfunction " }}}
 
 " source texproject.vim before other files
 exe 'source '.s:path.'/texproject.vim'
@@ -703,6 +730,7 @@ if g:Tex_Diacritics != 0
 	exe 'source '.s:path.'/diacritics.vim'
 endif
 
+
 " ==============================================================================
 " Finally set up the folding, options, mappings and quit.
 " ============================================================================== 
@@ -716,7 +744,7 @@ function! <SID>SetTeXOptions()
 
 	exe 'setlocal dict+='.s:path.'/dictionaries/dictionary'
 
-	call Tex_Debug('SetTeXOptions: sourcing maps')
+	call Tex_Debug('SetTeXOptions: sourcing maps', 'main')
 	" smart functions
 	if g:Tex_SmartKeyQuote 
 		inoremap <buffer> <silent> " "<Left><C-R>=<SID>TexQuotes()<CR>
@@ -737,7 +765,7 @@ endfunction
 
 augroup LatexSuite
 	au LatexSuite User LatexSuiteFileType 
-		\ call Tex_Debug('main.vim: Catching LatexSuiteFileType event') | 
+		\ call Tex_Debug('main.vim: Catching LatexSuiteFileType event', 'main') | 
 		\ call <SID>SetTeXOptions()
 augroup END
 
@@ -888,6 +916,7 @@ else
 endif
 " }}}
 
+
 let &cpo = s:save_cpo
 
 " Define the functions in python if available.
@@ -896,5 +925,6 @@ if !has('python') || !g:Tex_UsePython
 endif
 
 exec 'pyfile '.expand('<sfile>:p:h').'/pytools.py'
+
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4:nowrap
