@@ -3,7 +3,7 @@
 " 	     File: texrc.vim
 "      Author: Srinath Avadhanula
 "     Created: Mon Apr 01 11:00 AM 2002 PST
-" Last Change: Sun Oct 27 02:00 AM 2002 PST
+" Last Change: Sun Oct 27 10:00 PM 2002 PST
 "
 "  Description: This file contains resource configuration information for the
 "               latex-suite plugin.
@@ -103,6 +103,10 @@ else
 	TexLet g:Tex_ViewRule_ps = 'ghostview'
 	TexLet g:Tex_ViewRule_pdf = 'acroread'
 	TexLet g:Tex_ViewRule_dvi = 'xdvi'
+	" the option below specifies an editor for the dvi viewer while starting
+	" up the dvi viewer according to Dimitri Antoniou's tip on vim.sf.net (tip
+	" #225)
+	TexLet g:Tex_UseEditorSettingInDVIViewer = 0
 endif
 " }}}
 " ------------------------------------------------------------------------------ 
@@ -121,6 +125,7 @@ TexLet g:Tex_IgnoredWarnings =
 	\'Overfull¡'.
 	\'specifier changed to¡'.
 	\'You have requested¡'.
+	\'Reference¡'.
 	\'Missing number, treated as zero.'
 
 " the 'ignore level' of the 'efm'. A value of 4 says that the first 4 kinds of
