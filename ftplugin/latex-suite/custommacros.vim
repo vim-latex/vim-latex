@@ -3,6 +3,7 @@
 "      Author: Mikolaj Machowski
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
+"         CVS: $Id$ 
 " 
 "  Description: functions for processing custom macros in the
 "               latex-suite/macros directory
@@ -10,23 +11,34 @@
 
 let s:path = expand('<sfile>:p:h')
 
+" Set path to macros dir dependent on OS {{{
+if has("unix") || has("macunix")
+	let s:macrodirpath = $HOME."/.vim/ftplugin/latex-suite/macros/"
+elseif has("win32")
+	if exists("$HOME")
+		let s:macrodirpath = $HOME."/vimfiles/ftplugin/latex-suite/macros/"
+	else
+		let s:macrodirpath = $VIMRUNTIME."/ftplugin/latex-suite/macros/"
+	endif
+endif
+
+" }}}
 " SetCustomMacrosMenu: sets up the menu for Macros {{{
 function! <SID>SetCustomMacrosMenu()
-	let flist = glob(s:path."/macros/*")
-	exe 'amenu '.g:Tex_MacrosMenuLocation.'&New :call <SID>NewMacro()<CR>'
-	exe 'amenu '.g:Tex_MacrosMenuLocation.'&Redraw :call <SID>RedrawMacro()<CR>'
+	let flist = Tex_FileInRtp('', 'macros')
+	exe 'amenu '.g:Tex_MacrosMenuLocation.'&New :call NewMacro()<CR>'
+	exe 'amenu '.g:Tex_MacrosMenuLocation.'&Redraw :call RedrawMacro()<CR>'
 
 	let i = 1
 	while 1
-		let fname = Tex_Strntok(flist, "\n", i)
+		let fname = Tex_Strntok(flist, ',', i)
 		if fname == ''
 			break
 		endif
-		let fnameshort = fnamemodify(fname, ':p:t:r')
-		exe "amenu ".g:Tex_MacrosMenuLocation."&Delete.&".i.":<tab>".fnameshort." :call <SID>DeleteMacro('".fnameshort."')<CR>"
-		exe "amenu ".g:Tex_MacrosMenuLocation."&Edit.&".i.":<tab>".fnameshort."   :call <SID>EditMacro('".fnameshort."')<CR>"
-		exe "imenu ".g:Tex_MacrosMenuLocation."&".i.":<tab>".fnameshort." <C-r>=<SID>ReadMacro('".fnameshort."')<CR>"
-		exe "nmenu ".g:Tex_MacrosMenuLocation."&".i.":<tab>".fnameshort." i<C-r>=<SID>ReadMacro('".fnameshort."')<CR>"
+		exe "amenu ".g:Tex_MacrosMenuLocation."&Delete.&".i.":<tab>".fname." :call <SID>DeleteMacro('".fname."')<CR>"
+		exe "amenu ".g:Tex_MacrosMenuLocation."&Edit.&".i.":<tab>".fname."   :call <SID>EditMacro('".fname."')<CR>"
+		exe "imenu ".g:Tex_MacrosMenuLocation."&".i.":<tab>".fname." <C-r>=<SID>ReadMacro('".fname."')<CR>"
+		exe "nmenu ".g:Tex_MacrosMenuLocation."&".i.":<tab>".fname." i<C-r>=<SID>ReadMacro('".fname."')<CR>"
 		let i = i + 1
 	endwhile
 endfunction 
@@ -37,15 +49,18 @@ endif
 
 " }}}
 " NewMacro: opens new file in macros directory {{{
-function! <SID>NewMacro()
-	exe "cd ".s:path."/macros"
-	new
-	set filetype=tex
+function! <SID>NewMacro(newmacro)
+	if Tex_FileInRtp(a:newmacro, 'macros') != ''
+		exe "echomsg 'Macro with name '".a:newmacro."' exists. Try another one.'"
+		return
+	endif
+	exe 'split '.s:macrodirpath.a:newmacro
+	setlocal filetype=tex
 endfunction
 
 " }}}
 " RedrawMacro: refreshes macro menu {{{
-function! <SID>RedrawMacro()
+function! RedrawMacro()
 	aunmenu TeX-Suite.Macros
 	call <SID>SetCustomMacrosMenu()
 endfunction
@@ -54,32 +69,35 @@ endfunction
 " ChooseMacro: choose a macro file {{{
 " " Description: 
 function! s:ChooseMacro(ask)
-	let pwd = getcwd()
-	exe 'cd '.s:path.'/macros'
+	let filelist = Tex_FileInRtp('', 'macros')
 	let filename = Tex_ChooseFromPrompt(
 				\ a:ask."\n" . 
-				\ Tex_CreatePrompt(glob('*'), 2, "\n") .
+				\ Tex_CreatePrompt(filelist, 2, ',') .
 				\ "\nEnter number or filename :",
-				\ glob('*'), "\n")
-	exe 'cd '.pwd
-endfunction " }}}
+				\ filelist, ',')
+endfunction 
+
+" }}}
 " DeleteMacro: deletes macro file {{{
 function! <SID>DeleteMacro(...)
 	if a:0 > 0
 		let filename = a:1
 	else
-		let pwd = getcwd()
-		exe 'cd '.s:path.'/macros'
 		let filename = s:ChooseMacro('Choose a macro file for deletion :')
-		exe 'cd '.pwd
 	endif
 
-	let ch = confirm('Really delete '.filename.' ?', 
-		\"Yes\nNo", 2)
-	if ch == 1
-		call delete(s:path.'/macros/'.filename)
+	" Remove only if filename is in local directory
+	if !filereadable(s:macrodirpath.filename)
+		call confirm('This file is not in your local directory: '.filename."\n".
+					\ 'It will not be deleted.' , '&OK', 1)
+
+	else
+		let ch = confirm('Really delete '.filename.' ?', "&Yes\n&No", 2)
+		if ch == 1
+			call delete(s:macrodirpath.filename)
+		endif
+		call RedrawMacro()
 	endif
-	call s:RedrawMacro()
 endfunction
 
 " }}}
@@ -88,15 +106,25 @@ function! <SID>EditMacro(...)
 	if a:0 > 0
 		let filename = a:1
 	else
-		let pwd = getcwd()
-		exe 'cd '.s:path.'/macros'
 		let filename = s:ChooseMacro('Choose a macro file for insertion:')
-		exe 'cd '.pwd
 	endif
 
-	exe "split ".s:path."/macros/".filename
-	exe "lcd ".s:path."/macros/"
-	set filetype=tex
+	if filereadable(s:macrodirpath.filename)
+		exe 'split '.s:macrodirpath.filename
+	else
+		let ch = confirm("You are trying to edit file which is probably read-only.\n".
+					\ "It will be copied to your local LaTeX-Suite macros directory\n".
+					\ "and you will be operating on local copy with suffix -local.\n".
+					\ "It will succeed only if ftplugin/latex-suite/macros dir exists.\n".
+					\ "Do you agree?", "&Yes\n&No", 1)
+		if ch == 1
+			new
+			exe '0read '.Tex_FileInRtp(filename, 'macros')
+			exe 'write '.s:macrodirpath.filename.'-local'
+		endif
+		
+	endif
+	setlocal filetype=tex
 endfunction
 
 " }}}
@@ -107,13 +135,15 @@ function! <SID>ReadMacro(...)
 	if a:0 > 0
 		let filename = a:1
 	else
-		let pwd = getcwd()
-		exe 'cd '.s:path.'/macros'
-		let filename = s:ChooseMacro('Choose a macro file for insertion:')
-		exe 'cd '.pwd
+		let filelist = Tex_FileInRtp('', 'macros')
+		let filename = 
+					\ Tex_ChooseFromPrompt("Choose a macro file:\n" . 
+					\ Tex_CreatePrompt(filelist, 2, ',') . 
+					\ "\nEnter number or name of file :", 
+					\ filelist, ',')
 	endif
 
-	let fname = s:path.'/macros/'.filename
+	let fname = Tex_FileInRtp(filename, 'macros')
 
 	let markerString = '<---- Latex Suite End Macro ---->'
 	let _a = @a
@@ -140,10 +170,38 @@ endfunction
 
 " }}}
 " commands for macros {{{
-com! -nargs=? TMacro          :let s:retVal = <SID>ReadMacro(<f-args>) <bar> normal! i<C-r>=s:retVal<CR>
-com! -nargs=0 TMacroNew       :call <SID>NewMacro()
-com! -nargs=? TMacroEdit      :call <SID>EditMacro(<f-args>)
-com! -nargs=? TMacroDelete    :call <SID>DeleteMacro(<f-args>)
+com! -nargs=1 TMacroNew :call <SID>NewMacro(<f-args>)
+
+" This macros had to have 2 versions:
+if v:version >= 602 
+	com! -complete=custom,Tex_CompleteMacroName -nargs=? TMacro
+				\ :let s:retVal = <SID>ReadMacro(<f-args>) <bar> normal! i<C-r>=s:retVal<CR>
+	com! -complete=custom,Tex_CompleteMacroName -nargs=? TMacroEdit
+				\ :call <SID>EditMacro(<f-args>)
+	com! -complete=custom,Tex_CompleteMacroName -nargs=? TMacroDelete
+				\ :call <SID>DeleteMacro(<f-args>)
+
+	" Tex_CompleteMacroName: for completing names in TMacro... commands {{{
+	"	Description: get list of macro names with Tex_FileInRtp(), remove full path
+	"	and return list of names separated with newlines.
+	"
+	function! Tex_CompleteMacroName(A,P,L)
+		" Get name of macros from all runtimepath directories
+		let macronames = Tex_FileInRtp('', 'macros')
+		" Separate names with \n not ,
+		let macronames = substitute(macronames,',','\n','g')
+		return macronames
+	endfunction
+
+	" }}}
+
+else
+	com! -nargs=? TMacro
+		\	:let s:retVal = <SID>ReadMacro(<f-args>) <bar> normal! i<C-r>=s:retVal<CR>
+	com! -nargs=? TMacroEdit   :call <SID>EditMacro(<f-args>)
+	com! -nargs=? TMacroDelete :call <SID>DeleteMacro(<f-args>)
+
+endif
 
 " }}}
 

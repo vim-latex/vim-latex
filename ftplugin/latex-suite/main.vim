@@ -583,6 +583,56 @@ function! Tex_ClearDebug(...)
 	endif
 endfunction " }}}
 " }}}
+" Tex_FileInRtp: check if file exists in &rtp {{{
+" Description:	Checks if file exists in globpath(&rtp, ...) and cuts off the
+" 				rest of returned names. This guarantees that sourced file is
+" 				from $HOME. Drawback: doesn't respect special after directory.
+" 				If first argument == '' return list of files separated with \n	
+function! Tex_FileInRtp(filename, directory)
+	" We need different behavior for each special subdirectory:
+	if a:directory == 'packages'
+		if a:filename != ''
+			let filepath = globpath(&rtp, "ftplugin/latex-suite/packages/".a:filename)
+			"if filepath != '' && filepath =~ '\n'
+				"let filepath = substitute(filepath, '\n.*', '', '')
+			"endif
+			return filepath
+		else
+			" Return list of packages separated with ,
+			let list = globpath(&rtp, "ftplugin/latex-suite/packages/*")
+			let list = substitute(list,'\n',',','g')
+			let list = substitute(list,'^\|,[^,]*/',',','g')
+			return list
+		endif
+	elseif a:directory == 'dictionaries'
+		if a:filename != ''
+			" Return list of dictionaries separated with ,
+			let filepath = globpath(&rtp, "ftplugin/latex-suite/dictionaries/".a:filename)
+			let filepath = substitute(filepath, '\n', ',', 'g')
+			return filepath
+		endif
+	elseif a:directory =~ 'macros\|templates'
+		if a:filename != ''
+			" Return first file extracted from &rtp
+			let filepath = globpath(&rtp, "ftplugin/latex-suite/".a:directory."/".a:filename)
+			if filepath != '' && filepath =~ '\n'
+				let filepath = substitute(filepath, '\n.*', '', '')
+			endif
+			return filepath
+		else
+			" Return list of macros/templates separated with ,
+			let list = globpath(&rtp, "ftplugin/latex-suite/".a:directory."/*")
+			let list = substitute(list,'\n',',','g')
+			let list = substitute(list,'^\|,[^,]*/',',','g')
+			let list = substitute(list,'^,', '', '')
+			let list = substitute(list,'\.tex', '', 'ge')
+			return list
+		endif
+	endif
+
+endfunction
+
+" }}}
 
 " source texproject.vim before other files
 exe 'source '.s:path.'/texproject.vim'
@@ -653,6 +703,7 @@ augroup END
 " ==============================================================================
 " Settings for taglist.vim plugin
 " ============================================================================== 
+" Sets Tlist_Ctags_Cmd for taglist.vim and regexps for ctags {{{
 if exists("g:Tex_TaglistSupport") && g:Tex_TaglistSupport == 1 
 	if !exists("g:tlist_tex_settings") 
 		let g:tlist_tex_settings = 'tex;s:section;c:chapter;l:label;r:ref'
@@ -685,6 +736,8 @@ if exists("g:Tex_TaglistSupport") && g:Tex_TaglistSupport == 1
 	endif
 endif
 
+" }}}
+ 
 " commands to completion
 let g:Tex_completion_explorer = ','
 

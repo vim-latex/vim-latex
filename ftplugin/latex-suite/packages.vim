@@ -31,9 +31,10 @@ if v:version >= 602
 	"	and return list of names separated with newlines.
 	"
 	function! Tex_CompletePackageName(A,P,L)
-		let packnames = globpath(s:path.'/packages','*')
-		let packnames = substitute(packnames,'\n',',','g')
-		let packnames = substitute(packnames,'^\|,[^,]*/',',','g')
+		" Get name of packages from all runtimepath directories
+		let packnames = Tex_FileInRtp('', 'packages')
+		let packnames = substitute(packnames, '^,', '', 'e')
+		" Separate names with \n not ,
 		let packnames = substitute(packnames,',','\n','g')
 		return packnames
 	endfunction
@@ -59,8 +60,12 @@ let g:Tex_PromptedCommandsDefault = g:Tex_PromptedCommands
 " Tex_pack_check: creates the package menu and adds to 'dict' setting. {{{
 "
 function! Tex_pack_check(package)
-	if filereadable(s:path.'/packages/'.a:package)
-		exe 'source ' . s:path . '/packages/' . a:package
+	" Use Tex_FileInRtp() function to get first name from packages list in all
+	" rtp directories conforming with latex-suite directories hierarchy
+	" Store names in variables to process functions only once.
+	let packname = Tex_FileInRtp(a:package, 'packages')
+	if packname != ''
+		exe 'runtime! ftplugin/latex-suite/packages/' . a:package
 		if has("gui_running")
 			call Tex_pack(a:package)
 		endif
@@ -68,9 +73,11 @@ function! Tex_pack_check(package)
 			let g:Tex_package_supported = g:Tex_package_supported.','.a:package
 		endif
 	endif
-	if filereadable(s:path.'/dictionaries/'.a:package)
-		exe 'setlocal dict+='.s:path.'/dictionaries/'.a:package
-		if filereadable(s:path.'/dictionaries/'.a:package) && g:Tex_package_supported !~ a:package
+	" Return full list of dictionaries (separated with ,) for package in &rtp
+	let dictname = Tex_FileInRtp(a:package, 'dictionaries')
+	if dictname != ''
+		exe 'setlocal dict+=' . dictname
+		if g:Tex_package_supported !~ a:package
 			let g:Tex_package_supported = g:Tex_package_supported.','.a:package
 		endif
 	endif
@@ -84,17 +91,19 @@ endfunction
 " }}}
 " Tex_pack_uncheck: removes package from menu and 'dict' settings. {{{
 function! Tex_pack_uncheck(package)
-	if has("gui_running") && filereadable(s:path.'/packages/'.a:package)
+	if has("gui_running") && Tex_FileInRtp(a:package, 'packages') != ''
 		exe 'silent! aunmenu '.g:Tex_PackagesMenuLocation.'-sep'.a:package.'-'
 		exe 'silent! aunmenu '.g:Tex_PackagesMenuLocation.a:package.'\ Options'
 		exe 'silent! aunmenu '.g:Tex_PackagesMenuLocation.a:package.'\ Commands'
 	endif
-	if filereadable(s:path.'/dictionaries/'.a:package)
-		exe 'setlocal dict-='.s:path.'/dictionaries/'.a:package
+	if Tex_FileInRtp(a:package, 'dictionaries') != ''
+		exe 'setlocal dict-='.Tex_FileInRtp(a:package, 'dictionaries')
 	endif
 endfunction
 
 " }}}
+" This function should go to main.vim for reuse with templates and macros.
+" I keep it here because want to do it in onefile patch. 
 " Tex_pack_updateall: updates the TeX-Packages menu {{{
 " Description:
 " 	This function first calls Tex_pack_all to scan for \usepackage's etc if
@@ -248,14 +257,11 @@ endfunction
 "   packages found in the packages/ directory
 function! Tex_pack_one(...)
 	if a:0 == 0 || (a:0 > 0 && a:1 == '')
-		let pwd = getcwd()
-		exe 'cd '.s:path.'/packages'
 		let packname = Tex_ChooseFromPrompt(
 					\ "Choose a package: \n" . 
-					\ Tex_CreatePrompt(glob('*'), 3, "\n") .
+					\ Tex_CreatePrompt(Tex_FileInRtp('','packages'), "3", ",") .
 					\ "\nEnter number or filename :", 
-					\ glob('*'), "\n")
-		exe 'cd '.pwd
+					\ Tex_FileInRtp('','packages'), "\n")
 		if packname != ''
 			return Tex_pack_one(packname)
 		else
@@ -268,7 +274,7 @@ function! Tex_pack_one(...)
 		let omega = 1
 		while omega <= a:0
 			let packname = a:{omega}
-			if filereadable(s:path.'/packages/'.packname)
+			if Tex_FileInRtp(packname, 'packages') != ''
 				call Tex_pack_check(packname)
 				if exists('g:TeX_package_option_'.packname)
 						\ && g:TeX_package_option_{packname} != ''
@@ -452,12 +458,11 @@ endfunction
 "   of 20...
 function! Tex_pack_supp_menu()
 
-	let pwd = getcwd()
-	exec 'cd '.s:path.'/packages'
-	let suplist = glob("*")
-	exec 'cd '.pwd
-
-	let suplist = substitute(suplist, "\n", ',', 'g').','
+	" Get list of packages in all rtp directories. 
+	" TODO: sort it and get rid of duplicate entries.
+	let suplist = globpath(&rtp, "ftplugin/latex-suite/packages/*")
+	let suplist = substitute(suplist,'\n',',','g')
+	let suplist = substitute(suplist,'^\|,[^,]*/',',','g').","
 
 	call Tex_MakeSubmenu(suplist, g:Tex_PackagesMenuLocation.'Supported.', 
 		\ '<plug><C-r>=Tex_pack_one("', '")<CR>')

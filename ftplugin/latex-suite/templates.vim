@@ -2,8 +2,10 @@
 " 	     File: templates.vim
 "      Author: Gergely Kontra
 "              (minor modifications by Srinath Avadhanula)
+"              (plus other modifications by Mikolaj Machowski) 
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
+"         CVS: $Id$ 
 " 
 "  Description: functions for handling templates in latex-suite/templates
 "               directory.
@@ -13,20 +15,15 @@ let s:path = expand("<sfile>:p:h")
 
 " SetTemplateMenu: sets up the menu for templates {{{
 function! <SID>SetTemplateMenu()
-	let flist = glob(s:path."/templates/*")
+	let flist = Tex_FileInRtp('', 'templates')
 	let i = 1
 	while 1
-		let fname = Tex_Strntok(flist, "\n", i)
+		let fname = Tex_Strntok(flist, ',', i)
 		if fname == ''
 			break
 		endif
-		let fnameshort = fnamemodify(fname, ':p:t:r')
-		if fnameshort == ''
-			let i = i + 1
-			continue
-		endif
-		exe "amenu ".g:Tex_TemplatesMenuLocation."&".i.":<Tab>".fnameshort." ".
-			\":call <SID>ReadTemplate('".fnameshort."')<CR>".
+		exe "amenu ".g:Tex_TemplatesMenuLocation."&".i.":<Tab>".fname." ".
+			\":call <SID>ReadTemplate('".fname."')<CR>".
 			\":call <SID>ProcessTemplate()<CR>:0<CR>".
 			\"i<C-r>=IMAP_Jumpfunc('', 1)<CR>"
 		let i = i + 1
@@ -43,17 +40,14 @@ function! <SID>ReadTemplate(...)
 	if a:0 > 0
 		let filename = a:1.'.*'
 	else
-		let pwd = getcwd()
-		exe 'cd '.s:path.'/templates'
 		let filename = 
 					\ Tex_ChooseFromPrompt("Choose a template file:\n" . 
-					\ Tex_CreatePrompt(glob('*'), 2, "\n") . 
+					\ Tex_CreatePrompt(Tex_FileInRtp('', 'templates'), 2, ",") . 
 					\ "\nEnter number or name of file :", 
-					\ glob('*'), "\n")
-		exe 'cd '.pwd
+					\ Tex_FileInRtp('', 'templates'), ",")
 	endif
 
-	let fname = glob(s:path."/templates/".filename)
+	let fname = Tex_FileInRtp(filename, 'templates')
 	silent! exe "0read ".fname
 	" The first line of the file contains the specifications of what the
 	" placeholder characters and the other special characters are.
@@ -110,10 +104,33 @@ endfunction
 
 " }}}
 
-com! -nargs=? TTemplate :call <SID>ReadTemplate(<f-args>)
-	\| :call <SID>ProcessTemplate()
-	\| :0
-	\| :exec "normal! i\<C-r>=IMAP_Jumpfunc('', 1)\<CR>"
-	\| :startinsert
+if v:version >= 602
+	com! -complete=custom,Tex_CompleteTemplateName -nargs=? TTemplate :call <SID>ReadTemplate(<f-args>)
+		\| :call <SID>ProcessTemplate()
+		\| :0
+		\| :exec "normal! i\<C-r>=IMAP_Jumpfunc('', 1)\<CR>"
+		\| :startinsert
+
+	" Tex_CompleteTemplateName: for completing names in TTemplate command {{{
+	"	Description: get list of template names with Tex_FileInRtp(), remove full path
+	"	and return list of names separated with newlines.
+	"
+	function! Tex_CompleteTemplateName(A,P,L)
+		" Get name of macros from all runtimepath directories
+		let tmplnames = Tex_FileInRtp('', 'templates')
+		" Separate names with \n not ,
+		let tmplnames = substitute(tmplnames,',','\n','g')
+		return tmplnames
+	endfunction
+	" }}}
+	
+else
+	com! -nargs=? TTemplate :call <SID>ReadTemplate(<f-args>)
+		\| :call <SID>ProcessTemplate()
+		\| :0
+		\| :exec "normal! i\<C-r>=IMAP_Jumpfunc('', 1)\<CR>"
+		\| :startinsert
+
+endif
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4
