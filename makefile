@@ -12,8 +12,10 @@ latexs:
 	zip -q latexSuite.zip plugin/SyntaxFolds.vim
 	zip -q latexSuite.zip plugin/libList.vim
 	zip -q latexSuite.zip plugin/explorer.vim
+	zip -q latexSuite.zip plugin/remoteOpen.vim
 	# ftplugins
 	zip -q latexSuite.zip ftplugin/tex_latexSuite.vim
+	zip -q latexSuite.zip ftplugin/bib_latexSuite.vim
 	zip -q latexSuite.zip ftplugin/tex/*.vim
 	# files in the latex-suite directory. Skip the CVS files.
 	zip -q -R latexSuite.zip `find ftplugin/latex-suite -name '*' | grep -v CVS`
@@ -38,8 +40,8 @@ latexs:
 		tar czf latexSuite.tar.gz * ; \
 		\mv latexSuite.tar.gz $(DIR1)/ ; \
 	)
-		mv latexSuite.zip latexSuite`date +%Y%m%d`.zip ; \
-		mv latexSuite.tar.gz latexSuite`date +%Y%m%d`.tar.gz ; \
+	mv latexSuite.zip latexSuite`date +%Y%m%d`.zip ; \
+	mv latexSuite.tar.gz latexSuite`date +%Y%m%d`.tar.gz ; \
 
 # target for removing archive files.
 clean:
@@ -54,12 +56,12 @@ ltt:
 # This target is related to a script I have on my sf.net account. That
 # script looks like:
 #
-# #!/bin/bash                                                                     
-# cd ~/testing/vimfiles; \                                                        
-# cvs -q update; \                                                                
-# make clean; \                                                                   
-# make; \                                                                         
-# cp latexsuite.* ~/htdocs/download/ 
+# #!/bin/bash
+# cd ~/testing/vimfiles; \
+# cvs -q update; \
+# make clean; \
+# make; \
+# cp latexsuite.* ~/htdocs/download/
 #
 # Doing a release via sf.net has a couple of advantages:
 # - I do not have to bother with CRLF pain anymore because the copy on
@@ -75,11 +77,11 @@ release:
 # version.
 # This is again related to the uphtdocs script on my sf.net account which
 # looks like:
-# #!/bin/sh                                                                       
-#                                                                                 
-# # update the htdocs directory                                                   
-# cd /home/groups/v/vi/vim-latex/htdocs; cvs -q update                            
-# # update the packages directory                                                 
+# #!/bin/sh
+#
+# # update the htdocs directory
+# cd /home/groups/v/vi/vim-latex/htdocs; cvs -q update
+# # update the packages directory
 # cd /home/groups/v/vi/vim-latex/htdocs/packages; cvs -q update
 uphtdocs:
 	plink srinathava@vim-latex.sf.net /home/users/s/sr/srinathava/bin/uphtdocs
