@@ -170,7 +170,11 @@ function! Tex_SetupErrorWindow()
 
 		" resize the window to just fit in with the number of lines.
 		exec ( line('$') < 4 ? line('$') : 4 ).' wincmd _'
-		call GotoErrorLocation(mfnlog)
+        if exists('g:Tex_GotoError') && g:Tex_GotoError == 1
+ 	        call GotoErrorLocation(mfnlog)
+        else
+           wincmd k
+        endif
 	endif
 
 endfunction " }}}

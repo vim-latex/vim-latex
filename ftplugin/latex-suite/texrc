@@ -188,6 +188,10 @@ TexLet g:Tex_Flavor = 'latex'
 "       flavor and flags seperately? --SA
 " TexLet g:Tex_CompilerFlags = ''
 
+" If disabled (set to 0) LaTeX-Suite doesn't go immediately to warnings or
+" errors after compilation
+TexLet g:Tex_GotoError == 1
+
 " }}}
 " ============================================================================== 
 " Macros: latex-suite comes with a large number of macros to speed up typing {{{
