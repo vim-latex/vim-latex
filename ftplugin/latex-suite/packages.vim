@@ -2,7 +2,7 @@
 " 	     File: packages.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: pi± lis 29 09:00  2002 C
+" Last Change: sob lis 30 03:00  2002 C
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -49,7 +49,7 @@ endfunction
 " Tex_pack_uncheck: removes package from menu and 'dict' settings. {{{
 function! Tex_pack_uncheck(package)
 	if has("gui_running") && filereadable(s:path.'/packages/'.a:package)
-		exe 'aunmenu '.s:p_menu_lev.'&'.a:package
+		exe 'silent! aunmenu '.s:p_menu_lev.'&'.a:package
 	endif
 	if filereadable(s:path.'/dictionaries/'.a:package)
 		exe 'setlocal dict-='.s:path.'/dictionaries/'.a:package
@@ -346,7 +346,7 @@ endfunction
 " }}}
 " Tex_pack_supp: "supports" the package... {{{
 function! Tex_pack_supp(supp_pack)
-	call Tex_pack(a:supp_pack)
+	call Tex_pack_check(a:supp_pack)
 	exe 'let g:s_p_o = g:TeX_package_option_'.a:supp_pack 
 	if exists('g:s_p_o') && g:s_p_o != ''
 		exe 'normal i\usepackage{'.a:supp_pack.'}«»'
@@ -367,10 +367,10 @@ endfunction
 function! Tex_PutPackage(package)
 	if filereadable(s:path.'/packages/'.a:package)
 		call Tex_pack_supp(a:package)
-		call Tex_pack_updateall()
 	else
 		exe 'normal i\usepackage{'.a:package."}\<Esc>$"
 	endif
+		call Tex_pack_updateall()
 endfunction	" }}}
 
 if g:Tex_Menus
