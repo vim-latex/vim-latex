@@ -1,6 +1,6 @@
 *latex-suite*   Tools for an enhanced LaTeX environment in Vim
                         For Vim version 6.0 and above.
-                  Last Change: Sat Dec 14 02:00 AM 2002 PST
+                  Last Change: Sat Dec 28 09:00 PM 2002 PST
 
                  By Srinath Avadhanula <srinath@fastmail.fm>,
                       Mikolaj Machowski <mikmach@wp.pl>,
@@ -298,7 +298,7 @@ Mnemonic: (make your own!) >
 Example:
     SSE in insert mode inserts >
         \section{<++>}<++>
-<   If you select a word or line and press `se, then you get >
+<   If you select a word or line and press ,se, then you get >
         \section{section name}
 <   The menu item in Tex-Environments.Sections have a sub-menu called
     'Advanced'. Choosing an item from this sub-menu asks a couple of questions
