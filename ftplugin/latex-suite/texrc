@@ -3,7 +3,7 @@
 " 	     File: texrc.vim
 "      Author: Srinath Avadhanula
 "     Created: Mon Apr 01 11:00 AM 2002 PST
-" Last Change: Sat Dec 28 09:00 PM 2002 PST
+" Last Change: Sat Jan 04 08:00 PM 2003 PST
 "
 "  Description: This file contains resource configuration information for the
 "               latex-suite package.
@@ -389,7 +389,7 @@ TexLet g:Tex_SmartQuoteClose = "''"
 " Latex-suite maps the <space> key in such a way that $ characters are not
 " broken across lines.
 " NOTE: Setting this to 1 has the side-effect of making the 'tw' setting be 0.
-TexLet g:Tex_SmartKeySpace = 1
+TexLet g:Tex_SmartKeySpace = 0
 
 " Pressing ... (3 dots) results in \ldots outside math mode and \cdots in math
 " mode.
