@@ -2,7 +2,7 @@
 "            Type: compiler plugin for LaTeX
 " Original Author: Artem Chuprina <ran@ran.pp.ru>
 "   Customization: Srinath Avadhanula <srinath@fastmail.fm>
-"     Last Change: Tue Nov 19 09:00 PM 2002 PST
+"     Last Change: Fri Dec 06 01:00 AM 2002 PST
 " Description:  {{{
 "   This file sets the 'makeprg' and 'errorformat' options for the LaTeX
 "   compiler. It is customizable to optionally ignore certain warnings and
@@ -211,7 +211,7 @@ function! <SID>SetLatexEfm()
 	exec 'setlocal efm+=%'.pm.'C%.%#[]%.%#'
 	exec 'setlocal efm+=%'.pm.'C[]%.%#'
 	exec 'setlocal efm+=%'.pm.'C%.%#%[{}\\]%.%#'
-	exec 'setlocal efm+=%'.pm.'C<%.%#>%.%#'
+	exec 'setlocal efm+=%'.pm.'C<%.%#>%m'
 	exec 'setlocal efm+=%'.pm.'C\ \ %m'
 	exec 'setlocal efm+=%'.pm.'GSee\ the\ LaTeX%m'
 	exec 'setlocal efm+=%'.pm.'GType\ \ H\ <return>%m'
