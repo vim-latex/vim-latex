@@ -264,7 +264,7 @@
      16 true:
      17 +--  4 lines: eqnarray (eqn:simple) :  \label{eqn:simple}---------------------
      21 This is my contribution to mathematics.
-     22 This is a reference to (\ref{}&amp;lt;++&amp;gt;)&amp;lt;++&amp;gt;
+     22 This is a reference to (\ref{}&lt;++&gt;)&lt;++&gt;
      23 \end{document}
 ~
 ~

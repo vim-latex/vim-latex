@@ -2079,33 +2079,43 @@ endif</programlisting>
  </section>
  <section id="latex-viewing">
   <title>Latex Viewing and Searching</title>
-  <para>
-   If you are usingly commonly used &latex; tools to view output files,
-   then you should be able to view compiled files from within &vim; by
-   simply pressing <literal>\lv</literal>.
-  </para>
-  <note>
+  <section id="latex-viewing-rules">
+   <title>Setting Viewing rules</title>
    <para>
-    The viewing function also takes the <link
-     linkend="latex-master-file"><literal>*.latexmain</literal></link> file
-    into account to decide which file to show.
+    In order to view the output files created by compiling the source
+    files, you need to specify which external program &ls; should call. You
+    can specify the external program using one of two settings
+    <link linkend="Tex_ViewRule_format">Tex_ViewRule_format</link> or <link
+     linkend="Tex_ViewRuleComplete_format">Tex_ViewRuleComplete_format</link>.
+    By default, &ls; has default settings for viewing various common output
+    formats via the <literal>Tex_ViewRule_format</literal> settings, so
+    that if you are using commonly used programs, you should be all set to
+    view compiled files from within &vim; by simply pressing
+    <literal>\lv</literal>.
    </para>
-  </note>
-  <para>
-   If pressing <literal>\lv</literal> does not work, then it most probably
-   has to do with incorrect settings of the <literal><link
-     linkend="Tex_ViewRule_format">g:Tex_ViewRule_&lt;format&gt;</link></literal>
-   where <literal>&lt;format&gt;</literal> is the format you are attempting
-   to view. See the link above for how to set this according to your
-   system.
-  </para>
-  <para>
-   In addition to viewing the files, &ls; also supports forward and inverse
-   searching for certain common tools for viewiing DVI documents. At the
-   moment, there is built-in support for YAP on windows (which ships with
-   MikTeX), and the popular <literal>xdvi</literal> on *nix platforms. See
-   the next few sections for details on forward and inverse searching.
-  </para>
+   <note>
+    <para>
+     The viewing function also takes the <link
+      linkend="latex-master-file"><literal>*.latexmain</literal></link> file
+     into account to decide which file to show.
+    </para>
+   </note>
+   <para>
+    If pressing <literal>\lv</literal> does not work, then it most probably
+    has to do with incorrect settings of the <link
+     linkend="Tex_ViewRule_format"><literal>g:Tex_ViewRule_&lt;format&gt;</literal></link>
+    where <literal>&lt;format&gt;</literal> is the format you are
+    attempting to view. See the link above for how to set this according to
+    your system.
+   </para>
+   <para>
+    In addition to viewing the files, &ls; also supports forward and inverse
+    searching for certain common tools for viewiing DVI documents. At the
+    moment, there is built-in support for YAP on windows (which ships with
+    MikTeX), and the popular <literal>xdvi</literal> on *nix platforms. See
+    the next few sections for details on forward and inverse searching.
+   </para>
+  </section>
   <section id="forward-searching">
    <title>Forward Searching DVI documents</title>
    <para>
@@ -3934,6 +3944,20 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
      the system pick the program for each format. If you define these variables
      for Mac, the system choice will be over-ridden.
     </para>
+    <para>
+     &ls; appends <literal>file.format</literal> to the above settings
+     while calling the external programs. For example, with
+     <programlisting>let g:Tex_ViewRule_dvi = 'yap -1'</programlisting>
+     <literal>yap</literal> is called as 
+     <programlisting>!start yap -1 file.dvi</programlisting> from within
+     &vim;. (The initial <literal>start</literal> is used on
+     <literal>Windows</literal> platforms is to make <literal>yap</literal>
+     start as a seperate process.) If you find the way &ls; constructs the
+     command line too restrictive, you can use the <link
+      linkend="Tex_ViewRuleComplete_format"><literal>Tex_ViewRuleComplete_format</literal></link>
+     setting for more complete control on how the command line is
+     constructed while calling the external program for viewing.
+    </para>
     <note>
      <para>
       For windows, you will need to set the <literal>$PATH</literal> variable
@@ -3948,6 +3972,46 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
       To change the default format for viewing files, set the <link
        linkend="Tex_DefaultTargetFormat">g:Tex_DefaultTargetFormat</link>
       variable.
+     </para>
+    </note>
+   </section>
+   <section id="Tex_ViewRuleComplete_format">
+    <title>Tex_ViewRuleComplete_&lt;format&gt;</title>
+    <para>
+     Here <literal>&lt;format&gt;</literal> refers to the extension of a
+     output format such as <literal>dvi</literal>, <literal>html</literal>
+     etc.
+    </para>
+    <para>
+     <literal>Tex_ViewRuleComplete_format</literal> takes precedence over
+     <literal>Tex_ViewRule_format</literal> if both are specified. By
+     default, &ls; does not define values for
+     <literal>Tex_ViewRuleComplete_format</literal> for any
+     <literal>format</literal>. Unlike in the case of
+     <literal>Tex_ViewRule_format</literal>, &ls; does not modify
+     <literal>Tex_ViewRuleComplete_format</literal> at all in constructing
+     the command line. The only modification is to substitute
+     <literal>'$*'</literal> everywhere in the string with the name of the
+     file being viewed (without the extension).
+    </para>
+    <note>
+     <title>IMPORTANT</title>
+     <para>
+      Make sure you make the process go into the background otherwise vim
+      will wait for the viewer to terminate before letting you edit the file
+      again.
+     </para>
+     <para>
+      To make a process go into the background on a <literal>*nix</literal>
+      platform, use a trailing <literal>&amp;</literal> in the setting. On
+      <literal>Windows</literal>, use <literal>start</literal> at the
+      beginning of the setting. Example: Suppose you have a latex->html
+      converter which converts a file say foo.tex to a file foo/index.html.
+      Then you would use:
+      <programlisting>" On *nix platform
+let g:Tex_ViewRuleComplete_html = 'MozillaFirebird $*/index.html &amp;'
+" On windows platform
+let g:Tex_ViewRuleComplete_html = 'start MozillaFirebird $*/index.html'</programlisting>
      </para>
     </note>
    </section>
