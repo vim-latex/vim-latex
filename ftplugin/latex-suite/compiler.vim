@@ -513,7 +513,7 @@ function! Tex_CompileMultipleTimes()
 		" file and remember to rerun latex.
 		if runCount == 0 && glob(idxFileName) != '' && idxlinesBefore != idxlinesAfter
 			echomsg "Running makeindex..."
-			let temp_mp = &mp | let &mp='makeindex $*.idx'
+			let temp_mp = &mp | let &mp = Tex_GetVarValue('Tex_MakeIndexFlavor')
 			exec 'silent! make '.mainFileName_root
 			let &mp = temp_mp
 

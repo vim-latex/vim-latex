@@ -187,8 +187,14 @@ TexLet g:Tex_IgnoreLevel = 7
 " specifies the current latex flavor.
 TexLet g:Tex_Flavor = 'latex'
 
-" specifies the BibTeX flavor and if necessary options.
+" specifies the BibTeX flavor and if necessary options. If you use $* in this
+" setting, it will be replaced by the *root* of the main file name, i.e, if
+" the main file is "thesis.tex", $* will be "thesis".
 TexLet g:Tex_BibtexFlavor = 'bibtex'
+
+" specifies the MakeIndedx flavor and if necessary options. $* will be
+" replaced by the *root* of the main file name. See above.
+TexLet g:Tex_MakeIndexFlavor = 'makeindex $*.idx'
 
 " By default the program described by g:Tex_Flavor above is called with the
 " flags '--src-specials --interaction=nonstopmode'. If your particular version
@@ -430,6 +436,18 @@ TexLet g:Tex_PromptedCommands =
 " Setting this to zero will leave the <BS> key unmapped.
 " Default: 1 
 TexLet g:Tex_SmartKeyBS = 1
+" The pattern used to detect whether the previous characters comprise a
+" diacritic character. This default pattern detects the standard LaTeX
+" diacritics
+TexLet g:Tex_SmartBSPattern = 
+	\ "\\\\[\"^'=v]{\\S}"      . '\|' .
+	\ "\\\\[\"^'=]\\S"         . '\|' .
+	\ '\\v \S'                 . '\|' .
+	\ "\\\\[\"^'=v]{\\\\[iI]}" . '\|' .
+	\ '\\v \\[iI]'             . '\|' .
+	\ '\\q \S'                 . '\|' .
+	\ '\\-'                    .
+	\ '\)' . "$"
 
 " Pressing " (english double quote) will insert `` or '' by making an
 " intelligent guess about whether we intended to open or close a quote.

@@ -263,16 +263,8 @@ if g:Tex_SmartKeyBS
 	" must press <BS> about 19x. With function smartBS() you must press <BS> only
 	" 7x. Strings like "\v{s}", "\'{y}" are considered like one character and are
 	" deleted with one <BS>.
-	"
-	let s:smartBS_pat = '\(' .
-		\ "\\\\[\"^'=v]{\\S}"      . '\|' .
-		\ "\\\\[\"^'=]\\S"         . '\|' .
-		\ '\\v \S'                 . '\|' .
-		\ "\\\\[\"^'=v]{\\\\[iI]}" . '\|' .
-		\ '\\v \\[iI]'             . '\|' .
-		\ '\\q \S'                 . '\|' .
-		\ '\\-'                    .
-		\ '\)' . "$"
+	let s:smartBS_pat = Tex_GetVarValue('Tex_SmartBSPattern')
+
 	fun! s:SmartBS_pat()
 		return s:smartBS_pat
 	endfun
