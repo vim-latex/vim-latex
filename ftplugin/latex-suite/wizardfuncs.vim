@@ -235,13 +235,12 @@ endfunction " }}}
 " Partial compilation and viewing output
 " ============================================================================== 
 "
-nnoremap <silent> <Plug>Tex_PartCompilation :call Tex_PartCompilation("f","l","v")<CR> 
+noremap <buffer> <silent> <Plug>Tex_PartCompilation :call Tex_PartCompilation("f","l","v")<CR>
 
 if !hasmapto('<Plug>Tex_PartCompilation',"v")
-	nnoremap <buffer> <silent> <F10> <Plug>Tex_PartCompilation
+	vmap <buffer> <silent> <F10> <Plug>Tex_PartCompilation
 endif
 
-map <F10> :call Tex_PartCompilation("f","l", "v")<cr> 
 command! -nargs=0 -range TPartComp silent! call Tex_PartCompilation(<line1>,<line2>, "c")
 command! -nargs=0 TPartView silent! call ViewLaTeX("part")
 
@@ -257,11 +256,12 @@ function! Tex_PartCompilation(fline,lline,mode) range
 	" compiler.vim
 	let tmpfile = tempname()
 	let g:tfile = tmpfile
+	let tmpfile = tmpfile.'.tex'
 
 	"Create temporary file
 	" If mainfile exists open it in tiny window and extract preamble there,
 	" otherwise do it from current file
-	let mainfile = Tex_GetMainFileName()
+	let mainfile = Tex_GetMainFileName(":p:r")
 	if mainfile != ''
 		exe 'bot 1 split '.mainfile
 		exe '1,/\s*\\begin{document}/w '.tmpfile
@@ -270,7 +270,7 @@ function! Tex_PartCompilation(fline,lline,mode) range
 		exe '1,/\s*\\begin{document}/w '.tmpfile
 	endif
 	" Write range to file, check how it works with marks, range and //,//
-	if a:mode == 'v' 
+	if a:mode == 'v'
 		exe a:firstline.','.a:lastline."w! >> ".tmpfile
 	else
 		exe a:fline.','.a:lline."w! >> ".tmpfile
