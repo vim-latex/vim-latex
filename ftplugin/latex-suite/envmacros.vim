@@ -2,7 +2,7 @@
 " 	     File: envmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
-" Last Change: czw maj 09 11:00  2002 U
+" Last Change: pon lis 04 09:00  2002 C
 " 
 "  Description: mappings/menus for environments. 
 "=============================================================================
@@ -40,7 +40,7 @@ function! <SID>Tex_EnvMacros(lhs, submenu, name)
 
 	let extra = ''
 	if a:submenu =~ 'Lists'
-		let extra = '\\item '
+		let extra = '\item '
 	endif
 
 	let vright = ''
@@ -222,6 +222,8 @@ call s:Tex_EnvMacros('EFC', '&Structure.', 'filecontents')
 call s:Tex_EnvMacros('',    '&Structure.', 'filecontents*')
 call s:Tex_EnvMacros('EFL', '&Structure.', 'flushleft')
 call s:Tex_EnvMacros('EFR', '&Structure.', 'flushright')
+call s:Tex_EnvMacros('EQN', '&Structure.', 'quotation')
+call s:Tex_EnvMacros('EQE', '&Structure.', 'quote')
 call s:Tex_EnvMacros('ESB', '&Structure.', 'sloppybar')
 call s:Tex_EnvMacros('ETI', '&Structure.', 'theindex')
 call s:Tex_EnvMacros('ETP', '&Structure.', 'titlepage')
