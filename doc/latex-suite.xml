@@ -1074,6 +1074,11 @@ endfunction</programlisting>
     that word.
    </para>
    <para>
+    You can also use the <link
+     linkend="TPackage"><literal>TPackage</literal></link> to insert the
+    <literal>\usepackage</literal> line.
+   </para>
+   <para>
     Once you have inserted a <literal>\usepackage</literal> line, for
     supported packages, you can use the Options and Commands menus
     described in the <link linkend="package-actions">next section</link>.
@@ -1082,18 +1087,25 @@ endfunction</programlisting>
   <section id="package-actions">
    <title>Actions taken for supported packages</title>
    <para>
-    Once a <literal>\usepackage</literal> line has been constructed using
-    one of the methods described in the previous section, if possible, the
-    following sub-menus will be created
+    &ls; takes the following actions for packages detected when a file is
+    loaded, or a new <literal>\usepackage</literal> line is inserted using
+    one of the methods described in the <link
+     linkend="inserting-packages">previous section</link>.
    </para>
+   <para>
+    If you are using the GUI and you have <link
+     linkend="Tex_Menus">g:Tex_Menus</link> set to 1, &ls; will create the
+    following sub-menus
    <simplelist>
     <member><literal>TeX-Suite > Packages > &lt;package&gt; Options</literal></member>
     <member><literal>TeX-Suite > Packages > &lt;package&gt; Commands</literal></member>
    </simplelist>
+   </para>
    <para>
     where <literal>&lt;package&gt;</literal> is the package you just
-    inserted. You can use these menus to insert commands, environments and
-    options which &ls; recognizes as belonging to this package.
+    inserted (or was detected). You can use these menus to insert commands,
+    environments and options which &ls; recognizes as belonging to this
+    package.
    </para>
    <note>
     <para>
@@ -1220,7 +1232,8 @@ endfunction</programlisting>
     the same name as the package and placing it in the
     <literal>$VIM/ftplugin/latex-suite/packages</literal> directory. A
     package script should define two variables as described in the next two
-    sections.
+    sections. In addition to these two variables, you can also define any
+    functions, environment definitions etc. in this file.
    </para>
    <section>
     <title><literal>g:Tex_package_option_&lt;package&gt;</literal></title>
@@ -2265,21 +2278,24 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
     <title>:TPackage [{package, ...}]</title>
     <para>
      When used without any arguments lists name of the packages for
-     which support is available. Report depends if you are using
-     GUI version and/or <link
-      linkend="Tex_Menus">g:Tex_Menus</link> is set to 1 or not. When you
-     are not using menus command lists files from
-     latex-suite/dictionaries/ (this is main support for non-menus
-     version of latexSuite) if menus are on |TPackage| lists
-     files from latex-suite/packages/ directory. In package file can be
-     also additional functions and syntax descriptions for commands,
-     environments, etc. In &vim; 6.2 and above you can use command-line
-     completion.
-
-     When {package} is given command turns on all possible support
-     for this {package} (|latex-menu-packages|,
-     |latex-packages-dictionary|). Number of arguments separated
-     with spaces is limited only with common sense.
+     which support is available. If you are using &vim; GUI and have
+     <literal>Tex_Menus</literal> set to 1, then it will list all files
+     found in the <literal>$VIM/ftplugin/latex-suite/packages</literal>
+     directory. Otherwise, &ls; will list files found in the
+     <literal>$VIM/ftplugin/latex-suite/dicrionaries</literal> directory.
+     Choosing a file from the list will insert a
+     <programlisting>\usepackage[&ph;]{&lt;packname&gt;}</programlisting> line into the
+     buffer at the current cursor location. For &vim; 6.2 and above, you
+     can use command-line completion to choose a package file. You can also
+     call <literal>TPackage</literal> with one or more package names
+     seperated with spaces in which case, &ls; will insert
+     <literal>\usepackage</literal> lines for each of them in turn.
+    </para>
+    <para>
+     After inserting the <literal>\usepackage</literal> line(s), &ls; will
+     support it (them) in various ways as described in the section <link
+      linkend="package-actions">Actions taken for supported
+      packages</link>.
     </para>
    </section>
    <section id="TPackageUpdate">
@@ -3187,6 +3203,23 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
     <para>
      If set to 0, &ls; will suppress showing all menus. Useful if you mostly
      work in terminals.
+    </para>
+   </section>
+   <section id="Tex_MainMenuLocation">
+    <title><literal>g:Tex_MainMenuLocation</literal></title>
+    <informaltable frame="all">
+     <tgroup cols="2">
+      <tbody>
+       <row><entry>Type</entry><entry>number</entry></row>
+       <row><entry>Default Value</entry>
+        <entry><literal>80</literal></entry></row>
+      </tbody>
+     </tgroup>
+    </informaltable>
+    <para>
+     This setting decides the location of the first top-level latex-suite
+     menu. You can for example shift all the menus created by latex-suite
+     to the very end by setting this value to a large number like 990.
     </para>
    </section>
    <section id="Tex_MathMenus">
