@@ -16,7 +16,7 @@ function! SetTeXCompilerTarget(type, target)
 		elseif g:Tex_DefaultTargetFormat =~ 'pdf'
 			let target = input('Enter the target (dvi/ps/[pdf]/...) for '.a:type.'r: ')
 		else
-			let target = input('Enter the target (dvi/ps/pdf/[...]) for '.a:type.'r: ')
+			let target = input('Enter the target (dvi/ps/pdf/['.g:Tex_DefaultTargetFormat.']) for '.a:type.'r: ')
 		endif
 	else
 		let target = a:target
