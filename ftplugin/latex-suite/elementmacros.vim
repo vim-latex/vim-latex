@@ -2,7 +2,7 @@
 " 	     File: elementmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: wto lis 05 02:00  2002 C
+" Last Change: nie lis 10 11:00  2002 C
 " 
 "  Description: macros for dimensions/fonts/counters.
 "               and various common commands such ref/label/footnote.
@@ -326,6 +326,7 @@ if g:Tex_Menus
 	call <SID>Tex_VariousMenus('footnotemark{}', '\footnotemark{ä}«»')
 	call <SID>Tex_VariousMenus('footnotemark{}', '\footnotetext{ä}«»')
 	call <SID>Tex_VariousMenus('cite{}'        , '\cite{ä}«»')
+	call <SID>Tex_VariousMenus('nocite{}'      , '\nocite{ä}«»')
 	" }}}
 endif
 
