@@ -8,31 +8,31 @@ DIR1 = $(PWD)
 # unix people can use it too...
 latexs:
 	# plugins:
-	zip latexSuite.zip plugin/imaps.vim
-	zip latexSuite.zip plugin/SyntaxFolds.vim
-	zip latexSuite.zip plugin/libList.vim
+	zip -q latexSuite.zip plugin/imaps.vim
+	zip -q latexSuite.zip plugin/SyntaxFolds.vim
+	zip -q latexSuite.zip plugin/libList.vim
 	# ftplugins
-	zip latexSuite.zip ftplugin/tex_latexSuite.vim
-	zip latexSuite.zip ftplugin/tex/*.vim
+	zip -q latexSuite.zip ftplugin/tex_latexSuite.vim
+	zip -q latexSuite.zip ftplugin/tex/*.vim
 	# files in the latex-suite directory. Skip the CVS files.
-	zip -R latexSuite.zip `find ftplugin/latex-suite -name '*' | grep -v CVS`
+	zip -q -R latexSuite.zip `find ftplugin/latex-suite -name '*' | grep -v CVS`
 	# documentation
-	zip latexSuite.zip doc/latex*.txt
+	zip -q latexSuite.zip doc/latex*.txt
 	# indentation
-	zip latexSuite.zip indent/tex.vim
+	zip -q latexSuite.zip indent/tex.vim
 	# compiler
-	zip latexSuite.zip compiler/tex.vim
+	zip -q latexSuite.zip compiler/tex.vim
 	# external tools
-	zip latexSuite.zip ltags
+	zip -q latexSuite.zip ltags
 
 	# Now to make a tar.gz file from the .zip file.
 	mkdir -p $(TMP)/latexSuite0793
 	cp latexSuite.zip $(TMP)/latexSuite0793/
 	( \
 		cd $(TMP)/latexSuite0793/ ; \
-		unzip -o latexSuite.zip ; \
+		unzip -q -o latexSuite.zip ; \
 		\rm latexSuite.zip ; \
-		tar cvzf latexSuite.tar.gz * ; \
+		tar czf latexSuite.tar.gz * ; \
 		\mv latexSuite.tar.gz $(DIR1)/ ; \
 	)
 
