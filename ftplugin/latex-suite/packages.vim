@@ -74,9 +74,11 @@ function! Tex_pack_check(package)
 		endif
 	endif
 	" Return full list of dictionaries (separated with ,) for package in &rtp
+	call Tex_Debug("searching for ".a:package." in dictionaries/ in &rtp", "pack")
 	let dictname = Tex_FindInRtp(a:package, 'dictionaries', ':p')
 	if dictname != ''
 		exe 'setlocal dict+=' . dictname
+		call Tex_Debug('setlocal dict+=' . dictname, 'pack')
 		if g:Tex_package_supported !~ a:package
 			let g:Tex_package_supported = g:Tex_package_supported.','.a:package
 		endif
@@ -113,11 +115,8 @@ function! Tex_pack_updateall(force)
 	call Tex_Debug('+Tex_pack_updateall', 'pack')
 
 	" Find out which file we need to scan.
-	if Tex_GetMainFileName() != ''
-		let fname = Tex_GetMainFileName(':p:r')
-	else
-		let fname = expand('%:p')
-	endif
+	let fname = escape(Tex_GetMainFileName(':p'), ' ')
+
 	" If this is the same as last time, don't repeat.
 	if !a:force && exists('s:lastScannedFile') &&
 				\ s:lastScannedFile == fname
@@ -143,10 +142,8 @@ function! Tex_pack_updateall(force)
 	call Tex_Debug('updateall: detected ['.g:Tex_package_detected.'] in first run', 'pack')
 	
 	" Now for each package find out if this is a custom package and if so,
-	" scan that as well. We will use the ':wincmd f' command in vim to let vim
-	" search for the file paths for us. We open up a new file, write down the
-	" name of each package and ask vim to open it for us using the 'gf'
-	" command.
+	" scan that as well. We will use the ':find' command in vim to let vim
+	" search through the file paths for us.
 	"
 	" NOTE: This while loop will also take into account packages included
 	"       within packages to any level of recursion as long as
@@ -178,6 +175,9 @@ function! Tex_pack_updateall(force)
 			continue
 		endif 
 
+		" Split this window in two. The packages/files being found will open
+		" in this new window and we also need not bother with files being
+		" modified etc.
 		split
 
 		call Tex_Debug('silent! find '.packname.'.sty', 'pack')
@@ -298,15 +298,12 @@ endfunction
 "   \newcommand lines and adds names to g:Tex_Prompted variables, they can be
 "   easy available through <F5> and <F7> shortcuts 
 function! Tex_ScanForPackages(fname, ...)
-
 	let pos = line('.').' | normal! '.virtcol('.').'|'
-	let currfile = expand('%:p')
+	let currfile = escape(expand('%:p'), ' ')
 	call Tex_Debug('currfile = '.currfile.', a:fname = '.a:fname, 'pack')
 
 	let toquit = 0
 	if a:fname != currfile
-
-		call Tex_Debug('splitting file', 'pack')
 		exe 'split '.a:fname
 		let toquit = 1
 	endif
@@ -440,6 +437,7 @@ function! Tex_ScanForPackages(fname, ...)
 	endwhile
 
 	if toquit
+		call Tex_Debug("quitting from ".bufname('%'), "pack")
 		q	
 	endif
 	
@@ -658,7 +656,7 @@ endif
 
 augroup LatexSuite
 	au LatexSuite User LatexSuiteFileType 
-		\ call Tex_Debug('packages.vim: Catching LatexSuiteFileType event') | 
+		\ call Tex_Debug('packages.vim: Catching LatexSuiteFileType event', 'pack') | 
 		\ call Tex_pack_updateall(0)
 augroup END
 
