@@ -2,7 +2,7 @@
 " 	     File: envmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
-" Last Change: Sat Nov 16 04:00 PM 2002 PST
+" Last Change: Sat Nov 16 07:00 PM 2002 PST
 " 
 "  Description: mappings/menus for environments. 
 "=============================================================================
@@ -494,18 +494,16 @@ endfunction " }}}
 "   called without arguments and there is a word on the current line, then use
 "   that as the name of a new environment.
 function! Tex_DoEnvironment(...)
-	let l = getline('.')
 	if a:0 < 1
-		let env = matchstr(l, '^\s*\zs.*')
+		let env = matchstr(getline('.'), '^\s*\zs\w*\*\=\ze\s*$')
 		if env == ''
 			let env = PromptForEnvironment('Choose which environment to insert :')
 			if env != ''
 				return Tex_PutEnvironment(env)
 			endif
 		else
-			let ind = matchstr(l, '^\s*\ze')
-			normal 0D
-			return Tex_PutEnvironment(ind, env)
+			normal! 0D
+			return Tex_PutEnvironment(env)
 		endif
 	else
 		return Tex_PutEnvironment(a:1)
@@ -525,6 +523,10 @@ function! Tex_PutEnvironment(env)
         return Tex_tabular(a:env)
 	elseif exists('*Tex_'.a:env)
 		exe 'return Tex_'.a:env.'(a:env)'
+	elseif a:env == '$$'
+		return IMAP_PutTextWithMovement('$$«»$$')
+	elseif a:env == '['
+		return IMAP_PutTextWithMovement("\\[\<CR>«»\<CR>\\]«»")
 	else
         return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr>«»\<cr>\\end{".a:env."}«»")
 	endif
