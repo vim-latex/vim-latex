@@ -72,21 +72,29 @@ function! MakeTexFolds(force)
 		return
 	end
 
+	" Setup folded items lists g:Tex_Foldedxxxx
+	" 	1. Use default value if g:Tex_Foldedxxxxxx is not defined
+	" 	2. prepend default value to g:Tex_Foldedxxxxxx if it starts with ','
+	" 	3. append default value to g:Tex_Foldedxxxxxx if it ends with ','
+
 	" Folding items which are not caught in any of the standard commands,
 	" environments or sections.
-	TexLet g:Tex_FoldedMisc = 'item,slide,'.
-				\ 'preamble,<<<'
+	let s = 'item,slide,preamble,<<<'
+	if !exists('g:Tex_FoldedMisc')
+		let g:Tex_FoldedMisc = s
+	elseif g:Tex_FoldedMisc[0] == ','
+		let g:Tex_FoldedMisc = s . g:Tex_FoldedMisc
+	elseif g:Tex_FoldedMisc =~ ',$'
+		let g:Tex_FoldedMisc = g:Tex_FoldedMisc . s
+	endif
 
-	" 1. Use default value if g:Tex_Foldedxxxxxx is not defined
-	" 2. prepend default value to g:Tex_Foldedxxxxxx if it starts with ','
-	" 3. append default value to g:Tex_Foldedxxxxxx if it ends with ','
 	let s = 'footnote,intertext'
     if !exists('g:Tex_FoldedCommands')
 		let g:Tex_FoldedCommands = s
 	elseif g:Tex_FoldedCommands[0] == ','
-		let g:Tex_FoldedCommands = s . g:Tex_FoldedCommands[0]
+		let g:Tex_FoldedCommands = s . g:Tex_FoldedCommands
 	elseif g:Tex_FoldedCommands =~ ',$'
-		let g:Tex_FoldedCommands = g:Tex_FoldedCommands[0] . s
+		let g:Tex_FoldedCommands = g:Tex_FoldedCommands . s
 	endif
 
 	let s = 'verbatim,comment,eq,gather,align,figure,table,thebibliography,'
