@@ -12,7 +12,7 @@ nnoremap <unique> <Plug>Tex_RefreshFolds :call MakeTexFolds(1)<cr>
 
 augroup LatexSuite
 	au LatexSuite User LatexSuiteFileType 
-		\ call Tex_Debug('folding.vim: catching LatexSuiteFileType') | 
+		\ call Tex_Debug('folding.vim: catching LatexSuiteFileType', 'fold') | 
 		\ call Tex_SetFoldOptions()
 augroup END
 
@@ -74,7 +74,7 @@ function! MakeTexFolds(force)
 
 	" Folding items which are not caught in any of the standard commands,
 	" environments or sections.
-	TexLet g:Tex_FoldedMisc = 'comments,item,slide,'.
+	TexLet g:Tex_FoldedMisc = 'item,slide,'.
 				\ 'preamble,<<<'
 
 	" 1. Use default value if g:Tex_Foldedxxxxxx is not defined
@@ -339,15 +339,15 @@ function! TexFoldTextFunction()
 			let caption = getline(v:foldstart + 1)
 		end
 
-		let retText = matchstr(ftxto, '^[^:]*').': "'.header
-						\.'" ('.label.') : '.caption
+		let retText = matchstr(ftxto, '^[^:]*').': '.header.
+						\ ' ('.label.') : '.caption
 		return retText
 	elseif getline(v:foldstart) =~ '^%' && getline(v:foldstart) !~ '^%%fake'
 		let ftxto = foldtext()
-		return matchstr(ftxto, '^[^:]*').': Comments '
+		return substitute(ftxto, ':', ': % ', '')
 	elseif getline(v:foldstart) =~ '^\s*\\document\(class\|style\).*{'
 		let ftxto = foldtext()
-		return matchstr(ftxto, '^[^:]*').': Preamble:'.matchstr(ftxto, '[^:]*$')
+		return substitute(ftxto, ':', ': Preamble: ', '')
 	else
 		return foldtext()
 	end
