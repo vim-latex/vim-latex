@@ -341,6 +341,7 @@ endfunction
 " }}}
 " TexFoldTextFunction: create fold text for folds {{{
 function! TexFoldTextFunction()
+	let leadingSpace = matchstr('                                       ', ' \{,'.indent(v:foldstart).'}')
 	if getline(v:foldstart) =~ '^\s*\\begin{'
 		let header = matchstr(getline(v:foldstart),
 							\ '^\s*\\begin{\zs\([:alpha:]*\)[^}]*\ze}')
@@ -367,15 +368,16 @@ function! TexFoldTextFunction()
 
 		let retText = matchstr(ftxto, '^[^:]*').': '.header.
 						\ ' ('.label.') : '.caption
-		return retText
+		return leadingSpace.retText
+
 	elseif getline(v:foldstart) =~ '^%' && getline(v:foldstart) !~ '^%%fake'
 		let ftxto = foldtext()
-		return substitute(ftxto, ':', ': % ', '')
+		return leadingSpace.substitute(ftxto, ':', ': % ', '')
 	elseif getline(v:foldstart) =~ '^\s*\\document\(class\|style\).*{'
-		let ftxto = foldtext()
+		let ftxto = leadingSpace.foldtext()
 		return substitute(ftxto, ':', ': Preamble: ', '')
 	else
-		return foldtext()
+		return leadingSpace.foldtext()
 	end
 endfunction
 " }}}
