@@ -2,7 +2,7 @@
 " 	     File: smartspace.vim
 "      Author: Carl Muller
 "     Created: Fri Dec 06 12:00 AM 2002 PST
-" Last Change: Mon Dec 09 12:00 PM 2002 PST
+" Last Change: Sat Dec 21 07:00 PM 2002 PST
 " 
 " Description: 
 "     Maps the <space> key in insert mode so that mathematical formulaes are
@@ -25,9 +25,7 @@ let b:done_smartspace = 1
 "       the user's 'tw' setting is still respected in the insert mode.
 "       However, normal mode actions which rely on 'tw' such as gqap will be
 "       broken because of the faulty 'tw' setting.
-if &l:tw > 0
-	let b:tw = &l:tw
-endif
+let b:tw = &l:tw
 setlocal tw=0
 
 inoremap <buffer> <silent> <Space> <Space><Esc>:call <SID>TexFill(b:tw)<CR>a
@@ -39,53 +37,53 @@ endif
 
 " TexFormatLine: format line retaining $$'s on the same line.
 function! s:TexFill(width)  " {{{
-    if col(".") > a:width
-	exe "normal! a##\<Esc>"
-	call <SID>TexFormatLine(a:width)
-	exe "normal! ?##\<CR>2s\<Esc>"
-    endif
+	if a:width != 0 && col(".") > a:width
+		exe "normal! a##\<Esc>"
+		call <SID>TexFormatLine(a:width)
+		exe "normal! ?##\<CR>2s\<Esc>"
+	endif
 endfunction
 
 " }}}
 function! s:TexFormatLine(width) " {{{
-    let first = strpart(getline(line(".")),0,1)
-    normal! $
-    let length = col(".")
-    let go = 1
-    while length > a:width+2 && go
-	let between = 0
-	let string = strpart(getline(line(".")),0,a:width)
-	" Count the dollar signs
-        let number_of_dollars = 0
-	let evendollars = 1
-	let counter = 0
-	while counter <= a:width-1
-	    if string[counter] == '$' && string[counter-1] != '\'  " Skip \$.
-	       let evendollars = 1 - evendollars
-	       let number_of_dollars = number_of_dollars + 1
-	    endif
-	    let counter = counter + 1
-	endwhile
-	" Get ready to split the line.
-	exe "normal! " . (a:width + 1) . "|"
-	if evendollars
-	" Then you are not between dollars.
-	   exe "normal! ?\\$\\| \<CR>W"
-	else
-	" Then you are between dollars.
-	    normal! F$
-	    if col(".") == 1 || strpart(getline(line(".")),col(".")-1,1) != "$"
-	       let go = 0
-	    endif
-	endif
-	if first == '$' && number_of_dollars == 1
-	    let go = 0
-	else
-	    exe "normal! i\<CR>\<Esc>$"
-	    let first = strpart(getline(line(".")),0,1)
-	endif
+	let first = strpart(getline(line(".")),0,1)
+	normal! $
 	let length = col(".")
-    endwhile
+	let go = 1
+	while length > a:width+2 && go
+		let between = 0
+		let string = strpart(getline(line(".")),0,a:width)
+		" Count the dollar signs
+		let number_of_dollars = 0
+		let evendollars = 1
+		let counter = 0
+		while counter <= a:width-1
+			if string[counter] == '$' && string[counter-1] != '\'  " Skip \$.
+				let evendollars = 1 - evendollars
+				let number_of_dollars = number_of_dollars + 1
+			endif
+			let counter = counter + 1
+		endwhile
+		" Get ready to split the line.
+		exe "normal! " . (a:width + 1) . "|"
+		if evendollars
+			" Then you are not between dollars.
+			exe "normal! ?\\$\\| \<CR>W"
+		else
+			" Then you are between dollars.
+			normal! F$
+			if col(".") == 1 || strpart(getline(line(".")),col(".")-1,1) != "$"
+				let go = 0
+			endif
+		endif
+		if first == '$' && number_of_dollars == 1
+			let go = 0
+		else
+			exe "normal! i\<CR>\<Esc>$"
+			let first = strpart(getline(line(".")),0,1)
+		endif
+		let length = col(".")
+	endwhile
 endfunction
 
 " }}}
