@@ -402,6 +402,11 @@ function! Tex_GetMainFileName(...)
 	let curd = getcwd()
 	exe 'cd '.expand('%:p:h')
 	let lheadfile = glob('*.latexmain')
+	" dirty hack to check in dir one level up. TODO: while with ":h" mod.
+	if lheadfile == ''
+		cd ..
+		let lheadfile = glob('*.latexmain')
+	endif
 	if lheadfile != ''
 		let lheadfile = fnamemodify(lheadfile, modifier)
 	endif
@@ -525,6 +530,7 @@ exe 'source '.s:path.'/templates.vim'
 exe 'source '.s:path.'/custommacros.vim'
 exe 'source '.s:path.'/bibtex.vim'
 exe 'source '.s:path.'/diacritics.vim'
+exe 'source '.s:path.'/texproject.vim'
 
 " ==============================================================================
 " Finally set up the folding, options, mappings and quit.

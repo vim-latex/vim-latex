@@ -95,6 +95,17 @@ if !exists("g:explHideFiles")
   let g:explHideFiles=''
 endif
 
+" Project files
+if !exists("g:projFiles")
+  let g:projFiles=''
+endif
+
+if !exists("g:projName")
+  let g:projName='[No Name]'
+endif
+
+
+
 " Field to sort by
 if !exists("g:explSortBy")
   let g:explSortBy='name'
@@ -304,6 +315,15 @@ function! s:EditDir()
     let b:filtering=""
   endif
 
+  " Set filter for project files
+  let b:projFormula = substitute(g:projFiles, '\([^\\]\),', '\1\\|', 'g')
+  let b:projFormula = substitute(b:projFormula, '^', '\\(', '')
+  let b:projFormula = substitute(b:projFormula, '$', '\\)', '')
+  if b:projFormula != '\(\)'
+    let b:proj="\n\" Project Name: " . g:projName
+  else
+    let b:proj=''
+  endif
   " Show the files
   call s:ShowDirectory()
 
@@ -649,8 +669,17 @@ function! s:MarkDirs()
     let fileLen=strlen(currLine)+1
   else
     let fileLen=strlen(currLine)
-    if (b:filterFormula!="") && (currLine =~ b:filterFormula)
-      " Don't show the file if it is to be filtered.
+	if !exists("w:projView") || w:projView == 0
+	  let w:projView = 0
+    else
+	  let b:projdir = Tex_GetMainFileName(":p:h")
+	  if (b:projFormula!='')&&(b:completePath.currLine!~b:projdir.'/'.b:projFormula)
+	    " Show only files in project
+	    d _
+	  endif
+	endif
+	if (b:filterFormula!="") && (currLine =~ b:filterFormula)
+       "Don't show the file if it is to be filtered.
       d _
     endif
   endif
@@ -748,7 +777,7 @@ function! s:AddHeader()
     else
       let @f="\" Press ? for keyboard shortcuts\n"
     endif
-    let @f=@f."\" Sorted by ".w:sortdirlabel.w:sorttype.b:suffixeslast.b:filtering."\n"
+    let @f=@f."\" Sorted by ".w:sortdirlabel.w:sorttype.b:suffixeslast.b:filtering.b:proj."\n"
     let @f=@f."\"= ".b:completePath."\n"
     put! f
     let @f=save_f

@@ -76,6 +76,7 @@ function! Tex_completion(what, where)
 			let bblfiles = <SID>Tex_FindBblFiles()
 			if bibfiles != ''
 				exe 'silent! grepadd! "@.*{'.s:prefix.'" '.bibfiles
+				let g:bbb = 'silent! grepadd! "@.*{'.s:prefix.'" '.bibfiles
 			endif
 			if bblfiles != ''
 				exe 'silent! grepadd! "bibitem{'.s:prefix.'" '.bblfiles
@@ -181,8 +182,17 @@ function! s:Tex_c_window_setup()
 	nnoremap <buffer> <silent> J :wincmd j<cr><c-e>:wincmd k<cr>
 	nnoremap <buffer> <silent> K :wincmd j<cr><c-y>:wincmd k<cr>
 
-	exe 'nnoremap <buffer> <silent> q :'.s:winnum.' wincmd w<cr>:pclose!<cr>:cclose<cr>'
+	exe 'nnoremap <buffer> <silent> q :call Tex_CloseSmallWindows()<cr>'
 
+endfunction " }}}
+" Tex_CloseSmallWindows: {{{
+" Description:
+"
+function! Tex_CloseSmallWindows()
+	exe s:winnum.' wincmd w'
+	pclose!
+	cclose
+	exe s:pos
 endfunction " }}}
 " Tex_explore_window: settings for completion of filenames {{{
 " Description: 
@@ -359,36 +369,53 @@ endfunction " }}}
 "
 function! s:Tex_FindBibFiles()
 
-	let bibfiles = ''
-	let bibfiles2 = ''
-	let curdir = expand("%:p:h")
-	let curdir = substitute(curdir, ' ', "\\", 'ge')
+	if g:projFiles != ''
+		let bibfiles = ''
+		let i = 1
+		while Tex_Strntok(g:projFiles, ',', i) != ''
+			let curfile = Tex_Strntok(g:projFiles, ',', i)
+			if curfile =~ '\.bib'
+				let curfile = substitute(curfile, '.*', s:search_directory.'\0', '')
+				let bibfiles = bibfiles.'"'.curfile.'" '
+			endif
+			let i = i + 1
+		endwhile
 
-	if search('\\bibliography{', 'w')
-		let bibfiles = matchstr(getline('.'), '\\bibliography{\zs.\{-}\ze}')
-		let bibfiles = substitute(bibfiles, '\(,\|$\)', '.bib ', 'ge')
-		let bibfiles = substitute(bibfiles, '\(^\| \)', ' '.curdir.'/', 'ge')
+		let g:bibf = bibfiles
+		return bibfiles
+
 	else
-		let bibfiles = glob(curdir.'/*.bib')
-		let bibfiles = substitute(bibfiles, '\n', ' ', 'ge')
-	endif
+		let bibfiles = ''
+		let bibfiles2 = ''
+		let curdir = expand("%:p:h")
+		let curdir = substitute(curdir, ' ', "\\", 'ge')
 
-	if Tex_GetMainFileName() != ''
-		let mainfname = Tex_GetMainFileName()
-		let mainfdir = fnamemodify(mainfname, ":p:h")
-		exe 'bot 1 split '.mainfname
 		if search('\\bibliography{', 'w')
-			let bibfiles2 = matchstr(getline('.'), '\\bibliography{\zs.\{-}\ze}')
-			let bibfiles2 = substitute(bibfiles2, '\(,\|$\)', '.bib ', 'ge')
-			let bibfiles2 = substitute(bibfiles2, '\(^\| \)', ' '.curdir.'/', 'ge')
-		elseif mainfdir != curdir
-			let bibfiles2 = glob(mainfdir.'/*.bib')
-			let bibfiles2 = substitute(bibfiles2, '\n', ' ', 'ge')
+			let bibfiles = matchstr(getline('.'), '\\bibliography{\zs.\{-}\ze}')
+			let bibfiles = substitute(bibfiles, '\(,\|$\)', '.bib ', 'ge')
+			let bibfiles = substitute(bibfiles, '\(^\| \)', ' '.curdir.'/', 'ge')
+		else
+			let bibfiles = glob(curdir.'/*.bib')
+			let bibfiles = substitute(bibfiles, '\n', ' ', 'ge')
 		endif
-		wincmd q
-	endif
 
-	return bibfiles.' '.bibfiles2
+		if Tex_GetMainFileName() != ''
+			let mainfname = Tex_GetMainFileName()
+			let mainfdir = fnamemodify(mainfname, ":p:h")
+			exe 'bot 1 split '.mainfname
+			if search('\\bibliography{', 'w')
+				let bibfiles2 = matchstr(getline('.'), '\\bibliography{\zs.\{-}\ze}')
+				let bibfiles2 = substitute(bibfiles2, '\(,\|$\)', '.bib ', 'ge')
+				let bibfiles2 = substitute(bibfiles2, '\(^\| \)', ' '.curdir.'/', 'ge')
+			elseif mainfdir != curdir
+				let bibfiles2 = glob(mainfdir.'/*.bib')
+				let bibfiles2 = substitute(bibfiles2, '\n', ' ', 'ge')
+			endif
+			wincmd q
+		endif
+
+		return bibfiles.' '.bibfiles2
+	endif
 
 endfunction " }}}
 " Tex_FindBblFiles: find bibitem entries in tex files {{{
@@ -396,25 +423,41 @@ endfunction " }}}
 "
 function! s:Tex_FindBblFiles()
 
-	let bblfiles = ''
-	let bblfiles2 = ''
-	let curdir = expand("%:p:h")
+	if g:projFiles != ''
+		let bblfiles = ''
+		let i = 1
+		while Tex_Strntok(g:projFiles, ',', i) != ''
+			let curfile = Tex_Strntok(g:projFiles, ',', i)
+			if curfile =~ '\.tex'
+				let curfile = substitute(curfile, '.*', s:search_directory.'\0', '')
+				let bblfiles = bblfiles.'"'.curfile.'" '
+			endif
+			let i = i + 1
+		endwhile
 
-	let bblfiles = glob(curdir.'/*.tex')
-	let bblfiles = substitute(bblfiles, '\n', ' ', 'ge')
+		return bblfiles
 
-	if Tex_GetMainFileName() != ''
-		let mainfname = Tex_GetMainFileName()
-		let mainfdir = fnamemodify(mainfname, ":p:h")
+	else
+		let bblfiles = ''
+		let bblfiles2 = ''
+		let curdir = expand("%:p:h")
 
-		if mainfdir != curdir
-			let bblfiles = glob(mainfdir.'/*.tex')
-			let bblfiles = substitute(bblfiles, '\n', ' ', 'ge')
+		let bblfiles = glob(curdir.'/*.tex')
+		let bblfiles = substitute(bblfiles, '\n', ' ', 'ge')
+
+		if Tex_GetMainFileName() != ''
+			let mainfname = Tex_GetMainFileName()
+			let mainfdir = fnamemodify(mainfname, ":p:h")
+
+			if mainfdir != curdir
+				let bblfiles = glob(mainfdir.'/*.tex')
+				let bblfiles = substitute(bblfiles, '\n', ' ', 'ge')
+			endif
+
 		endif
 
+		return bblfiles.' '.bblfiles2
 	endif
-
-	return bblfiles.' '.bblfiles2
 
 endfunction " }}}
 

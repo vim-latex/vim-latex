@@ -53,6 +53,13 @@ if has('gui_running') && g:Tex_Menus
 		\'   :TCLevel NONE<CR>'
 	exec 'inoremenu 80.100 '.s:mainmenuname.'C&omplete\ Ref/Cite'.
 		\'   <Esc>:call Tex_viewer("default","text")<CR>'
+	" project
+	exec 'anoremenu 80.105 '.s:mainmenuname.'Project.&Project<tab>:TProject'.
+		\'   :TProject<CR>'
+	exec 'anoremenu 80.106 '.s:mainmenuname.'Project.Project&Edit<tab>:TProjectEdit'.
+		\'   :TProjectEdit<CR>'
+	exec 'anoremenu 80.107 '.s:mainmenuname.'Project.Project&Write<tab>:TProjectWrite'.
+		\'   :TProjectWrite<CR>'
 	exec 'anoremenu 80.110 '.s:mainmenuname.'-sepsuite1- :'
 	" refreshing folds
 	if g:Tex_Folding

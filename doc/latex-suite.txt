@@ -1,6 +1,6 @@
 *latex-suite*   Tools for an enhanced LaTeX environment in Vim
                         For Vim version 6.0 and above.
-                  Last Change: Sat Apr 12 06:00 PM 2003 
+                  Last Change: Sat Apr 16 06:00 PM 2003 
 
                  By Srinath Avadhanula <srinath@fastmail.fm>,
                       Mikolaj Machowski <mikmach@wp.pl>,
@@ -553,6 +553,35 @@ list of avaiable templates is displayed and the user is asked to choose one of
 them.
 
 You can ofcourse place your own templates in this directory.
+
+}}}
+===========================================================================
+LATEX PROJECT                               *latex-project* {{{
+
+LaTeX-suite is quite smart with looking for components of LaTeX document. In 
+simple projects which can be put in one, two or three directories LaTeX-suite 
+can find bibliography, included or image files. But it is impossible to guess 
+all combinations, especially in projects dispersed in many directories, in 
+deep levels. For such situations you can create projects.
+
+Creating project
+
+To create project file make sure you don't have *.latexmain file 
+(|latex-master-file|). Open file which is the skelet of your whole work. Use 
+|:TProjectEdit| command. It will create file "yourmainfile.tex.latexmain" and 
+read in template of project file. This is just Vim file. Now you have two 
+commented variables: g:projName and g:projFiles. First isn't obligatory. It 
+will be visible in Explorer window to show you are editing project. This is 
+list of files separated with commas. File/dir name cannot contain 
+spaces. Example: 
+>
+    let g:projFiles="main.tex,roz1/roz1.tex,roz1/roz1.bib,main.bib,newfile.tex"
+
+Editing project file
+
+After |:TProjectEdit| screen will be split and you can make corrections, 
+comments or new files to project. To make changes available to Vim issue
+command |:TProjectWrite|. This will save file and source it immediately.
 
 }}}
 ===========================================================================
