@@ -110,7 +110,7 @@ function! RunLaTeX()
 
 	exec 'make '.mainfname
 
-	let winnum = winnr('')
+	let winnum = winnr()
 	cwindow
 	" just open the cwindow, do not remain there...
 	execute winnum "wincmd w"
