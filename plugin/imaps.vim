@@ -7,7 +7,7 @@
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
 "
-" Last Change: Sun Dec 22 08:00 AM 2002 EST
+" Last Change: Sun Dec 22 05:00 PM 2002 PST
 " 
 " Documentation: {{{
 "
@@ -186,11 +186,10 @@ function! IMAP(lhs, rhs, ft, ...)
 endfunction
 
 " }}}
-
 " IMAP_list:  list the rhs and place holders corresponding to a:lhs {{{
 "
 " Added mainly for debugging purposes, but maybe worth keeping.
-fun! IMAP_list(lhs)
+function! IMAP_list(lhs)
 	let char = a:lhs[strlen(a:lhs)-1]
 	let charHash = s:Hash(char)
 	if exists("s:LHS_" . &ft . "_" . charHash)
@@ -203,9 +202,8 @@ fun! IMAP_list(lhs)
 	let hash = s:Hash(a:lhs)
 	return "rhs = " . s:Map_{ft}_{hash} . " place holders = " .
 				\ s:phs_{ft}_{hash} . " and " . s:phe_{ft}_{hash}
-endfun
+endfunction
 " }}}
-
 " LookupCharacter: inserts mapping corresponding to this character {{{
 "
 " This function extracts from s:LHS_{&ft}_{a:char} or s:LHS__{a:char}
@@ -265,8 +263,8 @@ function! IMAP_PutTextWithMovement(str, ...)
 	let text = a:str
 
 	" The user's placeholder settings.
-	let phsUser = s:PlaceHolderStart()
-	let pheUser = s:PlaceHolderEnd()
+	let phsUser = IMAP_GetPlaceHolderStart()
+	let pheUser = IMAP_GetPlaceHolderEnd()
 
 	" A very rare string: Do not use any special characters here. This is used
 	" for moving to the beginning of the inserted text.
@@ -343,8 +341,8 @@ endfunction
 function! IMAP_Jumpfunc(direction, inclusive)
 
 	" The user's placeholder settings.
-	let phsUser = s:PlaceHolderStart()
-	let pheUser = s:PlaceHolderEnd()
+	let phsUser = IMAP_GetPlaceHolderStart()
+	let pheUser = IMAP_GetPlaceHolderEnd()
 
 	let searchOpts = a:direction
 	" If the user has nowrapscan set, then do not make the search wrap around
@@ -571,9 +569,9 @@ fun! s:Hash(text)
 				\ '\="_".char2nr(submatch(1))."_"', 'g')
 endfun
 "" }}}
-" PlaceHolderStart and PlaceHolderEnd:  return the buffer-local " {{{
-" variable, or the global one, or the default.
-fun! s:PlaceHolderStart()
+" IMAP_GetPlaceHolderStart and IMAP_GetPlaceHolderEnd:  "{{{
+" return the buffer local placeholder variables, or the global one, or the default.
+function! IMAP_GetPlaceHolderStart()
 	if exists("b:Imap_PlaceHolderStart") && strlen(b:Imap_PlaceHolderEnd)
 		return b:Imap_PlaceHolderStart
 	elseif exists("g:Imap_PlaceHolderStart") && strlen(g:Imap_PlaceHolderEnd)
@@ -581,7 +579,7 @@ fun! s:PlaceHolderStart()
 	else
 		return "<+"
 endfun
-fun! s:PlaceHolderEnd()
+function! IMAP_GetPlaceHolderEnd()
 	if exists("b:Imap_PlaceHolderEnd") && strlen(b:Imap_PlaceHolderEnd)
 		return b:Imap_PlaceHolderEnd
 	elseif exists("g:Imap_PlaceHolderEnd") && strlen(g:Imap_PlaceHolderEnd)
