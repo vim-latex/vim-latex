@@ -382,15 +382,20 @@ function! IMAP_Jumpfunc(direction, inclusive)
 		\          '\V\^'.phsUser.'\zs\.\{-}\ze\('.pheUser.'\|\$\)')
 	let placeHolderEmpty = !strlen(template)
 
+	" Jumping doesn't work with exclusive
+	let _selection = &selection
+	let &selection = 'inclusive'
+	let restoreselection = "let &selection = '"._selection."'"
+
 	" Select till the end placeholder character.
 	let movement = "\<C-o>v/\\V".pheUser."/e\<CR>"
 
 	" Now either goto insert mode or select mode.
 	if placeHolderEmpty && g:Imap_DeleteEmptyPlaceHolders
 		" delete the empty placeholder into the blackhole.
-		return movement."\"_c\<C-o>:".s:RemoveLastHistoryItem."\<CR>"
+		return movement."\"_c\<C-o>:".s:RemoveLastHistoryItem."|".restoreselection."\<CR>"
 	else
-		return movement."\<C-\>\<C-N>:".s:RemoveLastHistoryItem."\<CR>gv\<C-g>"
+		return movement."\<C-\>\<C-N>:".s:RemoveLastHistoryItem."|".restoreselection."\<CR>gv\<C-g>"
 	endif
 	
 endfunction
