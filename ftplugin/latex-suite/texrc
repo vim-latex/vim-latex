@@ -389,7 +389,9 @@ TexLet g:Tex_SmartKeyBS = 1
 TexLet g:Tex_SmartKeyQuote = 1
 
 " Users of other languages might want to change the quote characters to suit
-" their locale. 
+" their locale.  These global values will be ignored if there are buffer-local
+" versions, which may be set in the language-specific package files, such as
+" ftplugin/latex-suite/packages/german
 TexLet g:Tex_SmartQuoteOpen = "``"
 TexLet g:Tex_SmartQuoteClose = "''"
 
