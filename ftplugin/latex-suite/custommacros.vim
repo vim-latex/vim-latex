@@ -3,7 +3,7 @@
 "      Author: Mikolaj Machowski
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: czw maj 09 10:00  2002 U
+" Last Change: Thu Dec 05 10:00 PM 2002 PST
 " 
 "  Description: functions for processing custom macros in the
 "               latex-suite/macros directory
@@ -116,7 +116,7 @@ function! <SID>ReadMacro(...)
 	call search('¡!¡Start here¡!¡')
 	silent! normal! v15l"_x
 
-	call TeX_pack_all()
+	call Tex_pack_all()
 
 	silent! exe pos
 	if col('.') < strlen(getline('.'))
