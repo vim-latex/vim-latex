@@ -362,13 +362,12 @@ def handleTableRoot(root, width):
         thead = tgroup.getChildrenByTagName('thead')[0]
         rows = thead.getChildrenByTagName('row')
         numHeadRows = len(rows)
-    else:
-        headTable = ''
 
     tbody = tgroup.getChildrenByTagName('tbody')[0]
     rows += tbody.getChildrenByTagName('row')
 
     widths, text = calculateColumnWidthsDoublePass(rows, width)
+
     headText = text[0:numHeadRows]
     bodyText = text[numHeadRows:]
 
@@ -414,6 +413,8 @@ def calculateColumnWidths(rows, alloc_widths):
 # calculateColumnWidthsDoublePass(rows, width): {{{
 def calculateColumnWidthsDoublePass(rows, width):
     maxwidths, text = calculateColumnWidths(rows, [width])
+    if sum(maxwidths) <= width:
+        return maxwidths, text
 
     # now find out how many columns exceed the maximum permitted width.
     # nlarge: number of columns which are too wide.
