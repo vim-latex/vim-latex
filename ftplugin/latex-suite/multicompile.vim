@@ -118,7 +118,6 @@ endfunction " }}}
 " the cost of some slowdown and a new temporary buffer being added to the
 " buffer list.
 " Tex_GotoTempFile: open a temp file. reuse from next time on {{{
-" Description: 
 function! Tex_GotoTempFile()
 	if !exists('s:tempFileName')
 		let s:tempFileName = tempname()
@@ -126,11 +125,14 @@ function! Tex_GotoTempFile()
 	exec 'silent! split '.s:tempFileName
 endfunction " }}}
 " Tex_IsPresentInFile: finds if a string str, is present in filename {{{
-" Description: 
-function! Tex_IsPresentInFile(regexp, filename)
-	if has('python') && g:Tex_UsePython
+if has('python') && g:Tex_UsePython
+	function! Tex_IsPresentInFile(regexp, filename)
 		exec 'python isPresentInFile(r"'.a:regexp.'", r"'.a:filename.'")'
-	else
+
+		return retval
+	endfunction
+else
+	function! Tex_IsPresentInFile(regexp, filename)
 		call Tex_GotoTempFile()
 
 		silent! 1,$ d _
@@ -148,16 +150,19 @@ function! Tex_IsPresentInFile(regexp, filename)
 			let retval = 0
 		endif
 		silent! bd
-	endif
-
-	return retval
-endfunction " }}}
+		return retval
+	endfunction
+endif " }}}
 " Tex_CatFile: returns the contents of a file in a <NL> seperated string {{{
-function! Tex_CatFile(filename)
-	if has('python') && g:Tex_UsePython
+if has('python') && g:Tex_UsePython
+	function! Tex_CatFile(filename)
 		" catFile assigns a value to retval
 		exec 'python catFile("'.a:filename.'")'
-	else
+
+		return retval
+	endfunction
+else
+	function! Tex_CatFile(filename)
 		if glob(a:filename) == ''
 			return ''
 		endif
@@ -180,9 +185,9 @@ function! Tex_CatFile(filename)
 		silent! bd
 		let &report = _report
 		let &sc = _sc
-	endif
-	return retval
-endfunction
+		return retval
+	endfunction
+endif
 " }}}
 
 " Define the functions in python if available.
