@@ -390,15 +390,40 @@ endfunction
 nmap <silent> <script> <plug>cleanHistory :call Tex_CleanSearchHistory()<CR>
 
 " }}}
+" Tex_GetVarValue: gets the value of the variable {{{
+" Description: 
+" 	See if a window-local, buffer-local or global variable with the given name
+" 	exists and if so, returns the corresponding value. Otherwise return the
+" 	provided default value.
+function! Tex_GetVarValue(varname, default)
+	if exists('w:'.a:varname)
+		return w:{a:varname}
+	elseif exists('b:'.a:varname)
+		return b:{a:varname}
+	elseif exists('g:'.a:varname)
+		return g:{a:varname}
+	else
+		return a:default
+	endif
+endfunction " }}}
 " Tex_GetMainFileName: gets the name (without extension) of the main file being compiled. {{{
 " Description:  returns '' if .latexmain doesnt exist.
 "               i.e if main.tex.latexmain exists, then returns:
 "                   d:/path/to/main
+"               if a:1 is supplied, then it is used to modify the *.latexmain
+"               file instead of using ':p:r:r'.
 function! Tex_GetMainFileName(...)
 	if a:0 > 0
 		let modifier = a:1
 	else
 		let modifier = ':p:r:r'
+	endif
+
+	" If the user wants to use his own way to specify the main file name, then
+	" use it straight away.
+	if Tex_GetVarValue('Tex_MainFileExpression', '') != ''
+		exec 'let retval = '.Tex_GetVarValue('Tex_MainFileExpression', '')
+		return retval
 	endif
 
 	let curd = getcwd()
