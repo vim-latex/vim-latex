@@ -18,7 +18,10 @@ After 8 May 2003
 	* wizardfuncs.vim, latex-suite.txt:
 		Tshortcuts - new command show various shortcuts (MM)
 	* latex-suite.txt:
-		more cross-references with main Vim help, corrected mispells (MM)
+		More cross-references with main Vim help, corrected mispells (MM)
+	* texmenuconf.vim:
+		Show value of <mapleader> in General menu instead of hardcoded \ (it
+		caused confusion) (MM)
 
 	Bugfixes
 	* compiler.vim:
