@@ -47,7 +47,7 @@ let g:Tex_completion_addcontentsline = 'lof}{figure}{,lot}{table}{,toc}{chapter}
 									\ 'toc}{subparagraph}{'
 " }}}
 
-" Tex_viewer: main function {{{
+" Tex_completion: main function {{{
 " Description:
 "
 function! Tex_completion(what, where)
@@ -61,8 +61,8 @@ function! Tex_completion(what, where)
 		" What to do after <F9> depending on context
 		let s:curfile = expand("%:p")
 		let s:curline = strpart(getline('.'), col('.') - 40, 40)
-		let s:prefix = matchstr(s:curline, '{\zs.\{-}$')
-		let s:type = matchstr(s:curline, '\\\zs.\{-}\ze{.\{-}$')
+		let s:prefix = matchstr(s:curline, '.*{\zs.\{-}$')
+		let s:type = matchstr(s:curline, '.*\\\zs.\{-}\ze{.\{-}$')
 		let s:typeoption = matchstr(s:type, '\zs[.*]\ze')
 		let s:type = substitute(s:type, '[.*', '', 'e')
 
