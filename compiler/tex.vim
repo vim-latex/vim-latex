@@ -2,7 +2,7 @@
 "            Type: compiler plugin for LaTeX
 " Original Author: Artem Chuprina <ran@ran.pp.ru>
 "   Customization: Srinath Avadhanula <srinath@fastmail.fm>
-"     Last Change: Fri Dec 06 01:00 AM 2002 PST
+"             CVS: $Id$
 " Description:  {{{
 "   This file sets the 'makeprg' and 'errorformat' options for the LaTeX
 "   compiler. It is customizable to optionally ignore certain warnings and
@@ -75,16 +75,18 @@ let b:doneTexCompiler = 1
 " carefully, otherwise you might end up losing valuable information.
 if !exists('g:Tex_IgnoredWarnings')
 	let g:Tex_IgnoredWarnings =
-		\'Underfull¡'.
-		\'Overfull¡'.
-		\'specifier changed to¡'.
-		\'You have requested¡'.
-		\'Missing number, treated as zero.'
+		\'Underfull'."\n".
+		\'Overfull'."\n".
+		\'specifier changed to'."\n".
+		\'You have requested'."\n".
+		\'Missing number, treated as zero.'."\n".
+		\'There were undefined references'."\n".
+		\'Citation %.%# undefined'
 endif
 " This is the number of warnings in the g:Tex_IgnoredWarnings string which
 " will be ignored.
 if !exists('g:Tex_IgnoreLevel')
-	let g:Tex_IgnoreLevel = 4
+	let g:Tex_IgnoreLevel = 7
 endif
 " There will be lots of stuff in a typical compiler output which will
 " completely fall through the 'efm' parsing. This options sets whether or not
@@ -171,14 +173,14 @@ endif
 " }}}
 " ==============================================================================
 " Functions for setting up a customized 'efm' {{{
-"
+
 " IgnoreWarnings: parses g:Tex_IgnoredWarnings for message customization {{{
 " Description: 
 function! <SID>IgnoreWarnings()
 	let i = 1
-	while s:Strntok(g:Tex_IgnoredWarnings, '¡', i) != '' &&
+	while s:Strntok(g:Tex_IgnoredWarnings, "\n", i) != '' &&
 				\ i <= g:Tex_IgnoreLevel
-		let warningPat = s:Strntok(g:Tex_IgnoredWarnings, '¡', i)
+		let warningPat = s:Strntok(g:Tex_IgnoredWarnings, "\n", i)
 		let warningPat = escape(substitute(warningPat, '[\,]', '%\\\\&', 'g'), ' ')
 		exe 'setlocal efm+=%-G%.%#'.warningPat.'%.%#'
 		let i = i + 1
@@ -249,21 +251,32 @@ endfun
 
 " }}}
 " SetTexCompilerLevel: sets the "level" for the latex compiler {{{
-function! <SID>SetTexCompilerLevel(level)
-	if a:level == 'strict'
-		let g:Tex_ShowallLines = 1
-	elseif a:level =~ '^\d\+$'
-		let g:Tex_ShowallLines = 0
-		let g:Tex_IgnoreLevel = a:level
+function! <SID>SetTexCompilerLevel(...)
+	if a:0 > 0
+		let level = a:1
 	else
-		echoerr "SetTexCompilerLevel: Unkwown option [".a:level."]"
+		call Tex_ResetIncrementNumber(0)
+		echo substitute(g:Tex_IgnoredWarnings, 
+			\ '^\|\n\zs\S', '\=Tex_IncrementNumber(1)." ".submatch(0)', 'g')
+		let level = input("\nChoose an ignore level: ")
+		if level == ''
+			return
+		endif
+	endif
+	if level == 'strict'
+		let g:Tex_ShowallLines = 1
+	elseif level =~ '^\d\+$'
+		let g:Tex_ShowallLines = 0
+		let g:Tex_IgnoreLevel = level
+	else
+		echoerr "SetTexCompilerLevel: Unkwown option [".level."]"
 	end
 	call s:SetLatexEfm()
 endfunction 
 
-com! -nargs=1 TCLevel :call <SID>SetTexCompilerLevel(<f-args>)
+com! -nargs=? TCLevel :call <SID>SetTexCompilerLevel(<f-args>)
 " }}}
-"
+
 " }}}
 " ==============================================================================
 
