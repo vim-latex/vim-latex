@@ -47,15 +47,17 @@ if has('gui_running') && g:Tex_Menus
 		\'   :call SetTeXCompilerTarget("View", "")<CR>'
 	exec 'anoremenu 80.90 '.s:mainmenuname.'Set\ &Ignore\ Level<tab>:TCLevel'.
 		\'   :TCLevel NONE<CR>'
-	exec 'anoremenu 80.100 '.s:mainmenuname.'-sepsuite1- :'
+	exec 'inoremenu 80.100 '.s:mainmenuname.'C&omplete\ Ref/Cite'.
+		\'   <Esc>:call Tex_viewer("default","text")<CR>'
+	exec 'anoremenu 80.110 '.s:mainmenuname.'-sepsuite1- :'
 	" refreshing folds
 	if g:Tex_Folding
-		exec 'anoremenu 80.100 '.s:mainmenuname.'Refresh\ Folds<tab>\\rf'.
+		exec 'anoremenu 80.120 '.s:mainmenuname.'&Refresh\ Folds<tab>\\rf'.
 			\'   :call MakeTexFolds(1)<CR>'
-		exec 'anoremenu 80.110 '.s:mainmenuname.'-sepsuite2- :'
+		exec 'anoremenu 80.130 '.s:mainmenuname.'-sepsuite2- :'
 	endif
 	" editing private texrc
-	exec 'anoremenu 80.120 '.s:mainmenuname.'Edit\ &texrc<tab>:Ttexrc'.
+	exec 'anoremenu 80.140 '.s:mainmenuname.'Edit\ &texrc<tab>:Ttexrc'.
 			\' :Ttexrc<CR>'
 
 endif
