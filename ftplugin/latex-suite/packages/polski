@@ -53,6 +53,10 @@ endfunction
 call TPackagePolskiTylda()
 " --------8<-------------
 
+" Polskie znaki cudzyslowow 
+TexLet g:Tex_SmartQuoteOpen = ",,"
+TexLet g:Tex_SmartQuoteClose = "''"
+ 
 " Zmodyfikowana i rozwinieta funkcja Andrzeja Ostruszki
 " Z dodatkiem od Benjiego Fishera (sprawdzanie sk³adni)
 "
@@ -86,7 +90,7 @@ endfunction
 
 function! s:Tex_polish_space()
 	"Nic magicznego w matematyce
-	 if synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^texMath\|^texZone'
+	 if synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^texMath\|^texZone\^texRefZone'
 		 return ' '
 	 else
 		let s:col = col('.')
