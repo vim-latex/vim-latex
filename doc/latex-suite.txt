@@ -1186,6 +1186,15 @@ taking care about Macros, Templates and Packages.
                 Show last compiled fragment. All rules of viewing apply but
                 |latex-searching|.
 
+:Tshortcuts [{arg}]                    *:Tshortcuts*
+                Show shortcuts in terminal (not using menu). Without {arg}
+                you will see simple menu prompting for one of them. Possible
+                arguments:
+                g       General shortcuts
+                e       Environment shortcuts
+                f       Font shortcuts
+                s       Section shortcuts
+                a       All shortcuts
 }}}
 ===========================================================================
 CREDITS                                 *latex-suite-credits* {{{
