@@ -393,7 +393,7 @@ endfunction
 " }}} 
 " Tex_tabular: {{{
 function! Tex_tabular(env)
-	if Tex_UseMenuWizard == 1
+	if g:Tex_UseMenuWizard == 1
 		let pos    = input('(Optional) Position (t b)? ')
 		let format = input("Format  ( l r c p{width} | @{text} )? ")
 		if pos != ''
