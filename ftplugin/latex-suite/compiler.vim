@@ -3,7 +3,7 @@
 "      Author: Srinath Avadhanula
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 05:00 PM 2002 PST
-" Last Change: Tue Nov 12 08:00 AM 2002 PST
+" Last Change: Wed Nov 13 06:00 PM 2002 PST
 " 
 "  Description: functions for compiling/viewing/searching latex documents
 "=============================================================================
@@ -110,7 +110,7 @@ function! RunLaTeX()
 
 	exec 'make '.mainfname
 
-	let winnum = winnr('%')
+	let winnum = winnr('')
 	cwindow
 	" just open the cwindow, do not remain there...
 	execute winnum "wincmd w"
