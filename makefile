@@ -88,6 +88,14 @@ updoc:
 uphtdocs:
 	$(SSHCMD) $(CVSUSER)@vim-latex.sf.net /home/groups/v/vi/vim-latex/bin/uphtdocs
 	
+# Automatically generate the Changelog file using the cvs2cl utility
+#
+# Arguments:
+# -S			add a seperating line between filename and log
+#  --no-wrap	Do not attempt to format the Changelog comments
+#  -f			file to write the Changelog to.
+changelog:
+	cvs2cl -S --no-wrap -f ftplugin/latex-suite/Changelog
 
 # rsync is like cp (copy) on steroids.  Here are some useful options:
 # -C	auto ignore like CVS
