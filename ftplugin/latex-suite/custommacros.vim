@@ -18,7 +18,7 @@ elseif has("win32")
 	if exists("$HOME")
 		let s:macrodirpath = $HOME."/vimfiles/ftplugin/latex-suite/macros/"
 	else
-		let s:macrodirpath = $VIMRUNTIME."/ftplugin/latex-suite/macros/"
+		let s:macrodirpath = $VIM."/vimfiles/ftplugin/latex-suite/macros/"
 	endif
 endif
 
@@ -26,7 +26,7 @@ endif
 " SetCustomMacrosMenu: sets up the menu for Macros {{{
 function! <SID>SetCustomMacrosMenu()
 	let flist = Tex_FileInRtp('', 'macros')
-	exe 'amenu '.g:Tex_MacrosMenuLocation.'&New :call NewMacro()<CR>'
+	exe 'amenu '.g:Tex_MacrosMenuLocation.'&New :call <SID>NewMacro("FFFromMMMenu")<CR>'
 	exe 'amenu '.g:Tex_MacrosMenuLocation.'&Redraw :call RedrawMacro()<CR>'
 
 	let i = 1
@@ -49,12 +49,34 @@ endif
 
 " }}}
 " NewMacro: opens new file in macros directory {{{
-function! <SID>NewMacro(newmacro)
-	if Tex_FileInRtp(a:newmacro, 'macros') != ''
-		exe "echomsg 'Macro with name '".a:newmacro."' exists. Try another one.'"
-		return
+function! <SID>NewMacro(...)
+	" Allow for calling :TMacroNew without argument or from menu and prompt
+	" for name.
+	if a:0 > 0
+		let newmacroname = a:1
+	else
+		let newmacroname = input("Name of new macro: ")
+		if newmacroname == ''
+			return
+		endif
 	endif
-	exe 'split '.s:macrodirpath.a:newmacro
+
+	if newmacroname == "FFFromMMMenu"
+		" Check if NewMacro was called from menu and prompt for insert macro
+		" name
+		let newmacroname = input("Name of new macro: ")
+		if newmacroname == ''
+			return
+		endif
+	elseif Tex_FileInRtp(newmacroname, 'macros') != ''
+		" If macro with this name already exists, prompt for another name.
+		exe "echomsg 'Macro ".newmacroname." already exists. Try another name.'"
+		let newmacroname = input("Name of new macro: ")
+		if newmacroname == ''
+			return
+		endif
+	endif
+	exe 'split '.s:macrodirpath.newmacroname
 	setlocal filetype=tex
 endfunction
 
@@ -170,7 +192,7 @@ endfunction
 
 " }}}
 " commands for macros {{{
-com! -nargs=1 TMacroNew :call <SID>NewMacro(<f-args>)
+com! -nargs=? TMacroNew :call <SID>NewMacro(<f-args>)
 
 " This macros had to have 2 versions:
 if v:version >= 602 
