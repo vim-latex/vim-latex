@@ -1,5 +1,5 @@
 CVSUSER = srinathava
-SSHCMD = plink
+SSHCMD = ssh1
 DIR1 = $(PWD)
 
 # The main target. This creates a latex suite archive (zip and tar.gz
@@ -95,7 +95,7 @@ uphtdocs:
 #  --no-wrap	Do not attempt to format the Changelog comments
 #  -f			file to write the Changelog to.
 changelog:
-	cvs2cl -S --no-wrap -f ftplugin/latex-suite/Changelog
+	cvs2cl -S --no-wrap -f ftplugin/latex-suite/ChangeLog
 
 # rsync is like cp (copy) on steroids.  Here are some useful options:
 # -C	auto ignore like CVS
