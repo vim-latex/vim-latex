@@ -1,0 +1,50 @@
+In order to generate the html sources from the XML source, you will need to
+do the following:
+
+1. Download the Docbook XSL stylesheets from
+    http://sourceforge.net/project/showfiles.php?group_id=21935
+   I downloaded docbook-xsl-1.61.2.tar.gz
+   Unpack this archive under the doc/ directory (like
+   doc/docbook-xsl-1.XX.X) and rename the top-level directory from
+   docbook-xsl-1.61.2/ to docbook/ If you prefer to extract this someplace
+   else, make a symbolic link from that location to this one.
+
+2. Download the Docbook DTD from
+    http://www.oasis-open.org/docbook/xml/4.2/docbook-xml-4.2.zip
+   Extract this into
+   docbook/xml/*
+   CAUTION: the archive above does not create a top level directory but
+   unzips directly into the present directory. Therefore, make sure to run
+   the unzip from docbook/xml/
+
+3. Download saxon.jar from
+    http://vim-latex.sourceforge.net/documentation/saxon.jar
+   This is the bare .jar file without any of the other things which saxon
+   comes with.
+   Add the saxon.jar file to your $CLASSPATH setting.
+   NOTE: The CLASSPATH setting should point to the saxon.jar file, not the
+         directory where it resides.
+
+4. Download db2vim (created by me :)) via anonymous cvs vim-latex.sf.net
+   using
+    cvs -d :pserver:anonymous@cvs.vim-latex.sf.net:/cvsroot/vim-latex co db2vim
+   NOTE: This will create a directory db2vim in the present directory, so
+         maybe perform this operation in ~/bin or something similar.
+   Add the db2vim/ directory thus created to your $PATH setting.
+
+5. Create a new directory latex-suite/ under the doc/ directory for the
+   chunked html files to reside in. 
+
+6. Copy Makefile.in to Makefile or makefile and perform any necessary
+   customizations. For example, if you are using Activestate python under
+   windows, you will need to change the ls-txt: target as:
+        python e:/srinath/testing/db2vim/db2vim latex-suite.xml > latex-suite.txt
+
+
+Thats it! You are ready. Now you can do
+
+make ls-chunk
+make ls-flat
+make ls-txt
+
+to create the 3 formats.
