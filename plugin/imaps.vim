@@ -327,7 +327,7 @@ function! IMAP_PutTextWithMovement(str, ...)
 	let template = phsUser . template . pheUser
 	" Old trick:  insert and delete a character to get the same behavior at
 	" start, middle, or end of line and on empty lines.
-	let text = initial . "X\<C-\>\<C-N>:call IMAP_Mark('set')\<CR>s"
+	let text = initial . "X\<C-\>\<C-N>:call IMAP_Mark('set')\<CR>\"_s"
 	let text = text . template . final
 	let text = text . "\<C-\>\<C-N>:call IMAP_Mark('go')\<CR>"
 	let text = text . "i\<C-r>=IMAP_Jumpfunc('', 1)\<CR>"
