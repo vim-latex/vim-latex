@@ -564,7 +564,12 @@ augroup END
 
 " }}}
 
+" This variable has to be set before sourcing package files to add names of
+" commands to completion
+let g:Tex_completion_explorer = ',' 
+ 
 " Mappings defined in package files will overwrite all other
+
 exe 'source '.s:path.'/packages.vim'
 
 let &cpo = s:save_cpo
