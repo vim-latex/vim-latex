@@ -440,6 +440,7 @@ TexLet g:Tex_SmartKeyBS = 1
 " diacritic character. This default pattern detects the standard LaTeX
 " diacritics
 TexLet g:Tex_SmartBSPattern = 
+	\ '\(' .
 	\ "\\\\[\"^'=v]{\\S}"      . '\|' .
 	\ "\\\\[\"^'=]\\S"         . '\|' .
 	\ '\\v \S'                 . '\|' .

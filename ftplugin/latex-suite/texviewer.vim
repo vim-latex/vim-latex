@@ -70,7 +70,7 @@ function! Tex_Complete(what, where)
 		if s:curline =~ pattern
 			let s:type = substitute(s:curline, pattern, '\1', 'e')
 			let s:typeoption = substitute(s:curline, pattern, '\2', 'e')
-			call Tex_Debug('s:type = '.s:type.', typeoption = '.s:typeoption, 'view')
+			call Tex_Debug('Tex_Complete: s:type = '.s:type.', typeoption = '.s:typeoption, 'view')
 		endif
 
 		if exists("s:type") && s:type =~ 'ref'
