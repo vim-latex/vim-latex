@@ -17,9 +17,26 @@ let s:path = expand("<sfile>:p:h")
 
 let s:menu_div = 20
 
-com! -nargs=* TPackage let s:retVal = Tex_pack_one(<f-args>) <bar> normal! i<C-r>=s:retVal<CR>
+com! -complete=custom,Tex_CompletePackageName -nargs=* TPackage let s:retVal = Tex_pack_one(<f-args>) <bar> normal! i<C-r>=s:retVal<CR>
 com! -nargs=0 TPackageUpdate :silent! call Tex_pack_updateall(1)
 com! -nargs=0 TPackageUpdateAll :silent! call Tex_pack_updateall(1)
+
+" Tex_CompletePackageName: for completing names in TPackage command {{{
+"	Description: get list of package names with globpath(), remove full path
+"	and return list of names separated with newlines.
+"
+function! Tex_CompletePackageName(A,P,L)
+	let list = globpath(s:path.'/packages','*')
+	let list = substitute(list,'\n',',','g')
+	if has("win32") || has("dos32") || has("dos16")
+		let list = substitute(list,'^\|,[^,]*\',',','g')
+	else
+		let list = substitute(list,'^\|,[^,]*/',',','g')
+	endif
+	let list = substitute(list,',','\n','g')
+	return list
+endfunction
+" }}}
 
 imap <silent> <plug> <Nop>
 nmap <silent> <plug> i
