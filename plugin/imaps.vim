@@ -226,21 +226,51 @@ function! s:LookupCharacter(char)
 				\ && text =~ '\V\(' . s:LHS__{charHash} . '\)\$'
 		let ft = ""
 	else
-		return a:char
+		" If this is a character which could have been used to trigger an
+		" abbreviation, check if an abbreviation exists.
+		if a:char !~ '\k'
+			let lastword = matchstr(getline('.'), '\k\+$', '')
+			if lastword != ''
+				" An extremeley wierd way to get around the fact that vim
+				" doesn't have the equivalent of the :mapcheck() function for
+				" abbreviations.
+				exec "redir @a | silent! iab ".lastword." | redir END"
+				if @a =~ "No abbreviation found"
+					return a:char
+				endif
+				let abbreviationRHS = matchstr(@a, "\n".'i\s\+\k\+\s\+@\?\zs.*')
+				let abbreviationRHS = escape(abbreviationRHS, '<')
+				exec 'let abbreviationRHS = "'.abbreviationRHS.'"'
+
+				let lhs = lastword.a:char
+				let rhs = abbreviationRHS.a:char
+				let phs = IMAP_GetPlaceHolderStart()
+				let phe = IMAP_GetPlaceHolderEnd()
+			else
+				return a:char
+			endif
+		else
+			return a:char
+		endif
 	endif
 	" Find the longest left-hand side that matches the line so far.
 	" matchstr() returns the match that starts first. This automatically
 	" ensures that the longest LHS is used for the mapping.
-	let lhs = matchstr(text, '\V\(' . s:LHS_{ft}_{charHash} . '\)\$')
+	if !exists('lhs') || !exists('rhs')
+		let lhs = matchstr(text, '\V\(' . s:LHS_{ft}_{charHash} . '\)\$')
+		let hash = s:Hash(lhs)
+		let rhs = s:Map_{ft}_{hash}
+		let phs = s:phs_{ft}_{hash} 
+		let phe = s:phe_{ft}_{hash}
+	endif
+
 	if strlen(lhs) == 0
 		return a:char
 	endif
 	" enough back-spaces to erase the left-hand side; -1 for the last
 	" character typed:
 	let bs = substitute(strpart(lhs, 1), ".", "\<bs>", "g")
-	let hash = s:Hash(lhs)
-	return bs . IMAP_PutTextWithMovement(s:Map_{ft}_{hash},
-				\ s:phs_{ft}_{hash}, s:phe_{ft}_{hash})
+	return bs . IMAP_PutTextWithMovement(rhs, phs, phe)
 endfunction
 
 " }}}
@@ -681,7 +711,7 @@ function! IMAP_DebugClear(pattern)
 		let s:debug_{a:pattern} = ''
 	endif
 endfunction " }}}
-" IMAP_DebugClear: interface to Tex_DebugClear if avaialable, otherwise emulate it {{{
+" IMAP_DebugPrint: interface to Tex_DebugPrint if avaialable, otherwise emulate it {{{
 " Description: 
 function! IMAP_DebugPrint(pattern)
 	if exists('*Tex_DebugPrint')
