@@ -203,18 +203,26 @@ endfunction "}}}
 " Add looking help into latexhelp.txt
 " ============================================================================== 
 
-inoremap <buffer> <silent> <F1> <C-O>:silent! call <SID>TexHelp()<CR>
-nnoremap <buffer> <silent> <F1> :silent! call <SID>TexHelp()<CR>
-command! -nargs=0 THelp silent! call <SID>TexHelp()
+inoremap <buffer> <silent> <F1> <C-O>:call <SID>TexHelp()<CR>
+nnoremap <buffer> <silent> <F1> :call <SID>TexHelp()<CR>
+command! -nargs=0 THelp call <SID>TexHelp()
 
 " TexHelp: Cursor being on LaTeX item check if exists help tag about it " {{{
 function! s:TexHelp()
-	if synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^tex'
+	let syntax_item = synIDattr(synID(line('.'),col('.')-1,0),"name")
+	if syntax_item =~ '^tex'
 		setlocal isk+=\
 		let curword = expand('<cword>')
 		setlocal isk-=\
-		if curword =~ "^\\"
-			exe 'help ' . curword
+		let v:errmsg = ''
+		if curword =~ "^\\" || syntax_item == 'texSectionName'
+			exe 'silent! help '.curword
+			if v:errmsg =~ '^E149:'
+				echohl ErrorMsg
+				exe "echomsg 'Sorry, no help for LaTeX: ".curword."'"
+				echohl None
+				let v:errmsg = ''
+			endif
 		else
 			help
 		endif
