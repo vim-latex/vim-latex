@@ -450,6 +450,9 @@ TexLet g:Tex_TEXINPUTS = ''
 " Default: 1
 TexLet g:Tex_Menus = 1
 
+" The location of the main menu
+TexLet g:Tex_MainMenuLocation = 80
+
 " Math contains a large number of tex math elemets such as arrows,
 " mathematical fonts (\mathrm), mathematical diacritics (\dot), binary
 " relational operators etc. This menu compromises about 75% of the menus.
