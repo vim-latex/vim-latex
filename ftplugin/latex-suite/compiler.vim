@@ -266,12 +266,12 @@ function! Tex_ViewLaTeX()
 		" unfortunately, yap does not allow the specification of an external
 		" editor from the command line. that would have really helped ensure
 		" that this particular vim and yap are connected.
-		exec '!start' s:viewer mainfname . '.' . s:target
+		let execString = '!start' s:viewer mainfname . '.' . s:target
 	elseif has('macunix')
 		if strlen(s:viewer)
 			let s:viewer = '-a ' . s:viewer
 		endif
-		execute '!open' s:viewer mainfname . '.' . s:target
+		let execString = 'silent! !open' s:viewer mainfname . '.' . s:target
 	else
 		" taken from Dimitri Antoniou's tip on vim.sf.net (tip #225).
 		" slight change to actually use the current servername instead of
@@ -283,20 +283,27 @@ function! Tex_ViewLaTeX()
 						\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
 						\ exists('v:servername') &&
 						\ (s:viewer == "xdvi" || s:viewer == "xdvik")
-				exec '!'.s:viewer.' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.mainfname.'.dvi &'
+				let execString = 'silent! !'.s:viewer.' -editor "gvim --servername '.v:servername.
+							\ ' --remote-silent +\%l \%f" '.mainfname.'.dvi &'
 			elseif exists('g:Tex_UseEditorSettingInDVIViewer') &&
 						\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
 						\ s:viewer == "kdvi"
-				exec '!kdvi --unique '.mainfname.'.dvi &'
+				let execString = 'silent! !kdvi --unique '.mainfname.'.dvi &'
 			else
-				exec '!'.s:viewer.' '.mainfname.'.dvi &'
+				let execString = 'silent! !'.s:viewer.' '.mainfname.'.dvi &'
 			endif
 			redraw!
 		else
-			exec '!'.s:viewer.' '.mainfname.'.'.s:target.' &'
+			let execString = 'silent! !'.s:viewer.' '.mainfname.'.'.s:target.' &'
 			redraw!
 		endif
 	end
+
+	call Tex_Debug("Tex_ViewLaTeX: execString = ".execString, "comp")
+	execute execString
+	if !has('gui_running')
+		redraw!
+	endif
 
 	exec 'cd '.curd
 endfunction
@@ -338,22 +345,29 @@ function! Tex_ForwardSearchLaTeX()
 	" inverse search tips taken from Dimitri Antoniou's tip and Benji Fisher's
 	" tips on vim.sf.net (vim.sf.net tip #225)
 	if has('win32')
-		exec '!start '.viewer.' -s '.line('.').expand('%:p:t').' '.mainfname
+		let execString = 'silent! !start '.viewer.' -s '.line('.').expand('%:p:t').' '.mainfname
 	else
 		if exists('g:Tex_UseEditorSettingInDVIViewer') &&
 					\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
 					\ exists('v:servername') &&
 					\ (viewer == "xdvi" || viewer == "xdvik") 
-			exec '!'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.mainfname.'.dvi &'
+			let execString = '!'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').
+						\ ' -editor "gvim --servername '.v:servername.
+						\ ' --remote-silent +\%l \%f" '.mainfname.'.dvi &'
 		elseif exists('g:Tex_UseEditorSettingInDVIViewer') &&
 					\ g:Tex_UseEditorSettingInDVIViewer == 1 &&
 					\ viewer == "kdvi"
-			exec '!kdvi --unique file:'.mainfname.'.dvi\#src:'.line('.').Tex_GetMainFileName(":p:t:r").' &'
+			let execString = 'silent! !kdvi --unique file:'.mainfname.'.dvi\#src:'.line('.').Tex_GetMainFileName(":p:t:r").' &'
 		else
-			exec '!'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').' '.mainfname.'.dvi &'
+			let execString = 'silent! !'.viewer.' -name xdvi -sourceposition '.line('.').expand('%').' '.mainfname.'.dvi &'
 		endif
-		redraw!
 	end
+
+	call Tex_Debug("Tex_ForwardSearchLaTeX: execString = ".execString, "comp")
+	execute execString
+	if !has('gui_running')
+		redraw!
+	endif
 
 	exec 'cd '.curd
 endfunction
