@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='ISO-8859-1'?>
 
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-    "file:///c:/users/srinath/testing/docbook/docbookx.dtd" 
+    "docbook/xml/docbookx.dtd" 
 [<!ENTITY dummy      "dummy">
  <!ENTITY date       "$Date$">
  <!ENTITY ls         "Latex-Suite">
@@ -2752,34 +2752,14 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
   </section>
   <section id="customizing-packages">
    <title>Package Handling Customization</title>
-   <para>
-    &ls; is capable of handling simple projects in which all the source files
-    live in a single directory using the <link
-     linkend="latex-master-file">*.latexmain</link> method. However, for more
-    complex projects with files distributed in various directories, define the
-    <literal>g:Tex_TEXINPUTS</literal> variable.
+   <para> &ls; is capable of handling simple projects in which all the
+    source files live in a single directory using the <link
+     linkend="latex-master-file">*.latexmain</link> method. However, for
+    more complex projects with files distributed in various directories,
+    define the <link
+     linkend="Tex_TEXINPUTS"><literal>g:Tex_TEXINPUTS</literal></link>
+    variable.  
    </para>
-   <section id="Tex_TEXINPUTS">
-    <title>g:Tex_TEXINPUTS</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>String</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>''</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     This string defines a set of directories which contain user packages.
-     This setting corresponds to the <literal>$TEXINPUTS</literal> environment
-     variable.
-    </para>
-    <para>
-     TODO: The documentation for this part needs to be improved.
-    </para>
-   </section>
-  </section>
  </section>
  <section id="latex-suite-credits">
   <title>Credits</title>
