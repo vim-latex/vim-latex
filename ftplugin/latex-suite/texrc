@@ -115,6 +115,8 @@ TexLet g:Tex_CompileRule_html = 'latex2html $*.tex'
 
 TexLet g:Tex_CompileRule_bib = 'bibtex $*'
 
+" Set Tex_UseMakefile to 0 if you want to ignore the presence of a Makefile 
+" when deciding how to compile
 TexLet g:Tex_UseMakefile = 1
 
 " }}}
