@@ -2,7 +2,7 @@
 " 	     File: envmacros.vim
 "      Author: Mikolaj Machowski
 "     Created: Tue Apr 23 08:00 PM 2002 PST
-" Last Change: pon lis 04 09:00  2002 C
+" Last Change: czw lis 14 01:00  2002 C
 " 
 "  Description: mappings/menus for environments. 
 "=============================================================================
@@ -65,7 +65,7 @@ function! <SID>Tex_EnvMacros(lhs, submenu, name)
 	endif
 
 	if g:Tex_Menus && g:Tex_EnvironmentMenus && has("gui_running")
-		exe 'amenu '.location.' <plug><C-r>=Tex_MenuWizard("'.a:submenu.'", "'.a:name.'")<CR>'
+		exe 'amenu '.location.' <plug><C-r>=Tex_DoEnvironment("'.a:name.'")<CR>'
 		exe 'vmenu '.location.' '.vrhs
 	endif
 
@@ -257,6 +257,367 @@ call s:Tex_SpecialMacros("EPI", '', 'picture', "\\begin{picture}(«width», «heigh
 if g:Tex_CatchVisMapErrors
 	exe "vnoremap ".g:Tex_Leader2."   :\<C-u>call ExecMap('".g:Tex_Leader2."', 'v')\<CR>"
 endif
+
+" ==============================================================================
+" Specialized functions for various environments
+" ============================================================================== 
+" Tex_itemize: {{{
+function! Tex_itemize(indent, env)
+	exe 'normal i'.a:indent."\\begin{".a:env."}\<cr>\\item \<cr>\\end{".a:env."}«»\<Up>"
+endfunction
+" }}} 
+" Tex_description: {{{
+function! Tex_description(indent, env)
+	let itlabel = input("(Optional) Item label? ")
+	if (itlabel != "")
+		let itlabel = '['.itlabel.']'
+	endif
+	exe 'normal i'.a:indent."\\begin{description}\<cr>\\item".itlabel." \<cr>\\end{description}«»\<Up>"
+endfunction
+" }}} 
+" Tex_figure: {{{
+function! Tex_figure(indent, env)
+    let flto    = input("Float to (htbp)? ")
+    let caption = input("Caption? ")
+    let center  = input("Center ([y]/n)? ")
+    let label   = input('Label (for use with \ref)? ')
+    " additional to AUC Tex since my pics are usually external files
+    let pic = input("Name of Pic-File? ")
+    if (flto != "")
+        let flto = "[".flto."]\<cr>"
+    else
+        let flto = "\<cr>"
+    endif
+    if (pic != "")
+        let pic = "\\input{".pic."}\<cr>"
+    else
+        let pic = "ä\<cr>"
+    endif
+    if (caption != "")
+        let caption = "\\caption{".caption."}\<cr>"
+    endif
+    if (label != "")
+        let label = "\\label{fig:".label."}\<cr>"
+    endif
+    if (center == "y" || center == "")
+      let centr = "\\begin{center}\<cr>"
+      let centr = centr . pic 
+      let centr = centr . caption
+      let centr = centr . label
+      let centr = centr . "\\end{center}\<cr>"
+    else
+      let centr = pic
+      let centr = centr . caption
+      let centr = centr . label
+    endif
+    let figure = "\\begin{".a:env."}".flto
+    let figure = figure . centr
+    let figure = figure . "\\end{".a:env."}"
+	exe 'normal i'.a:indent.figure."\<Esc>$"
+endfunction
+" }}} 
+" Tex_table: {{{
+function! Tex_table(indent, env)
+    let flto    = input('Float to (htbp)? ')
+    let caption = input('Caption? ')
+    let center  = input('Center (y/n)? ')
+    let label   = input('Label? ')
+    if (flto != "")
+        let flto ='['.flto."]\<cr>"
+    else
+        let flto = ''
+    endif
+    let ret='\begin{table}'.flto
+    if (center == "y")
+        let ret=ret."\\begin{center}\<cr>"
+    endif
+    let foo = "\\begin{tabular}"
+    let pos = input('(Optional) Position (t b)? ')
+    if (pos!='')
+        let foo = foo.'['.pos."]"
+	else
+		let foo = foo."\<cr>"
+    endif
+    let format = input("Format  ( l r c p{width} | @{text} )? ")
+	if format == ''
+		let format = '«»'
+	endif
+    let ret = ret.foo.'{'.format."}\<cr>ä\<cr>\\end{tabular}«»\<cr>"
+    if (center == 'y')
+        let ret=ret."\\end{center}\<cr>"
+    endif
+    if (caption != '')
+        let ret=ret.'\caption{'.caption."}\<cr>"
+    endif
+    if (label != "")
+        let ret=ret.'\label{tab:'.label."}\<cr>"
+    endif
+    let ret=ret."\\end{table}«»"
+	exe "normal i".ret."\<Esc>?ä\<cr>:nohl\<cr>C"
+endfunction
+" }}} 
+" Tex_tabular: {{{
+function! Tex_tabular(indent, env)
+    let pos    = input("(Optional) Position (t b)? ")
+    let format = input("Format  ( l r c p{width} | @{text} )? ")
+    if (pos != '')
+      let pos = '['.pos.']'
+    endif
+    if format != ''
+      let format = '{'.format.'}'
+    endif
+    exe 'normal i'.a:indent."\\begin{".a:env.'}'.pos.format."\<cr> \<cr>\\end{".a:env."}«»\<Up>"
+endfunction
+" }}} 
+" Tex_eqnarray: {{{
+function! Tex_eqnarray(indent, env)
+    let label = input("Label?  ")
+    if (label != "")
+        let arrlabel = '\label{'.label."}\<cr> "
+      else
+        let arrlabel = " "
+    endif
+    exe 'normal i'.a:indent."\\begin{".a:env."}\<cr>".arrlabel."\<cr>\\end{".a:env."}«»\<Up>"
+endfunction
+" }}} 
+" Tex_list: {{{
+function! Tex_list(indent, env)
+	let label = input('Label (for \item)? ')
+	if (label != '')
+		let label = '{'.label.'}'
+		let addcmd = input('Additional commands? ')
+		if (addcmd != '')
+			let label = label . '{'.addcmd.'}'
+		endif
+	else
+		let label = ''
+	endif
+	exe 'normal i'.a:indent."\\begin{list}".label."\<cr>\\item \<cr>\\end{list}«»\<Up>"
+endfunction
+" }}} 
+" Tex_document: {{{
+function! Tex_document(indent, env)
+    let dstyle = input('Document style? ')
+    let opts = input('(Optional) Options? ')
+    let foo = '\documentclass'
+    if (opts == '')
+        let foo = foo.'{'.dstyle.'}'
+    else
+        let foo = foo.'['.opts.']'.'{'.dstyle.'}'
+    endif
+    exe 'normal i'.a:indent.foo."\<cr>\<cr>\\begin{document}\<cr>\<cr>\\end{document}\<Up>"
+endfunction
+" }}} 
+" Tex_minipage: {{{
+function! Tex_minipage(indent, env)
+    let foo = '\begin{minipage}'
+    let pos = input('(Optional) Position (t b)? ')
+    let width = input('Width? ')
+    if (pos=="")
+        let foo = foo.'{'.width.'}'
+    else
+        let  foo = foo.'['.pos.']{'.width.'}'
+    endif
+    exe 'normal i'.a:indent.foo."\<cr> \<cr>\\end{minipage}«»\<Up>"
+endfunction
+" }}} 
+" Tex_thebibliography: {{{
+function! Tex_thebibliography(indent, env)
+    " AUC Tex: "Label for BibItem: 99"
+    let indent = input('Indent for BibItem? ')
+    let foo = '{'.indent.'}'
+    let biblabel = input('(Optional) Bibitem label? ')
+    let key = input("Add key? ")
+    let bar = '\bibitem'
+    if (biblabel != '')
+        let bar = bar.'['.biblabel.']'
+    endif
+    let bar = bar.'{'.key.'}'
+    exe 'normal i'.a:indent.'\begin{thebibliography}'.foo."\<cr>".bar." \<cr>\\end{thebibliography}«»\<Up>"
+endfunction
+" }}} 
+
+" Merged contributions from Carl Mueller
+" asdf is a fake argument to recognize if call is coming from keyboard or from
+" menu 
+inoremap <buffer> <F5> <C-0>:call Tex_DoEnvironment("asdf")<CR>
+noremap  <buffer> <F5> :call Tex_DoEnvironment("asdf")<CR>
+function! Tex_DoEnvironment(env) " {{{
+	let l = getline(".")
+	if a:env == "asdf"
+		let env = matchstr(l, '^\s*\zs.*')
+		if env == ''
+			call Tex_PutEnvironment(l, input("Environment? "))
+		else
+			let ind = matchstr(l, '^\s*\ze')
+			normal 0D
+			call Tex_PutEnvironment(ind, env)
+		endif
+	else
+		call Tex_PutEnvironment(l, a:env)
+	endif
+	startinsert
+endfunction " }}}
+function! Tex_PutEnvironment(indent, env) " {{{
+	if a:env =~ "theorem\\|lemma\\|equation\\|eqnarray\\|align\\|multline"
+		call Tex_eqnarray(a:indent, a:env)
+	elseif a:env =~ "enumerate\\|itemize\\|theindex\\|trivlist"
+		call Tex_itemize(a:indent, a:env)
+    elseif a:env =~ "table\\|table*"
+        call Tex_table(a:indent, a:env)
+    elseif a:env =~ "tabular\\|tabular*\\|array\\|array*"
+        call Tex_tabular(a:indent, a:env)
+	elseif exists("*Tex_".a:env)
+		exe "call Tex_".a:env."(a:indent, a:env)"
+	else
+        exe 'normal i'.a:indent.'\begin{'.a:env."}\<cr> \<cr>\\end{".a:env."}«»\<Up>"
+	endif
+endfunction " }}}
+
+let b:DoubleDollars = 0
+
+inoremap <buffer> <C-F5> <C-O>:call <SID>ChangeEnvironment(input("Environment? "))<CR>
+noremap <buffer> <C-F5> :call <SID>ChangeEnvironment(input("Environment? "))<CR>
+inoremap <buffer> <S-F5> <C-O>:call Tex_change_environment()<CR>
+noremap <buffer> <S-F5> :call Tex_change_environment()<CR>
+
+function! Tex_AmsLatex() " {{{
+	if g:Tex_package_supported =~ "amsmath"
+		let amslatex = 1
+	endif
+    return amslatex
+endfunction " }}}
+
+"let b:searchmax = 100
+function Tex_change_environment() " {{{
+    let env_line = searchpair("\\[\\|begin{", "", "\\]\\|end{", "bn")
+	if env_line != 0
+		if getline(env_line) =~ "\\["
+			let env_name = "["
+		else
+			let env_name = matchstr(getline(line), 'begin{\zs.\{-}\ze}')
+		endif
+	endif
+	if !exists("env_name")
+		echomsg "You are not inside environment"
+		return 0
+	endif
+	exe "let change_env = input('You are within a \"".env_name."\" environment.\n".
+			\ "Do you want to change it to?\n".
+			\ "(1) eqnarray  (2) eqnarray*\n".
+			\ "(3) align     (4) align*\n".
+			\ "(5) equation* (6) leave unchanged\n".
+			\ "Enter number: ')"
+	if change_env == 1
+		call <SID>Change('eqnarray', 1, '', 1)
+	elseif change_env == 2
+		call <SID>Change('eqnarray*', 0, '\\nonumber', 0)
+	elseif change_env == 3
+		call <SID>Change('align', 1, '', 1)
+	elseif change_env == 4
+		call <SID>Change('align*', 0, '\\nonumber', 0)
+	elseif change_env == 5
+		call <SID>Change('equation*', 0, '&\|\\lefteqn{\|\\nonumber\|\\\\', 0)
+	elseif change_env == 6
+		return 0
+	else
+		echomsg "Wrong argument"
+		return 0
+	endif
+endfunction " }}}
+function! s:Change(env, label, delete, putInNonumber) " {{{
+	if a:env == '['
+		if b:DoubleDollars == 0
+			let first = '\\['
+			let second = '\\]'
+		else
+			let first = '$$'
+			let second = '$$'
+		endif
+	else
+		let first = '\\begin{' . a:env . '}'
+		let second = '\\end{' . a:env . '}'
+	endif
+	if b:DoubleDollars == 0
+		let bottom = searchpair('\\\[\|\\begin{','','\\\]\|\\end{','')
+		s/\\\]\|\\end{.\{-}}/\=second/
+		let top = searchpair('\\\[\|\\begin{','','\\\]\|\\end{','b')
+		s/\\\[\|\\begin{.\{-}}/\=first/
+	else
+		let bottom = search('\$\$\|\\end{')
+		s/\$\$\|\\end{.\{-}}/\=second/
+		let top = search('\$\$\|\\begin{','b')
+		s/\$\$\|\\begin{.\{-}}/\=first/
+	end
+	if a:delete != ''
+		exe 'silent '. top . "," . bottom . 's/' . a:delete . '//e'
+	endif
+	if a:putInNonumber == 1
+		exe top
+		call search('\\end\|\\\\')
+		if line(".") != bottom
+			exe '.+1,' . bottom . 's/\\\\/\\nonumber\\\\/e'
+			exe (bottom-1) . 's/\s*$/  \\nonumber/'
+		endif
+	endif
+	if a:label == 1
+		exe top
+		if getline(top+1) !~ '.*label.*'
+			put ='\label{}'
+			normal $
+		endif
+	else
+		exe 'silent '.top . ',' . bottom . ' g/\\label/delete'
+	endif
+endfunction " }}}
+
+" Due to Ralf Arens <ralf.arens@gmx.net>
+function! s:ArgumentsForArray(arg) " {{{
+	put! = '{' . a:arg . '}'
+	normal kgJj
+endfunction 
+" }}}
+function! s:ChangeEnvironment(env) " {{{
+	if b:DoubleDollars == 0
+		call searchpair('\\\[\|\\begin{','','\\\]\|\\end{','')
+	else
+		call search('\$\$\|\\end{')
+	end
+	let l = getline(line("."))
+	let indent = strpart(l, 0, match(l, '\S'))
+	if b:DoubleDollars == 0
+		s/\\\]\|\\end{.\{-}}/\='\\end{' . a:env . '}'/
+		call searchpair('\\\[\|\\begin{','','\\\]\|\\end{','b')
+		s/\\\[\|\\begin{.\{-}}/\='\\begin{' . a:env . '}'/
+	else
+		s/\$\$\|\\end{.\{-}}/\='\\end{' . a:env . '}'/
+		call search('\$\$\|\\begin{','b')
+		s/\$\$\|\\begin{.\{-}}/\='\\begin{' . a:env . '}'/
+	endif
+	if a:env =~# '^\(theorem\|lemma\|equation\|eqnarray\|align\|multline\)$'
+		if (-1 == match(getline(line(".")),"\\label"))
+			let label = input("Label? ")
+			if label != ''
+				put! = indent . '\label{' . label . '}'
+			endif
+		endif
+	elseif a:env[strlen(a:env)-1] == '*'
+		if (-1 != match(getline(line(".")),"\\label"))
+			delete
+		endif
+	endif
+	echo ''
+endfunction 
+" }}}
+function! s:PutInNonumber() " {{{
+	call search('\\end\|\\\\')
+	if getline(line("."))[col(".")] != "e"
+		.+1,'>s/\\\\/\\nonumber\\\\/e
+		normal `>k
+		s/\s*$/  \\nonumber/
+	endif
+endfunction 
+" }}}
 
 " this statement has to be at the end.
 let s:doneOnce = 1
