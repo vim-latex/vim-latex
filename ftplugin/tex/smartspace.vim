@@ -2,7 +2,7 @@
 " 	     File: smartspace.vim
 "      Author: Carl Muller
 "     Created: Fri Dec 06 12:00 AM 2002 PST
-" Last Change: Sat Dec 21 07:00 PM 2002 PST
+" Last Change: Fri Jan 03 03:00 PM 2003 PST
 " 
 " Description: 
 "     Maps the <space> key in insert mode so that mathematical formulaes are
@@ -46,13 +46,14 @@ endfunction
 
 " }}}
 function! s:TexFormatLine(width) " {{{
-	let first = strpart(getline(line(".")),0,1)
+	" get the first non-blank character.
+	let first = matchstr(getline('.'), '\S')
 	normal! $
 	let length = col(".")
 	let go = 1
 	while length > a:width+2 && go
 		let between = 0
-		let string = strpart(getline(line(".")),0,a:width)
+		let string = strpart(getline('.'), 0, a:width)
 		" Count the dollar signs
 		let number_of_dollars = 0
 		let evendollars = 1
@@ -72,7 +73,7 @@ function! s:TexFormatLine(width) " {{{
 		else
 			" Then you are between dollars.
 			normal! F$
-			if col(".") == 1 || strpart(getline(line(".")),col(".")-1,1) != "$"
+			if col(".") == 1 || getline('.')[col(".")-1] != "$"
 				let go = 0
 			endif
 		endif
@@ -80,7 +81,8 @@ function! s:TexFormatLine(width) " {{{
 			let go = 0
 		else
 			exe "normal! i\<CR>\<Esc>$"
-			let first = strpart(getline(line(".")),0,1)
+			" get the first non-blank character.
+			let first = matchstr(getline('.'), '\S')
 		endif
 		let length = col(".")
 	endwhile
