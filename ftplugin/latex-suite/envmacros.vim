@@ -489,17 +489,21 @@ endfunction
 " }}} 
 " Tex_thebibliography: {{{
 function! Tex_thebibliography(env)
-    " AUC Tex: "Label for BibItem: 99"
-    let indent = input('Indent for BibItem? ')
-    let foo = '{'.indent.'}'
-    let biblabel = input('(Optional) Bibitem label? ')
-    let key = input('Add key? ')
-    let bar = '\bibitem'
-    if biblabel != ''
-        let bar = bar.'['.biblabel.']'
-    endif
-    let bar = bar.'{'.key.'}'
-    return IMAP_PutTextWithMovement('\begin{thebibliography}'.foo."\<cr>".bar." \<cr>\\end{thebibliography}<++>\<Up>")
+	if g:Tex_UseMenuWizard == 1
+		" AUC Tex: "Label for BibItem: 99"
+		let indent = input('Indent for BibItem? ')
+		let foo = '{'.indent.'}'
+		let biblabel = input('(Optional) Bibitem label? ')
+		let key = input('Add key? ')
+		let bar = '\bibitem'
+		if biblabel != ''
+			let bar = bar.'['.biblabel.']'
+		endif
+		let bar = bar.'{'.key.'}'
+		return IMAP_PutTextWithMovement('\begin{thebibliography}'.foo."\<cr>".bar." \<cr>\\end{thebibliography}<++>\<Up>")
+	else
+		return IMAP_PutTextWithMovement("\\begin{thebibliography}\<CR><++>\<CR>\\end{thebibliography}<++>")
+	endif
 endfunction
 " }}} 
 
@@ -867,6 +871,7 @@ function! Tex_SetFastEnvironmentMaps()
 		call s:SetUpHotKeys()
 	endif
 endfunction " }}}
+
 " ==============================================================================
 " Contributions / Tex_InsertItem() from Johannes Tanzler
 " ============================================================================== 
@@ -875,33 +880,43 @@ endfunction " }}}
 "    			  position and insert proper \item, depending on env name.
 "    			  Env names are stored in g: variables it can be used by
 "    			  package files. 
-let g:Tex_ItemNormal = ',itemize,enumerate,theindex,' 
-let g:Tex_ItemBib = ',thebibliography,' 
-let g:Tex_ItemDescription = ',description,' 
-function! Tex_InsertItem()
 
-    " Get current environment: 
+TexLet g:Tex_ItemStyle_itemize = '\item '
+TexLet g:Tex_ItemStyle_enumerate = '\item '
+TexLet g:Tex_ItemStyle_theindex = '\item '
+TexLet g:Tex_ItemStyle_thebibliography = '\item[<+biblabel+>]{<+bibkey+>} '
+TexLet g:Tex_ItemStyle_description = '\item[<+lablel+>] '
+
+function! Tex_InsertItem()
+    " Get current enclosing environment
 	let pos = line('.').' | normal! '.virtcol('.').'|'
     let env_line = search('^[^%]*\\begin{', 'bW')
     let env = matchstr(getline(env_line), '\\begin{\zs.\{-}\ze}')
 	exe pos
 
-    if g:Tex_ItemNormal =~ ','.env.','
-        return IMAP_PutTextWithMovement("\\item ")
-	elseif g:Tex_ItemDescription =~ ','.env.','
-        return IMAP_PutTextWithMovement("\\item[<+label+>] <++>")
-    elseif g:Tex_ItemBib =~ ','.env.','
-        return IMAP_PutTextWithMovement("\\item[<+biblabel+>]{<+bibkey+>}<++>")
-    else
-        return ''
-    endif
-
+	if exists('g:Tex_ItemStyle_'.env)
+		return IMAP_PutTextWithMovement(g:Tex_ItemStyle_{env})
+	else
+		return ''
+	endif
 endfunction
-
-inoremap <C-CR> <ESC>o<C-R>=Tex_InsertItem()<CR>
-inoremap <Leader>it <C-R>=Tex_InsertItem()<CR>
-
 " }}}
+" Tex_SetItemMaps: sets the \item inserting maps for current buffer {{{
+" Description: 
+
+inoremap <script> <silent> <Plug>Tex_InsertItemOnThisLine <Esc>a<C-r>=Tex_InsertItem()<CR>
+inoremap <script> <silent> <Plug>Tex_InsertItemOnNextLine <ESC>o<C-R>=Tex_InsertItem()<CR>
+
+function! Tex_SetItemMaps()
+	if !hasmapto("\<Plug>Tex_InsertItem")
+		imap <buffer> <Leader>it <Plug>Tex_InsertItemOnThisLine
+		imap <buffer> <M-i> <Plug>Tex_InsertItemOnThisLine
+	endif
+	if !hasmapto("\<Plug>Tex_InsertItemOnNextLine")
+		imap <buffer> <C-CR> <Plug>Tex_InsertItemOnNextLine
+	endif
+endfunction " }}}
+
 " ==============================================================================
 " Implementation of Fast Environment commands for LaTeX commands 
 " ==============================================================================
@@ -1094,6 +1109,7 @@ function! <SID>SetEnvMacrosOptions()
 	if g:Tex_PromptedCommands != ''
 		call Tex_SetFastCommandMaps()
 	endif
+	call Tex_SetItemMaps()
 endfunction " }}}
 " Catch the Filetype event so we set maps for each buffer {{{
 augroup LatexSuite
