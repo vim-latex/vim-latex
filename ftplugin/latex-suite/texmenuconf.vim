@@ -35,7 +35,7 @@ if has('gui_running') && g:Tex_Menus
 	" menus for compiling / viewing etc.
 	exec 'anoremenu 80.30 '.s:mainmenuname.'&Compile<tab>'.mapleader.'ll'.
 		\'   :silent! call RunLaTeX()<CR>'
-	exec 'vnoremenu 80.35 '.s:mainmenuname.'Compile&Part<tab>'.mapleaer.'lc'.
+	exec 'vnoremenu 80.35 '.s:mainmenuname.'Compile&Part<tab>'.mapleader.'lc'.
 		\'   :call Tex_PartCompilation("f","l","v")<CR>'
 	exec 'anoremenu 80.40 '.s:mainmenuname.'&View<tab>'.mapleader.'lv'.
 		\'   :silent! call ViewLaTeX("all")<CR>'
@@ -63,7 +63,7 @@ if has('gui_running') && g:Tex_Menus
 	exec 'anoremenu 80.110 '.s:mainmenuname.'-sepsuite1- :'
 	" refreshing folds
 	if g:Tex_Folding
-		exec 'anoremenu 80.120 '.s:mainmenuname.'&Refresh\ Folds<tab>'.mapleaer.'rf'.
+		exec 'anoremenu 80.120 '.s:mainmenuname.'&Refresh\ Folds<tab>'.mapleader.'rf'.
 			\'   :call MakeTexFolds(1)<CR>'
 		exec 'anoremenu 80.130 '.s:mainmenuname.'-sepsuite2- :'
 	endif
