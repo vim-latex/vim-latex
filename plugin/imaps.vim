@@ -4,7 +4,7 @@
 "         WWW: http://robotics.eecs.berkeley.edu/~srinath/vim/.vim/imaps.vim
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
-" Last Change: Mon Nov 04 02:00 PM 2002 PST
+" Last Change: Mon Dec 02 04:00 AM 2002 PST
 " 
 " Documentation: {{{
 "
@@ -270,6 +270,9 @@ endfunction
 " 		This enables which cursor placement.
 function! IMAP_PutTextWithMovement(text)
 	
+	let s:oldenc = &encoding
+	let &encoding='latin1'
+
 	let text = a:text
 
 	" if the user doesnt want to use place-holders, then remove them.
@@ -329,7 +332,7 @@ function! IMAP_PutTextWithMovement(text)
 		" history.
 		let movement = movement.":call SAImaps_RemoveLastHistoryItem()\<cr>"
 		" BNF 12 Nov 2002:  Functions never add more than one item to the searcg
-		" history.  I do not recall where this is documented...
+		" history.
 		" let movement = movement.":call SAImaps_RemoveLastHistoryItem()\<cr>"
 
 		" if its a ä or «», then just delete it
@@ -340,11 +343,13 @@ function! IMAP_PutTextWithMovement(text)
 
 		" otherwise enter select mode...
 		else
-			let movement = movement."vf".phe."\<C-g>"
+			let movement = movement."v/".iconv(phe, 'latin1', s:oldenc)."\<CR>\<C-g>"
 		end
 
 	end
+	let &encoding = s:oldenc
 	return initial.text.movement
+
 endfunction 
 
 " }}}
@@ -354,6 +359,9 @@ endfunction
 "         from Stephen Riehm's bracketing system.
 " modified by SA to use optional place holder characters.
 function! IMAP_Jumpfunc()
+	let s:oldenc = &encoding
+	setglobal encoding=latin1
+
 	let phs = '«'
 	let phe = '»'
 
@@ -369,27 +377,43 @@ function! IMAP_Jumpfunc()
 		let phe = g:Imap_PlaceHolderEnd
 	endif
 
-	if !search(phs.'.\{-}'.phe,'W') "no more marks
+	let phsc = iconv(phs, 'latin1', s:oldenc)
+	let phec = iconv(phe, 'latin1', s:oldenc)
+
+	if !search(phsc.'.\{-}'.phec,'W') "no more marks
 		echomsg "no marks found\n"
 		return "\<CR>"
 	else
-		if getline('.')[col('.')] == phe
-			return "\<Del>\<Del>"
+		if strpart (  
+					\ getline('.'), 
+					\ col('.') + strlen(phsc) - 1,
+					\ strlen(phec)
+					\ 
+					\ ) == phec
+
+			return substitute(phsc.phec, '.', "\<Del>", 'g')."\<C-r>=RestoreEncoding()\<CR>"
 		else
 			if col('.') > 1
-				return "\<Esc>lvf".phe."\<C-g>"
+				return "\<Esc>lv/".phec."\<CR>\<Esc>:call RestoreEncoding()\<CR>gv\<C-g>"
 			else
-				return "\<C-\>\<C-n>vf".phe."\<C-g>"
+				return "\<C-\>\<C-n>v/".phe."\<CR>\<Esc>:call RestoreEncoding()\<CR>gv\<C-g>"
 			endif
 		endif
 	endif
 endfunction
+
 " map only if there is no mapping already. allows for user customization.
 if !hasmapto('IMAP_Jumpfunc')
     inoremap <C-J> <c-r>=IMAP_Jumpfunc()<CR>
     nmap <C-J> i<C-J>
 end
 " }}}
+" RestoreEncoding: restores file encoding to what it was originally {{{
+" Description: 
+function! RestoreEncoding()
+	let &g:encoding = s:oldenc
+	return ''
+endfunction " }}}
 
 nmap <silent> <script> <plug>«SelectRegion» `<v`>
 
