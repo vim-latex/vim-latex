@@ -149,7 +149,7 @@ if !exists('s:doneMappings')
 			if nr2char(i) =~ '[[:print:]]'
 				call IMAP('``'.nr2char(i), '``'.nr2char(i), 'tex')
 				call IMAP('\`'.nr2char(i), '\`'.nr2char(i), 'tex')
-				call IMAP('"`'.nr2char(i), '\`'.nr2char(i), 'tex')
+				call IMAP('"`'.nr2char(i), '"`'.nr2char(i), 'tex')
 			endif
 			let i = i + 1
 		endwhile
