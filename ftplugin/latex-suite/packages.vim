@@ -3,7 +3,7 @@
 "      Author: Mikolaj Machowski
 " 	  Version: 1.0 
 "     Created: Tue Apr 23 06:00 PM 2002 PST
-" Last Change: Mon Apr 29 01:00 PM 2002 PDT
+" Last Change: Sat May 04 04:00 PM 2002 EST
 " 
 "  Description: handling packages from within vim
 "=============================================================================
@@ -173,10 +173,6 @@ function! TeX_pack_supp_menu()
 	let OptMenu = ""
 	while basic_nu_s_list < nu_s_list
 		let s_item = GetListItem(g:suplist, basic_nu_s_list)
-		if s_item =~ "CVS"
-		    let basic_nu_s_list = basic_nu_s_list + 1
-			continue
-		endif
 		let fptr = fnamemodify(s_item, ':p:t:r')
 		let fpt = fnamemodify(s_item, ':p:t')
 		if !exists("NotSupMenu") && basic_nu_s_list % s:menu_div == 0 
@@ -291,6 +287,16 @@ function! TeX_pack(pack)
 				let com_type = "(E)"
 				let l_m_item = "&".p_item_name."(E)"
 				let r_m_item = "<plug>\\begin{".p_item_name."}<cr> <cr>\\end{".p_item_name."}«»<Up><Left>"
+			elseif p_item_def == "ens"
+				let com_type = "(E)"
+				let p_env_spec = substitute(p_item_name, ".*:", "", "")
+				let p_env_name = matchstr(p_item_name, "^[^:]*")
+				let l_m_item = "&".p_env_name."(E)"
+				let r_m_item = "<plug>\\begin{".p_env_name."}".p_env_spec."<cr>«»<cr>\\end{".p_env_name."}«»<Up><Up><C-j>"
+			elseif p_item_def == "eno"
+				let com_type = "(E)"
+				let l_m_item = "&".p_item_name."(E)"
+				let r_m_item = "<plug>\\begin[«»]{".p_item_name."}<cr>«»<cr>\\end{".p_item_name."}«»<Up><Up><C-j>"
 			elseif p_item_def == "nor"
 				let com_type = "\\\\'"
 				let l_m_item = "\\\\&".p_item_name."'"
