@@ -169,8 +169,65 @@ end
 " }}}
 
 " ==============================================================================
-" Helper Functions
+" Helper functions for debugging
 " ============================================================================== 
+" Tex_Debug: appends the argument into s:debugString {{{
+" Description: 
+" 
+" Do not want a memory leak! Set this to zero so that latex-suite always
+" starts out in a non-debugging mode.
+if !exists('g:Tex_Debug')
+	let g:Tex_Debug = 0
+endif
+function! Tex_Debug(str, ...)
+	if !g:Tex_Debug
+		return
+	endif
+	if a:0 > 0
+		let pattern = a:1
+	else
+		let pattern = ''
+	endif
+	if !exists('s:debugString_'.pattern)
+		let s:debugString_{pattern} = ''
+	endif
+	let s:debugString_{pattern} = s:debugString_{pattern}.a:str."\n"
+
+	let s:debugString_ = (exists('s:debugString_') ? s:debugString_ : '')
+		\ . pattern.' : '.a:str."\n"
+
+	if Tex_GetVarValue('Tex_DebugLog') != ''
+		exec 'redir! >> '.Tex_GetVarValue('Tex_DebugLog')
+		silent! echo pattern.' : '.a:str
+		redir END
+	endif
+endfunction " }}}
+" Tex_PrintDebug: prings s:debugString {{{
+" Description: 
+" 
+function! Tex_PrintDebug(...)
+	if a:0 > 0
+		let pattern = a:1
+	else
+		let pattern = ''
+	endif
+	if exists('s:debugString_'.pattern)
+		echo s:debugString_{pattern}
+	endif
+endfunction " }}}
+" Tex_ClearDebug: clears the s:debugString string {{{
+" Description: 
+" 
+function! Tex_ClearDebug(...)
+	if a:0 > 0
+		let pattern = a:1
+	else
+		let pattern = ''
+	endif
+	if exists('s:debugString_'.pattern)
+		let s:debugString_{pattern} = ''
+	endif
+endfunction " }}}
 " Tex_ShowVariableValue: debugging help {{{
 " provides a way to examine script local variables from outside the script.
 " very handy for debugging.
@@ -188,6 +245,69 @@ function! Tex_ShowVariableValue(...)
 endfunction
 
 " }}}
+
+" ==============================================================================
+" Helper functions for grepping
+" ============================================================================== 
+" Tex_Grep: shorthand for :grep or :vimgrep {{{
+function! Tex_Grep(string, where)
+	if v:version >= 700
+		exec 'silent! vimgrep! /'.a:string.'/ '.a:where
+	else
+		exec 'silent! grep! '.Tex_EscapeForGrep(a:string).' '.a:where
+	endif
+endfunction
+
+" }}}
+" Tex_Grepadd: shorthand for :grepadd or :vimgrepadd {{{
+function! Tex_Grepadd(string, where)
+	if v:version >= 700
+		exec 'silent! vimgrepadd! /'.a:string.'/ '.a:where
+	else
+		exec "silent! grepadd! ".Tex_EscapeForGrep(a:string).' '.a:where
+	endif
+endfunction
+
+" }}}
+" Tex_EscapeForGrep: escapes back-slashes and doublequotes the correct number of times {{{
+" Description: This command escapes the backslash and double quotes in a
+" 	search pattern the correct number of times so it can be used in the ``:grep``
+" 	command. This command is meant to be used as::
+"
+" 		exec "silent! grep ".Tex_EscapeForGrep(pattern)." file"
+"
+" 	The input argument to this function should be the string which you want
+" 	the external command to finally see. For example, to search for a string
+" 	``'\bibitem'``, the grep command needs to be passed a string like
+" 	``'\\bibitem'``.  Examples::
+"
+" 		Tex_EscapeForGrep('\\bibitem')        	" correct
+" 		Tex_EscapeForGrep('\bibitem')			" wrong
+" 		Tex_EscapeForGrep("\\bibitem")			" wrong
+" 		Tex_EscapeForGrep('\<word\>')			" correct
+"
+function! Tex_EscapeForGrep(string)
+	let retVal = a:string
+
+	" The shell halves the backslashes.
+	if &shell =~ 'sh'
+		let retVal = escape(retVal, "\\")
+
+		" If shellxquote is set, then the backslashes are halved yet again.
+		if &shellxquote == '"'
+			let retVal = escape(retVal, "\"\\")
+		endif
+
+	endif
+	" escape special characters which bash/cmd.exe might interpret
+	let retVal = escape(retVal, "<>")
+
+	return retVal
+endfunction " }}}
+
+" ==============================================================================
+" Uncategorized helper functions
+" ============================================================================== 
 " Tex_Strntok: extract the n^th token from a list {{{
 " example: Strntok('1,23,3', ',', 2) = 23
 fun! Tex_Strntok(s, tok, n)
@@ -384,100 +504,6 @@ endfunction
 function! Tex_ResetIncrementNumber(val)
 	let s:incnum = a:val
 endfunction " }}}
-" Tex_EscapeForGrep: escapes back-slashes and doublequotes the correct number of times {{{
-" Description: This command escapes the backslash and double quotes in a
-" 	search pattern the correct number of times so it can be used in the ``:grep``
-" 	command. This command is meant to be used as::
-"
-" 		exec "silent! grep ".Tex_EscapeForGrep(pattern)." file"
-"
-" 	The input argument to this function should be the string which you want
-" 	the external command to finally see. For example, to search for a string
-" 	``'\bibitem'``, the grep command needs to be passed a string like
-" 	``'\\bibitem'``.  Examples::
-"
-" 		Tex_EscapeForGrep('\\bibitem')        	" correct
-" 		Tex_EscapeForGrep('\bibitem')			" wrong
-" 		Tex_EscapeForGrep("\\bibitem")			" wrong
-" 		Tex_EscapeForGrep('\<word\>')			" correct
-"
-function! Tex_EscapeForGrep(string)
-	let retVal = a:string
-
-	" The shell halves the backslashes.
-	if &shell =~ 'sh'
-		let retVal = escape(retVal, "\\")
-
-		" If shellxquote is set, then the backslashes are halved yet again.
-		if &shellxquote == '"'
-			let retVal = escape(retVal, "\"\\")
-		endif
-
-	endif
-	" escape special characters which bash/cmd.exe might interpret
-	let retVal = escape(retVal, "<>")
-
-	return retVal
-endfunction " }}}
-" Functions for debugging {{{
-" Tex_Debug: appends the argument into s:debugString {{{
-" Description: 
-" 
-" Do not want a memory leak! Set this to zero so that latex-suite always
-" starts out in a non-debugging mode.
-if !exists('g:Tex_Debug')
-	let g:Tex_Debug = 0
-endif
-function! Tex_Debug(str, ...)
-	if !g:Tex_Debug
-		return
-	endif
-	if a:0 > 0
-		let pattern = a:1
-	else
-		let pattern = ''
-	endif
-	if !exists('s:debugString_'.pattern)
-		let s:debugString_{pattern} = ''
-	endif
-	let s:debugString_{pattern} = s:debugString_{pattern}.a:str."\n"
-
-	let s:debugString_ = (exists('s:debugString_') ? s:debugString_ : '')
-		\ . pattern.' : '.a:str."\n"
-
-	if Tex_GetVarValue('Tex_DebugLog') != ''
-		exec 'redir! >> '.Tex_GetVarValue('Tex_DebugLog')
-		silent! echo pattern.' : '.a:str
-		redir END
-	endif
-endfunction " }}}
-" Tex_PrintDebug: prings s:debugString {{{
-" Description: 
-" 
-function! Tex_PrintDebug(...)
-	if a:0 > 0
-		let pattern = a:1
-	else
-		let pattern = ''
-	endif
-	if exists('s:debugString_'.pattern)
-		echo s:debugString_{pattern}
-	endif
-endfunction " }}}
-" Tex_ClearDebug: clears the s:debugString string {{{
-" Description: 
-" 
-function! Tex_ClearDebug(...)
-	if a:0 > 0
-		let pattern = a:1
-	else
-		let pattern = ''
-	endif
-	if exists('s:debugString_'.pattern)
-		let s:debugString_{pattern} = ''
-	endif
-endfunction " }}}
-" }}}
 " Tex_FindInRtp: check if file exists in &rtp {{{
 " Description:	Checks if file exists in globpath(&rtp, ...) and cuts off the
 " 				rest of returned names. This guarantees that sourced file is
@@ -609,7 +635,7 @@ endfunction " }}}
 "			"stabilize" that version by releasing a few pre-releases and then
 "			keep that as a stable point.
 function! Tex_Version()
-	return "Latex-Suite: version 1.6.13"
+	return "Latex-Suite: version 1.6.14"
 endfunction 
 
 com! -nargs=0 TVersion echo Tex_Version()

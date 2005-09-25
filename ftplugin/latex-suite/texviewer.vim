@@ -77,7 +77,7 @@ function! Tex_Complete(what, where)
 			if Tex_GetVarValue('Tex_UseSimpleLabelSearch') == 1
 				call Tex_Debug("Tex_Complete: searching for \\labels in all .tex files in the present directory", "view")
 				call Tex_Debug("Tex_Complete: silent! grep! ".Tex_EscapeForGrep('\\label{'.s:prefix)." *.tex", 'view')
-				exec "silent! grep! ".Tex_EscapeForGrep('\\label{'.s:prefix)." *.tex"
+				call Tex_Grep('\\label{'.s:prefix, '*.tex')
 			else
 				call Tex_Debug("Tex_Complete: calling Tex_GrepHelper", "view")
 				silent! grep! ____HIGHLY_IMPROBABLE___ %
@@ -148,25 +148,25 @@ function! Tex_Complete(what, where)
 				endif
 			endif
 			call Tex_Debug("silent! grep! ".Tex_EscapeForGrep('\<'.s:word.'\>')." *.tex", 'view')
-			exec "silent! grep! ".Tex_EscapeForGrep('\<'.s:word.'\>')." *.tex"
+			call Tex_Grep('\<'.s:word.'\>', '*.tex')
 
 			call <SID>Tex_SetupCWindow()
 		endif
 		
 	elseif a:where == 'tex'
 		" Process :TLook command
-		exe "silent! grep! ".Tex_EscapeForGrep(a:what)." *.tex"
+		call Tex_Grep(a:what, "*.tex")
 		call <SID>Tex_SetupCWindow()
 
 	elseif a:where == 'bib'
 		" Process :TLookBib command
-		exe "silent! grep! ".Tex_EscapeForGrep(a:what)." *.bib"
-		exe "silent! grepadd! ".Tex_EscapeForGrep(a:what)." *.bbl"
+		call Tex_Grep(a:what, "*.bib")
+		call Tex_Grepadd(a:what, "*.bbl")
 		call <SID>Tex_SetupCWindow()
 
 	elseif a:where == 'all'
 		" Process :TLookAll command
-		exe "silent! grep! ".Tex_EscapeForGrep(a:what)." *"
+		call Tex_Grep(a:what, "*")
 		call <SID>Tex_SetupCWindow()
 	endif
 
@@ -363,7 +363,7 @@ function! s:Tex_SyncPreviewWindow()
 	 call Tex_Debug('+Tex_SyncPreviewWindow', 'view')
 
 	let viewfile = matchstr(getline('.'), '^\f*\ze|\d')
-	let viewline = matchstr(getline('.'), '|\zs\d\+\ze|')
+	let viewline = matchstr(getline('.'), '|\zs\d\+\ze')
 
 	" Hilight current line in cwindow
 	" Normally hightlighting is done with quickfix engine but we use something
@@ -540,7 +540,7 @@ function! Tex_ScanFileForCite(prefix)
 				call Tex_Debug('using pattern '.Tex_EscapeForGrep('@.*{'.a:prefix), 'view')
 				lcd %:p:h
 				" use the appropriate syntax for the .bib file.
-				exec "silent! grepadd! ".Tex_EscapeForGrep('@.*{'.a:prefix)." %"
+				call Tex_Grepadd('@.*{'.a:prefix, "%")
 			else
 				let thisbufnum = bufnr('%')
 				exec 'silent! find '.Tex_Strntok(bibnames, ',', i).'.bbl'
@@ -548,7 +548,7 @@ function! Tex_ScanFileForCite(prefix)
 				if bufnr('%') != thisbufnum
 					call Tex_Debug('finding .bbl file ['.bufname('.').']', 'view')
 					lcd %:p:h
-					exec "silent! grepadd! ".Tex_EscapeForGrep('\\bibitem{'.a:prefix)." %"
+					call Tex_Grepadd('\\bibitem{'.a:prefix, "%")
 				endif
 			endif
 			" close the newly opened window
@@ -573,7 +573,7 @@ function! Tex_ScanFileForCite(prefix)
 		split
 		lcd %:p:h
 		call Tex_Debug("silent! grepadd! ".Tex_EscapeForGrep('\\bibitem{'.a:prefix)." %", 'view')
-		exec "silent! grepadd! ".Tex_EscapeForGrep('\\bibitem{'.a:prefix)." %"
+		call Tex_Grepadd('\\bibitem{'.a:prefix, "%")
 		q
 		
 		return 1
@@ -620,7 +620,7 @@ function! Tex_ScanFileForLabels(prefix)
 	call Tex_Debug("+Tex_ScanFileForLabels: grepping in file [".bufname('%')."]", "view")
 
 	lcd %:p:h
-	exec "silent! grepadd! ".Tex_EscapeForGrep('\\label{'.a:prefix)." %"
+	call Tex_Grepadd('\\label{'.a:prefix, "%")
 
 	" Then recursively grep for all \include'd or \input'ed files.
 	let &suffixesadd = '.tex'
@@ -639,14 +639,11 @@ function! Tex_ScanFileForLabels(prefix)
 
 		if bufnr('%') != thisbufnum
 			call Tex_Debug('Tex_ScanFileForLabels: scanning recursively in ['.bufname('%').']', 'view')
-			let foundCiteFile = Tex_ScanFileForLabels(a:prefix)
+			call Tex_ScanFileForLabels(a:prefix)
 		endif
 
 		q
 
-		if foundCiteFile
-			return 1
-		endif
 	endwhile
 endfunction " }}}
 
