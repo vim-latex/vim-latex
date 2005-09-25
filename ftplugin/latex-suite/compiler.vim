@@ -102,7 +102,7 @@ function! Tex_CompileLatex()
 	" file name.
 	if exists('b:fragmentFile')
 		let mainfname = expand('%:p:t')
-		call Tex_CD(expand('%:p:h')
+		call Tex_CD(expand('%:p:h'))
 	else
 		let mainfname = Tex_GetMainFileName(':p:t')
 		call Tex_CD(Tex_GetMainFileName(':p:h'))
