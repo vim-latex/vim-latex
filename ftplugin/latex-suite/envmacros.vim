@@ -958,14 +958,14 @@ endfunction " }}}
 " Implementation of Fast Environment commands for LaTeX commands 
 " ==============================================================================
 " Define certain commonly used command definitions {{{
-"
+
 TexLet g:Tex_Com_{'newtheorem'} = '\newtheorem{<+name+>}{<+caption+>}[<+within+>]'
 TexLet g:Tex_Com_{'frac'} = '\frac{<+n+>}{<+d+>}<++>'
+
 " }}}
 " PromptForCommand: prompts for a command {{{
 " Description: 
 function! PromptForCommand(ask)
-
 	let common_com_prompt = 
 				\ Tex_CreatePrompt(g:Tex_PromptedCommands, 2, ',') . "\n" .
 				\ "Enter number or command name :"
@@ -982,26 +982,42 @@ endfunction " }}}
 " Tex_DoCommand: fast insertion of commands {{{
 " Description:
 "
-function! Tex_DoCommand(...)
-	if a:0 < 1
-		" If the current line is empty or if a visual selection has been made,
-		" prompt for a new environment.
-		if getline('.') == '' || (exists('s:isvisual') && s:isvisual == 'yes')
-			let com = PromptForCommand('Choose a command to insert: ')
-			if com != ''
-				return Tex_PutCommand(com)
+function! Tex_DoCommand(isvisual)
+	" If the current line is empty or if a visual selection has been made,
+	" prompt for a new environment.
+	if getline('.') == '' || a:isvisual == 'yes'
+		let com = PromptForCommand('Choose a command to insert: ')
+		if com != ''
+			return Tex_PutCommand(com)
+		else
+			return ''
+		endif
+	else
+		" We want to find out the word under the cursor without issuing
+		" any movement commands.
+		let presline = getline('.')
+		let c = col('.')
+
+		let wordbef = matchstr(strpart(presline, 0, c-1), '\k\+$')
+		let wordaft = matchstr(strpart(presline, c-1), '^\k\+')
+
+		let word = wordbef . wordaft
+		call Tex_Debug("Tex_DoCommand: wordbef = [".wordbef."], wordaft = [".wordaft."], word = [".word."]", 'env')
+
+		" We use \<Del> instead of \<Bs> because \<Bs> does not work
+		" unless bs=2
+		if word != ''
+			return substitute(wordbef, '.', "\<Left>", 'g')
+				\ . substitute(word, '.', "\<Del>", 'g')
+				\ . Tex_PutCommand(word)
+		else
+			let cmd = PromptForCommand('Choose a command to insert: ')
+			if cmd != ''
+				return Tex_PutCommand(cmd)
 			else
 				return ''
 			endif
-		else
-			let lastword = matchstr(getline('.'), '\w\+$')
-			call Tex_Debug("Tex_DoCommand: getting lastword = ".lastword, "env")
-			if lastword != ''
-				return substitute(lastword, '.', "\<bs>", 'g').Tex_PutCommand(lastword)
-			endif
 		endif
-	else
-		return Tex_PutCommand(a:1)
 	endif
 endfunction " }}}
 " Tex_PutCommand: calls various specialized functions {{{
@@ -1041,27 +1057,13 @@ if g:Tex_PromptedCommands != ''
 
 	let b:DoubleDollars = 0
 
-	inoremap <silent> <Plug>Tex_FastCommandInsert  <C-r>=Tex_FastCommandInsert('no')<cr>
-	nnoremap <silent> <Plug>Tex_FastCommandInsert  ea<C-r>=Tex_FastCommandInsert('no')<cr>
+	inoremap <silent> <Plug>Tex_FastCommandInsert  <C-r>=Tex_DoCommand('no')<cr>
+	nnoremap <silent> <Plug>Tex_FastCommandInsert  i<C-r>=Tex_DoCommand('no')<cr>
+	vnoremap <silent> <Plug>Tex_FastCommandInsert  <C-\><C-N>:call Tex_DoCommand('yes')<CR>
+
 	inoremap <silent> <Plug>Tex_FastCommandChange  <C-O>:call Tex_ChangeCommand('no')<CR>
 	nnoremap <silent> <Plug>Tex_FastCommandChange  :call Tex_ChangeCommand('no')<CR>
-	vnoremap <silent> <Plug>Tex_FastCommandInsert  <C-\><C-N>:call Tex_FastCommandInsert('yes')<CR>
 
-	" Tex_FastCommandInsert: maps <F7> to prompt for command and insert it " {{{
-	" Description:
-	"	Here we are not solving if we are in preamble, behaviour is always the
-	"	same. 
-	function! Tex_FastCommandInsert(isvisual)
-
-		let start_line = line('.')
-		let pos = line('.').' | normal! '.virtcol('.').'|'
-		let s:isvisual = a:isvisual
-
-		return Tex_DoCommand()
-
-	endfunction 
-
-	" }}}
 	" Tex_ChangeCommand: calls ChangeCommand() to change the environment {{{
 	" Description:
 	"   Finds out which environment the cursor is positioned in and changes

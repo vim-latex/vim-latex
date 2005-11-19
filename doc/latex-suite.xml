@@ -392,18 +392,17 @@ quotation (_q_uotatio_n_)      ---&gt; EQN</programlisting>
    </section>
   </section>
   <section id="latex-command-maps">
-   <title>&latex; command maps</title>
+   <title>Command Mappings</title>
    <anchor id="ls-imap-f7" />
    <anchor id="ls-imap-s-f7" />
    <para>
     &ls; provides two simple mappings <literal>&lt;F7&gt;</literal> and
     <literal>&lt;S-F7&gt;</literal> which work in both insert and normal
-    mode in an idential manner. In insert mode, if the cursor is located on
-    (or just after) a non-whitespace character, then a command from the
-    last word (<literal>&lt;cword&gt;</literal>) is created. If the cursor
-    is located on a white-space character, then you will be prompted with a
-    list of commands to choose from. The list of commands is constructed
-    from the <link
+    mode in an idential manner. In insert mode, if the cursor is touching a
+    word, then that word is replaced by a command constructed with that
+    word. If the cursor is located on a white-space character, then you
+    will be prompted with a list of commands to choose from. The list of
+    commands is constructed from the <link
      linkend="Tex_PromptedCommands"><literal>g:Tex_PromptedCommands</literal></link>
     setting and also from commands which &ls; finds while scanning custom
     packages which &ls; finds. See the <link
@@ -412,12 +411,20 @@ quotation (_q_uotatio_n_)      ---&gt; EQN</programlisting>
    </para>
    <para>
     For certain common commands, &ls; will expand them to include
-    additional arguments as needed. Otherwise, it will simply change the
-    word under the cursor as follows
-    <programlisting>word --> \word{&ph;}&ph;</programlisting>
-    You can define custom expansios of commands using the
-    <literal>Tex_Com_{name}</literal> setting as described in <link
-     linkend="Tex_Com_name">here</link>.
+    additional arguments as needed. For example, <literal>frac</literal>
+    becomes <literal>\frac{&ph;}{&ph;}&ph;</literal>. Otherwise, it will
+    simply change the word under the cursor as follows 
+    <programlisting>word --> \word{&ph;}&ph;</programlisting> 
+    You can define custom expansios
+    of commands using the <literal>Tex_Com_{name}</literal> setting as
+    described in <link linkend="Tex_Com_name">here</link>.
+   </para>
+   <para>
+    Pressing <literal>&lt;F7&gt;</literal> in normal mode is equivalent to
+    pressing <literal>i</literal> to go to insert mode and then pressing
+    <literal>&lt;F7&gt;</literal>. In other words, if the cursor is in or
+    just after a word, then that word will become a command, otherwise, the
+    user is prompted to choose a command to insert.
    </para>
    <para>
     In both insert and normal mode <literal>&lt;S-F7&gt;</literal> will

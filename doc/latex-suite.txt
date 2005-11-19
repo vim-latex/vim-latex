@@ -28,7 +28,7 @@ Homepage: http://vim-latex.sourceforge.net |ls_u_1|
 |ls_2| Inserting Templates
 |ls_3| Latex-Suite Macros
     |ls_3_1| Environment Mappings
-    |ls_3_2| LaTeX command maps
+    |ls_3_2| Command Mappings
     |ls_3_3| Font Mappings
     |ls_3_4| Section Mappings
     |ls_3_5| Greek Letter Mappings
@@ -170,7 +170,7 @@ Latex-Suite Macros                                              *ls_3* *ls_a_be*
                                                                   *latex-macros*
 
 |ls_3_1| Environment Mappings
-|ls_3_2| LaTeX command maps
+|ls_3_2| Command Mappings
 |ls_3_3| Font Mappings
 |ls_3_4| Section Mappings
 |ls_3_5| Greek Letter Mappings
@@ -390,27 +390,32 @@ Pressing <F5> in normal mode has the same effect as pressing <F5> in
 insert-mode, namely you will be prompted to choose an environment to insert.
 
 --------------------------------------------------------------------------------
-LaTeX command maps                                            *ls_3_2* *ls_a_bn*
+Command Mappings                                              *ls_3_2* *ls_a_bn*
                                                             *latex-command-maps*
 
                                                           *ls-imap-f7* *ls_a_dP*
                                                         *ls-imap-s-f7* *ls_a_dQ*
 Latex-Suite provides two simple mappings <F7> and <S-F7> which work in both
 insert and normal mode in an idential manner. In insert mode, if the cursor is
-located on (or just after) a non-whitespace character, then a command from the
-last word (<cword>) is created. If the cursor is located on a white-space
-character, then you will be prompted with a list of commands to choose from. The
-list of commands is constructed from the g:Tex_PromptedCommands [|ls_a_db|]
-setting and also from commands which Latex-Suite finds while scanning custom
-packages which Latex-Suite finds. See the Package actions [|ls_a_bH|] section
-for details on which files are scanned etc.
+touching a word, then that word is replaced by a command constructed with that
+word. If the cursor is located on a white-space character, then you will be
+prompted with a list of commands to choose from. The list of commands is
+constructed from the g:Tex_PromptedCommands [|ls_a_db|] setting and also from
+commands which Latex-Suite finds while scanning custom packages which
+Latex-Suite finds. See the Package actions [|ls_a_bH|] section for details on
+which files are scanned etc.
 
 For certain common commands, Latex-Suite will expand them to include additional
-arguments as needed. Otherwise, it will simply change the word under the cursor
-as follows  >
+arguments as needed. For example, frac becomes \frac{<++>}{<++>}<++>. Otherwise,
+it will simply change the word under the cursor as follows  >
     word --> \word{<++>}<++>
 You can define custom expansios of commands using the Tex_Com_{name} setting as
 described in here [|ls_a_dd|].
+
+Pressing <F7> in normal mode is equivalent to pressing i to go to insert mode
+and then pressing <F7>. In other words, if the cursor is in or just after a
+word, then that word will become a command, otherwise, the user is prompted to
+choose a command to insert.
 
 In both insert and normal mode <S-F7> will find out if you are presently within
 an environment and then prompt you with a list of commands to change it to.
@@ -751,7 +756,7 @@ If the character before the cursor is none of the above, then it will simply
 insert a \label{<++>}<++>.
 
 
-<Alt-M>                                            *ls_3_10_2* *ls_a_by* *Alt-M*
+<Alt-B>                                            *ls_3_10_2* *ls_a_by* *Alt-B*
 
 This insert-mode mapping encloses the previous character in \mathbf{}.
 
