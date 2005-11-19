@@ -824,8 +824,8 @@ abstract = {&ph;},</programlisting>
      simply insert a <literal>\label{&ph;}&ph;</literal>.
     </para>
    </section>
-   <section id="Alt-M">
-    <title><literal>&lt;Alt-M&gt;</literal></title> 
+   <section id="Alt-B">
+    <title><literal>&lt;Alt-B&gt;</literal></title> 
     <para>
      This insert-mode mapping encloses the previous character in
      <literal>\mathbf{}</literal>.

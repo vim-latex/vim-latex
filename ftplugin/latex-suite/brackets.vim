@@ -46,7 +46,7 @@ endif
 " Tex_MathBF: encloses te previous letter/number in \mathbf{} {{{
 " Description: 
 function! Tex_MathBF()
-	return "\<Left>\\mathbf{\<Right>}\<Esc>hvUla"
+	return "\<Left>\\mathbf{\<Right>}"
 endfunction " }}}
 " Tex_MathCal: enclose the previous letter/number in \mathcal {{{
 " Description:
