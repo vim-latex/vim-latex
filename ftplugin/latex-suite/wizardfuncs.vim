@@ -205,9 +205,11 @@ endfunction "}}}
 " Add looking help into latexhelp.txt
 " ============================================================================== 
 
-inoremap <buffer> <silent> <F1> <C-O>:call <SID>TexHelp()<CR>
-nnoremap <buffer> <silent> <F1> :call <SID>TexHelp()<CR>
+inoremap <silent> <Plug>Tex_Help <C-o>:call <SID>TexHelp()<CR>
+nnoremap <silent> <Plug>Tex_Help :call <SID>TexHelp()<CR>
 command! -nargs=0 THelp call <SID>TexHelp()
+call Tex_MakeMap('<F1>', '<Plug>Tex_Help', 'i', '')
+call Tex_MakeMap('<F1>', '<Plug>Tex_Help', 'n', '')
 
 " TexHelp: Cursor being on LaTeX item check if exists help tag about it " {{{
 function! s:TexHelp()
