@@ -15,7 +15,10 @@ let g:TeX_package_url =
 \.'bra:path,'
 \.'bra:urldef'
 
-syn region texZone    start="\\url\z([^ \ta-zA-Z]\)"   end="\z1\|%stopzone\>"
-syn region texZone    start="\\path\z([^ \ta-zA-Z]\)"   end="\z1\|%stopzone\>"
+" TODO uncomment if you figure out
+" 	1. how to get this syn command to work every time instead of only the
+" 	   first time this file is sourced.
+" syn region texZone    start="\\url{"   end="}\|%stopzone\>"
+" syn region texZone    start="\\path{"   end="}\|%stopzone\>"
 
 " vim:ft=vim:ff=unix:
