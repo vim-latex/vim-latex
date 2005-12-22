@@ -1,6 +1,6 @@
 "=============================================================================
 "        File: texmenuconf.vim
-"      Author: Srinath Avadhanula <srinath@fastmail.fm>
+"      Author: Srinath Avadhanula
 "   Copyright: Vim charityware license. :help license
 " Description: 
 "         CVS: $Id$

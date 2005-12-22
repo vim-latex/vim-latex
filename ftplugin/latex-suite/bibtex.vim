@@ -2,8 +2,7 @@
 " 	       File: bibtex.vim
 "      Function: BibT
 "        Author: Alan G Isaac <aisaac@american.edu>
-"                modified by Srinath Avadhanula <srinath AT fastmail DOT fm>
-"                for latex-suite.
+"                modified by Srinath Avadhanula for latex-suite.
 "       License: Vim Charityware license.
 "           CVS: $Id$
 "=============================================================================

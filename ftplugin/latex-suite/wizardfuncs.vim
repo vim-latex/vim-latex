@@ -4,7 +4,6 @@
 " 
 " Installation:
 "      History: pluginized by Srinath Avadhanula
-"               ( srinath@fastmail.fm)
 "=============================================================================
 
 if exists('s:doneOnce')
