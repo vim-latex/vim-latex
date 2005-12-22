@@ -1989,9 +1989,8 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'</programlisting>
    <note>
     <para>
      Here <literal>main.tex.latexmain</literal> is (obviously) a different
-     file from <literal>main.tex</literal> itself. <literal>main.tex</literal>
-     need not be renamed. The contents of
-     <literal>main.tex.latexmain</literal> are not used.  This ofcourse
+     file from <literal>main.tex</literal> itself.
+     <literal>main.tex</literal> need not be renamed. This ofcourse
      restricts each directory to have a single master file.
     </para>
    </note>
@@ -2593,6 +2592,31 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
     </para>
    </note>
   </section>
+ </section>
+ <section id="latex-project">
+  <title>Latex projects</title>
+  <para>
+   Most &latex; projects are divided into a set of files each of which
+   contains some related material, like a chapter, a section etc. &ls;
+   supports this in various ways. The per-project settings are stored in
+   the <link linkend="latex-master-file">master file</link>, which is of
+   the form <literal>main.tex.latexmain</literal>. In previous versions,
+   the contents of this file were ignored. However, this file is now
+   considered as if it is a &vim; source file and its contents are sourced
+   whenever a new project is edited. Thus you can put &ls; settings
+   specific to a given project in this file.
+  </para>
+  <para>
+   This file is used in various ways. Firstly, it is used to point to the
+   name of the file which should be compiled as described in <link
+    linkend="latex-master-file">latex-master-file</link>. 
+  </para>
+  <para>
+   You can also put settings such as <link
+    linkend="Tex_ProjectSourceFiles">Tex_ProjectSourceFiles</link> in this
+   file to minimize the time it takes to search through all the relevant
+   project files.
+  </para>
  </section>
  <section id="latex-suite-commands-maps">
   <title>&ls; Commands and Maps</title>
@@ -3688,6 +3712,35 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
       then it will simply search for <literal>\labels</literal> in the
       present file.</listitem>
     </orderedlist>
+   </section>
+   <section id="Tex_ProjectSourceFiles">
+    <title>g:Tex_ProjectSourceFiles</title>
+    <informaltable frame="all">
+     <tgroup cols="2">
+      <tbody>
+       <row><entry>Type</entry><entry>String</entry></row>
+       <row><entry>Default Value</entry>
+        <entry><literal>''</literal></entry></row>
+      </tbody>
+     </tgroup>
+    </informaltable>
+    <para>
+     This setting is meant to be initialized on a per-project basis using
+     the <link linkend="latex-master-file">&ls; master file</link> as
+     described in <link linkend="latex-project">&ls; Project</link>
+     section. It is a list of source files which are used in the project.
+     If defined, then instead of using the logic described in 
+     <link
+      linkend="Tex_UseSimpleLabelSearch">Tex_UseSimpleLabelSearch</link> to
+     search for files in which to search for <literal>\label</literal>s, we
+     simply search for <literal>\label</literal>s in this list. This
+     significantly reduces the time it takes to generate the list of
+     possible completions for large projects.
+    </para>
+    <para>
+     The list is specified as a whitespace seperated list of filenames
+     relative to the location of the main file.
+    </para>
    </section>
    <section id="Tex_RememberCiteSearch">
     <title>g:Tex_RememberCiteSearch</title>
