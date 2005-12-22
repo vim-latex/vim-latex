@@ -78,6 +78,10 @@ function! Tex_Complete(what, where)
 				call Tex_Debug("Tex_Complete: searching for \\labels in all .tex files in the present directory", "view")
 				call Tex_Debug("Tex_Complete: silent! grep! ".Tex_EscapeForGrep('\\label{'.s:prefix)." *.tex", 'view')
 				call Tex_Grep('\\label{'.s:prefix, '*.tex')
+			elseif Tex_GetVarValue('Tex_ProjectSourceFiles') != ''
+				call Tex_Debug('Tex_Complete: searching for \\labels in all Tex_ProjectSourceFiles', 'view')
+				call Tex_CD(Tex_GetMainFileName(':p:h'))
+				call Tex_Grep('\\label{'.s:prefix, Tex_GetVarValue('Tex_ProjectSourceFiles'))
 			else
 				call Tex_Debug("Tex_Complete: calling Tex_GrepHelper", "view")
 				silent! grep! ____HIGHLY_IMPROBABLE___ %

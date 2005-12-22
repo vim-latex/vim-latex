@@ -454,6 +454,7 @@ endfunction
 " Tex_ChooseFromPrompt: process a user input to a prompt string {{{
 " " Description: 
 function! Tex_ChooseFromPrompt(dialog, list, sep)
+	let g:Tex_ASDF = a:dialog
 	let inp = input(a:dialog)
 	if inp =~ '\d\+'
 		return Tex_Strntok(a:list, a:sep, inp)
@@ -635,7 +636,7 @@ endfunction " }}}
 "			"stabilize" that version by releasing a few pre-releases and then
 "			keep that as a stable point.
 function! Tex_Version()
-	return "Latex-Suite: version 1.6.19"
+	return "Latex-Suite: version 1.7.01"
 endfunction 
 
 com! -nargs=0 TVersion echo Tex_Version()
