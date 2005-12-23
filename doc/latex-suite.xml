@@ -1564,22 +1564,46 @@ newfile.tex [Preview]                                         11,3           21%
   <section id="ls-completion-ref">
    <title>&ls; \ref completion</title>
    <para>
-    To complete a <literal>|\ref|</literal> command, position yourself
-    between the curly braces of a <literal>\ref</literal> command and press
-    <literal>&lt;F9&gt;</literal>. &ls; will present you with a list of
-    <literal>\label</literal>'s as described <link
-     linkend="ls-completion-usage"
-     endterm="ls-completion-usage.title">here</link>. You can also press
-    <literal>&lt;F9&gt;</literal> after typing a part of the label, for
-    example, a common prefix which a group of <literal>\label</literal>'s
-    might share. In this case, &ls; will list only those
-    <literal>\label</literal>'s which start with that prefix.
+    If you press &lt;F9&gt; in insert mode when the cursor is positioned
+    just after the string "<literal>\ref{pre</literal>", then &ls; will
+    present you with a list of all the <literal>\label</literal>s which
+    begin with the prefix "pre". If you press &lt;F9&gt; after
+    <literal>\ref{</literal>, then &ls; will present you with a list of
+    <emphasis>all</emphasis> labels. See <link
+     linkend="ls-completion-usage">here</link> for an example.
    </para>
    <para>
-    See <link
-     linkend="Tex_UseSimpleLabelSearch">Tex_UseSimpleLabelSearch</link> for
-    a description of the algorithm used by &ls; to search for
-    <literal>\label</literal>'s and how to change it.
+    <orderedlist>
+     <listitem>If <link
+       linkend="Tex_UseSimpleLabelSearch">Tex_UseSimpleLabelSearch</link>
+      is set to 1, then &ls; will simply search for
+      <literal>\label</literal>s in all the <literal>.tex</literal> files
+      in the directory containing the current file</listitem>.
+     <listitem>If the <link
+       linkend="Tex_ProjectSourceFiles">Tex_ProjectSourceFiles</link>
+      setting is non-empty, then &ls; will search for all labels specified
+      in the list of files given by the setting above.</listitem>
+     <listitem>If Tex_UseSimpleLabelSearch is 0 and Tex_ProjectSourceFiles
+      is empty, then &ls; uses the following logic:
+      <orderedlist>
+       <listitem>First &ls; will determine if it can find a master-file
+        specification as described <link
+         linkend="latex-master-file-specification">here</link>.</listitem>
+       <listitem>If it can, then &ls; will search for
+        <literal>\label</literal>'s in that file first.</listitem>
+       <listitem>If the master file <literal>\include</literal>'s or
+        <literal>\input</literal>'s any other files, then &ls; will search
+        for <literal>\label</literal>'s in those files.  The search for
+        <literal>\include</literal>'d and <literal>\input</literal>'ed files
+        is recursive, i.e, if an <literal>\include</literal>'d file
+        <literal>\include</literal>'s another file, then that will be
+        searched as well and so on.</listitem>
+       <listitem>If &ls; cannot find a master file specified for this file,
+        then it will simply search for <literal>\labels</literal> in the
+        present file.</listitem>
+      </orderedlist>
+     </listitem>
+    </orderedlist>
    </para>
    <para>
     Any command which contains the pattern <literal>ref</literal> in it is
@@ -1802,6 +1826,12 @@ newfile.tex [Preview]                                         11,3           21%
   <para>Trying to choose a format for which no rule has been defined will
    result in &ls; displaying a warning message without taking any action.
   </para>
+  <para>
+   If you are using a multiple file project and need to compile a master
+   file while editing other files, then &ls; provides a way to specify the
+   file to be compiled as described in <link
+    linkend="latex-master-file">latex-master-file</link>.
+  </para>
   <section id="compiler-rules">
    <title>Setting Compilation rules</title>
    <para>
@@ -1953,65 +1983,6 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'</programlisting>
     steps will ensure that on most platforms/environments, you will get a
     clean output with all the cross-references, citations etc correctly
     labelled and ordered. 
-   </para>
-  </section>
-  <section id="latex-master-file">
-   <title>Specifying which file to compile</title>
-   <para>
-    Often times the file you are currently editing is only a fragment being
-    <literal>\input</literal>'ed into a master tex file. In such cases you
-    will need to do create a dummy file in the directory containing the
-    current file. This dummy file is of the form:
-    <literal>&lt;mainfilename&gt;.latexmain</literal>
-   </para>
-   <para>
-    As an example, suppose you have the following setup:
-    <programlisting>% file: main.tex
-\documentclass{report}
-\begin{document}
-
-\input{chapter1.tex}
-
-\end{document}</programlisting>
-    In other words, even when you are editing <literal>chapter1.tex</literal>,
-    you want to compile <literal>main.tex</literal>. In this situation, create
-    a file called <literal>main.tex.latexmain</literal> in the directory
-    containing <literal>chapter1.tex</literal> (and
-    <literal>main.tex</literal>). After doing this, when you press
-    <literal>\ll</literal> while editing <literal>chapter1.tex</literal>, then
-    &ls; will compile <literal>main.tex</literal> instead. The
-    <literal>.latexmain</literal> file can also be present in a directory
-    directly above the directory containing the present file. &ls; will
-    scan upwards recursively from the directory containing the present file
-    and stop when it finds a <literal>.latexmain</literal> file, which
-    points to the master file for the present file.
-   </para>
-   <note>
-    <para>
-     Here <literal>main.tex.latexmain</literal> is (obviously) a different
-     file from <literal>main.tex</literal> itself.
-     <literal>main.tex</literal> need not be renamed. This ofcourse
-     restricts each directory to have a single master file.
-    </para>
-   </note>
-   <anchor id="Tex_MainFileExpression" />
-   <para>
-    If you wish to use some different logic to specify the main file name,
-    you can specify a custom expression via the
-    <literal>Tex_MainFileExpression</literal> variable. This is a string
-    containing a valid vim expression. In addition, you can use a variable
-    <literal>modifier</literal> which is in the format used for
-    <literal>|filename-modifiers|</literal>, for example,
-    <literal>':p:h'</literal>. You should utilize this variable to modify
-    the filename of the main file.
-    <programlisting>let g:Tex_MainFileExpression = 'MainFile(modifier)'
-function! MainFile(fmod)
-    if glob('*.latexmain') != ''
-        return fnamemodify(glob('*.latexmain'), a:fmod)
-    else
-        return ''
-    endif
-endif</programlisting>
    </para>
   </section>
   <section id="compiler-output-customization">
@@ -2594,29 +2565,128 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
   </section>
  </section>
  <section id="latex-project">
-  <title>Latex projects</title>
+  <title>Multiple file &latex; projects</title>
+  <anchor id="latex-project-example" />
   <para>
-   Most &latex; projects are divided into a set of files each of which
-   contains some related material, like a chapter, a section etc. &ls;
-   supports this in various ways. The per-project settings are stored in
-   the <link linkend="latex-master-file">master file</link>, which is of
-   the form <literal>main.tex.latexmain</literal>. In previous versions,
-   the contents of this file were ignored. However, this file is now
-   considered as if it is a &vim; source file and its contents are sourced
-   whenever a new project is edited. Thus you can put &ls; settings
-   specific to a given project in this file.
+   Many &latex; projects contain multiple source files which are
+   <literal>\include</literal>d from a master file. A typical example of
+   this situation is a directory layout such as the following
   </para>
   <para>
-   This file is used in various ways. Firstly, it is used to point to the
-   name of the file which should be compiled as described in <link
-    linkend="latex-master-file">latex-master-file</link>. 
+   <programlisting>thesis/
+    main.tex
+    abstract.tex
+    intro/
+        intro.tex
+        figures/
+            fig1.eps
+            fig2.eps
+    chapter1/
+        chap1.tex
+        figures/
+            fig1.eps
+    conclusion/
+        conclusion.tex
+        figures/</programlisting> 
   </para>
   <para>
-   You can also put settings such as <link
-    linkend="Tex_ProjectSourceFiles">Tex_ProjectSourceFiles</link> in this
-   file to minimize the time it takes to search through all the relevant
-   project files.
+   In the above case, <literal>main.tex</literal> will typically look like
   </para>
+  <para>
+    <programlisting>% file: main.tex
+\documentclass{report}
+\begin{document}
+
+\input{abstract.tex}
+\input{intro/intro.tex}
+\input{chapter1/chap1.tex}
+\input{conclusion/conclusion.tex}
+
+\end{document}</programlisting>
+  </para>
+  <para>
+   <anchor id="latex-master-file-specification" />
+   In such situations, you will need to convey to &ls; that
+   <literal>main.tex</literal> is the main file which
+   <literal>\input</literal>s the other files. This is done by creating a
+   file called <literal>main.tex.latexmain</literal> in the same directory
+   in which <literal>main.tex</literal> resides. This file is called the
+   <emphasis>master file</emphasis> in this manual. See <link
+    linkend="Tex_MainFileExpression">Tex_MainFileExpression</link> for an
+   alternative way of specifying the master file.
+  </para>
+  <note>
+   <para>
+    Here <literal>main.tex.latexmain</literal> is (obviously) a different
+    file from <literal>main.tex</literal> itself.
+    <literal>main.tex</literal> need not be renamed. This ofcourse
+    restricts each directory to have a single master file.
+   </para>
+  </note>
+  <para>
+   Each time &ls; opens a new &latex; file, it will try to see if it is
+   part of a multiple file project by searching upwards (to the root of
+   the file-system) from the current file's directory to see if it finds a
+   file of the form <literal>*.latexmain</literal>. If such a file is
+   found, then it is considered that the current file is part of a larger
+   project. The name of the &latex; master file is inferred directly from
+   the first part of the <literal>*.latexmain</literal> file as described
+   in the example above.
+  </para>
+  <section id="latex-project-settings">
+   <title>&ls; project settings</title>
+   <para>
+    If a <link linkend="latex-master-file">master file</link> is found,
+    then &ls; <literal>:source</literal>s the file. Thus this file needs to
+    contain valid &vim; commands. This file is typically used to store
+    project specific settings.
+   </para>
+   <para>
+    Some typical per-project settings which are best put in the master file
+    are
+    <simplelist>
+     <member><link
+       linkend="Tex_ProjectSourceFiles">Tex_ProjectSourceFiles</link></member>
+    </simplelist>
+   </para>
+  </section>
+  <section id="latex-master-file">
+   <title>Specifying which file to compile</title>
+   <para>
+    In the example described <link
+     linkend="latex-project-example">previously</link>, if you are editing
+    <literal>intro/intro.tex</literal> and press <literal>\ll</literal>,
+    then you still want &ls; to compile <literal>main.tex</literal>,
+    because <literal>intro/intro.tex</literal> is merely a fragment which
+    is <literal>\input</literal>'ed into <literal>main.tex</literal>. If
+    the master file is already specified using the
+    <literal>*.latexmain</literal> convention described <link
+     linkend="latex-project-example">previously</link>, then &ls; will automatically
+    compile the master file when you are editing any of its
+    <literal>\input</literal>'ed fragments. Thus pressing
+    <literal>\ll</literal> while editing <literal>intro/intro.tex</literal>
+    will compile <literal>main.tex</literal>.
+   </para>
+   <anchor id="Tex_MainFileExpression" />
+   <para>
+    If you wish to use some different logic to specify the main file name,
+    you can specify a custom expression via the
+    <literal>Tex_MainFileExpression</literal> variable. This is a string
+    containing a valid vim expression. In addition, you can use a variable
+    <literal>modifier</literal> which is in the format used for
+    <literal>|filename-modifiers|</literal>, for example,
+    <literal>':p:h'</literal>. You should utilize this variable to modify
+    the filename of the main file.
+    <programlisting>let g:Tex_MainFileExpression = 'MainFile(modifier)'
+function! MainFile(fmod)
+    if glob('*.latexmain') != ''
+        return fnamemodify(glob('*.latexmain'), a:fmod)
+    else
+        return ''
+    endif
+endif</programlisting>
+   </para>
+  </section>
  </section>
  <section id="latex-suite-commands-maps">
   <title>&ls; Commands and Maps</title>
@@ -3037,21 +3107,15 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
   <title>Customizing &ls;</title>
   <para>
    Customizing &ls; is done by defining certain global variables in
-   <literal>$VIM/ftplugin/tex/texrc</literal>, where
+   <literal>$VIM/ftplugin/tex.vim</literal>, where
    <literal>$VIM</literal> corresponds to <literal>~/.vim</literal> for *nix
    machines and <literal>~/vimfiles</literal> for windows machines. This file
-   is not part of the &ls; distribution. You will need to create this file if
+   is not part of the &ls; distribution. You will need to create this file
+   yourself (or modify it if it exists) if
    you need to change any default settinngs. Since this file is not
    included as part of the &ls; distribution, it will not be over-written in
    subsequent updates.
   </para>
-  <note>
-   <para>It is also possible to define any customization in the
-    <literal>$VIM/ftplugin/tex.vim</literal> file, but for the sake of
-    clarity, you might want to use the <literal>texrc</literal> file
-    described above
-   </para>
-  </note>
   <para>
    The default settings in &ls; are defined in
    <literal>$VIM/ftplugin/latex-suite/texrc</literal>. Please take a look at
@@ -3211,32 +3275,99 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
   </section>
   <section id="customizing-macros">
    <title>Macro Customization</title>
-   <para>
-    The following variables disable various parts of the macro functionality
-    of &ls;. See the links to the relevant sections to see what functionality
-    setting each of the variables to zero will take away.
-   </para>
-   <anchor id="Tex_EnvironmentMaps" />
-   <anchor id="Tex_EnvironmentMenus" />
-   <anchor id="Tex_FontMaps" />
-   <anchor id="Tex_FontMenus" />
-   <anchor id="Tex_SectionMaps" />
-   <anchor id="Tex_SectionMenus" />
-   <informaltable frame="all">
-    <tgroup cols="3">
-     <thead>
-      <row><entry>Setting</entry><entry>Link to relevant section</entry><entry>Default Value</entry></row>
-     </thead>
-     <tbody>
-      <row><entry><literal>g:Tex_EnvironmentMaps </literal></entry><entry><link linkend="insert-mode-environment-mappings">Environment Mappings</link></entry><entry>1</entry></row>
-      <row><entry><literal>g:Tex_EnvironmentMenus</literal></entry><entry></entry><entry>1</entry></row>
-      <row><entry><literal>g:Tex_FontMaps        </literal></entry><entry><link linkend="font-maps">Font Mappings</link></entry><entry>1</entry></row>
-      <row><entry><literal>g:Tex_FontMenus       </literal></entry><entry></entry><entry>1</entry></row>
-      <row><entry><literal>g:Tex_SectionMaps     </literal></entry><entry><link linkend="section-mappings">Section Mappings</link></entry><entry>1</entry></row>
-      <row><entry><literal>g:Tex_SectionMenus    </literal></entry><entry></entry><entry>1</entry></row>
-     </tbody>
-    </tgroup>
-   </informaltable>
+   <section id="Tex_Env_name">
+    <title>Tex_Env_name</title>
+     <para>
+      If you wish to wish to expand certain environments differently from
+      the way &ls; does it, you can define custom expansions using global
+      variables of the form <literal>Tex_Env_{name}</literal> where
+      <literal>name</literal> corresponds to the environment.
+     </para>
+     <para>
+      For example, if you press <literal>&lt;F5&gt;</literal> after typing
+      <literal>theorem</literal>, &ls; will by default expand it to
+      <programlisting>\begin{theorem}
+     \label{&ph;}&ph;
+\end{theorem}&ph;</programlisting>
+       However, if you wish change this to
+      <programlisting>\begin{theorem}
+     &ph;
+\end{theorem}&ph;</programlisting>
+       then define the following variable
+      <programlisting>let g:Tex_Env_theorem = "\\begin{theorem}\&lt;CR&gt;&ph;\&lt;CR&gt;\\end{theorem}"</programlisting>
+      </para>
+     <para>
+      If the expaniosn uses special keys such as carriage return etc, then
+      use double-quotes and use the <literal>"\&lt;key&gt;"</literal>
+      notation for special keys. Backslashes have to be doubled.
+     </para>
+     <para>
+      You could even use strings returned by functions as the expansion by
+      using the <link
+       linkend="IMAP_PutTextWithMovement">IMAP_PutTextWithMovement()</link>
+      function.
+     </para>
+     <para>
+      If the name of the environment contains special characters (for
+      example, the <literal>eqnarray*</literal> environment), then use the
+      following form:
+      <programlisting>let g:Tex_Env_{'eqnarray*'} = 
+        \ "\\begin{eqnarray*}\&lt;CR&gt;&ph; &amp;=&amp; &ph;\&lt;CR&gt;\\end{eqnarray*}&ph;"</programlisting>
+       This will make pressing <literal>&lt;F5&gt;</literal> after
+       <literal>eqnarray*</literal> expand to
+       <programlisting>\begin{eqnarray*}
+    &ph; &amp;=&amp; &ph;
+\end{eqnarray*}&ph;</programlisting>
+     </para>
+   </section>
+   <section id="Tex_Com_name">
+    <title>Tex_Com_name</title>
+    <para>
+     If you wish to define new expansions for fast command insertion as
+     described <link linkend="latex-command-maps">here</link>, or redefine
+     expansios from the default values in &ls;, you will need to define
+     variables of the form <literal>g:Tex_Com_{name}</literal> where
+     <literal>name</literal> is a command name. For example, with the
+     setting
+     <programlisting>let g:Tex_Com_frac = "\\frac{&ph;}{&ph;}&ph;"</programlisting>
+     pressing <literal>&lt;F7&gt;</literal> after typing
+     <literal>frac</literal> will change it to <literal>\frac{&ph;}{&ph;}&ph;</literal>
+    </para>
+    <para>
+     See <link linkend="Tex_Env_name">Tex_Env_name</link> for additional
+     details on how to create this setting in various special
+     circumstances.
+    </para>
+   </section>
+   <section id="macro-enabling">
+    <title>Enabling / disabling macros</title>
+    <para>
+     The following variables disable various parts of the macro functionality
+     of &ls;. See the links to the relevant sections to see what functionality
+     setting each of the variables to zero will take away.
+    </para>
+    <anchor id="Tex_EnvironmentMaps" />
+    <anchor id="Tex_EnvironmentMenus" />
+    <anchor id="Tex_FontMaps" />
+    <anchor id="Tex_FontMenus" />
+    <anchor id="Tex_SectionMaps" />
+    <anchor id="Tex_SectionMenus" />
+    <informaltable frame="all">
+     <tgroup cols="3">
+      <thead>
+       <row><entry>Setting</entry><entry>Link to relevant section</entry><entry>Default Value</entry></row>
+      </thead>
+      <tbody>
+       <row><entry><literal>g:Tex_EnvironmentMaps </literal></entry><entry><link linkend="insert-mode-environment-mappings">Environment Mappings</link></entry><entry>1</entry></row>
+       <row><entry><literal>g:Tex_EnvironmentMenus</literal></entry><entry></entry><entry>1</entry></row>
+       <row><entry><literal>g:Tex_FontMaps        </literal></entry><entry><link linkend="font-maps">Font Mappings</link></entry><entry>1</entry></row>
+       <row><entry><literal>g:Tex_FontMenus       </literal></entry><entry></entry><entry>1</entry></row>
+       <row><entry><literal>g:Tex_SectionMaps     </literal></entry><entry><link linkend="section-mappings">Section Mappings</link></entry><entry>1</entry></row>
+       <row><entry><literal>g:Tex_SectionMenus    </literal></entry><entry></entry><entry>1</entry></row>
+      </tbody>
+     </tgroup>
+    </informaltable>
+   </section>
    <section id="Tex_UseMenuWizard">
     <title>g:Tex_UseMenuWizard</title>
     <informaltable frame="all">
@@ -3431,74 +3562,6 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
      key unmapped.
     </para>
    </section>
-   <section id="Tex_Env_name">
-    <title>Tex_Env_name</title>
-     <para>
-      If you wish to wish to expand certain environments differently from
-      the way &ls; does it, you can define custom expansions using global
-      variables of the form <literal>Tex_Env_{name}</literal> where
-      <literal>name</literal> corresponds to the environment. This
-      over-riding setting only works for Methods 1-3 described in the
-      section <link linkend="insert-mode-environment-mappings"
-       endterm="insert-mode-environment-mappings.title"></link>.
-      In the future, it will work with the fourth method too.
-     </para>
-     <para>
-      For example, if you press <literal>&lt;F5&gt;</literal> after typing
-      <literal>theorem</literal>, &ls; will by default expand it to
-      <programlisting>\begin{theorem}
-     \label{&ph;}&ph;
-\end{theorem}&ph;</programlisting>
-       However, if you wish change this to
-      <programlisting>\begin{theorem}
-     &ph;
-\end{theorem}&ph;</programlisting>
-       then define the following variable
-      <programlisting>let g:Tex_Env_theorem = "\\begin{theorem}\&lt;CR&gt;&ph;\&lt;CR&gt;\\end{theorem}"</programlisting>
-      </para>
-     <para>
-      If the expaniosn uses special keys such as carriage return etc, then
-      use double-quotes and use the <literal>"\&lt;key&gt;"</literal>
-      notation for special keys. Backslashes have to be doubled.
-     </para>
-     <para>
-      You could even use strings returned by functions as the expansion by
-      using the <link
-       linkend="IMAP_PutTextWithMovement">IMAP_PutTextWithMovement()</link>
-      function.
-     </para>
-     <para>
-      If the name of the environment contains special characters (for
-      example, the <literal>eqnarray*</literal> environment), then use the
-      following form:
-      <programlisting>let g:Tex_Env_{'eqnarray*'} = 
-        \ "\\begin{eqnarray*}\&lt;CR&gt;&ph; &amp;=&amp; &ph;\&lt;CR&gt;\\end{eqnarray*}&ph;"</programlisting>
-       This will make pressing <literal>&lt;F5&gt;</literal> after
-       <literal>eqnarray*</literal> expand to
-       <programlisting>\begin{eqnarray*}
-    &ph; &amp;=&amp; &ph;
-\end{eqnarray*}&ph;</programlisting>
-     </para>
-   </section>
-   <section id="Tex_Com_name">
-    <title>Tex_Com_name</title>
-    <para>
-     If you wish to define new expansions for fast command insertion as
-     described <link linkend="latex-command-maps">here</link>, or redefine
-     expansios from the default values in &ls;, you will need to define
-     variables of the form <literal>g:Tex_Com_{name}</literal> where
-     <literal>name</literal> is a command name. For example, with the
-     setting
-     <programlisting>let g:Tex_Com_frac = "\\frac{&ph;}{&ph;}&ph;"</programlisting>
-     pressing <literal>&lt;F7&gt;</literal> after typing
-     <literal>frac</literal> will change it to <literal>\frac{&ph;}{&ph;}&ph;</literal>
-    </para>
-    <para>
-     See <link linkend="Tex_Env_name">Tex_Env_name</link> for additional
-     details on how to create this setting in various special
-     circumstances.
-    </para>
-   </section>
    <section id="Tex_ItemStyle_environment">
     <title>Tex_ItemStyle_environment</title>
     <para>
@@ -3686,32 +3749,11 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
    <section id="Tex_UseSimpleLabelSearch">
     <title>Tex_UseSimpleLabelSearch</title>
     <para>
-     This variable controls whether &ls; uses a simple algorithm to search
-     for possible completions of a <literal>\label</literal> command. When
-     set to 1, &ls; will search simply for <literal>\label</literal>'s in
-     all the <literal>.tex</literal> files found in the present directory,
-     ignoring whether they are part of a latex project or not.
+     When set to 1, &ls; searches for <literal>\label</literal>s in all
+     <literal>.tex</literal> files in the directory containing the file
+     being edited when &lt;F9&gt; is pressed. See <link
+      linkend="ls-completion-ref">\ref completion</link> for details.
     </para>
-    <para>
-     When set to 0, then &ls; will use the following algorithm to determine
-     the list of possible completions:
-    </para>
-    <orderedlist>
-     <listitem>First &ls; will determine if it can find a master-file
-      specification.</listitem>
-     <listitem>If it can, then &ls; will search for
-      <literal>\label</literal>'s in that file first.</listitem>
-     <listitem>If the master file <literal>\include</literal>'s or
-      <literal>\input</literal>'s any other files, then &ls; will search
-      for <literal>\label</literal>'s in those files.  The search for
-      <literal>\include</literal>'d and <literal>\input</literal>'ed files
-      is recursive, i.e, if an <literal>\include</literal>'d file
-      <literal>\include</literal>'s another file, then that will be
-      searched as well and so on.</listitem>
-     <listitem>If &ls; cannot find a master file specified for this file,
-      then it will simply search for <literal>\labels</literal> in the
-      present file.</listitem>
-    </orderedlist>
    </section>
    <section id="Tex_ProjectSourceFiles">
     <title>g:Tex_ProjectSourceFiles</title>
@@ -3760,7 +3802,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
     </para>
    </section>
   </section>
-  <section id="compiler-customization">
+  <section id="customizing-compiling">
    <title>Compiler Customization</title>
    <para>
     The following settings affect &ls;'s compilation functionality
@@ -3972,7 +4014,7 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
     </para>
    </section>
   </section>
-  <section id="viewer-customization">
+  <section id="customizing-viewing">
    <title>Viewer Customization</title>
    <para>
     The following settings affect how &ls; will display compiled files.
