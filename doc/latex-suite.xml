@@ -228,66 +228,57 @@ set iskeyword+=:
   <section id="environment-mappings">
    <title>Environment Mappings</title>
    &ls; provides a rich set of mappings to insert, enclose and modify
-   &latex; environments.
-   <section id="insert-mode-environment-mappings">
-    <title id="insert-mode-environment-mappings.title">Insert-mode Mappings</title>
-    <para> 
-     These mappings insert LaTeX "environments" such as:
-     <programlisting>\begin{center}
-    &ph;
-\end{center}&ph;</programlisting>
-     with the cursor left at the first |placeholder|. There are
-     various ways of inserting environments into the source file. If
-     the environment is a standard latex environment, then latex suite
-     might also include common fields associated with it.
-    </para>
+   &latex; environments, i.e, <literal>\begin{...} ... \end{...}</literal>
+   pairs.
+   <section id="inserting-environments">
+    <title>Inserting Environments</title>
     <para>
-     See <link linkend="Tex_Env_name">this section</link> for details on
-     how to customize the way &ls; will expand various environments.
+     &ls; provides the following ways to insert environments
     </para>
-    <section id="ls-imap-f5">
-     <title>Method 1</title>
+    <section id="inserting-env-f5">
+     <title>Method 1: Pressing <literal>&lt;F5&gt;</literal></title>
      <para>
-      If you press <literal>&lt;F5&gt;</literal> in the
-      insert mode while on an empty line, &ls; prompts you
-      with a list of environments you might want to insert. You can
-      either choose one from the list or type in a new environment
-      name. This list can be customized via the <link
-       linkend="Tex_PromptedEnvironments"><literal>g:Tex_PromptedEnvironments</literal></link>
+      If you press <literal>&lt;F5&gt;</literal> in the insert or normal
+      mode while on an empty line, &ls; prompts you with a list of
+      environments you might want to insert. You can either choose one
+      from the list or type in a new environment name.  If you press
+      <literal>&lt;F5&gt;</literal> on a line which already has a word,
+      then that word is used instead of prompting.
+     </para>
+     <para>
+      See <link linkend="Tex_Env_name">Tex_Env_name</link> for a
+      description of how &ls; uses the word to form the expansion and how
+      to modify &ls;'s behavior.
+     </para>
+     <para>
+      The list of environments which &ls; prompts you with (when
+      <literal>&lt;F5&gt;</literal> is pressed on an empty line) is formed
+      from the <link
+       linkend="Tex_PromptedEnvironments">Tex_PromptedEnvironments</link>
       setting.
      </para>
      <para>
-      In addition to the <literal>Tex_PromptedEnvironments</literal>
-      variable, &ls; also lists envionments found in custom packages as
-      described in the section <link linkend="package-actions">Package
-       actions.</link>
+      In addition to this setting, &ls; also lists envionments found in
+      custom packages as described in the section <link
+       linkend="package-actions">Package actions.</link>
      </para>
     </section>
-    <section>
-     <title>Method 2</title>
-     <para>
-      If you press <literal>&lt;F5&gt;</literal> while on a line
-      containing a single word, then &ls; creates a
-      environment of that name.
-     </para>
-    </section>
-    <section>
-     <title>Method 3</title>
+    <section id="inserting-env-shift-f1">
+     <title>Method 2: Using <literal>&lt;S-F1&gt;</literal>-<literal>&lt;S-F4&gt;</literal></title>
      <para>
       The shifted function keys, <literal>&lt;S-F1&gt;</literal> to
-      <literal>&lt;S-F4&gt;</literal> can also be optionally mapped
-      to some common environments which you insert most often. The
-      environments mapped to each key can also be customized via the <link
+      <literal>&lt;S-F4&gt;</literal> can be mapped to insert very commonly
+      used environments. The environments mapped to each key can be
+      customized via the <link
        linkend="Tex_HotKeyMappings">g:Tex_HotKeyMappings</link> setting.
      </para>
     </section>
-    <section>
-     <title>Method 4</title>
+    <section id="inserting-env-threeletter">
+     <title>Method 3: Using three letter sequences</title>
      <para>
-      Environments can also be inserted by pressing a 3 capital
-      letter sequence starting with an <literal>E</literal>. The following subsection
-      describes this in detail. The sequence of 3 letters generally
-      tries to follow the following rules:
+      Environments can also be inserted by pressing a 3 capital letter
+      sequence starting with an <literal>E</literal>. The sequence of 3
+      letters generally tries to follow the following rules:
      </para>
      <orderedlist>
       <listitem>
@@ -321,26 +312,48 @@ quotation (_q_uotatio_n_)      ---&gt; EQN</programlisting>
      </para>
     </section>
    </section>
-   <section id="visual-mode-environment-mapings">
-    <title>Visual-mode Mappings</title>
+   <section id="enclosing-environments">
+    <title>Enclosing in Environments</title>
     <para>
      &ls; provides visual-mode mappings which enclose visually
-     selected portions of text in environments. These mappings are
-     derived from the corresponding insert-mode environment mappings
-     according to the following simple rule:
-
-     <programlisting>ECE           --&gt; ,ce</programlisting>
-     The rule simply says that the leading <literal>E</literal> is
-     converted to <literal>,</literal> and the next 2 letters are
-     small case.  
-
-     Here <literal>ECE</literal> is the insert-mode map which inserts
-     the <literal>\begin{center} ... \end{center}</literal>
-     environment.  Correspondingly, if you select a portion of text
-     visually and press <literal>,ce</literal> while still in visual
-     mode, then the selected portion will be enclosed in
-     <literal>\begin{center} ... \end{center}</literal>.
-
+     selected portions of text in environments. There are two ways provided
+     to do this.
+    </para>
+    <section id="enclosing-env-f5">
+     <title>Method 1: Pressing <literal>&lt;F5&gt;</literal></title>
+     <para>
+      You can also select a portion of text visually and press
+      <literal>&lt;F5&gt;</literal> while still in visual mode. This will
+      prompt you with a list of environments. (This list can be customized
+      via the <link
+       linkend="Tex_PromptedEnvironments">g:Tex_PromptedEnvironments</link>
+      setting). You can either choose from this list or type in a new
+      environment name. Once the selection is done, &ls; encloses the
+      visually selected portion in the chosen environment.
+     </para>
+    </section>
+    <section id="enclosing-env-threeletter">
+     <title>Method 2: Using three letter mappings</title>
+     <para>
+      You can also select text visually and press a sequence of three
+      characters beginning with <literal>,</literal> (the single comma
+      character) and the selected text will be enclosed in the chosen
+      environment. The three letter sequence follows directly from the
+      three letter sequence used to insert environments as described <link
+       linkend="inserting-env-threeletter">here</link>. The following
+      example describes the rule used:
+     </para>
+     <para>
+      If <literal>ECE</literal> inserts a
+      <literal>\begin{center}...\end{center}</literal> environment, then to
+      enclose a block of selected text in
+      <literal>\begin{center}...\end{center}</literal>, simply select the
+      text and press <literal>,ce</literal>.  The rule simply says that the
+      leading <literal>E</literal> is converted to <literal>,</literal> and
+      the next 2 letters are small case.  
+     </para>
+    </section>
+    <para>
      Some of the visual mode mappings are sensitive to whether you
      choose line-wise or character-wise. For example, if you choose a
      word and press <literal>,ce</literal>, then you get
@@ -350,20 +363,9 @@ quotation (_q_uotatio_n_)      ---&gt; EQN</programlisting>
     line
 \end{center}</programlisting>
     </para>
-    <anchor id="ls-vmap-f5" />
-    <para>
-     You can also select a portion of text visually and press
-     <literal>&lt;F5&gt;</literal> while still in visual mode. This will
-     prompt you with a list of environments. (This list can be customized
-     via the <link
-      linkend="Tex_PromptedEnvironments">g:Tex_PromptedEnvironments</link>
-     setting). You can either choose from this list or type in a new
-     environment name. Once the selection is done, &ls; encloses the
-     visually selected portion in the chosen environment.
-    </para>
    </section>
-   <section id="normal-mode-environment-mappings">
-    <title>Normal Mode Mappings</title>
+   <section id="changing-environments">
+    <title>Changing Environments</title>
     <para>
      Pressing <literal>&lt;S-F5&gt;</literal> in normal mode detects which
      environment the cursor is presently located in and prompts you to
@@ -393,55 +395,60 @@ quotation (_q_uotatio_n_)      ---&gt; EQN</programlisting>
   </section>
   <section id="latex-command-maps">
    <title>Command Mappings</title>
-   <anchor id="ls-imap-f7" />
-   <anchor id="ls-imap-s-f7" />
-   <para>
-    &ls; provides two simple mappings <literal>&lt;F7&gt;</literal> and
-    <literal>&lt;S-F7&gt;</literal> which work in both insert and normal
-    mode in an idential manner. In insert mode, if the cursor is touching a
-    word, then that word is replaced by a command constructed with that
-    word. If the cursor is located on a white-space character, then you
-    will be prompted with a list of commands to choose from. The list of
-    commands is constructed from the <link
-     linkend="Tex_PromptedCommands"><literal>g:Tex_PromptedCommands</literal></link>
-    setting and also from commands which &ls; finds while scanning custom
-    packages which &ls; finds. See the <link
-     linkend="package-actions">Package actions</link> section for details
-    on which files are scanned etc.
-   </para>
-   <para>
-    For certain common commands, &ls; will expand them to include
-    additional arguments as needed. For example, <literal>frac</literal>
-    becomes <literal>\frac{&ph;}{&ph;}&ph;</literal>. Otherwise, it will
-    simply change the word under the cursor as follows 
-    <programlisting>word --> \word{&ph;}&ph;</programlisting> 
-    You can define custom expansios
-    of commands using the <literal>Tex_Com_{name}</literal> setting as
-    described in <link linkend="Tex_Com_name">here</link>.
-   </para>
-   <para>
-    Pressing <literal>&lt;F7&gt;</literal> in normal mode is equivalent to
-    pressing <literal>i</literal> to go to insert mode and then pressing
-    <literal>&lt;F7&gt;</literal>. In other words, if the cursor is in or
-    just after a word, then that word will become a command, otherwise, the
-    user is prompted to choose a command to insert.
-   </para>
-   <para>
-    In both insert and normal mode <literal>&lt;S-F7&gt;</literal> will
-    find out if you are presently within an environment and then prompt you
-    with a list of commands to change it to.
-   </para>
-   <anchor id="ls-vmap-f7" />
-   <para>
-    You can also select a portion of text visually and press
-    <literal>&lt;F7&gt;</literal> while still in visual mode. This will
-    prompt you with a list of commands. (This list can be customized
-    via the <link
-     linkend="Tex_PromptedCommands">g:Tex_PromptedCommands</link>
-    setting). You can either choose from this list or type in a new
-    command name. Once the selection is done, &ls; encloses the
-    visually selected portion in the chosen command.
-   </para>
+   &ls; provides a rich set of mappings to insert, enclose and modify
+   &latex; commands.
+   <section id="inserting-commands">
+    <title>Inserting &latex; commands</title>
+    <anchor id="ls-imap-f7" />
+    <anchor id="ls-imap-s-f7" />
+    <para>
+     Pressing <literal>&lt;F7&gt;</literal> in insert or normal mode while
+     the cursor is touching a word will insert a command formed from the
+     word touching the cursor. 
+    </para>
+    <para>
+     For certain common commands, &ls; will expand them to include
+     additional arguments as needed. For example, <literal>frac</literal>
+     becomes <literal>\frac{&ph;}{&ph;}&ph;</literal>. Otherwise, it will
+     simply change the word under the cursor as follows 
+     <programlisting>word --> \word{&ph;}&ph;</programlisting> 
+     You can define custom expansions
+     of commands using the <literal>Tex_Com_{name}</literal> setting as
+     described in <link linkend="Tex_Com_name">here</link>.
+    </para>
+    <para>
+     If <literal>&lt;F7&gt;</literal> is pressed when the cursor is on
+     white-space, then &ls; will prompt you to choose a command and insert
+     that instead.The list of commands is constructed from the <link
+      linkend="Tex_PromptedCommands"><literal>g:Tex_PromptedCommands</literal></link>
+     setting and also from commands which &ls; finds while scanning custom
+     packages which &ls; finds. See the <link
+      linkend="package-actions">Package actions</link> section for details
+     on which files are scanned etc.
+    </para>
+   </section>
+   <section id="enclosing-commands">
+    <title>Enclosing in a command</title>
+    <para>
+     You can select a portion of text visually and press
+     <literal>&lt;F7&gt;</literal> while still in visual mode. This will
+     prompt you with a list of commands. (This list can be customized
+     via the <link
+      linkend="Tex_PromptedCommands">g:Tex_PromptedCommands</link>
+     setting). You can either choose from this list or type in a new
+     command name. Once the selection is done, &ls; encloses the
+     visually selected portion in the chosen command.
+    </para>
+   </section>
+   <section id="changing-commands">
+    <title>Changing commands</title>
+    <anchor id="ls-vmap-f7" />
+    <para>
+     In both insert and normal mode <literal>&lt;S-F7&gt;</literal> will
+     find out if you are presently within an environment and then prompt you
+     with a list of commands to change it to.
+    </para>
+   </section>
   </section>
   <section id="font-maps">
    <title>Font Mappings</title> 
@@ -1273,7 +1280,7 @@ endfunction</programlisting>
     <literal>newcommand</literal> lines and also append any commands and
     environments found to the list of commands and environments which you
     are prompted with when you press <link
-     linkend="ls-imap-f5"><literal>&lt;F5&gt;</literal></link> or <link
+     linkend="inserting-env-f5"><literal>&lt;F5&gt;</literal></link> or <link
      linkend="ls-imap-f7"><literal>&lt;F7&gt;</literal></link> in insert
     mode.
    </para>
@@ -3358,7 +3365,8 @@ endif</programlisting>
        <row><entry>Setting</entry><entry>Link to relevant section</entry><entry>Default Value</entry></row>
       </thead>
       <tbody>
-       <row><entry><literal>g:Tex_EnvironmentMaps </literal></entry><entry><link linkend="insert-mode-environment-mappings">Environment Mappings</link></entry><entry>1</entry></row>
+       <row><entry><literal>g:Tex_EnvironmentMaps
+       </literal></entry><entry><link linkend="environment-mappings">Environment Mappings</link></entry><entry>1</entry></row>
        <row><entry><literal>g:Tex_EnvironmentMenus</literal></entry><entry></entry><entry>1</entry></row>
        <row><entry><literal>g:Tex_FontMaps        </literal></entry><entry><link linkend="font-maps">Font Mappings</link></entry><entry>1</entry></row>
        <row><entry><literal>g:Tex_FontMenus       </literal></entry><entry></entry><entry>1</entry></row>
@@ -3482,9 +3490,9 @@ endif</programlisting>
     </informaltable>
     <para>
      In order to avoid clashes between the large number of visual mode macros
-     provided, the <link linkend="visual-mode-environment-mapings">visual mode
+     provided, the <link linkend="enclosing-env-threeletter">visual mode
       macros for environments</link> and sections start with a character
-     different from <literal>g:Tex_Leade</literal>.
+     different from <literal>g:Tex_Leader</literal>.
     </para>
    </section>
    <section id="Tex_PromptedEnvironments">
