@@ -7,7 +7,6 @@
 "              Part of vim-latexSuite: http://vim-latex.sourceforge.net
 "         CVS: $Id$
 " ============================================================================
-
 " Tex_SetTexViewerMaps: sets maps for this ftplugin {{{
 function! Tex_SetTexViewerMaps()
 	inoremap <silent> <Plug>Tex_Completion <Esc>:call Tex_Complete("default","text")<CR>
@@ -53,6 +52,10 @@ function! Tex_Complete(what, where)
 	unlet! s:type
 	unlet! s:typeoption
 
+	if Tex_GetVarValue('Tex_WriteBeforeCompletion') == 1
+		wall
+	endif
+
 	if a:where == "text"
 		" What to do after <F9> depending on context
 		let s:curfile = expand("%:p")
@@ -74,21 +77,30 @@ function! Tex_Complete(what, where)
 		endif
 
 		if exists("s:type") && s:type =~ 'ref'
-			if Tex_GetVarValue('Tex_UseSimpleLabelSearch') == 1
+			if Tex_GetVarValue('Tex_UseOutlineCompletion') == 1
+				call Tex_Debug("Tex_Complete: using outline search method", "view")
+				call Tex_StartOutlineCompletion()
+
+			elseif Tex_GetVarValue('Tex_UseSimpleLabelSearch') == 1
 				call Tex_Debug("Tex_Complete: searching for \\labels in all .tex files in the present directory", "view")
 				call Tex_Debug("Tex_Complete: silent! grep! ".Tex_EscapeForGrep('\\label{'.s:prefix)." *.tex", 'view')
 				call Tex_Grep('\\label{'.s:prefix, '*.tex')
+				call <SID>Tex_SetupCWindow()
+
 			elseif Tex_GetVarValue('Tex_ProjectSourceFiles') != ''
 				call Tex_Debug('Tex_Complete: searching for \\labels in all Tex_ProjectSourceFiles', 'view')
 				call Tex_CD(Tex_GetMainFileName(':p:h'))
 				call Tex_Grep('\\label{'.s:prefix, Tex_GetVarValue('Tex_ProjectSourceFiles'))
+				call <SID>Tex_SetupCWindow()
+
 			else
 				call Tex_Debug("Tex_Complete: calling Tex_GrepHelper", "view")
 				silent! grep! ____HIGHLY_IMPROBABLE___ %
 				call Tex_GrepHelper(s:prefix, 'label')
+				call <SID>Tex_SetupCWindow()
 			endif
+
 			redraw!
-			call <SID>Tex_SetupCWindow()
 
 		elseif exists("s:type") && s:type =~ 'cite'
 			" grep! nothing % 
@@ -215,13 +227,14 @@ endfunction " }}}
 " Tex_CompleteFileName:  {{{
 " Description: 
 function! Tex_CompleteFileName(filename, ext)
-	call Tex_Debug('getting filename = '.a:filename, 'view')
+	call Tex_Debug('+Tex_CompleteFileName: getting filename '.a:filename, 'view')
 
-	let completeword = Tex_RelPath(a:filename, expand('%:p'))
 	if a:ext == 'noext'
-		let completeword = fnamemodify(completeword, ':r')
+		let completeword = fnamemodify(a:filename, ':r')
 	endif
+	let completeword = Tex_RelPath(completeword, Tex_GetMainFileName(':p:h'))
 
+	call Tex_Debug(":Tex_CompleteFileName: completing with ".completeword, "view")
 	call Tex_CompleteWord(completeword)
 endfunction " }}}
 " Tex_Common: common part of strings {{{
@@ -690,9 +703,96 @@ function! s:Tex_DoCompletion(texcommand)
 	endif
 endfunction " }}}
 
-com! -nargs=0 TClearCiteHist unlet! s:citeSearchHistory
+" ==============================================================================
+" Functions for presenting an outlined version for completion
+" ============================================================================== 
+" Tex_StartOutlineCompletion: sets up an outline window {{{
 
-" this statement has to be at the end.
-let s:doneOnce = 1
+" get the place where this plugin resides for setting cpt and dict options.
+" these lines need to be outside the function.
+let s:path = expand('<sfile>:p:h')
+
+function! Tex_StartOutlineCompletion()
+	let mainfname = Tex_GetMainFileName(':p')
+
+	" open the buffer
+    let _report = &report
+    let _cmdheight=&cmdheight
+    let _lazyredraw = &lazyredraw
+    set report=1000
+    set cmdheight=1
+    set lazyredraw
+
+    bot split __OUTLINE__
+
+	setlocal modifiable
+	setlocal noswapfile
+	setlocal buftype=nowrite
+	setlocal bufhidden=delete
+	setlocal nowrap
+    setlocal foldmethod=marker
+    setlocal foldmarker=<<<,>>>
+
+	" delete everything in it to the blackhole
+	% d _
+	" read in the output of the outline command
+	exec '0r!'.s:path.'/outline.py '.mainfname.' '.s:prefix
+	0
+
+    call Tex_SetupOutlineSyntax()
+
+	exec 'nnoremap <buffer> <cr> '
+		\ .':cd '.s:origdir.'<CR>'
+		\ .':call Tex_FinishOutlineCompletion()<CR>'
+	exec 'nnoremap <buffer> q '
+		\ .':cd '.s:origdir.'<CR>'
+		\ .':close<CR>'
+
+	" once the buffer is initialized, go back to the original settings.
+	setlocal nomodifiable
+	setlocal nomodified
+    let &report = _report
+    let &cmdheight = _cmdheight
+    let &lazyredraw = _lazyredraw
+endfunction " }}}
+" Tex_SetupOutlineSyntax: sets up the syntax items for the outline {{{
+" Description: 
+function! Tex_SetupOutlineSyntax()
+    syn match outlineFileName "<\f\+>$" contained
+    syn match foldMarkers "<<<\d$" contained
+    syn match firstSemiColon '^:' contained
+    syn match firstAngle '^>' contained
+
+    syn match sectionNames '\(\d\.\)\+ .*' contains=foldMarkers
+    syn match previousLine '^:.*' contains=firstSemiColon
+    syn match labelLine '^>.*' contains=firstAngle,outlineFileName
+
+    hi def link outlineFileName Ignore
+    hi def link foldMarkers Ignore
+    hi def link firstSemiColon Ignore
+    hi def link firstAngle Ignore
+
+    hi def link sectionNames Type
+    hi def link previousLine Special
+    hi def link labelLine Comment
+endfunction " }}}
+" Tex_FinishOutlineCompletion: inserts the reference back in the text {{{
+function! Tex_FinishOutlineCompletion()
+	if getline('.') !~ '^[>:]'
+		return
+	endif
+
+	if getline('.') =~ '^>'
+		let ref_complete = matchstr(getline('.'), '^>\s\+\zs\S\+\ze')
+	elseif getline('.') =~ '^:'
+		let ref_complete = matchstr(getline(line('.')-1), '^>\s\+\zs\S\+\ze')
+	endif
+
+	let ref_remaining = strpart(ref_complete, strlen(s:prefix))
+	close
+	call Tex_CompleteWord(ref_remaining)
+endfunction " }}}
+
+com! -nargs=0 TClearCiteHist unlet! s:citeSearchHistory
 
 " vim:fdm=marker:nowrap:noet:ff=unix:ts=4:sw=4
