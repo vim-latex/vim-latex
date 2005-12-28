@@ -76,14 +76,14 @@ function! RemoteOpen(arglist)
 
 	let i = 1
 	let server = s:Strntok(servers, "\n", i) 
-	let firstServer = v:servername
+	let targetServer = v:servername
 
 	while server != ''
 		" Find out if there was any server which was used by remoteOpen before
 		" this. If a new gvim session was ever started via remoteOpen, then
 		" g:Remote_Server will be set.
 		if remote_expr(server, 'exists("g:Remote_Server")')
-			let firstServer = server
+			let targetServer = server
 		endif
 
 		" Ask each server if that file is being edited by them.
@@ -93,37 +93,27 @@ function! RemoteOpen(arglist)
 			" ask the server to edit that file and come to the foreground.
 			" set a variable g:Remote_Server to indicate that this server
 			" session has at least one file opened via RemoteOpen
-			call remote_send(server, 
-				\ "\<C-\>\<C-n>".
-				\ ":let g:Remote_Server = 1\<CR>".
-				\ ":drop ".filename."\<CR>".
-				\ ":".linenum."\<CR>zv"
-				\ )
-			call remote_foreground(server)
-			" quit this vim session
-			q
-			" Is this necessary? :)
-			return
+			let targetServer = server
+			break
 		end
 		
 		let i = i + 1
 		let server = s:Strntok(servers, "\n", i) 
 	endwhile
-	call Tex_Debug("no server has file open, but firstServer = ".firstServer, "ropen")
 
 	" If none of the servers have the file open, then open this file in the
 	" first server. This has the advantage if yap tries to make vim open
 	" multiple vims, then at least they will all be opened by the same gvim
 	" server.
-	call remote_send(firstServer, 
+	call remote_send(targetServer, 
 		\ "\<C-\>\<C-n>".
 		\ ":let g:Remote_Server = 1\<CR>".
 		\ ":drop ".filename."\<CR>".
 		\ ":".linenum."\<CR>zv"
 		\ )
-	call remote_foreground(firstServer)
+	call remote_foreground(targetServer)
 	" quit this vim session
-	if v:servername != firstServer
+	if v:servername != targetServer
 		q
 	endif
 endfunction " }}}
