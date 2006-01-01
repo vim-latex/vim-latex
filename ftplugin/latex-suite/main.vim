@@ -370,13 +370,15 @@ nmap <silent> <script> <plug>cleanHistory :call Tex_CleanSearchHistory()<CR>
 " 	See if a window-local, buffer-local or global variable with the given name
 " 	exists and if so, returns the corresponding value. If none exist, return
 " 	an empty string.
-function! Tex_GetVarValue(varname)
+function! Tex_GetVarValue(varname, ...)
 	if exists('w:'.a:varname)
 		return w:{a:varname}
 	elseif exists('b:'.a:varname)
 		return b:{a:varname}
 	elseif exists('g:'.a:varname)
 		return g:{a:varname}
+	elseif a:0 > 0
+		return a:1
 	else
 		return ''
 	endif
@@ -635,7 +637,7 @@ endfunction " }}}
 "			"stabilize" that version by releasing a few pre-releases and then
 "			keep that as a stable point.
 function! Tex_Version()
-	return "Latex-Suite: version 1.8.01"
+	return "Latex-Suite: version 1.8.02"
 endfunction 
 
 com! -nargs=0 TVersion echo Tex_Version()
