@@ -9,6 +9,7 @@
 import re
 import os
 import sys
+import stringio
 
 # getFileContents {{{
 def getFileContents(argin, ext=''):
@@ -53,12 +54,12 @@ def createOutline(contents, prefix):
     for cmd in outline_cmds:
         outline_nums[cmd] = 0
 
-
     pres_depth = 0
     fname = ''
     prev_txt = ''
     inside_env = 0
     prev_env = ''
+    outstr = stringio.StringIO()
 
     for line in contents.splitlines():
         # remember which file we are currently "in"
@@ -93,9 +94,9 @@ def createOutline(contents, prefix):
             # :          e^{i\pi} + 1 = 0
             #
             # Use the current "section depth" for the leading indentation.
-            print '>%s%s\t\t<%s>' % (' '*(2*pres_depth+6),
+            print >>outstr, '>%s%s\t\t<%s>' % (' '*(2*pres_depth+6),
                     m.group(1), fname)
-            print ':%s%s' % (' '*(2*pres_depth+8), prev_txt)
+            print >>outstr, ':%s%s' % (' '*(2*pres_depth+8), prev_txt)
             prev_txt = ''
 
         # We found a TOC command, i.e one of \chapter, \section etc.
@@ -123,7 +124,7 @@ def createOutline(contents, prefix):
                 sec_txt += (' ' + m.group(1))
                 pres_depth = i
 
-                print '%s%s\t<<<%d' % (' '*2*pres_depth, sec_txt, pres_depth+1)
+                print >>outstr, '%s%s\t<<<%d' % (' '*2*pres_depth, sec_txt, pres_depth+1)
                 break
 
         # If we just encoutered the start or end of an environment or a
@@ -152,23 +153,30 @@ def createOutline(contents, prefix):
             else:
                 prev_txt = line
 
+    return outstr.getvalue()
+
 
 # }}}
-
-if __name__ == "__main__":
-    fname = sys.argv[1]
-    if len(sys.argv) > 2:
-        prefix = sys.argv[2]
-    else:
-        prefix = ''
-
+# main(fname) {{{
+def main(fname, prefix):
     [head, tail] = os.path.split(fname)
     if head:
         os.chdir(head)
 
     [root, ext] = os.path.splitext(tail)
     contents = getFileContents(root, ext)
+    outline = createOutline(contents, prefix)
 
-    createOutline(contents, prefix)
+    return outline
+    
+# }}}
+
+if __name__ == "__main__":
+    if len(sys.argv) > 2:
+        prefix = sys.argv[2]
+    else:
+        prefix = ''
+
+    print main(sys.argv[1], prefix)
 
 # vim: fdm=marker

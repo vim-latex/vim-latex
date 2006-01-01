@@ -711,6 +711,11 @@ endfunction " }}}
 " get the place where this plugin resides for setting cpt and dict options.
 " these lines need to be outside the function.
 let s:path = expand('<sfile>:p:h')
+if has('python') && Tex_GetVarValue('Tex_UsePython')
+	python import sys, re
+	exec "python sys.path += [r'". s:path . "']"
+	python import outline
+endif
 
 function! Tex_StartOutlineCompletion()
 	let mainfname = Tex_GetMainFileName(':p')
@@ -724,6 +729,7 @@ function! Tex_StartOutlineCompletion()
     set lazyredraw
 
     bot split __OUTLINE__
+	exec Tex_GetVarValue('Tex_OutlineWindowHeight', 15).' wincmd _'
 
 	setlocal modifiable
 	setlocal noswapfile
@@ -735,8 +741,20 @@ function! Tex_StartOutlineCompletion()
 
 	" delete everything in it to the blackhole
 	% d _
-	" read in the output of the outline command
-	exec '0r!'.s:path.'/outline.py '.mainfname.' '.s:prefix
+
+	if has('python') && Tex_GetVarValue('Tex_UsePython')
+		exec 'python retval = outline.main('
+			\. 'r"' . fnamemodify(mainfname, ':p') . '", '
+			\. 'r"' . s:prefix . '")'
+
+		" transfer variable from python to a local variable.
+		python vim.command("""let retval = "%s" """ % re.sub(r'"|\\', r'\\\g<0>', retval))
+
+		0put!=retval
+	else
+		exec '0r!'.s:path.'/outline.py '.mainfname.' '.s:prefix
+	endif
+
 	0
 
     call Tex_SetupOutlineSyntax()
@@ -754,6 +772,7 @@ function! Tex_StartOutlineCompletion()
     let &report = _report
     let &cmdheight = _cmdheight
     let &lazyredraw = _lazyredraw
+
 endfunction " }}}
 " Tex_SetupOutlineSyntax: sets up the syntax items for the outline {{{
 " Description: 
