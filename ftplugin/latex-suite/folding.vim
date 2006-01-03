@@ -350,8 +350,16 @@ function! TexFoldTextFunction()
 		let i = v:foldstart
 		while i <= v:foldend
 			if getline(i) =~ '\\caption'
-				let caption = matchstr(getline(i), '\\caption{\zs.*')
-				let caption = substitute(caption, '\zs}[^}]*$', '', '')
+				" distinguish between
+				" \caption{fulldesc} - fulldesc will be displayed
+				" \caption[shortdesc]{fulldesc} - shortdesc will be displayed
+				if getline(i) =~ '\\caption\['
+					let caption = matchstr(getline(i), '\\caption\[\zs[^\]]*')
+					let caption = substitute(caption, '\zs\]{.*}[^}]*$', '', '')
+				else
+					let caption = matchstr(getline(i), '\\caption{\zs.*')
+					let caption = substitute(caption, '\zs}[^}]*$', '', '')
+				end
 			elseif getline(i) =~ '\\label'
 				let label = matchstr(getline(i), '\\label{\zs.*')
 				let label = substitute(label, '\zs}[^}]*$', '', '')
