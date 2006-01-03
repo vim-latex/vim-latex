@@ -103,25 +103,35 @@ function! Tex_Complete(what, where)
 			redraw!
 
 		elseif exists("s:type") && s:type =~ 'cite'
-			" grep! nothing % 
-			" does _not_ clear the search history contrary to what the
-			" help-docs say. This was expected. So use something improbable.
-			" TODO: Is there a way to clear the search-history w/o making a
-			"       useless, inefficient search?
-			let s:prefix = matchstr(s:prefix, '\([^,]\+,\)*\zs\([^,]\+\)\ze$')
-			silent! grep! ____HIGHLY_IMPROBABLE___ %
-			if g:Tex_RememberCiteSearch && exists('s:citeSearchHistory')
-				call <SID>Tex_SetupCWindow(s:citeSearchHistory)
+
+			if Tex_GetVarValue('Tex_UseJabref') == 1
+				call Tex_CD(s:origdir)
+				let g:Remote_WaitingForCite = 1
+				let citation = input('Enter citation from jabref (<enter> to leave blank): ')
+				let g:Remote_WaitingForCite = 0
+				call Tex_CompleteWord(citation)
+			
 			else
-				call Tex_GrepHelper(s:prefix, 'bib')
-				redraw!
-				call <SID>Tex_SetupCWindow()
-			endif
-			if g:Tex_RememberCiteSearch && &ft == 'qf'
-				let _a = @a
-				silent! normal! ggVG"ay
-				let s:citeSearchHistory = @a
-				let @a = _a
+				" grep! nothing % 
+				" does _not_ clear the search history contrary to what the
+				" help-docs say. This was expected. So use something improbable.
+				" TODO: Is there a way to clear the search-history w/o making a
+				"       useless, inefficient search?
+				let s:prefix = matchstr(s:prefix, '\([^,]\+,\)*\zs\([^,]\+\)\ze$')
+				silent! grep! ____HIGHLY_IMPROBABLE___ %
+				if g:Tex_RememberCiteSearch && exists('s:citeSearchHistory')
+					call <SID>Tex_SetupCWindow(s:citeSearchHistory)
+				else
+					call Tex_GrepHelper(s:prefix, 'bib')
+					redraw!
+					call <SID>Tex_SetupCWindow()
+				endif
+				if g:Tex_RememberCiteSearch && &ft == 'qf'
+					let _a = @a
+					silent! normal! ggVG"ay
+					let s:citeSearchHistory = @a
+					let @a = _a
+				endif
 			endif
 
 		elseif exists("s:type") && (s:type =~ 'includegraphics' || s:type == 'psfig') 
