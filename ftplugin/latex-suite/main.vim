@@ -570,7 +570,7 @@ function! Tex_GetErrorList()
 	let errlist = @a
 	let @a = _a
 
-	if errlist =~ 'E42: No Errors'
+	if errlist =~ '^E42: '
 		let errlist = ''
 	endif
 
@@ -637,7 +637,7 @@ endfunction " }}}
 "			"stabilize" that version by releasing a few pre-releases and then
 "			keep that as a stable point.
 function! Tex_Version()
-	return "Latex-Suite: version 1.8.04"
+	return "Latex-Suite: version 1.8.05"
 endfunction 
 
 com! -nargs=0 TVersion echo Tex_Version()
