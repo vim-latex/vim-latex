@@ -9,7 +9,7 @@
 import re
 import os
 import sys
-import stringio
+import StringIO
 
 # getFileContents {{{
 def getFileContents(argin, ext=''):
@@ -59,7 +59,7 @@ def getSectionLabels_Root(lineinfo, section_prefix, label_prefix):
     prev_txt = ''
     inside_env = 0
     prev_env = ''
-    outstr = stringio.StringIO('')
+    outstr = StringIO.StringIO('')
     pres_depth = len(section_prefix)
 
     #print '+getSectionLabels_Root: lineinfo = [%s]' % lineinfo
