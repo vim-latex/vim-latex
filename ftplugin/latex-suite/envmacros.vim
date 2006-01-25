@@ -988,7 +988,7 @@ function! Tex_DoCommand(isvisual)
 	if getline('.') == '' || a:isvisual == 'yes'
 		let com = PromptForCommand('Choose a command to insert: ')
 		if com != ''
-			return Tex_PutCommand(com)
+			return Tex_PutCommand(com, a:isvisual)
 		else
 			return ''
 		endif
@@ -998,8 +998,8 @@ function! Tex_DoCommand(isvisual)
 		let presline = getline('.')
 		let c = col('.')
 
-		let wordbef = matchstr(strpart(presline, 0, c-1), '\k\+$')
-		let wordaft = matchstr(strpart(presline, c-1), '^\k\+')
+		let wordbef = matchstr(strpart(presline, 0, c-1), '\k\+\*\?$')
+		let wordaft = matchstr(strpart(presline, c-1), '^\k\+\*\?')
 
 		let word = wordbef . wordaft
 		call Tex_Debug("Tex_DoCommand: wordbef = [".wordbef."], wordaft = [".wordaft."], word = [".word."]", 'env')
@@ -1009,11 +1009,11 @@ function! Tex_DoCommand(isvisual)
 		if word != ''
 			return substitute(wordbef, '.', "\<Left>", 'g')
 				\ . substitute(word, '.', "\<Del>", 'g')
-				\ . Tex_PutCommand(word)
+				\ . Tex_PutCommand(word, a:isvisual)
 		else
 			let cmd = PromptForCommand('Choose a command to insert: ')
 			if cmd != ''
-				return Tex_PutCommand(cmd)
+				return Tex_PutCommand(cmd, a:isvisual)
 			else
 				return ''
 			endif
@@ -1023,10 +1023,8 @@ endfunction " }}}
 " Tex_PutCommand: calls various specialized functions {{{
 " Description: 
 "   Based on input argument, it calls various specialized functions.
-function! Tex_PutCommand(com)
-	if exists("s:isvisual") && s:isvisual == "yes"
-		let s:isvisual = 'no'
-
+function! Tex_PutCommand(com, isvisual)
+	if a:isvisual == "yes"
 		if a:com == '$'
 			return VEnclose('$', '$', '$', '$')
 		elseif a:com == '\\('
