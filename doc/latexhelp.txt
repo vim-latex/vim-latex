@@ -69,7 +69,7 @@ the text should be formatted.
 17. Sectioning					|latex-sectioning|
 18. Spaces & Boxes				|latex-spaces-boxes|
 19. Special Characters				|latex-special-char|
-20. Splitting the Input				|latex-inputing|
+20. Splitting the Input				|latex-inputting|
 21. Starting & Ending				|latex-start-end|
 22. Table of Contents				|latex-toc|
 23. Terminal Input/Output			|latex-terminal|
@@ -916,7 +916,7 @@ It is best suited for cases where the width of each column is constant and
 known in advance.
 
 This environment can be broken across pages, unlike the |tabular| environment.
-The following commands can be used inside a tabbing enviroment:
+The following commands can be used inside a tabbing environment:
 
 				*tab=*
 \= 		Sets a tab stop at the current position.
@@ -2124,7 +2124,7 @@ You can also specify octal numbers with ' or hexadecimal numbers with ", so
 the previous example could also be written as \symbol{'40} or \symbol{"20}.
 
 ==============================================================================
-20. Splitting the Input				*latex-inputing*
+20. Splitting the Input				*latex-inputting*
 
 A large document requires a lot of input. Rather than putting the whole input
 in a single large file, it's more efficient to split it into several smaller

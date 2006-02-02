@@ -44,7 +44,7 @@
    <para>
     &ls; is released under the Vim charityware license. For
     license and conditions of use look at |copyright|. Replace all
-    occurences of ``Vim'' with ``Latex-Suite''. The current copyright
+    occurrences of ``Vim'' with ``Latex-Suite''. The current copyright
     holders of &ls; are Srinath Avadhanula and Mikolaj Machowski.
    </para>
    <para>
@@ -74,7 +74,7 @@ set shellslash
 
 " IMPORTANT: grep will sometimes skip displaying the file name if you
 " search in a singe file. This will confuse &ls;. Set your grep
-" program to alway generate a file-name.
+" program to always generate a file-name.
 set grepprg=grep\ -nH\ $*
 
 " OPTIONAL: This enables automatic indentation as you type.
@@ -110,7 +110,7 @@ set iskeyword+=:
    the first line of the current file.
   </para>
   <para>
-   A template file can utlilize placeholders for initializing the cursor
+   A template file can utilize placeholders for initializing the cursor
    position when the template is read in and subsequent movement. In
    addition, template files can contain dynamic elements such as the
    time of creation of a file etc, by using vim expressions.
@@ -258,7 +258,7 @@ set iskeyword+=:
       setting.
      </para>
      <para>
-      In addition to this setting, &ls; also lists envionments found in
+      In addition to this setting, &ls; also lists environments found in
       custom packages as described in the section <link
        linkend="package-actions">Package actions.</link>
      </para>
@@ -486,7 +486,7 @@ line
     These maps insert &latex; sections such as:
     <programlisting>\section{&ph;}&ph;</programlisting>
     etc. Just as in the case of environments and fonts, can be enclosed with a
-    visual selection. The enclosing is not sensetive to character or line-wise
+    visual selection. The enclosing is not sensitive to character or line-wise
     selection.
    </para>
    <para>
@@ -595,8 +595,8 @@ SSP for subparagraph</programlisting>
 +:       expands to \^{o}</programlisting>
    <para>
     &ls; also ships with <link linkend="smart-backspace">smart
-     backspacing</link> functionality which provides another convinience while
-    editing languages with diactritics.
+     backspacing</link> functionality which provides another convenience while
+    editing languages with diacritics.
    </para>
    <note>
     <para>Diacritics are disabled by default in &ls; because they can
@@ -640,7 +640,7 @@ SSP for subparagraph</programlisting>
    <para>
     <literal>BBB</literal> inserts a template with only the fields
     mandatorily required for a given entry type. <literal>BBL</literal>
-    inserts a template with commony used extra options.
+    inserts a template with commonly used extra options.
     <literal>BBH</literal> inserts a template with more options which are
     not as commonly used. <literal>BBX</literal> inserts a template with
     all the fields which the entry type supports.
@@ -728,7 +728,7 @@ SSP for subparagraph</programlisting>
      If you have some other fields you wish to associate with an article
      which are not listed above, then you will have to use the
      <literal>Bib_{type}_extrafields</literal> option. This is a newline
-     seperated string of complete field names which will be included in the
+     separated string of complete field names which will be included in the
      template. For example, if you define
      <programlisting>let g:Bib_article_extrafields = "crossref\nabstract"</programlisting>
      then the article template will include the lines
@@ -758,7 +758,7 @@ abstract = {&ph;},</programlisting>
    </formalpara>
    <formalpara>
     <title>Smart Quotes</title>
-    Pressing <literal>"</literal> (english double quote) will insert
+    Pressing <literal>"</literal> (English double quote) will insert
     <literal>``</literal> or <literal>''</literal> by making an
     intelligent guess about whether we intended to open or close a quote.
    </formalpara>
@@ -935,7 +935,7 @@ abstract = {&ph;},</programlisting>
     into the current buffer after the current cursor position. In non-gui
     mode, you can use the |TMacro| command instead of choosing from the
     menu. This command takes the macro file name as an argument. When
-    called without arguments (preferred usage), then a list of avaiable
+    called without arguments (preferred usage), then a list of available
     macro files is displayed and the user is prompted to choose one of
     them).
    </para>
@@ -1084,7 +1084,7 @@ call IMAP('foobar', 'something else', 'tex')</programlisting>
            because typing <literal>"foo"</literal> will immediately insert
            <literal>"something"</literal>. This is the "cost" which you incur
            over the normal <literal>:imap</literal> command for the
-           convinience of no 'timeout' problems, the ability to correct
+           convenience of no 'timeout' problems, the ability to correct
            <literal>lhs</literal> etc.
           </para>
          </entry>
@@ -1254,13 +1254,13 @@ endfunction</programlisting>
    <note>
     <para>
      While inserting an option, you need to position yourself in the
-     appropritate place in the document, most commonly inside the square
+     appropriate place in the document, most commonly inside the square
      braces in the <literal>\usepackage[]{packname}</literal> command. &ls;
      will not navigate to that location.
     </para>
    </note>
    <para>
-    In addition to creating these sub-meuns, &ls; will also scan the
+    In addition to creating these sub-menus, &ls; will also scan the
     <literal>$VIM/ftplugin/latex-suite/dictionaries</literal> directory and
     if a dictionary file corresponding to the package file is found, then
     it will add the file to the <literal>'dict'</literal> setting in &vim;
@@ -1364,7 +1364,7 @@ endfunction</programlisting>
     <note>
      <para>
       The present directory <literal>'.'</literal> is always searched. You
-      need not incude that in <literal>g:Tex_TEXINPUTS</literal>.
+      need not include that in <literal>g:Tex_TEXINPUTS</literal>.
      </para>
     </note>
    </section>
@@ -1382,14 +1382,14 @@ endfunction</programlisting>
    <section>
     <title><literal>g:Tex_package_option_&lt;package&gt;</literal></title>
     <para>
-     This setting is a string containing a comma seperated list of options
+     This setting is a string containing a comma separated list of options
      supported by this package.
     </para>
     <para>
      Example:
-     <programlisting>g:Tex_pacakge_option_mypack = 'opt1,opt2=,sbr:group1,opt3,opt4'</programlisting>
+     <programlisting>g:Tex_package_option_mypack = 'opt1,opt2=,sbr:group1,opt3,opt4'</programlisting>
      The <literal>=</literal> suffix means that the option takes a value.
-     Use <literal>sbr:group name</literal> to seperate options into
+     Use <literal>sbr:group name</literal> to separate options into
      sub-menus. All successive options will be clubbed into the
      <literal>group1</literal> sub-menu till the next
      <literal>sbr:</literal> option is encountered.
@@ -1446,7 +1446,7 @@ Command can be also given without prefix:. The result is
   <title>Latex Completion</title>
   <para>
    This module provides an easy way to insert references to labels and
-   bibliographic entries. Although the completion capabilites are very
+   bibliographic entries. Although the completion capabilities are very
    diverse, &ls; only uses a single key (<literal>&lt;F9&gt;</literal> by
    default) to do all of it. Pressing the <literal>&lt;F9&gt;</literal> key
    does different things based on where you are located. &ls; tries to
@@ -1470,7 +1470,7 @@ Command can be also given without prefix:. The result is
     proven to be very inadequate (for one, it does not have an option to
     force the file name to be displayed when searching through a single
     file). Your best bet is to install <ulink
-     url="http://www.cygwin.com">cygwin</ulink>, but if you think thats
+     url="http://www.cygwin.com">cygwin</ulink>, but if you think that's
     overkill, you can <ulink
      url="http://www.google.com/search?q=windows%20gnu%20grep">search
      for</ulink> a windows implementation of GNU grep. (&ls; testing on
@@ -1780,7 +1780,7 @@ newfile.tex [Preview]                                         11,3           21%
     <literal>&lt;F9&gt;</literal> key. At the moment, the
     <literal>\bibliographystyle</literal>, <literal>\addtocontents</literal>
     and the <literal>\addcontentsline</literal> commands are recognized,
-    although morre will be added in the future. When you press the
+    although more will be added in the future. When you press the
     <literal>&lt;F9&gt;</literal> after such a command, &ls; will prompt
     you with a list of arguments which make sense for the command.
    </para>
@@ -1789,7 +1789,7 @@ newfile.tex [Preview]                                         11,3           21%
     variable of the form
     <literal>g:Tex_completion_{&lt;command&gt;}</literal> is defined where
     <literal>&lt;command&gt;</literal> is the command name. This variable
-    is a comma seperated list of values which this command takes. For
+    is a comma separated list of values which this command takes. For
     example, the argument to the <literal>\bibliographystyle</literal>
     command is commonly one of <literal>abbr,alpha,plain,unsrt</literal>.
     Therefore, &ls; defines
@@ -1883,7 +1883,7 @@ newfile.tex [Preview]                                         11,3           21%
     <programlisting>
 let g:Tex_FormatDependency_pdf = 'dvi,ps,pdf'
 </programlisting>
-    This is a comma seperated string of formats specifying the order in
+    This is a comma separated string of formats specifying the order in
     which the formats to be compiled into should be chosen.  With this
     setting, if you set the target format to <literal>pdf</literal>, then
     the next time you compile via the <literal>\ll</literal> shortcut, &ls;
@@ -1922,13 +1922,13 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'</programlisting>
    <title>Compiling multiple times</title>
    <para>
     Most &latex; compilers need to be re-run several times in several
-    commonly occuring situations in order to get a final camera ready copy.
+    commonly occurring situations in order to get a final camera ready copy.
     For example, when <literal>\label</literal>'s change, when new
     <literal>\cite</literal> commands are added etc. If the target format
     you are compiling to requires multiple compilations, then you will
     need to include the format in the
     <literal>g:Tex_MultipleCompileFormats</literal> setting. This is a
-    comma seperated string of formats which need multiple compilations to
+    comma separated string of formats which need multiple compilations to
     be generated correctly.
    </para>
    <para>
@@ -2111,7 +2111,7 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'</programlisting>
    </para>
    <para>
     In addition to viewing the files, &ls; also supports forward and inverse
-    searching for certain common tools for viewiing DVI documents. At the
+    searching for certain common tools for viewing DVI documents. At the
     moment, there is built-in support for YAP on windows (which ships with
     MikTeX), and the popular <literal>xdvi</literal> on *nix platforms. See
     the next few sections for details on forward and inverse searching.
@@ -2179,7 +2179,7 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'</programlisting>
    but the folding is based on &latex; syntax. This offers a speed increase over
    regular syntax folding. Ofcourse it has the disadvantage that the folds are
    not dynamic, i.e newly created syntax items are not automatically folded up.
-   (This is a compromise between speed and convinience).
+   (This is a compromise between speed and convenience).
   </para>
   <para>
    When you open up a LaTeX file, all the portions will be automatically folded
@@ -2241,7 +2241,7 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'</programlisting>
     <title>Tex_FoldedSections</title>
     <para>
      This entry defines which sections will be folded. This
-     setting is a comma seperated list of section names. 
+     setting is a comma separated list of section names. 
      The default value is:
      <programlisting>part,chapter,section,%%fakesection,
 subsection,subsubsection,paragraph</programlisting>
@@ -2262,8 +2262,8 @@ subsection,subsubsection,paragraph</programlisting>
     <title>Tex_FoldedEnvironments</title>
     <para>
      This entry defines which environments will be folded. It is a
-     comma seperated string of words each of which defines a single
-     environment. The default settng is
+     comma separated string of words each of which defines a single
+     environment. The default setting is
      <programlisting>verbatim,comment,eq,gather,
 align,figure,table,thebibliography,
 keywords,abstract,titlepage</programlisting>
@@ -2286,7 +2286,7 @@ keywords,abstract,titlepage</programlisting>
     <title>Tex_FoldedCommands</title>
     <para>
      This entry defines which commands will be folded. It is a comma
-     seperated string of words each of which defines a single command.
+     separated string of words each of which defines a single command.
      The default setting is empty, i.e no commands are folded.
      The words need not be standard Latex commands. You can use whatever
      words you like. Each word will fold all commands whose name begins
@@ -2326,7 +2326,7 @@ and some more text
     <para>
      This entry defines fold syntax for certain items which do not
      naturally fit into the section, environment of command lists. It is a
-     comma seperated list of words. The default value is:
+     comma separated list of words. The default value is:
      <programlisting>item,preamble,&lt;&lt;&lt;</programlisting>
      <note>
       <para>
@@ -2399,7 +2399,7 @@ and some more text
      Each of the fold setting variables
      <literal>Tex_FoldedSections</literal>,
      <literal>Tex_FoldedEnvironments</literal> etc., as explained previously
-     is a comma seperated string of variables. However, to make it easier
+     is a comma separated string of variables. However, to make it easier
      to <emphasis>add</emphasis> to the default settings without having to
      repeat the whole default setting again, &ls; uses the following logic
      in forming the complete setting string from the
@@ -2737,7 +2737,7 @@ endif</programlisting>
    <section id="customize-imap-maps">
     <title>IMAP mappings</title>
     <para>
-     These mappings are utlilized for jumping between placeholders as
+     These mappings are utilized for jumping between placeholders as
      described <link linkend="place-holders">here</link>. See the <link
       linkend="latex-suite-maps">parent section</link> to find out how to
      use this information to change the default maps.
@@ -2897,13 +2897,13 @@ endif</programlisting>
      <literal>Tex_Menus</literal> set to 1, then it will list all files
      found in the <literal>$VIM/ftplugin/latex-suite/packages</literal>
      directory. Otherwise, &ls; will list files found in the
-     <literal>$VIM/ftplugin/latex-suite/dicrionaries</literal> directory.
+     <literal>$VIM/ftplugin/latex-suite/dictionaries</literal> directory.
      Choosing a file from the list will insert a
      <programlisting>\usepackage[&ph;]{&lt;packname&gt;}</programlisting> line into the
      buffer at the current cursor location. For &vim; 6.2 and above, you
      can use command-line completion to choose a package file. You can also
      call <literal>TPackage</literal> with one or more package names
-     seperated with spaces in which case, &ls; will insert
+     separated with spaces in which case, &ls; will insert
      <literal>\usepackage</literal> lines for each of them in turn.
     </para>
     <para>
@@ -3119,7 +3119,7 @@ endif</programlisting>
    machines and <literal>~/vimfiles</literal> for windows machines. This file
    is not part of the &ls; distribution. You will need to create this file
    yourself (or modify it if it exists) if
-   you need to change any default settinngs. Since this file is not
+   you need to change any default settings. Since this file is not
    included as part of the &ls; distribution, it will not be over-written in
    subsequent updates.
   </para>
@@ -3204,7 +3204,7 @@ endif</programlisting>
      </tgroup>
     </informaltable>
     <para>
-     Setting this to zero completeley disables using place-holders.
+     Setting this to zero completely disables using place-holders.
     </para>
    </section>
    <section id="Imap_PlaceHolderStart">
@@ -3236,7 +3236,7 @@ endif</programlisting>
     <para>
      These settings affect the strings displayed at the beginning and end of
      the place-holder string. Set these strings to a value different than a
-     commonly ocurring sequence of characters. 
+     commonly occurring sequence of characters. 
     </para>
     <note>
      <title>TIP</title>
@@ -3304,7 +3304,7 @@ endif</programlisting>
       <programlisting>let g:Tex_Env_theorem = "\\begin{theorem}\&lt;CR&gt;&ph;\&lt;CR&gt;\\end{theorem}"</programlisting>
       </para>
      <para>
-      If the expaniosn uses special keys such as carriage return etc, then
+      If the expansion uses special keys such as carriage return etc, then
       use double-quotes and use the <literal>"\&lt;key&gt;"</literal>
       notation for special keys. Backslashes have to be doubled.
      </para>
@@ -3332,7 +3332,7 @@ endif</programlisting>
     <para>
      If you wish to define new expansions for fast command insertion as
      described <link linkend="latex-command-maps">here</link>, or redefine
-     expansios from the default values in &ls;, you will need to define
+     expansions from the default values in &ls;, you will need to define
      variables of the form <literal>g:Tex_Com_{name}</literal> where
      <literal>name</literal> is a command name. For example, with the
      setting
@@ -3388,7 +3388,7 @@ endif</programlisting>
      </tgroup>
     </informaltable>
     <para>
-     If this variable is set to 1, then when an enviroment is chosen from the
+     If this variable is set to 1, then when an environment is chosen from the
      menu then for selected environments, &ls; asks a series of
      questions on the command line and inserts a template with the
      corresponding fields already filled in.  Setting this to zero will insert
@@ -3506,7 +3506,7 @@ endif</programlisting>
      </tgroup>
     </informaltable>
     <para>
-     This string represents a comma seperated list of fields corresponding to
+     This string represents a comma separated list of fields corresponding to
      environments. Pressing <literal>&lt;F5&gt;</literal> in insert-mode in
      the body of the document asks you to choose from one of these
      environments to insert.
@@ -3528,7 +3528,7 @@ endif</programlisting>
      </tgroup>
     </informaltable>
     <para>
-     This string represents a comma seperated list of environments which are
+     This string represents a comma separated list of environments which are
      mapped to <literal>&lt;Shift-F-1&gt;</literal> through
      <literal>&lt;Shift-F-4&gt;</literal>. For example, pressing
      <literal>&lt;Shift-F-2&gt;</literal> with this setting inserts the
@@ -3560,7 +3560,7 @@ endif</programlisting>
      </tgroup>
     </informaltable>
     <para>
-     This string represents a comma seperated list of &latex; commands
+     This string represents a comma separated list of &latex; commands
      which &ls; uses for the <literal>&lt;F7&gt;</literal> and
      <literal>&lt;S-F7&gt;</literal> maps as described <link
       linkend="latex-command-maps">here</link>.
@@ -3668,7 +3668,7 @@ endif</programlisting>
      </tgroup>
     </informaltable>
     <para>
-     Non-english users will want to change these settings to their locale.
+     Non-English users will want to change these settings to their locale.
      These global variables will be ignored if there are buffer-local
      variables (with the same name), which may be set in the language specific
      package files, such as
@@ -3788,7 +3788,7 @@ endif</programlisting>
      possible completions for large projects.
     </para>
     <para>
-     The list is specified as a whitespace seperated list of filenames
+     The list is specified as a whitespace separated list of filenames
      relative to the location of the main file.
     </para>
    </section>
@@ -3888,7 +3888,7 @@ endif</programlisting>
      string such as <literal>'dvi'</literal> etc.
     </para>
     <para>
-     The value of each string is a comma seperated string such as 'dvi,ps'.
+     The value of each string is a comma separated string such as 'dvi,ps'.
      See the <link linkend="compiler-dependency">Compiler dependency</link>
      section to see how to use/specify this setting
     </para>
@@ -3907,7 +3907,7 @@ endif</programlisting>
      </informaltable>
     </para>
     <para>
-     This is a comma seperated string of formats for which the compiler
+     This is a comma separated string of formats for which the compiler
      needs to be called multiple times in order to get cross-references,
      citations etc right. See the <link
       linkend="compiling-multiple">Compiling multiple times</link> section
@@ -3921,7 +3921,7 @@ endif</programlisting>
       <tbody>
        <row><entry>Type</entry><entry>String</entry></row>
        <row><entry>Default Value</entry>
-        <entry><literal>a new-line seperated list of patterns as described
+        <entry><literal>a new-line separated list of patterns as described
           below</literal></entry></row>
       </tbody>
      </tgroup>
@@ -4079,7 +4079,7 @@ endif</programlisting>
      <programlisting>!start yap -1 file.dvi</programlisting> from within
      &vim;. (The initial <literal>start</literal> is used on
      <literal>Windows</literal> platforms is to make <literal>yap</literal>
-     start as a seperate process.) If you find the way &ls; constructs the
+     start as a separate process.) If you find the way &ls; constructs the
      command line too restrictive, you can use the <link
       linkend="Tex_ViewRuleComplete_format"><literal>Tex_ViewRuleComplete_format</literal></link>
      setting for more complete control on how the command line is
@@ -4215,7 +4215,7 @@ let g:Tex_ViewRuleComplete_html = 'start MozillaFirebird $*/index.html'</program
      This setting controls the "compactness" of the menus. If set to 1, then the
      Font, Counter and Dimensioning menus are collected together in a single
      menu called <literal>Tex-Elements</literal>, otherwise, they will each get
-     a seperate menu.
+     a separate menu.
     </para>
    </section>
    <section id="Tex_PackagesMenu">
@@ -4337,7 +4337,7 @@ let g:Tex_ViewRuleComplete_html = 'start MozillaFirebird $*/index.html'</program
     </informaltable>
     <para>
      This setting describes the directories scanned by &ls; while searching
-     for custom user packages as desribed in the <link
+     for custom user packages as described in the <link
       linkend="custom-packages">custom packages</link> section. Do not
      include the present directory in this setting. The present directory
      is always scanned for custom packages.

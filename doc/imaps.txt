@@ -7,7 +7,7 @@
                                     Abstract
                                     ========
 This plugin provides a function IMAP() which emulates vims |:imap| function. The
-motivation for providing this plugin is that |:imap| sufffers from problems
+motivation for providing this plugin is that |:imap| suffers from problems
 which get increasingly annoying with a large number of mappings.
 
 Consider an example. If you do >
@@ -50,7 +50,7 @@ Using IMAP                                                  *im_1* *imaps-usage*
 
 
 
-Each call to IMAP is made using the sytax: >
+Each call to IMAP is made using the syntax: >
     call IMAP (lhs, rhs, ft [, phs, phe])
 
 
@@ -84,7 +84,7 @@ Set g:Imap_PlaceHolderStart and g:Imap_PlaceHolderEnd to something else if you
 want different place holder characters. Also, b:Imap_PlaceHolderStart and
 b:Imap_PlaceHolderEnd override the values of g:Imap_PlaceHolderStart and
 g:Imap_PlaceHolderEnd respectively. This is useful for setting buffer specific
-place hoders.
+place holders.
 
 Example Two: You can use the <C-r> command to insert dynamic elements such as
 dates. >

@@ -108,7 +108,7 @@
    preamble, type the single word <literal>amsmath</literal> and then press
    <literal>&lt;F5&gt;</literal> in normal mode. The line will change to
    <programlisting>\usepackage[]{amsmath}&ph;</programlisting>
-   with the cursor positioned conviniently between the
+   with the cursor positioned conveniently between the
    <literal>[]</literal>'s. For now, do not worry about the trailing
    <literal>&ph;</literal> at the end of this line. Assume we want to
    provide the <literal>sumlimits</literal> options to amsmath. You can
@@ -125,7 +125,7 @@
    with the cursor before <literal>]</literal>. Press
    <literal>&lt;C-j&gt;</literal> in insert mode. You will see the cursor
    jump to the end of the package line and the trailing
-   <literal>&ph;</literal> will dissapear. What just happened?! You had
+   <literal>&ph;</literal> will disappear. What just happened?! You had
    your first taste of <emphasis>Placeholders</emphasis>. Read more about
    them (later) <ulink
     url="http://vim-latex.sourceforge.net/documentation/latex-suite/latex-macros.html">here</ulink>.
@@ -311,7 +311,7 @@ test.tex [Preview][+]                                               11,2-5      
   </para>
   <para>
    The <literal>&lt;F9&gt;</literal> key also works for inserting
-   <literal>\cite</literal> commands to reference bibliographich entries,
+   <literal>\cite</literal> commands to reference bibliographic entries,
    inserting file names for the <literal>\inputgraphics</literal> command
    and just plain searching for words. Click <ulink
     url="http://vim-latex.sourceforge.net/documentation/latex-suite/latex-completion.html">here</ulink>
@@ -427,7 +427,7 @@ And this is $\another$</programlisting>
    <para>
     Most DVI viewers also support inverse searching, whereby you can
     make the DVI viewer ask vim to display the tex source corresponding
-    to the DVI file being shown. This is extremeley helpful while
+    to the DVI file being shown. This is extremely helpful while
     proofreading large documents.
    </para>
 
