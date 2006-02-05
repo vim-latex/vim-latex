@@ -925,7 +925,11 @@ else
 	endfunction
 endif " }}}
 " Tex_CatFile: returns the contents of a file in a <NL> seperated string {{{
-if has('python') && g:Tex_UsePython
+if has('*readfile')
+	function! Tex_CatFile(filename)
+		return join(readfile(filename), "\n")
+	endfunction
+elseif has('python') && g:Tex_UsePython
 	function! Tex_CatFile(filename)
 		" catFile assigns a value to retval
 		exec 'python catFile("'.a:filename.'")'
