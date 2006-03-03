@@ -59,7 +59,7 @@ function! Tex_Complete(what, where)
 	if a:where == "text"
 		" What to do after <F9> depending on context
 		let s:curfile = expand("%:p")
-		let s:curline = strpart(getline('.'), col('.') - 40, 40)
+		let s:curline = strpart(getline('.'), 0, col('.'))
 		let s:prefix = matchstr(s:curline, '.*{\zs.\{-}\(}\|$\)')
 		" a command is of the type
 		" \psfig[option=value]{figure=}
@@ -104,7 +104,17 @@ function! Tex_Complete(what, where)
 
 		elseif exists("s:type") && s:type =~ 'cite'
 
-			if Tex_GetVarValue('Tex_UseJabref') == 1
+			let s:prefix = matchstr(s:prefix, '\([^,]\+,\)*\zs\([^,]\+\)\ze$')
+			call Tex_Debug(":Tex_Complete: using s:prefix = ".s:prefix, "view")
+
+			if has('python') && Tex_GetVarValue('Tex_UsePython') 
+				\ && Tex_GetVarValue('Tex_UseCiteCompletionVer2') == 1
+
+				call Tex_CD(s:origdir)
+				silent! call Tex_StartCiteCompletion()
+
+			elseif Tex_GetVarValue('Tex_UseJabref') == 1
+
 				call Tex_CD(s:origdir)
 				let g:Remote_WaitingForCite = 1
 				let citation = input('Enter citation from jabref (<enter> to leave blank): ')
@@ -117,7 +127,6 @@ function! Tex_Complete(what, where)
 				" help-docs say. This was expected. So use something improbable.
 				" TODO: Is there a way to clear the search-history w/o making a
 				"       useless, inefficient search?
-				let s:prefix = matchstr(s:prefix, '\([^,]\+,\)*\zs\([^,]\+\)\ze$')
 				silent! grep! ____HIGHLY_IMPROBABLE___ %
 				if g:Tex_RememberCiteSearch && exists('s:citeSearchHistory')
 					call <SID>Tex_SetupCWindow(s:citeSearchHistory)
@@ -547,7 +556,7 @@ function! Tex_ScanFileForCite(prefix)
 		let bibnames = substitute(bibnames, '\s', '', 'g')
 
 		call Tex_Debug('trying to search through ['.bibnames.']', 'view')
-		
+
 		let &path = '.,'.g:Tex_BIBINPUTS
 
 		let i = 1
@@ -820,6 +829,236 @@ function! Tex_FinishOutlineCompletion()
 	let ref_remaining = strpart(ref_complete, strlen(s:prefix))
 	close
 	call Tex_CompleteWord(ref_remaining)
+endfunction " }}}
+
+" ==============================================================================
+" Functions for presenting a nicer list of bibtex entries
+" ============================================================================== 
+" Tex_FindBibFiles: finds all .bib files used by the main file {{{
+" Description: 
+function! Tex_FindBibFiles()
+
+	let mainfname = Tex_GetMainFileName(':p')
+	wincmd n
+	exec ':e '.mainfname
+
+	if search('\\\(no\)\?bibliography{', 'w')
+
+		call Tex_Debug('Tex_FindBibFiles: found bibliography command in '.bufname('%'), 'view')
+
+		" extract the bibliography filenames from the command.
+		let bibnames = matchstr(getline('.'), '\\\(no\)\?bibliography{\zs.\{-}\ze}')
+		let bibnames = substitute(bibnames, '\s', '', 'g')
+
+		call Tex_Debug(':Tex_FindBibFiles: trying to search through ['.bibnames.']', 'view')
+
+		let _path = &path
+		let &path = '.,'.g:Tex_BIBINPUTS
+
+		let bibfiles = ''
+		let i = 1
+		while Tex_Strntok(bibnames, ',', i) != ''
+			" split a new window so we do not screw with the current buffer.
+			split
+			let thisbufnum = bufnr('%')
+
+			call Tex_Debug(':Tex_FindBibFiles: silent! find '.Tex_Strntok(bibnames, ',', i).'.bib', 'view')
+			exec 'silent! find '.Tex_Strntok(bibnames, ',', i).'.bib'
+			if bufnr('%') != thisbufnum
+				call Tex_Debug(':Tex_FindBibFiles: finding .bib file ['.bufname('%').']', 'view')
+				" use the appropriate syntax for the .bib file.
+				let bibfiles = bibfiles.expand('%:p')."\n"
+			endif
+
+			q
+
+			let i = i + 1
+		endwhile
+
+		call Tex_Debug(":Tex_FindBibFiles: returning [".bibfiles."]", "view")
+		let &path = _path
+		q
+		return bibfiles
+
+	else
+		q
+		return ''
+	endif
+
+endfunction " }}}
+" Tex_StartBibtexOutline: sets up an outline window {{{
+
+" get the place where this plugin resides for setting cpt and dict options.
+" these lines need to be outside the function.
+if has('python') && Tex_GetVarValue('Tex_UsePython')
+	python import sys, re
+	exec "python sys.path += [r'". s:path . "']"
+	python import bibtools
+endif
+
+function! Tex_StartCiteCompletion()
+	let mainfname = Tex_GetMainFileName(':p')
+	let bibfiles = Tex_FindBibFiles()
+
+    bot split __OUTLINE__
+	exec Tex_GetVarValue('Tex_OutlineWindowHeight', 15).' wincmd _'
+
+	exec 'python Tex_BibFile = bibtools.BibFile("""'.bibfiles.'""")'
+	exec 'python Tex_BibFile.addfilter("key ^'.s:prefix.'")'
+	call Tex_DisplayBibList()
+
+	nnoremap <Plug>Tex_JumpToNextBibEntry :call search('^\S.*\]$', 'W')<CR>:call Tex_EchoBibShortcuts()<CR>z.
+	nnoremap <Plug>Tex_JumpToPrevBibEntry :call search('^\S.*\]$', 'bW')<CR>:call Tex_EchoBibShortcuts()<CR>z.
+	nnoremap <Plug>Tex_FilterBibEntries   :call Tex_HandleBibShortcuts('filter')<CR>
+	nnoremap <Plug>Tex_RemoveBibFilters   :call Tex_HandleBibShortcuts('remove_filters')<CR>
+	nnoremap <Plug>Tex_SortBibEntries	  :call Tex_HandleBibShortcuts('sort')<CR>
+	nnoremap <Plug>Tex_CompleteCiteEntry  :call Tex_CompleteCiteEntry()<CR>
+
+	nmap <buffer> <silent> n 		<Plug>Tex_JumpToNextBibEntry
+	nmap <buffer> <silent> p 		<Plug>Tex_JumpToPrevBibEntry
+	nmap <buffer> <silent> f		<Plug>Tex_FilterBibEntries
+	nmap <buffer> <silent> s		<Plug>Tex_SortBibEntries
+	nmap <buffer> <silent> a		<Plug>Tex_RemoveBibFilters
+	nmap <buffer> <silent> q		:close<CR>
+	nmap <buffer> <silent> <CR>		<Plug>Tex_CompleteCiteEntry
+
+endfunction " }}}
+" Tex_DisplayBibList: displays the list of bibtex entries {{{
+" Description: 
+function! Tex_DisplayBibList()
+	" open the buffer
+    let _report = &report
+    let _cmdheight=&cmdheight
+    let _lazyredraw = &lazyredraw
+    set report=1000
+    set cmdheight=1
+    set lazyredraw
+
+	setlocal modifiable
+	setlocal noswapfile
+	setlocal buftype=nowrite
+	setlocal bufhidden=delete
+	setlocal nowrap
+    setlocal foldmethod=marker
+    setlocal foldmarker=<<<,>>>
+
+
+	" delete everything in it to the blackhole
+	% d _
+
+	exec 'python Tex_CurBuf = vim.current.buffer'
+	exec 'python Tex_CurBuf[:] = str(Tex_BibFile).splitlines()'
+
+	call Tex_SetupBibSyntax()
+
+	0
+	call Tex_EchoBibShortcuts()
+
+	" once the buffer is initialized, go back to the original settings.
+	setlocal nomodifiable
+	setlocal nomodified
+    let &report = _report
+    let &cmdheight = _cmdheight
+    let &lazyredraw = _lazyredraw
+
+endfunction " }}}
+" Tex_EchoBibShortcuts: echos all the shortcuts in the status line {{{
+" Description:
+function! Tex_EchoBibShortcuts()
+	echomsg '(a) all (f) filter (s) sort (n) next (p) previous (q) quit (<CR>) choose'
+endfunction " }}}
+" Tex_SetupBibSyntax: sets up the syntax items for the outline {{{
+" Description: 
+function! Tex_SetupBibSyntax()
+	syn match BibTitleHeader "^TI" contained
+	syn match BibAuthorHeader "^AU" contained
+	syn match BibLocationHeader "^IN" contained
+	syn match BibMiscHeader "^MI" contained
+
+	syn match BibKeyLine '^\S.*\]$' contains=BibKey
+	syn match BibTitle "^TI .*" contains=BibTitleHeader
+	syn match BibAuthor "^AU .*" contains=BibAuthorHeader
+	syn match BibLocation "^IN .*" contains=BibLocationHeader
+	syn match BibMisc "^MI .*" contains=BibMiscHeader
+
+    hi def link BibTitleHeader Ignore
+    hi def link BibAuthorHeader Ignore
+    hi def link BibLocationHeader Ignore
+	hi def link BibMiscHeader Ignore
+
+	hi def link BibKeyLine Visual
+    hi def link BibTitle Type
+    hi def link BibAuthor Special
+    hi def link BibLocation Comment
+	hi def link BibMisc Comment
+endfunction " }}}
+" Tex_HandleBibShortcuts: handles user keypresses {{{
+" Description: 
+function! Tex_HandleBibShortcuts(command)
+
+	if a:command == 'filter' || a:command == 'sort'
+
+		let fieldprompt = 
+			\ "Field acronyms: (`:let g:Tex_EchoBibFields = 0` to avoid this message)\n" .
+			\ " [t] title         [a] author        [b] booktitle     \n" .
+			\ " [j] journal       [y] year          [p] bibtype       \n" .
+			\ " (you can also enter the complete field name)    \n"
+
+		let fieldprompt = Tex_GetVarValue('Tex_BibFieldPrompt', fieldprompt)
+
+		if Tex_GetVarValue('Tex_EchoBibFields', 1) == 1
+			echo fieldprompt
+		endif
+
+		let inp = input('Enter '.a:command.' criterion [field<space>value]: ')
+
+		if inp != ''
+			" If the field is specified as a single character, then replace
+			" it with the corresponding 'full form'.
+			if inp =~ '^[a-z]\>'
+				if Tex_GetVarValue('Tex_BibAcronym_'.inp[0]) != ''
+					let inp = substitute(inp, '.', Tex_GetVarValue('Tex_BibAcronym_'.inp[0]), '')
+				elseif fieldprompt =~ '\['.inp[0].'\]'
+					let full = matchstr(fieldprompt, '\['.inp[0].'\] \zs\w\+\ze')
+					let inp = substitute(inp, '.', full, '')
+				endif
+			endif
+			call Tex_Debug(":Tex_HandleBibShortcuts: using inp = [".inp."]", "view")
+			if a:command == 'filter'
+				exec 'python Tex_BibFile.addfilter("'.inp.'")'
+			elseif a:command == 'sort'
+				exec "python Tex_BibFile.addsortfield(\"".inp."\")"
+				exec 'python Tex_BibFile.sort()'
+			endif
+			call Tex_DisplayBibList()
+		endif
+
+	elseif a:command == 'remove_filters'
+
+		exec 'python Tex_BibFile.rmfilters()'
+		exec 'python Tex_BibFile.addfilter("key '.s:prefix.'")'
+		call Tex_DisplayBibList()
+		
+	endif
+
+endfunction " }}}
+" Tex_CompleteCiteEntry: completes cite entry {{{
+" Description: 
+function! Tex_CompleteCiteEntry()
+	normal! 0
+	call search('\[\S\+\]$', 'W')
+	if getline('.') !~ '\[\S\+\]$'
+		call search('\[\S\+\]$', 'bW')
+	endif
+	
+	if getline('.') !~ '\[\S\+\]$'
+		return
+	endif
+
+	let ref = matchstr(getline('.'), '\[\zs\S\+\ze\]$')
+	close
+	call Tex_Debug(":Tex_CompleteCiteEntry: completing with ".ref, "view")
+	call Tex_CompleteWord(strpart(ref, strlen(s:prefix)))
 endfunction " }}}
 
 com! -nargs=0 TClearCiteHist unlet! s:citeSearchHistory

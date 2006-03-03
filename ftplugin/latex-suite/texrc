@@ -550,23 +550,93 @@ TexLet g:Tex_AdvancedMath = 1
 " }}}
 " ==============================================================================
 " TeX Completion: {{{
-"
-" Options for preview window for ref/cite completion.
+
+" Options for controlling the window sizes of the completion windows {{{
+
+" The height of the window which contains the \label's (when completing a
+" \ref) or bibtex entries (when completing a \cite). This option is used in
+" the newer methods of completing \ref's and \cite's.
+TexLet g:Tex_OutlineWindowHeight = 15
+
+" Options for preview window for ref/cite completion. The next two options
+" are used only when g:Tex_UseOutlineCompletion = 0 or
+" g:Tex_UseCiteCompletionVer2 = 0, i.e, when we use a classic method of
+" completing \refs and \cites.
 " Height of cwindow
-" Default: 5 
 TexLet g:Tex_ViewerCwindowHeight = 5 
 " Height of preview window
-" Default: 10 
 TexLet g:Tex_ViewerPreviewHeight = 10 
 
 " Options for explorer completion.
 " Height of explorer window
-" Default: 10 
 TexLet g:Tex_ExplorerHeight = 10
 
 " Directory for images. Read |latex-completion-explorer| before changing
-" Default: '' 
 TexLet g:Tex_ImageDir = ''
+
+" }}}
+" Options for completing a \ref {{{
+
+" Whether to use the "outline mode" for displaying the \label's while doing
+" \ref completion. In this mode, each label is displayed within the
+" document element it resides in. The entire thing is folded to ease
+" navigation. Should be easier/faster than the classical mode.
+TexLet g:Tex_UseOutlineCompletion = 1
+
+" This option should be set via the .latexmain file. It should be a newline
+" seperated list of files which make up all the "source" files in the
+" current project. This enables latex-suite to skip the more complicated
+" algorithm of finding the source files by recursively searching for
+" \input'ed files from the |latex-master-file|.
+"
+" Only used when g:Tex_UseOutlineCompletion = 0.
+TexLet g:Tex_ProjectSourceFiles = ''
+
+" Whether latex-suite simply searches for \\label's in all the .tex file
+" found in the current directory or whether it will use a more complex
+" algorithm. This is used only g:Tex_UseOutlineCompletion = 0 and
+" g:Tex_ProjectSourceFiles = ''.
+" See 
+" 	:help Tex_UseSimpleLabelSearch 
+" for more information
+TexLet g:Tex_UseSimpleLabelSearch = 0
+
+" }}}
+" Options for completing a \cite'ation {{{
+
+" If set to 1, then the newer way of presenting the bibtex entries is used.
+" Instead of a |cwindow| showing just the keys and a synced |preview|
+" window beneath, show a single window containing a nicely formatted list
+" of bibtex entries. This should be faster and easier to use than the
+" classic mode
+TexLet g:Tex_UseCiteCompletionVer2 = 1
+
+" This is a string which is displayed to the user when he wants to sort or
+" filter the bibtex entries. This string also serves to define acronyms for
+" the various fields of a bibtex entry. 
+TexLet g:Tex_BibFieldPrompt = 
+	\ "Field acronyms: (`:let g:Tex_EchoBibFields = 0` to avoid this message)\n" .
+	\ " [t] title         [a] author        [b] booktitle     \n" .
+	\ " [j] journal       [y] year          [p] bibtype       \n" .
+	\ " (you can also enter the complete field name)    \n"
+
+" Whether or not to display the string above to aid the user in choosing
+" the field to filter/sort with.
+TexLet g:Tex_EchoBibFields = 1
+
+" A setting of this form defines the letter 'a' as standing for the field
+" 'author'. Thus when the user types
+" 	a ellington
+" when asked to enter a filter, it is equivalent to the user specifying the
+" filter
+" 	author ellington
+" TexLet g:Tex_BibAcronym_a = 'author'
+
+" Whether or not to use Jabref to complete citations
+" See
+" 	:help latex-suite-jabref
+" for more infomration
+TexLet g:Tex_UseJabref = 0
 
 " whether or not searches for \cite's are cached.
 TexLet g:Tex_RememberCiteSearch = 0
@@ -574,12 +644,7 @@ TexLet g:Tex_RememberCiteSearch = 0
 TexLet g:Tex_BIBINPUTS = ''
 TexLet g:Tex_TEXINPUTS = ''
 
-" Whether latex-suite simply searches for \\label's in all the .tex file found
-" in the current directory or whether it will use a more complex algorithm. 
-" See 
-" 	:help Tex_UseSimpleLabelSearch 
-" for more information
-TexLet g:Tex_UseSimpleLabelSearch = 0
+" }}}
 
 " }}}
 " ==============================================================================
