@@ -467,6 +467,7 @@ function! Tex_CompileMultipleTimes()
 	TCLevel 1000
 
 	let idxFileName = mainFileName_root.'.idx'
+	let auxFileName = mainFileName_root.'.aux'
 
 	let runCount = 0
 	let needToRerun = 1
@@ -475,6 +476,7 @@ function! Tex_CompileMultipleTimes()
 		let needToRerun = 0
 
 		let idxlinesBefore = Tex_CatFile(idxFileName)
+		let auxlinesBefore = Tex_GetAuxFile(auxFileName)
 
 		" first run latex.
 		echomsg "latex run number : ".(runCount+1)
@@ -531,8 +533,9 @@ function! Tex_CompileMultipleTimes()
 		endif
 
 		" check if latex asks us to rerun
-		if Tex_IsPresentInFile('Rerun to get cross-references right', mainFileName_root.'.log')
-			echomsg "Need to rerun to get cross-references right..."
+		let auxlinesAfter = Tex_GetAuxFile(auxFileName)
+		if auxlinesAfter != auxlinesBefore
+			echomsg "Need to rerun because the AUX file changed..."
 			call Tex_Debug("Tex_CompileMultipleTimes: Need to rerun to get cross-references right...", 'comp')
 			let needToRerun = 1
 		endif
@@ -551,6 +554,21 @@ function! Tex_CompileMultipleTimes()
 	exec 'silent! cfile '.mainFileName_root.'.log'
 
 	call Tex_CD(curd)
+endfunction " }}}
+" Tex_GetAuxFile: get the contents of the AUX file {{{
+" Description: get the contents of the AUX file recursively including any
+" @\input'ted AUX files.
+function! Tex_GetAuxFile(auxFile)
+	if !filereadable(a:auxFile)
+		return ''
+	endif
+
+	let auxContents = Tex_CatFile(a:auxFile)
+	let pattern = '@\input{\(.\{-}\)}'
+
+	let auxContents = substitute(auxContents, pattern, '\=Tex_GetAuxFile(submatch(1))', 'g')
+
+	return auxContents
 endfunction " }}}
 
 " ==============================================================================
