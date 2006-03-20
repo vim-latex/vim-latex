@@ -15,7 +15,7 @@ many people. Please see latex-suite-credits [|ls_a_dU|] for a list of people who
 have helped.
 
 Latex-Suite is released under the Vim charityware license. For license and
-conditions of use look at |copyright|. Replace all occurences of ``Vim'' with
+conditions of use look at |copyright|. Replace all occurrences of ``Vim'' with
 ``Latex-Suite''. The current copyright holders of Latex-Suite are Srinath
 Avadhanula and Mikolaj Machowski.
 
@@ -115,7 +115,7 @@ Make sure that you create a few necessary settings in your ~/.vimrc.  >
     
     " IMPORTANT: grep will sometimes skip displaying the file name if you
     " search in a singe file. This will confuse Latex-Suite. Set your grep
-    " program to alway generate a file-name.
+    " program to always generate a file-name.
     set grepprg=grep\ -nH\ $*
     
     " OPTIONAL: This enables automatic indentation as you type.
@@ -149,7 +149,7 @@ $VIM/ftplugin/latex-suite/templates/ directory and creates menu items based on
 the files found there. When you select a template from this menu, the file will
 be read in above the first line of the current file.
 
-A template file can utlilize placeholders for initializing the cursor position
+A template file can utilize placeholders for initializing the cursor position
 when the template is read in and subsequent movement. In addition, template
 files can contain dynamic elements such as the time of creation of a file etc,
 by using vim expressions.
@@ -286,7 +286,7 @@ The list of environments which Latex-Suite prompts you with (when <F5> is
 pressed on an empty line) is formed from the Tex_PromptedEnvironments
 [|ls_a_di|] setting.
 
-In addition to this setting, Latex-Suite also lists envionments found in custom
+In addition to this setting, Latex-Suite also lists environments found in custom
 packages as described in the section Package actions. [|ls_a_bL|]
 
 
@@ -465,7 +465,7 @@ Section Mappings                                              *ls_3_4* *ls_a_bt*
 These maps insert LaTeX sections such as:  >
     \section{<++>}<++>
 etc. Just as in the case of environments and fonts, can be enclosed with a
-visual selection. The enclosing is not sensetive to character or line-wise
+visual selection. The enclosing is not sensitive to character or line-wise
 selection.
 
 Mnemonic: (make your own!)  >
@@ -571,7 +571,7 @@ where <l> is an alphabet.
     +}       expands to \"{a}
     +:       expands to \^{o}
 Latex-Suite also ships with smart backspacing [|ls_a_dZ|] functionality which
-provides another convinience while editing languages with diactritics.
+provides another convenience while editing languages with diacritics.
 
 NOTE: Diacritics are disabled by default in Latex-Suite because they can
       sometimes be a little too intrusive. Moreover, most European users can
@@ -611,7 +611,7 @@ After that you can use <Ctrl-J> to navigate to successive locations in the
 template and enter new values.
 
 BBB inserts a template with only the fields mandatorily required for a given
-entry type. BBL inserts a template with commony used extra options. BBH inserts
+entry type. BBL inserts a template with commonly used extra options. BBH inserts
 a template with more options which are not as commonly used. BBX inserts a
 template with all the fields which the entry type supports.
 
@@ -682,7 +682,7 @@ insert the following template  >
 
 If you have some other fields you wish to associate with an article which are
 not listed above, then you will have to use the Bib_{type}_extrafields option.
-This is a newline seperated string of complete field names which will be
+This is a newline separated string of complete field names which will be
 included in the template. For example, if you define  >
     let g:Bib_article_extrafields = "crossref\nabstract"
 then the article template will include the lines  >
@@ -710,7 +710,7 @@ characters for backspacing.
 
 Smart Quotes
 ------------
-Pressing " (english double quote) will insert `` or '' by making an intelligent
+Pressing " (English double quote) will insert `` or '' by making an intelligent
 guess about whether we intended to open or close a quote.
 
 Smart Space
@@ -833,7 +833,7 @@ When you choose a macro from the menu, the corresponding file is read into the
 current buffer after the current cursor position. In non-gui mode, you can use
 the |TMacro| command instead of choosing from the menu. This command takes the
 macro file name as an argument. When called without arguments (preferred usage),
-then a list of avaiable macro files is displayed and the user is prompted to
+then a list of available macro files is displayed and the user is prompted to
 choose one of them).
 
 There are some other tools provided in this menu, namely:
@@ -919,7 +919,7 @@ lhs         This is the "left-hand-side" of the mapping. When you use IMAP, only
                 call IMAP('foobar', 'something else', 'tex')
 <           Then you will never be able to trigger "foobar" because typing "foo"
             will immediately insert "something". This is the "cost" which you
-            incur over the normal :imap command for the convinience of no
+            incur over the normal :imap command for the convenience of no
             'timeout' problems, the ability to correct lhs etc.
             
             
@@ -1047,12 +1047,12 @@ these menus to insert commands, environments and options which Latex-Suite
 recognizes as belonging to this package.
 
 NOTE: While inserting an option, you need to position yourself in the
-      appropritate place in the document, most commonly inside the square braces
+      appropriate place in the document, most commonly inside the square braces
       in the \usepackage[]{packname} command. Latex-Suite will not navigate to
       that location.
       
       
-In addition to creating these sub-meuns, Latex-Suite will also scan the
+In addition to creating these sub-menus, Latex-Suite will also scan the
 $VIM/ftplugin/latex-suite/dictionaries directory and if a dictionary file
 corresponding to the package file is found, then it will add the file to the
 'dict' setting in Vim so you can use the <C-X><C-K> command to complete words
@@ -1128,7 +1128,7 @@ Example:  >
 The ** indicates that all directories below the directory ~/texmf/mypackages and
 ./ are to be scanned for custom packages.
 
-NOTE: The present directory '.' is always searched. You need not incude that in
+NOTE: The present directory '.' is always searched. You need not include that in
       g:Tex_TEXINPUTS.
       
       
@@ -1147,12 +1147,12 @@ functions, environment definitions etc. in this file.
 
 g:Tex_package_option_<package>                              *ls_4_4_1* *ls_a_bP*
 
-This setting is a string containing a comma seperated list of options supported
+This setting is a string containing a comma separated list of options supported
 by this package.
 
 Example:  >
-    g:Tex_pacakge_option_mypack = 'opt1,opt2=,sbr:group1,opt3,opt4'
-The = suffix means that the option takes a value. Use sbr:group name to seperate
+    g:Tex_package_option_mypack = 'opt1,opt2=,sbr:group1,opt3,opt4'
+The = suffix means that the option takes a value. Use sbr:group name to separate
 options into sub-menus. All successive options will be clubbed into the group1
 sub-menu till the next sbr: option is encountered.
 
@@ -1215,8 +1215,9 @@ Latex Completion                                                *ls_5* *ls_a_bR*
 |ls_5_5| Custom command completion
 
 
-This module provides an easy way to insert references to labels and
-bibliographic entries. Although the completion capabilites are very diverse,
+Latex-Suite provides an easy way to insert references to labels and
+bibliographic entries and also provide filename arguments to commands such as
+\includegraphics. Although the completion capabilities are very diverse,
 Latex-Suite only uses a single key (<F9> by default) to do all of it. Pressing
 the <F9> key does different things based on where you are located. Latex-Suite
 tries to guess what you might be trying to complete at the location where you
@@ -1235,10 +1236,10 @@ NOTE: Before you start with Latex-Suite's completion function...
       more than adequate. Most windows systems come with a utility findstr, but
       that has proven to be very inadequate (for one, it does not have an option
       to force the file name to be displayed when searching through a single
-      file). Your best bet is to install cygwin |ls_u_3|, but if you think thats
-      overkill, you can search for |ls_u_4| a windows implementation of GNU
-      grep. (Latex-Suite testing on windows has been done with cygwin's port of
-      GNU grep).
+      file). Your best bet is to install cygwin |ls_u_3|, but if you think
+      that's overkill, you can search for |ls_u_4| a windows implementation of
+      GNU grep. (Latex-Suite testing on windows has been done with cygwin's port
+      of GNU grep).
       
       Once you have a grep program installed, you need to set the 'grepprg'
       option for vim. Make sure you use a setting which forces the program to
@@ -1321,43 +1322,59 @@ are labelling will lead to an easier time completing references.
 Latex-Suite \ref completion                                   *ls_5_2* *ls_a_bT*
                                                              *ls-completion-ref*
 
-If you press <F9> in insert mode when the cursor is positioned just after the
-string "\ref{pre", then Latex-Suite will present you with a list of all the
-\labels which begin with the prefix "pre". If you press <F9> after \ref{, then
-Latex-Suite will present you with a list of _all_ labels. See here [|ls_a_bS|]
-for an example.
+Pressing <F9> when you are within a partially completed \ref command will split
+open a window (named __OUTLINE__) which contains a nicely formatted list of all
+the \labels found in the present project. The \labels are heirarchically
+arranged according to which \section, \subsection etc of the overall document
+structure they are present in. For example, when you first press <F9> after
+typing \ref{, you should see something like:  >
+    
+    +-- 54 lines: 2. Kinematics--------------------------------
+    +-- 98 lines: 3. Aerodynamics of the MFI thorax------------
+    +-- 40 lines: 4. Jump Resonance in Fourbar Mechanisms------
+    +-- 28 lines: 5. Design and Fabrication Issues-------------
+        
+Each chapter is |fold|ed away so that you can quickly jump to the correct
+section/subsection in which the relevant equation is defined. This makes
+inserting references significantly faster for large projects with hundreds of
+equations. You can then open some of the folds to see for example:  >
+    
+    +-- 54 lines: 2. Kinematics--------------------------------
+    3. Aerodynamics of the MFI thorax
+        3.1. Aerodynamic modeling of the MFI wing forces
+            3.1.1. Geometric Specification
+                   eqn:wingnormal-pos
+                     \nhat =  T_z(\theta_2) T_y(\theta_y)T_x(\theta_x)\nhat_0,
+                   eqn:T-1
+                     T_1(\theta_2) &=& T_z(\theta_2)
+        
+The <Tab> key is mapped in this window to toggle folds so that you can quickly
+open/close folds in order to navigate the heirarchy faster. Once you are
+positioned on a label, press <Enter>. This closes the __OUTLINE__ window,
+returns to the window in which you pressed <F9> and inserts the reference at the
+current cursor position.
 
-1. If Tex_UseSimpleLabelSearch [|ls_a_ds|] is set to 1, then Latex-Suite will
-   simply search for \labels in all the .tex files in the directory containing
-   the current file
-
-2. If the Tex_ProjectSourceFiles [|ls_a_dt|] setting is non-empty, then
-   Latex-Suite will search for all labels specified in the list of files given
-   by the setting above.
-
-3. If Tex_UseSimpleLabelSearch is 0 and Tex_ProjectSourceFiles is empty, then
-   Latex-Suite uses the following logic:
-   1. First Latex-Suite will determine if it can find a master-file
-      specification as described here [|ls_a_eg|].
-   
-   2. If it can, then Latex-Suite will search for \label's in that file first.
-   
-   3. If the master file \include's or \input's any other files, then
-      Latex-Suite will search for \label's in those files. The search for
-      \include'd and \input'ed files is recursive, i.e, if an \include'd file
-      \include's another file, then that will be searched as well and so on.
-   
-   4. If Latex-Suite cannot find a master file specified for this file, then it
-      will simply search for \labels in the present file.
-
-Any command which contains the pattern ref in it is treated as if it is a way to
-call \ref indirectly. Thus pressing <F9> after something like \pref{ will also
-search for \label's.
-
-NOTE: HINT
-      ----
-      By prefixing your labels with eqn:, fig: etc, you can easily filter out a
-      lot of undesirable results.
+NOTE: Filtering labels by prefix
+      --------------------------
+      You can press <F9> after typing part of the \label. In this case,
+      Latex-Suite only presents \labels which begin with the already filled
+      characters. You can use this to choose between equations, figures, tables
+      etc. if you consistently label equations to begin with eqn:, figures to
+      begin with fig: etc. For example, with this scheme, pressing <F9> after
+      typing \ref{eqn: will only list equations.
+      
+      
+NOTE: Latex-Suite works the same way if you press <F9> after any command which
+      contains the letters ref. Thus you can complete \eqref in exactly the same
+      manner.
+      
+      
+NOTE: Requirements
+      ------------
+      This method of preseting the \labels depends on Vim being compiled with
+      python support. To check if you have this, see the output of the :ver
+      command. If you see something like +python, you are all set. Failing this,
+      you will need to have python somewhere in your $PATH.
       
       
 
@@ -1365,13 +1382,59 @@ NOTE: HINT
 Latex-Suite \cite completion                                  *ls_5_3* *ls_a_bU*
                                                          *latex-completion-cite*
 
-When you press <F9> in insert mode after \cite{pre, Latex-Suite will present a
-list of valid bibliographic keys starting with "pre" and ask you to choose from
-one of them. ("pre" can be left empty in which case all valid bibliographic keys
-will be listed). The window setup is as described in section [|ls_a_bS|].
+Latex-Suite provides an easy way to insert references to bibliographic entries.
+Pressing <F9> when the cursor is placed inside a partially completed \cite
+command will split open a new window (named __OUTLINE__) which contains a
+formatted and syntax highlighted list of all bibtex entries found. For example,
+pressing <F9> after typing \ref{ should present you with a window which looks
+something like this:  >
+    
+    Article [dickinson:science:99]
+       "Wing rotation and aerodynamic basis of insect flight"
+       M. H. Dickinson and F-O. Lehman and S. P. Sane
+       In Science, 1999
+    
+    Article [ellington:84:part1]
+       "The Aerodynamics of Hovering Insect Flight. I. The Quasi-Steady Analysis"
+       Ellington, C P
+       In Philosophical Transactions of the Royal Society of London. Series B, Biological Sciences, 1984
+    
+    Article [ellington:84:part2]
+       "The Aerodynamics of Hovering Insect Flight. II. Morphological Parameters"
+       Ellington, C P
+       In Philosophical Transactions of the Royal Society of London. Series B, Biological Sciences, 1984
+        
 
-<F9> will also work in a similar way after any command which contains the word
-cite in it. For example, pressing <F9> will also work with \citenum etc.
+
+You can easily jump from one entry to another using the 'n' and 'p' keys (to go
+to the next / previous entry respectively).
+
+You can also filter out a subset of the bibtex entries by pressing 'f' while in
+this window. Doing this presents the following prompt:  >
+    
+    Field acronyms: (`:let g:Tex_EchoBibFields = 0` to avoid this message)
+     [t] title         [a] author        [b] booktitle
+     [j] journal       [y] year          [p] bibtype
+     (you can also enter the complete field name)
+    Enter filter criterion [field<space>value]:
+        
+At the prompt, type  >
+    a ellington
+Notice that the letter a is an acronym for author according to the prompt above.
+Therefore this filter only shows those bibtex entries whose author field
+contains the text ellington. You can keep narrowing your selection by repeatedly
+filtering the results. If you would like to remove all the filters and see all
+entries again, press 'a', which removes all the filters.
+
+You can also sort the bibtex entries based on a field. To do this, press 's'.
+This will present you with a prompt like in the case of the filter and you are
+asked to choose a field. In this case, you would type in a single character.
+This sorts the entries according to that field.
+
+NOTE: <F9> will also work in a similar way after any command which contains the
+      word cite in it. For example, pressing <F9> will also work with \citenum
+      etc.
+
 
 The following logic is applied to find out which bibliographic entries are
 included in the completion.
@@ -1450,13 +1513,13 @@ Custom command completion                                     *ls_5_5* *ls_a_bX*
 
 Latex-Suite also recognizes certain commonly used LaTeX commands for the <F9>
 key. At the moment, the \bibliographystyle, \addtocontents and the
-\addcontentsline commands are recognized, although morre will be added in the
+\addcontentsline commands are recognized, although more will be added in the
 future. When you press the <F9> after such a command, Latex-Suite will prompt
 you with a list of arguments which make sense for the command.
 
 This functionality is available for commands for which a global variable of the
 form g:Tex_completion_{<command>} is defined where <command> is the command
-name. This variable is a comma seperated list of values which this command
+name. This variable is a comma separated list of values which this command
 takes. For example, the argument to the \bibliographystyle command is commonly
 one of abbr,alpha,plain,unsrt. Therefore, Latex-Suite defines  >
     let g:Tex_completion_bibliographystyle = 'abbr,alpha,plain,unsrt'
@@ -1544,7 +1607,7 @@ following setting in your Latex-Suite configuration (see customizing Latex-Suite
     
     let g:Tex_FormatDependency_pdf = 'dvi,ps,pdf'
     
-This is a comma seperated string of formats specifying the order in which the
+This is a comma separated string of formats specifying the order in which the
 formats to be compiled into should be chosen. With this setting, if you set the
 target format to pdf, then the next time you compile via the \ll shortcut,
 Latex-Suite will first generate a dvi file, then use that to generate the ps
@@ -1577,12 +1640,12 @@ Compiling multiple times                                      *ls_6_3* *ls_a_cb*
                                                             *compiling-multiple*
 
 Most LaTeX compilers need to be re-run several times in several commonly
-occuring situations in order to get a final camera ready copy. For example, when
-\label's change, when new \cite commands are added etc. If the target format you
-are compiling to requires multiple compilations, then you will need to include
-the format in the g:Tex_MultipleCompileFormats setting. This is a comma
-seperated string of formats which need multiple compilations to be generated
-correctly.
+occurring situations in order to get a final camera ready copy. For example,
+when \label's change, when new \cite commands are added etc. If the target
+format you are compiling to requires multiple compilations, then you will need
+to include the format in the g:Tex_MultipleCompileFormats setting. This is a
+comma separated string of formats which need multiple compilations to be
+generated correctly.
 
 By default, this setting contains just the dvi format. If you use the pdflatex
 compiler to generate pdf files, then you might want to also include pdf into the
@@ -1719,7 +1782,7 @@ you are attempting to view. See the link above for how to set this according to
 your system.
 
 In addition to viewing the files, Latex-Suite also supports forward and inverse
-searching for certain common tools for viewiing DVI documents. At the moment,
+searching for certain common tools for viewing DVI documents. At the moment,
 there is built-in support for YAP on windows (which ships with MikTeX), and the
 popular xdvi on *nix platforms. See the next few sections for details on forward
 and inverse searching.
@@ -1780,7 +1843,7 @@ Latex-Suite ships with the plugin SyntaxFolds.vim which is a plugin for creating
 folding is based on LaTeX syntax. This offers a speed increase over regular
 syntax folding. Ofcourse it has the disadvantage that the folds are not dynamic,
 i.e newly created syntax items are not automatically folded up. (This is a
-compromise between speed and convinience).
+compromise between speed and convenience).
 
 When you open up a LaTeX file, all the portions will be automatically folded up.
 However, no new folds will be created until you press <F6> or \rf. (rf stands
@@ -1843,7 +1906,7 @@ Tex_FoldedSections                                          *ls_8_2_1* *ls_a_cl*
                                                             *Tex_FoldedSections*
 
 This entry defines which sections will be folded. This setting is a comma
-seperated list of section names. The default value is:  >
+separated list of section names. The default value is:  >
     part,chapter,section,%%fakesection,
     subsection,subsubsection,paragraph
 Each of the entries in the list will fold up a section of the corresponding
@@ -1858,8 +1921,8 @@ See also advanced fold settings [|ls_a_cp|].
 Tex_FoldedEnvironments                                      *ls_8_2_2* *ls_a_cm*
                                                         *Tex_FoldedEnvironments*
 
-This entry defines which environments will be folded. It is a comma seperated
-string of words each of which defines a single environment. The default settng
+This entry defines which environments will be folded. It is a comma separated
+string of words each of which defines a single environment. The default setting
 is  >
     verbatim,comment,eq,gather,
     align,figure,table,thebibliography,
@@ -1876,7 +1939,7 @@ See also advanced fold settings [|ls_a_cp|].
 Tex_FoldedCommands                                          *ls_8_2_3* *ls_a_cn*
                                                             *Tex_FoldedCommands*
 
-This entry defines which commands will be folded. It is a comma seperated string
+This entry defines which commands will be folded. It is a comma separated string
 of words each of which defines a single command. The default setting is empty,
 i.e no commands are folded. The words need not be standard Latex commands. You
 can use whatever words you like. Each word will fold all commands whose name
@@ -1909,7 +1972,7 @@ Tex_FoldedMisc                                              *ls_8_2_4* *ls_a_co*
                                                                 *Tex_FoldedMisc*
 
 This entry defines fold syntax for certain items which do not naturally fit into
-the section, environment of command lists. It is a comma seperated list of
+the section, environment of command lists. It is a comma separated list of
 words. The default value is:  >
     item,preamble,<<<
 NOTE: Unlike the other Tex_FoldedXXXX variables, the words in this setting are
@@ -1945,7 +2008,7 @@ interior is not examined further. The correct value should have been
 
                                                  *fold-setting-adding* *ls_a_ee*
 Each of the fold setting variables Tex_FoldedSections, Tex_FoldedEnvironments
-etc., as explained previously is a comma seperated string of variables. However,
+etc., as explained previously is a comma separated string of variables. However,
 to make it easier to _add_ to the default settings without having to repeat the
 whole default setting again, Latex-Suite uses the following logic in forming the
 complete setting string from the Tex_FoldedXXXX variables. If the variable
@@ -2201,7 +2264,7 @@ NOTE: To change the IMAP mappings which affect jumping between placeholders, the
 IMAP mappings                                              *ls_10_1_1* *ls_a_cw*
                                                            *customize-imap-maps*
 
-These mappings are utlilized for jumping between placeholders as described here
+These mappings are utilized for jumping between placeholders as described here
 [|ls_a_eD|]. See the parent section [|ls_a_cv|] to find out how to use this
 information to change the default maps.
 
@@ -2302,12 +2365,12 @@ When used without any arguments lists name of the packages for which support is
 available. If you are using Vim GUI and have Tex_Menus set to 1, then it will
 list all files found in the $VIM/ftplugin/latex-suite/packages directory.
 Otherwise, Latex-Suite will list files found in the
-$VIM/ftplugin/latex-suite/dicrionaries directory. Choosing a file from the list
+$VIM/ftplugin/latex-suite/dictionaries directory. Choosing a file from the list
 will insert a  >
     \usepackage[<++>]{<packname>}
 line into the buffer at the current cursor location. For Vim 6.2 and above, you
 can use command-line completion to choose a package file. You can also call
-TPackage with one or more package names seperated with spaces in which case,
+TPackage with one or more package names separated with spaces in which case,
 Latex-Suite will insert \usepackage lines for each of them in turn.
 
 After inserting the \usepackage line(s), Latex-Suite will support it (them) in
@@ -2460,7 +2523,7 @@ Customizing Latex-Suite is done by defining certain global variables in
 $VIM/ftplugin/tex.vim, where $VIM corresponds to ~/.vim for *nix machines and
 ~/vimfiles for windows machines. This file is not part of the Latex-Suite
 distribution. You will need to create this file yourself (or modify it if it
-exists) if you need to change any default settinngs. Since this file is not
+exists) if you need to change any default settings. Since this file is not
 included as part of the Latex-Suite distribution, it will not be over-written in
 subsequent updates.
 
@@ -2523,7 +2586,7 @@ g:Imap_UsePlaceHolders                                     *ls_11_2_1* *ls_a_cU*
 Type             Boolean
 Default Value    1
 
-Setting this to zero completeley disables using place-holders.
+Setting this to zero completely disables using place-holders.
 
 
 g:Imap_PlaceHolderStart & g:Imap_PlaceHolderEnd            *ls_11_2_2* *ls_a_cV*
@@ -2536,7 +2599,7 @@ Imap_PlaceHolderEnd      String    '+>'
 
 These settings affect the strings displayed at the beginning and end of the
 place-holder string. Set these strings to a value different than a commonly
-ocurring sequence of characters.
+occurring sequence of characters.
 
 NOTE: TIP
       ---
@@ -2594,7 +2657,7 @@ then define the following variable  >
     let g:Tex_Env_theorem = "\\begin{theorem}\<CR><++>\<CR>\\end{theorem}"
 <   
 
-If the expaniosn uses special keys such as carriage return etc, then use
+If the expansion uses special keys such as carriage return etc, then use
 double-quotes and use the "\<key>" notation for special keys. Backslashes have
 to be doubled.
 
@@ -2616,7 +2679,7 @@ Tex_Com_name                                               *ls_11_3_2* *ls_a_da*
                                                                   *Tex_Com_name*
 
 If you wish to define new expansions for fast command insertion as described
-here [|ls_a_bo|], or redefine expansios from the default values in Latex-Suite,
+here [|ls_a_bo|], or redefine expansions from the default values in Latex-Suite,
 you will need to define variables of the form g:Tex_Com_{name} where name is a
 command name. For example, with the setting  >
     let g:Tex_Com_frac = "\\frac{<++>}{<++>}<++>"
@@ -2655,7 +2718,7 @@ g:Tex_UseMenuWizard                                        *ls_11_3_4* *ls_a_dc*
 Type             Boolean
 Default Value    0
 
-If this variable is set to 1, then when an enviroment is chosen from the menu
+If this variable is set to 1, then when an environment is chosen from the menu
 then for selected environments, Latex-Suite asks a series of questions on the
 command line and inserts a template with the corresponding fields already filled
 in. Setting this to zero will insert a template with place-holders [|ls_a_eD|]
@@ -2731,7 +2794,7 @@ g:Tex_PromptedEnvironments                                *ls_11_3_10* *ls_a_di*
 Type             String
 Default Value    'eqnarray*,eqnarray,equation,equation*,\[,$$,align,align*'
 
-This string represents a comma seperated list of fields corresponding to
+This string represents a comma separated list of fields corresponding to
 environments. Pressing <F5> in insert-mode in the body of the document asks you
 to choose from one of these environments to insert.
 
@@ -2745,7 +2808,7 @@ g:Tex_HotKeyMappings                                      *ls_11_3_11* *ls_a_dj*
 Type             String
 Default Value    'eqnarray*,eqnarray,bmatrix'
 
-This string represents a comma seperated list of environments which are mapped
+This string represents a comma separated list of environments which are mapped
 to <Shift-F-1> through <Shift-F-4>. For example, pressing <Shift-F-2> with this
 setting inserts the eqnarray environment.
 
@@ -2764,7 +2827,7 @@ g:Tex_PromptedCommands                                    *ls_11_3_12* *ls_a_dk*
 Type             String
 Default Value    'footnote,cite,pageref,label'
 
-This string represents a comma seperated list of LaTeX commands which
+This string represents a comma separated list of LaTeX commands which
 Latex-Suite uses for the <F7> and <S-F7> maps as described here [|ls_a_bo|].
 
 Leaving this string empty will leave the <F7> key unmapped.
@@ -2826,7 +2889,7 @@ Setting                  Value~
 g:Tex_SmartQuoteOpen     "``"
 g:Tex_SmartQuoteClose    "''"
 
-Non-english users will want to change these settings to their locale. These
+Non-English users will want to change these settings to their locale. These
 global variables will be ignored if there are buffer-local variables (with the
 same name), which may be set in the language specific package files, such as
 $VIM/ftplugin/latex-suite/packages/german.
@@ -2903,7 +2966,7 @@ Tex_UseSimpleLabelSearch [|ls_a_ds|] to search for files in which to search for
 the time it takes to generate the list of possible completions for large
 projects.
 
-The list is specified as a whitespace seperated list of filenames relative to
+The list is specified as a whitespace separated list of filenames relative to
 the location of the main file.
 
 
@@ -2964,7 +3027,7 @@ Default Value    ''
 By default, there are no format dependencies defined. Each definition is of the
 form above where <format> is a string such as 'dvi' etc.
 
-The value of each string is a comma seperated string such as 'dvi,ps'. See the
+The value of each string is a comma separated string such as 'dvi,ps'. See the
 Compiler dependency [|ls_a_ca|] section to see how to use/specify this setting
 
 
@@ -2974,7 +3037,7 @@ g:Tex_MultipleCompileFormats                               *ls_11_6_4* *ls_a_dz*
 Type             string
 Default Value    'dvi'
 
-This is a comma seperated string of formats for which the compiler needs to be
+This is a comma separated string of formats for which the compiler needs to be
 called multiple times in order to get cross-references, citations etc right. See
 the Compiling multiple times [|ls_a_cb|] section for details.
 
@@ -2984,7 +3047,7 @@ g:Tex_IgnoredWarnings                                      *ls_11_6_5* *ls_a_dA*
 
 
 Type             String
-Default Value    a new-line seperated list of patterns as described below
+Default Value    a new-line separated list of patterns as described below
 
 The default value of this setting is  >
     \"Underfull\n".
@@ -3080,7 +3143,7 @@ programs. For example, with  >
 yap is called as  >
     !start yap -1 file.dvi
 from within Vim. (The initial start is used on Windows platforms is to make yap
-start as a seperate process.) If you find the way Latex-Suite constructs the
+start as a separate process.) If you find the way Latex-Suite constructs the
 command line too restrictive, you can use the Tex_ViewRuleComplete_format
 [|ls_a_dG|] setting for more complete control on how the command line is
 constructed while calling the external program for viewing.
@@ -3182,7 +3245,7 @@ Default Value    1
 
 This setting controls the "compactness" of the menus. If set to 1, then the
 Font, Counter and Dimensioning menus are collected together in a single menu
-called Tex-Elements, otherwise, they will each get a seperate menu.
+called Tex-Elements, otherwise, they will each get a separate menu.
 
 
 g:Tex_PackagesMenu                                         *ls_11_8_5* *ls_a_dM*
@@ -3271,9 +3334,9 @@ Type             string
 Default Value    ''
 
 This setting describes the directories scanned by Latex-Suite while searching
-for custom user packages as desribed in the custom packages [|ls_a_bN|] section.
-Do not include the present directory in this setting. The present directory is
-always scanned for custom packages.
+for custom user packages as described in the custom packages [|ls_a_bN|]
+section. Do not include the present directory in this setting. The present
+directory is always scanned for custom packages.
 
 This string should be set in the syntax accepted by Vim's native 'path' setting.
 

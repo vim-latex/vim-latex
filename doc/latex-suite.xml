@@ -1445,13 +1445,15 @@ Command can be also given without prefix:. The result is
  <section id="latex-completion">
   <title>Latex Completion</title>
   <para>
-   This module provides an easy way to insert references to labels and
-   bibliographic entries. Although the completion capabilities are very
-   diverse, &ls; only uses a single key (<literal>&lt;F9&gt;</literal> by
-   default) to do all of it. Pressing the <literal>&lt;F9&gt;</literal> key
-   does different things based on where you are located. &ls; tries to
-   guess what you might be trying to complete at the location where you
-   pressed <literal>&lt;F9&gt;</literal>. For example, pressing
+   &ls; provides an easy way to insert references to labels and
+   bibliographic entries and also provide filename arguments to commands
+   such as <literal>\includegraphics</literal>. Although the completion
+   capabilities are very diverse, &ls; only uses a single key
+   (<literal>&lt;F9&gt;</literal> by default) to do all of it. Pressing the
+   <literal>&lt;F9&gt;</literal> key does different things based on where
+   you are located. &ls; tries to guess what you might be trying to
+   complete at the location where you pressed
+   <literal>&lt;F9&gt;</literal>. For example, pressing
    <literal>&lt;F9&gt;</literal> when you are within a
    <literal>\ref</literal> command will try to list the
    <literal>\label</literal>'s in the present directory. Pressing it when
@@ -1571,79 +1573,148 @@ newfile.tex [Preview]                                         11,3           21%
   <section id="ls-completion-ref">
    <title>&ls; \ref completion</title>
    <para>
-    If you press &lt;F9&gt; in insert mode when the cursor is positioned
-    just after the string "<literal>\ref{pre</literal>", then &ls; will
-    present you with a list of all the <literal>\label</literal>s which
-    begin with the prefix "pre". If you press &lt;F9&gt; after
-    <literal>\ref{</literal>, then &ls; will present you with a list of
-    <emphasis>all</emphasis> labels. See <link
-     linkend="ls-completion-usage">here</link> for an example.
-   </para>
-   <para>
-    <orderedlist>
-     <listitem>If <link
-       linkend="Tex_UseSimpleLabelSearch">Tex_UseSimpleLabelSearch</link>
-      is set to 1, then &ls; will simply search for
-      <literal>\label</literal>s in all the <literal>.tex</literal> files
-      in the directory containing the current file</listitem>.
-     <listitem>If the <link
-       linkend="Tex_ProjectSourceFiles">Tex_ProjectSourceFiles</link>
-      setting is non-empty, then &ls; will search for all labels specified
-      in the list of files given by the setting above.</listitem>
-     <listitem>If Tex_UseSimpleLabelSearch is 0 and Tex_ProjectSourceFiles
-      is empty, then &ls; uses the following logic:
-      <orderedlist>
-       <listitem>First &ls; will determine if it can find a master-file
-        specification as described <link
-         linkend="latex-master-file-specification">here</link>.</listitem>
-       <listitem>If it can, then &ls; will search for
-        <literal>\label</literal>'s in that file first.</listitem>
-       <listitem>If the master file <literal>\include</literal>'s or
-        <literal>\input</literal>'s any other files, then &ls; will search
-        for <literal>\label</literal>'s in those files.  The search for
-        <literal>\include</literal>'d and <literal>\input</literal>'ed files
-        is recursive, i.e, if an <literal>\include</literal>'d file
-        <literal>\include</literal>'s another file, then that will be
-        searched as well and so on.</listitem>
-       <listitem>If &ls; cannot find a master file specified for this file,
-        then it will simply search for <literal>\labels</literal> in the
-        present file.</listitem>
-      </orderedlist>
-     </listitem>
-    </orderedlist>
-   </para>
-   <para>
-    Any command which contains the pattern <literal>ref</literal> in it is
-    treated as if it is a way to call <literal>\ref</literal> indirectly.
-    Thus pressing <literal>&lt;F9&gt;</literal> after something like
-    <literal>\pref{</literal> will also search for
-    <literal>\label</literal>'s.
+    Pressing <literal>&lt;F9&gt;</literal> when you are within a partially
+    completed <literal>\ref</literal> command will split open a window
+    (named <literal>__OUTLINE__</literal>) which contains a nicely
+    formatted list of all the <literal>\label</literal>s found in the
+    present project.  The <literal>\label</literal>s are heirarchically
+    arranged according to which <literal>\section</literal>,
+    <literal>\subsection</literal> etc of the overall document structure
+    they are present in. For example, when you first press
+    <literal>&lt;F9&gt;</literal> after typing <literal>\ref{</literal>,
+    you should see something like:
+    <programlisting>
++-- 54 lines: 2. Kinematics--------------------------------
++-- 98 lines: 3. Aerodynamics of the MFI thorax------------
++-- 40 lines: 4. Jump Resonance in Fourbar Mechanisms------
++-- 28 lines: 5. Design and Fabrication Issues-------------
+    </programlisting>
+    Each chapter is |fold|ed away so that you can quickly jump to the
+    correct section/subsection in which the relevant equation is defined.
+    This makes inserting references significantly faster for large projects
+    with hundreds of equations. You can then open some of the folds to see
+    for example:
+    <programlisting>
++-- 54 lines: 2. Kinematics--------------------------------
+3. Aerodynamics of the MFI thorax
+    3.1. Aerodynamic modeling of the MFI wing forces
+        3.1.1. Geometric Specification
+               eqn:wingnormal-pos
+                 \nhat =  T_z(\theta_2) T_y(\theta_y)T_x(\theta_x)\nhat_0,
+               eqn:T-1
+                 T_1(\theta_2) &amp;=&amp; T_z(\theta_2)
+    </programlisting>
+    The <literal>&lt;Tab&gt;</literal> key is mapped in this window to
+    toggle folds so that you can quickly open/close folds in order to
+    navigate the heirarchy faster. Once you are positioned on a
+    label, press <literal>&lt;Enter&gt;</literal>. This closes the
+    <literal>__OUTLINE__</literal> window, returns to the window in which
+    you pressed <literal>&lt;F9&gt;</literal> and inserts the reference
+    at the current cursor position.
    </para>
    <note>
-    <title>HINT</title>
+    <title>Filtering labels by prefix</title>
+   <para>
+     You can press <literal>&lt;F9&gt;</literal> after typing part of the
+     <literal>\label</literal>. In this case, &ls; only presents
+     <literal>\label</literal>s which begin with the already filled
+     characters. You can use this to choose between equations, figures,
+     tables etc. if you consistently label equations to begin with
+     <literal>eqn:</literal>, figures to begin with <literal>fig:</literal>
+     etc. For example, with this scheme, pressing
+     <literal>&lt;F9&gt;</literal> after typing
+     <literal>\ref{eqn:</literal> will only list equations.
+   </para>
+   </note>
+   <note>
+   <para>
+     &ls; works the same way if you press <literal>&lt;F9&gt;</literal>
+     after any command which contains the letters <literal>ref</literal>.
+     Thus you can complete <literal>\eqref</literal> in exactly the same
+     manner.
+   </para>
+   </note>
+   <note>
+    <title>Requirements</title>
     <para>
-     By prefixing your labels with eqn:, fig: etc, you can easily filter
-     out a lot of undesirable results.
+     This method of preseting the <literal>\label</literal>s depends on Vim
+     being compiled with python support. To check if you have this, see the
+     output of the <literal>:ver</literal> command. If you see something
+     like <literal>+python</literal>, you are all set. Failing this, you
+     will need to have <literal>python</literal> somewhere in your
+     <literal>$PATH</literal>.
     </para>
    </note>
   </section>
   <section id="latex-completion-cite">
    <title>&ls; <literal>\cite</literal> completion</title>
    <para>
-    When you press <literal>&lt;F9&gt;</literal> in insert mode after
-    <literal>\cite{pre</literal>, &ls; will present a list of valid
-    bibliographic keys starting with <literal>"pre"</literal> and ask you
-    to choose from one of them. ("pre" can be left empty in which case all
-    valid bibliographic keys will be listed). The window setup is as
-    described in section <link linkend="ls-completion-usage"
-     endterm="ls-completion-usage.title"></link>.
+    &ls; provides an easy way to insert references to bibliographic
+    entries. Pressing <literal>&lt;F9&gt;</literal> when the cursor is
+    placed inside a partially completed <literal>\cite</literal> command
+    will split open a new window (named <literal>__OUTLINE__</literal>)
+    which contains a formatted and syntax highlighted list of all bibtex
+    entries found. For example, pressing <literal>&lt;F9&gt;</literal>
+    after typing <literal>\ref{</literal> should present you with a window
+    which looks something like this:
+    <programlisting>
+Article [dickinson:science:99]
+   "Wing rotation and aerodynamic basis of insect flight"
+   M. H. Dickinson and F-O. Lehman and S. P. Sane
+   In Science, 1999
+
+Article [ellington:84:part1]
+   "The Aerodynamics of Hovering Insect Flight. I. The Quasi-Steady Analysis"
+   Ellington, C P
+   In Philosophical Transactions of the Royal Society of London. Series B, Biological Sciences, 1984
+
+Article [ellington:84:part2]
+   "The Aerodynamics of Hovering Insect Flight. II. Morphological Parameters"
+   Ellington, C P
+   In Philosophical Transactions of the Royal Society of London. Series B, Biological Sciences, 1984
+    </programlisting>
    </para>
    <para>
+    You can easily jump from one entry to another using the
+    <literal>'n'</literal> and <literal>'p'</literal> keys (to go to the
+    next / previous entry respectively).
+   </para>
+   <para>
+    You can also filter out a subset of the bibtex entries by pressing
+    <literal>'f'</literal> while in this window. Doing this presents the
+    following prompt:
+    <programlisting>
+Field acronyms: (`:let g:Tex_EchoBibFields = 0` to avoid this message)
+ [t] title         [a] author        [b] booktitle
+ [j] journal       [y] year          [p] bibtype
+ (you can also enter the complete field name)
+Enter filter criterion [field&lt;space&gt;value]:
+    </programlisting>
+    At the prompt, type
+    <programlisting>a ellington</programlisting>
+    Notice that the letter a is an acronym for <literal>author</literal>
+    according to the prompt above. Therefore this filter only shows those
+    bibtex entries whose author field contains the text
+    <literal>ellington</literal>. You can keep narrowing your selection by
+    repeatedly filtering the results. If you would like to remove all the
+    filters and see all entries again, press 'a', which removes
+    all the filters.
+   </para>
+   <para>
+    You can also sort the bibtex entries based on a field. To do this,
+    press 's'. This will present you with a prompt like in the case of the
+    filter and you are asked to choose a field. In this case, you would
+    type in a single character. This sorts the entries according to that
+    field.
+   </para>
+   <note>
+    <para>
     <literal>&lt;F9&gt;</literal> will also work in a similar way after any
     command which contains the word <literal>cite</literal> in it. For
     example, pressing <literal>&lt;F9&gt;</literal> will also work with
     <literal>\citenum</literal> etc.
    </para>
+   </note>
    <para>
     The following logic is applied to find out which bibliographic entries
     are included in the completion.
