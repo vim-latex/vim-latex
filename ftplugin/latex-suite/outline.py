@@ -16,10 +16,7 @@ def getFileContents(argin, ext=''):
     if type(argin) is str:
         fname = argin + ext
     else:
-        if argin.group(2) == 'include':
             fname = argin.group(3) + ext
-        else:
-            fname = argin.group(3)
 
     # This longish thing is to make sure that all files are converted into
     # \n seperated lines.
