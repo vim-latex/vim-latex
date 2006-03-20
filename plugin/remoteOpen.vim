@@ -31,6 +31,7 @@
 
 " Enclose <args> in single quotes so it can be passed as a function argument.
 com -nargs=1 RemoteOpen :call RemoteOpen('<args>')
+com -nargs=? RemoteInsert :call RemoteInsert('<args>')
 
 " RemoteOpen: open a file remotely (if possible) {{{
 " Description: checks all open vim windows to see if this file has been opened
@@ -116,6 +117,40 @@ function! RemoteOpen(arglist)
 	if v:servername != targetServer
 		q
 	endif
+endfunction " }}}
+" RemoteInsert: inserts a \cite'ation remotely (if possible) {{{
+" Description:
+function! RemoteInsert(...)
+
+	let citation =  matchstr(argv(0), "\\[InsText('.cite{\\zs.\\{-}\\ze}');\\]")
+	if citation == ""
+		q
+	endif
+
+	" Otherwise, loop through all available servers
+	let servers = serverlist()
+
+	let i = 1
+	let server = s:Strntok(servers, "\n", i) 
+	let targetServer = v:servername
+
+	while server != ''
+		if remote_expr(server, 'exists("g:Remote_WaitingForCite")')
+			call remote_send(server, citation . "\<CR>")
+			call remote_foreground(server)
+			if v:servername != server
+				q
+			else
+				return
+			endif
+		endif
+
+		let i = i + 1
+		let server = s:Strntok(servers, "\n", i) 
+	endwhile
+
+	q
+
 endfunction " }}}
 " Strntok: extract the n^th token from a list {{{
 " example: Strntok('1,23,3', ',', 2) = 23
