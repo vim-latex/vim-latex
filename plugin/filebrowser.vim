@@ -13,6 +13,10 @@
 " 		(Both these regexps are '' by default which means no filtering is
 " 		done).
 
+" line continuation used here.
+let s:save_cpo = &cpo
+set cpo&vim
+
 "======================================================================
 " Globally visible functions (API)
 "======================================================================
@@ -241,5 +245,7 @@ function! <SID>FB_GetVar(name, default)
 endfunction
 
 " }}}
+
+let &cpo = s:save_cpo
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4:nowrap
