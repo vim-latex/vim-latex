@@ -17,7 +17,7 @@ latexs:
 	zip -q latexSuite.zip ftplugin/bib_latexSuite.vim
 	zip -q latexSuite.zip ftplugin/tex/*.vim
 	# files in the latex-suite directory. Skip the CVS files.
-	zip -q -R latexSuite.zip `find ftplugin/latex-suite -name '*' | grep -v CVS`
+	zip -q -R latexSuite.zip `find ftplugin/latex-suite -name '*' | grep -v .svn`
 	# documentation
 	zip -q latexSuite.zip doc/latex*.txt
 	zip -q latexSuite.zip doc/imaps*.txt
