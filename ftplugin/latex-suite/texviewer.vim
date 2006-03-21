@@ -504,7 +504,7 @@ function! Tex_GrepHelper(prefix, what)
 	if mainfname == expand('%:p')
 		split
 	else
-		exec 'split '.mainfname
+		exec 'split '.Tex_EscapeSpaces(mainfname)
 	endif
 
 	let pos = line('.').'| normal! '.virtcol('.').'|'
@@ -560,35 +560,32 @@ function! Tex_ScanFileForCite(prefix)
 		let &path = '.,'.g:Tex_BIBINPUTS
 
 		let i = 1
-		while Tex_Strntok(bibnames, ',', i) != ''
+		while 1
+			let bibname = Tex_Strntok(bibnames, ',', i)
+			if bibname == ''
+				break
+			endif
+
 			" first try to find if a .bib file exists. If so do not search in
 			" the corresponding .bbl file. (because the .bbl file will most
 			" probly be generated automatically from the .bib file with
 			" bibtex).
 			
-			" split a new window so we do not screw with the current buffer.
-			split
-			let thisbufnum = bufnr('%')
-			call Tex_Debug('silent! find '.Tex_Strntok(bibnames, ',', i).'.bib', 'view')
-			exec 'silent! find '.Tex_Strntok(bibnames, ',', i).'.bib'
-			if bufnr('%') != thisbufnum
+			let fname = Tex_FindFile(bibname, '.,'.g:Tex_BIBINPUTS, '.bib')
+			if fname != ''
 				call Tex_Debug('finding .bib file ['.bufname('%').']', 'view')
-				call Tex_Debug('using pattern '.Tex_EscapeForGrep('@.*{'.a:prefix), 'view')
-				lcd %:p:h
-				" use the appropriate syntax for the .bib file.
+				exec 'split '.Tex_EscapeSpaces(fname)
 				call Tex_Grepadd('@.*{'.a:prefix, "%")
+				q
 			else
-				let thisbufnum = bufnr('%')
-				exec 'silent! find '.Tex_Strntok(bibnames, ',', i).'.bbl'
-				call Tex_Debug('now in bufnum#'.bufnr('%'), 'view')
-				if bufnr('%') != thisbufnum
+				let fname = Tex_FindFile(bibname, '.,'.g:Tex_BIBINPUTS, '.bbl')
+				if fname != ''
+					exec 'split '.Tex_EscapeSpaces(fname)
 					call Tex_Debug('finding .bbl file ['.bufname('.').']', 'view')
-					lcd %:p:h
 					call Tex_Grepadd('\\bibitem{'.a:prefix, "%")
+					q
 				endif
 			endif
-			" close the newly opened window
-			q
 
 			let i = i + 1
 		endwhile
@@ -618,8 +615,6 @@ function! Tex_ScanFileForCite(prefix)
 	" If we have not found any \bibliography or \thebibliography environment
 	" in this file, search for these environments in all the files which this
 	" file includes.
-	let &path = '.,'.g:Tex_TEXINPUTS
-	let &suffixesadd = '.tex'
 
 	exec 0
 	let wrap = 'w'
@@ -628,16 +623,13 @@ function! Tex_ScanFileForCite(prefix)
 
 		let filename = matchstr(getline('.'), '\\\(input\|include\){\zs.\{-}\ze}')
 
-		split
-		let thisbufnum = bufnr('%')
-
-		exec 'silent! find '.filename
-		if bufnr('%') != thisbufnum
-			" DANGER! recursive call.
-			call Tex_Debug('scanning recursively in ['.bufname('%').']', 'view')
+		let foundfile = Tex_FindFile(filename, '.,'.g:Tex_TEXINPUTS, '.tex')
+		if foundfile != ''
+			exec 'split '.Tex_EscapeSpaces(foundfile)
+			call Tex_Debug('scanning recursively in ['.foundfile.']', 'view')
 			let foundCiteFile = Tex_ScanFileForCite(a:prefix)
+			q
 		endif
-		q
 
 		if foundCiteFile
 			return 1
@@ -659,28 +651,21 @@ function! Tex_ScanFileForLabels(prefix)
 	call Tex_Grepadd('\\label{'.a:prefix, "%")
 
 	" Then recursively grep for all \include'd or \input'ed files.
-	let &suffixesadd = '.tex'
-	let &path = '.,'.g:Tex_TEXINPUTS
 	exec 0
 	let wrap = 'w'
 	while search('^\s*\\\(input\|include\)', wrap)
 		let wrap = 'W'
 
 		let filename = matchstr(getline('.'), '\\\(input\|include\){\zs.\{-}\ze}')
-
-		let thisbufnum = bufnr('%')
-
-		split
-		exec 'silent! find '.filename
-
-		if bufnr('%') != thisbufnum
-			call Tex_Debug('Tex_ScanFileForLabels: scanning recursively in ['.bufname('%').']', 'view')
+		let foundfile = Tex_FindFile(filename, '.,'.Tex_TEXINPUTS, '.tex')
+		if foundfile != ''
+			exec 'split '.Tex_EscapeSpaces(foundfile)
+			call Tex_Debug('Tex_ScanFileForLabels: scanning recursively in ['.foundfile.']', 'view')
 			call Tex_ScanFileForLabels(a:prefix)
+			q
 		endif
-
-		q
-
 	endwhile
+
 endfunction " }}}
 
 " ==============================================================================
@@ -840,7 +825,7 @@ function! Tex_FindBibFiles()
 
 	let mainfname = Tex_GetMainFileName(':p')
 	wincmd n
-	exec ':e '.mainfname
+	exec 'silent! e '.mainfname
 
 	if search('\\\(no\)\?bibliography{', 'w')
 
@@ -852,31 +837,21 @@ function! Tex_FindBibFiles()
 
 		call Tex_Debug(':Tex_FindBibFiles: trying to search through ['.bibnames.']', 'view')
 
-		let _path = &path
-		let &path = '.,'.g:Tex_BIBINPUTS
-
 		let bibfiles = ''
 		let i = 1
-		while Tex_Strntok(bibnames, ',', i) != ''
-			" split a new window so we do not screw with the current buffer.
-			split
-			let thisbufnum = bufnr('%')
-
-			call Tex_Debug(':Tex_FindBibFiles: silent! find '.Tex_Strntok(bibnames, ',', i).'.bib', 'view')
-			exec 'silent! find '.Tex_Strntok(bibnames, ',', i).'.bib'
-			if bufnr('%') != thisbufnum
-				call Tex_Debug(':Tex_FindBibFiles: finding .bib file ['.bufname('%').']', 'view')
-				" use the appropriate syntax for the .bib file.
-				let bibfiles = bibfiles.expand('%:p')."\n"
+		while 1
+			let bibname = Tex_Strntok(bibnames, ',', i)
+			if bibname == ''
+				break
 			endif
-
-			q
-
+			let fname = Tex_FindFile(bibname, '.,'.g:Tex_BIBINPUTS, '.bib')
+			if fname != ''
+				let bibfiles = bibfiles.fname."\n"
+			endif
 			let i = i + 1
 		endwhile
 
 		call Tex_Debug(":Tex_FindBibFiles: returning [".bibfiles."]", "view")
-		let &path = _path
 		q
 		return bibfiles
 

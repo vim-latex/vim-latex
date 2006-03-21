@@ -611,6 +611,34 @@ endfunction " }}}
 function! Tex_EscapeSpaces(path)
 	return substitute(a:path, '[^\\]\(\\\\\)*\zs ', '\\ ', 'g')
 endfunction " }}}
+" Tex_FindFile: finds a file in the vim's 'path' {{{
+" Description: finds a file in vim's 'path'
+function! Tex_FindFile(fname, path, suffixesadd)
+	if exists('*findfile')
+		let _suffixesadd = &suffixesadd
+		let &suffixesadd = a:suffixesadd
+		let retval = findfile(a:fname, a:path)
+		let &suffixesadd = _suffixesadd
+	else
+		" split a new window so we do not screw with the current buffer. We
+		" want to use the same filename each time so that multiple scratch
+		" buffers are not created.
+		let retval = ''
+		silent! split __HOPEFULLY_THIS_FILE_DOES_NOT_EXIST__
+		let _suffixesadd = &suffixesadd
+		let _path = &path
+		let &suffixesadd = a:suffixesadd
+		let &path = a:path
+		exec 'silent! find '.a:fname
+		if bufname('%') != '__HOPEFULLY_THIS_FILE_DOES_NOT_EXIST__'
+			let retval = expand('%:p')
+		end
+		silent! bdelete!
+		let &suffixesadd = _suffixesadd
+		let &path = _path
+	endif
+	return retval
+endfunction " }}}
 
 " ==============================================================================
 " Smart key-mappings
