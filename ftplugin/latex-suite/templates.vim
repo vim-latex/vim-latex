@@ -60,8 +60,10 @@ function! <SID>ReadTemplate(...)
 	let s:exeTemp = substitute(getline(1), pattern, '\3', '')
 	let s:comTemp = substitute(getline(1), pattern, '\4', '')
 
-	call s:ProcessTemplate()
 	0 d_
+
+	call s:ProcessTemplate()
+	call Tex_pack_updateall(1)
 
 	" Do not handle the placeholders here. Let IMAP_PutTextWithMovement do it
 	" because it handles UTF-8 character substitutions etc. Therefore delete
@@ -84,7 +86,6 @@ function! <SID>ReadTemplate(...)
 
 	call Tex_Debug('phs = '.s:phsTemp.', phe = '.s:pheTemp.', exe = '.s:exeTemp.', com = '.s:comTemp, 'templates')
 
-	call Tex_pack_updateall(1)
 endfunction
 
 " }}}
