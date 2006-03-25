@@ -1,3 +1,7 @@
+# Author: Srinath Avadhanula
+# This file is distributed as part of the vim-latex project
+# http://vim-latex.sf.net
+
 import re
 
 class Bibliography(dict):
@@ -6,7 +10,6 @@ class Bibliography(dict):
         txt:
             a string which represents the entire bibtex entry. A typical
             entry is of the form:
-
                 @ARTICLE{ellington:84:part3,
                   author = {Ellington, C P},
                   title = {The Aerodynamics of Hovering Insect Flight. III. Kinematics},
@@ -78,11 +81,10 @@ class Bibliography(dict):
                 value = body[:(mn.start(0))]
 
             else:
-                mn = re.match(r'\d+', body)
-                if not mn:
-                    raise "Only completely numeral fields can be left unquoted"
-
-                value = m.group(2) + mn.group(0)
+                # $ always matches. So we do not need to do any
+                # error-checking.
+                mn = re.search(r',|$', body)
+                value = m.group(2) + body[:(mn.start(0))].rstrip()
 
             self[field] = re.sub(r'\s+', ' ', value)
             body = body[(mn.start(0)+1):]
