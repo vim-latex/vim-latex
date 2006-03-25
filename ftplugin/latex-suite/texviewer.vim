@@ -872,8 +872,13 @@ if has('python') && Tex_GetVarValue('Tex_UsePython')
 endif
 
 function! Tex_StartCiteCompletion()
-	let mainfname = Tex_GetMainFileName(':p')
 	let bibfiles = Tex_FindBibFiles()
+	if bibfiles !~ '\S'
+		echohl WarningMsg
+		echomsg 'No bibfiles found! Sorry'
+		echohl None
+		return
+	endif
 
     bot split __OUTLINE__
 	exec Tex_GetVarValue('Tex_OutlineWindowHeight', 15).' wincmd _'
@@ -986,6 +991,12 @@ function! Tex_HandleBibShortcuts(command)
 		endif
 
 		let inp = input('Enter '.a:command.' criterion [field<space>value]: ')
+		if inp !~ '\v^\S+\s+\S.*'
+			echohl WarningMsg
+			echomsg 'Invalid filter specification. Use "field<space>value"'
+			echohl None
+			return
+		endif
 
 		if inp != ''
 			" If the field is specified as a single character, then replace
@@ -1005,13 +1016,13 @@ function! Tex_HandleBibShortcuts(command)
 				exec "python Tex_BibFile.addsortfield(\"".inp."\")"
 				exec 'python Tex_BibFile.sort()'
 			endif
-			call Tex_DisplayBibList()
+			silent! call Tex_DisplayBibList()
 		endif
 
 	elseif a:command == 'remove_filters'
 
 		exec 'python Tex_BibFile.rmfilters()'
-		exec 'python Tex_BibFile.addfilter("key '.s:prefix.'")'
+		exec 'python Tex_BibFile.addfilter("key ^'.s:prefix.'")'
 		call Tex_DisplayBibList()
 		
 	endif
