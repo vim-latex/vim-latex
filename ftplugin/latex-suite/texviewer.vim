@@ -241,7 +241,7 @@ function! Tex_SetupFileCompletion(accept, reject, ext)
 	call FB_SetVar('FB_CallBackFunction', 'Tex_CompleteFileName')
 	call FB_SetVar('FB_CallBackFunctionArgs', '"'.a:ext.'"')
 
-	call FB_OpenFileBrowser('.')
+	call FB_OpenFileBrowser(Tex_GetVarValue('Tex_ImageDir', '.'))
 endfunction " }}}
 " Tex_CompleteFileName:  {{{
 " Description: 
