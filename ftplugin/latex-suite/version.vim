@@ -24,7 +24,7 @@
 "			"stabilize" that version by releasing a few pre-releases and then
 "			keep that as a stable point.
 function! Tex_Version()
-	return "Latex-Suite: version 1.8.15"
+	return "Latex-Suite: version 1.8.16"
 endfunction 
 
 com! -nargs=0 TVersion echo Tex_Version()

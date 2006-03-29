@@ -730,11 +730,11 @@ if g:Tex_PromptedEnvironments != ''
 		let change_env = PromptForEnvironment('What do you want to change it to? ')
 
 		if change_env == 'eqnarray'
-			call <SID>Change('eqnarray', 1, '', 1)
+			call <SID>Change('eqnarray', 1, '', env_name =~ '\*$')
+		elseif change_env == 'align'
+			call <SID>Change('align', 1, '', env_name =~ '\*$')
 		elseif change_env == 'eqnarray*'
 			call <SID>Change('eqnarray*', 0, '\\nonumber', 0)
-		elseif change_env == 'align'
-			call <SID>Change('align', 1, '', 1)
 		elseif change_env == 'align*'
 			call <SID>Change('align*', 0, '\\nonumber', 0)
 		elseif change_env == 'equation*'
