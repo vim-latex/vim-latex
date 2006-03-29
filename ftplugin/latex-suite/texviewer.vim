@@ -147,25 +147,33 @@ function! Tex_Complete(what, where)
 			call Tex_SetupFileCompletion(
 				\ '', 
 				\ '^\.\\|\.tex$\\|\.bib$\\|\.bbl$\\|\.zip$\\|\.gz$', 
-				\ 'noext')
+				\ 'noext', 
+				\ Tex_GetVarValue('Tex_ImageDir', '.'), 
+				\ Tex_GetVarValue('Tex_ImageDir', ''))
 			
 		elseif exists("s:type") && s:type == 'bibliography'
 			call Tex_SetupFileCompletion(
 				\ '\.b..$',
 				\ '',
-				\ 'noext')
+				\ 'noext',
+				\ '.', 
+				\ '')
 
 		elseif exists("s:type") && s:type =~ 'include\(only\)\='
 			call Tex_SetupFileCompletion(
 				\ '\.t..$', 
 				\ '',
-				\ 'noext')
+				\ 'noext',
+				\ '.', 
+				\ '')
 
 		elseif exists("s:type") && s:type == 'input'
 			call Tex_SetupFileCompletion(
 				\ '', 
 				\ '',
-				\ 'ext')
+				\ 'ext',
+				\ '.', 
+				\ '')
 
 		elseif exists('s:type') && exists("g:Tex_completion_".s:type)
 			call <SID>Tex_CompleteRefCiteCustom('plugin_'.s:type)
@@ -235,23 +243,25 @@ endfunction " }}}
 " ============================================================================== 
 " Tex_SetupFileCompletion:  {{{
 " Description: 
-function! Tex_SetupFileCompletion(accept, reject, ext)
+function! Tex_SetupFileCompletion(accept, reject, ext, dir, root)
 	call FB_SetVar('FB_AllowRegexp', a:accept)
 	call FB_SetVar('FB_RejectRegexp', a:reject)
 	call FB_SetVar('FB_CallBackFunction', 'Tex_CompleteFileName')
-	call FB_SetVar('FB_CallBackFunctionArgs', '"'.a:ext.'"')
+	call FB_SetVar('FB_CallBackFunctionArgs', '"'.a:ext.'", "'.a:root.'"')
 
-	call FB_OpenFileBrowser(Tex_GetVarValue('Tex_ImageDir', '.'))
+	call FB_OpenFileBrowser(a:dir)
 endfunction " }}}
 " Tex_CompleteFileName:  {{{
 " Description: 
-function! Tex_CompleteFileName(filename, ext)
+function! Tex_CompleteFileName(filename, ext, root)
+	let root = (a:root == '' ? Tex_GetMainFileName(':p:h') : a:root)
+
 	call Tex_Debug('+Tex_CompleteFileName: getting filename '.a:filename, 'view')
 
 	if a:ext == 'noext'
 		let completeword = fnamemodify(a:filename, ':r')
 	endif
-	let completeword = Tex_RelPath(completeword, Tex_GetMainFileName(':p:h'))
+	let completeword = Tex_RelPath(completeword, root)
 
 	call Tex_Debug(":Tex_CompleteFileName: completing with ".completeword, "view")
 	call Tex_CompleteWord(completeword)
