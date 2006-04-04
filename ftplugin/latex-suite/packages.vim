@@ -346,6 +346,7 @@ function! Tex_ScanForPackages(...)
 			break
 		endif
 
+		let saveUnnamed = @"
 		let saveA = @a
 
 		" If there are options, then find those.
@@ -398,6 +399,7 @@ function! Tex_ScanForPackages(...)
 
 		" restore @a
 		let @a = saveA
+		let @" = saveUnnamed
 	endwhile
 	call Tex_Debug(":Tex_ScanForPackages: End scan \\usepackage, detected packages = ".g:Tex_package_detected, "pack")
 
@@ -596,15 +598,18 @@ function! <SID>GroupPackageMenuItems(menuList, menuName,
 
 endfunction " }}}
 " Definition of what to do for various package commands {{{
-let s:CommandSpec_bra = '\<+replace+>{<++>}<++>'
 let s:CommandSpec_brs = '\<+replace+><++>'
+let s:CommandSpec_bra = '\<+replace+>{<++>}<++>'
 let s:CommandSpec_brd = '\<+replace+>{<++>}{<++>}<++>'
-let s:CommandSpec_env = '\begin{<+replace+>}'."\<CR><++>\<CR>".'\end{<+replace+>}<++>'
-let s:CommandSpec_ens = '\begin{<+replace+>}<+extra+>'."\<CR><++>\<CR>".'\end{<+replace+>}<++>'
-let s:CommandSpec_eno = '\begin[<++>]{<+replace+>}'."\<CR><++>\<CR>".'\end{<+replace+>}'
+
 let s:CommandSpec_nor = '\<+replace+>'
 let s:CommandSpec_noo = '\<+replace+>[<++>]'
 let s:CommandSpec_nob = '\<+replace+>[<++>]{<++>}{<++>}<++>'
+
+let s:CommandSpec_env = '\begin{<+replace+>}'."\<CR><++>\<CR>".'\end{<+replace+>}<++>'
+let s:CommandSpec_ens = '\begin{<+replace+>}<+extra+>'."\<CR><++>\<CR>".'\end{<+replace+>}<++>'
+let s:CommandSpec_eno = '\begin[<++>]{<+replace+>}'."\<CR><++>\<CR>".'\end{<+replace+>}'
+
 let s:CommandSpec_spe = '<+replace+>'
 let s:CommandSpec_    = '\<+replace+>'
 
