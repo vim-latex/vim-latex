@@ -62,42 +62,27 @@ function! FB_DisplayFiles(dir)
 	let dispFiles = ""
 	let subDirs = "../\n"
 
-	if v:version >= 700
-		let flist = split(allFilenames, "\n")
-		for filename in flist
-			if isdirectory(filename)
-				let subDirs = subDirs.filename."/\n"
-			else
-				if allowRegexp != '' && filename !~ allowRegexp
-				elseif rejectRegexp != '' && filename =~ rejectRegexp
-				else
-					let dispFiles = dispFiles.filename."\n"
-				endif
-			endif
-		endfor
-	else
-		let allFilenames = allFilenames."\n"
-		let start = 0
-		while 1
-			let next = stridx(allFilenames, "\n", start)
-			let filename = strpart(allFilenames, start, next-start)
-			if filename == ""
-				break
-			endif
+    let allFilenames = allFilenames."\n"
+    let start = 0
+    while 1
+        let next = stridx(allFilenames, "\n", start)
+        let filename = strpart(allFilenames, start, next-start)
+        if filename == ""
+            break
+        endif
 
-			if isdirectory(filename)
-				let subDirs = subDirs.filename."/\n"
-			else
-				if allowRegexp != '' && filename !~ allowRegexp
-				elseif rejectRegexp != '' && filename =~ rejectRegexp
-				else
-					let dispFiles = dispFiles.filename."\n"
-				endif
-			endif
+        if isdirectory(filename)
+            let subDirs = subDirs.filename."/\n"
+        else
+            if allowRegexp != '' && filename !~ allowRegexp
+            elseif rejectRegexp != '' && filename =~ rejectRegexp
+            else
+                let dispFiles = dispFiles.filename."\n"
+            endif
+        endif
 
-			let start = next + 1
-		endwhile
-	endif
+        let start = next + 1
+    endwhile
 
 	0put!=dispFiles
 	0put!=subDirs
