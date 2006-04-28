@@ -605,6 +605,7 @@ function! Tex_PutEnvironment(env)
 					endif
 					let i = i + 1
 				endwhile
+			endif
 		endif
 		" If nothing before us managed to create an environment, then just
 		" create a bare-bones environment from the name.
@@ -940,9 +941,8 @@ function! Tex_InsertItem()
 endfunction
 " }}}
 " Tex_SetItemMaps: sets the \item inserting maps for current buffer {{{
-" Description: 
 
-inoremap <script> <silent> <Plug>Tex_InsertItemOnThisLine <Esc>a<C-r>=Tex_InsertItem()<CR>
+inoremap <script> <silent> <Plug>Tex_InsertItemOnThisLine <C-r>=Tex_InsertItem()<CR>
 inoremap <script> <silent> <Plug>Tex_InsertItemOnNextLine <ESC>o<C-R>=Tex_InsertItem()<CR>
 
 function! Tex_SetItemMaps()
