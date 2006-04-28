@@ -12,19 +12,27 @@ import sys
 import StringIO
 
 # getFileContents {{{
-def getFileContents(argin, ext=''):
-    if type(argin) is str:
-        fname = argin + ext
-    else:
-            fname = argin.group(3) + ext
+def getFileContents(fname):
+    if type(fname) is not str:
+        fname = fname.group(3)
 
-    # This longish thing is to make sure that all files are converted into
-    # \n seperated lines.
-    contents = '\n'.join(open(fname).read().splitlines())
+    # If neither the file or file.tex exists, then we just give up.
+    if not os.path.isfile(fname):
+        if os.path.isfile(fname + '.tex'):
+            fname += '.tex'
+        else:
+            return ''
+
+    try:
+        # This longish thing is to make sure that all files are converted into
+        # \n seperated lines.
+        contents = '\n'.join(open(fname).read().splitlines())
+    except IOError:
+        return ''
 
     # TODO what are all the ways in which a tex file can include another?
     pat = re.compile(r'^\\(@?)(include|input){(.*?)}', re.M)
-    contents = re.sub(pat, lambda input: getFileContents(input, ext), contents)
+    contents = re.sub(pat, getFileContents, contents)
 
     return ('%%==== FILENAME: %s' % fname) + '\n' + contents
 
@@ -142,7 +150,7 @@ def getSectionLabels(lineinfo,
     # section_text]
 
     rettext = getSectionLabels(sections[0], sectypes[1:], section_prefix, label_prefix)
-    
+ 
     for i in range(1,len(sections),2):
         sec_num = (i+1)/2
         section_name = re.search(r'\\%s{(.*?)}' % sectypes[0], sections[i]).group(1)
@@ -166,8 +174,7 @@ def main(fname, label_prefix):
     if head:
         os.chdir(head)
 
-    [root, ext] = os.path.splitext(tail)
-    contents = getFileContents(root, ext)
+    contents = getFileContents(fname)
     nonempty = stripComments(contents)
     lineinfo = addFileNameAndNumber(nonempty)
 
