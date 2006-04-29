@@ -47,7 +47,7 @@ function! Tex_Complete(what, where)
 	let s:origdir = getcwd()
 	cd %:p:h
 
-	let s:pos = line('.').' | normal! '.virtcol('.').'|'
+	let s:pos = Tex_GetPos()
 
 	unlet! s:type
 	unlet! s:typeoption
@@ -220,7 +220,7 @@ endfunction
 " 	``<enter>`` in one of the [Error List] windows which shows the list of
 " 	matches. completeword is the rest of the word which needs to be inserted.
 function! Tex_CompleteWord(completeword)
-	exe s:pos
+	call Tex_SetPos(s:pos)
 
 	" Complete word, check if add closing }
 	exe 'normal! a'.a:completeword."\<Esc>"
@@ -476,7 +476,7 @@ function! Tex_CloseSmallWindows()
 	exe s:winnum.' wincmd w'
 	pclose!
 	cclose
-	exe s:pos
+	call Tex_SetPos(s:pos)
 endfunction " }}}
 " Tex_GoToLocation: Go to chosen location {{{
 " Description: Get number of current line and go to this number
@@ -517,13 +517,13 @@ function! Tex_GrepHelper(prefix, what)
 		exec 'split '.Tex_EscapeSpaces(mainfname)
 	endif
 
-	let pos = line('.').'| normal! '.virtcol('.').'|'
+	let pos = Tex_GetPos()
 	if a:what =~ 'bib'
 		call Tex_ScanFileForCite(a:prefix)
 	else
 		call Tex_ScanFileForLabels(a:prefix)
 	endif
-	exec pos
+	call Tex_SetPos(pos)
 
 	q
 	let &path = _path

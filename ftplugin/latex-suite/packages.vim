@@ -311,7 +311,7 @@ endfunction
 function! Tex_ScanForPackages(...)
 	call Tex_Debug("+Tex_ScanForPackages", "pack")
 
-	let pos = line('.').' | normal! '.virtcol('.').'|'
+	let pos = Tex_GetPos()
 
 	" For package files without \begin and \end{document}, we might be told to
 	" search from beginning to end.
@@ -448,7 +448,7 @@ function! Tex_ScanForPackages(...)
 
 	endwhile
 
-	exe pos
+	call Tex_SetPos(pos)
 	" first make a random search so that we push at least one item onto the
 	" search history. Since vim puts only one item in the history per function
 	" call, this way we make sure that one and only item is put into the

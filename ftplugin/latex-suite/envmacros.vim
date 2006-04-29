@@ -519,7 +519,7 @@ function! PromptForEnvironment(ask)
 	return Tex_ChooseFromPrompt(
 		\ a:ask."\n" . 
 		\ Tex_CreatePrompt(g:Tex_PromptedEnvironments, 2, ",") .
-		\ "\nEnter nae or number of environment :", 
+		\ "\nEnter name or number of environment :", 
 		\ g:Tex_PromptedEnvironments, ",")
 endfunction " }}}
 " Tex_DoEnvironment: fast insertion of environments {{{
@@ -642,7 +642,7 @@ if g:Tex_PromptedEnvironments != ''
 	function! Tex_FastEnvironmentInsert(isvisual)
 
 		let start_line = line('.')
-		let pos = line('.').' | normal! '.virtcol('.').'|'
+		let pos = Tex_GetPos()
 		let s:isvisual = a:isvisual
 
 		" decide if we are in the preamble of the document. If we are then
@@ -660,11 +660,11 @@ if g:Tex_PromptedEnvironments != ''
 			if start_line < begin_line
 				" return to our original location and insert a package
 				" statement.
-				exe pos
+				call Tex_SetPos(pos)
 				return Tex_package_from_line()
 			else
 				" we are after the preamble. insert an environment.
-				exe pos
+				call Tex_SetPos(pos)
 				return Tex_DoEnvironment()
 			endif
 
@@ -672,13 +672,13 @@ if g:Tex_PromptedEnvironments != ''
 			" if there is only a \documentclass but no \begin{document}, then
 			" the entire file is a preamble. Put a package.
 
-			exe pos
+			call Tex_SetPos(pos)
 			return Tex_package_from_line()
 
 		else
 			" no \documentclass, put an environment.
 
-			exe pos
+			call Tex_SetPos(pos)
 			return Tex_DoEnvironment()
 
 		endif
@@ -889,13 +889,13 @@ endfunction " }}}
 "
 " Author: Alan Schmitt
 function! Tex_GetCurrentEnv()
-	let pos = line('.').' | normal! '.virtcol('.').'|'
+	let pos = Tex_GetPos()
 	let i = 0
 	while 1
 		let env_line = search('^[^%]*\\\%(begin\|end\){', 'bW')
 		if env_line == 0
 			" we reached the beginning of the file, so we return the empty string
-			exe pos
+			call Tex_SetPos(pos)
 			return ''
 		endif
 		if match(getline(env_line), '^[^%]*\\begin{') == -1
@@ -906,7 +906,7 @@ function! Tex_GetCurrentEnv()
 			" we found a \\begin which has not been \\end'ed. we are done.
 			if i == 0
 				let env = matchstr(getline(env_line), '\\begin{\zs.\{-}\ze}')
-				exe pos
+				call Tex_SetPos(pos)
 				return env
 			else
 				" this \\begin closes a \\end, continue searching.
@@ -1071,7 +1071,7 @@ if g:Tex_PromptedCommands != ''
 	"
 	function! Tex_ChangeCommand(isvisual) 
 
-		let pos_com = line('.').' | normal! '.virtcol('.').'|'
+		let pos_com = Tex_GetPos()
 
 		let com_line = searchpair('\\\k\{-}{', '', '}', 'b')
 
@@ -1082,7 +1082,7 @@ if g:Tex_PromptedCommands != ''
 		
 		if !exists('com_name')
 			echomsg "You are not inside command"
-			exe pos_com
+			call Tex_SetPos(pos_com)
 			return 0
 		endif
 
@@ -1090,11 +1090,11 @@ if g:Tex_PromptedCommands != ''
 		let change_com = PromptForCommand('Do you want to change it to (number or name)? ')
 
 		if change_com == ''
-			exe pos_com
+			call Tex_SetPos(pos_com)
 			return 0
 		else
 			call <SID>ChangeCommand(change_com)
-			exe pos_com
+			call Tex_SetPos(pos_com)
 			return 0
 		endif
 

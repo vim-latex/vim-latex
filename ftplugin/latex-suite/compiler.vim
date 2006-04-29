@@ -377,8 +377,6 @@ endfunction
 "       compile it.
 function! Tex_PartCompile() range
 	call Tex_Debug('+Tex_PartCompile', 'comp')
-	" Save position
-	let pos = line('.').' | normal! '.virtcol('.').'|'
 
 	" Get a temporary file in the same directory as the file from which
 	" fragment is being extracted. This is to enable the use of relative path

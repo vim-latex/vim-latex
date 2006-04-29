@@ -196,7 +196,6 @@ function! <SID>ReadMacro(...)
 
 	let markerString = '<---- Latex Suite End Macro ---->'
 	let _a = @a
-	let position = line('.').' | normal! '.virtcol('.').'|'
 	silent! call append(line('.'), markerString)
 	silent! exec "read ".fname
 	silent! exec "normal! V/^".markerString."$/-1\<CR>\"ax"

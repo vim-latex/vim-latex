@@ -59,10 +59,9 @@ function! Tex_InsSecAdv(structure)
 	return sstructure.toc.shorttitle.ttitle 
 endfunction 
 
-
 " }}}
 function! Tex_section(...) "{{{
-	silent let pos = line('.').' | normal! '.virtcol('.').'|'
+	silent let pos = Tex_GetPos()
 	silent let last_section_value = s:Tex_section_detection()
 	if a:0 == 0
 		silent let last_section_name = s:Tex_section_name(last_section_value)
@@ -79,10 +78,10 @@ function! Tex_section(...) "{{{
 		silent let curr_section_name = s:Tex_section_name(curr_section_value)
 		silent call s:Tex_section_call(curr_section_name)
 	endif
-	silent exe pos
+	silent call Tex_SetPos(pos)
 endfunction "}}}
 function! Tex_section_adv(...) "{{{
-	let pos = line('.').' | normal! '.virtcol('.').'|'
+	let pos = Tex_GetPos()
 	silent let last_section_value = s:Tex_section_detection()
 	if a:0 == 0
 		silent let last_section_name = s:Tex_section_name(last_section_value)
@@ -99,12 +98,12 @@ function! Tex_section_adv(...) "{{{
 		let section = Tex_InsSecAdv(curr_section_name)
 	endif
 	exe "normal i".section
-	exe pos
+	call Tex_SetPos(pos)
 endfunction "}}}
 function! s:Tex_section_detection() "{{{
-	let pos = line('.').' | normal! '.virtcol('.').'|'
+	let pos = Tex_GetPos()
 	let last_section1 = search("\\\\\subparagraph\\|\\\\paragraph\\|\\\\subsubsection\\|\\\\subsection\\|\\\\section\\|\\\\chapter\\|\\\part\)", "b")
-	exe pos
+	call Tex_SetPos(pos)
 	let last_section2 = search("\\\\\part\\|\\\\chapter\\|\\\\section\\|\\\\subsection\\|\\\\subsubsection\\|\\\\paragraph\\|\\\subparagraph\)", "b")
 	if last_section1 > last_section2
 		let last_section = last_section1
@@ -132,7 +131,7 @@ function! s:Tex_section_detection() "{{{
 	else
 		let last_section_value = 0
 	endif
-	exe pos
+	call Tex_SetPos(pos)
 	return last_section_value
 endfunction "}}}
 function! s:Tex_section_curr_value(sec_arg) "{{{

@@ -639,6 +639,23 @@ function! Tex_FindFile(fname, path, suffixesadd)
 	endif
 	return retval
 endfunction " }}}
+" Tex_GetPos: gets position of cursor {{{
+function! Tex_GetPos()
+	if exists('*getpos')
+		return getpos('.')
+	else
+		return line('.').' | normal! '.virtcol('.').'|'
+	endif
+endfunction " }}}
+" Tex_SetPos: sets position of cursor {{{
+function! Tex_SetPos(pos)
+	if exists('*setpos')
+		call setpos('.', a:pos)
+	else
+		exec a:pos
+	endif
+endfunction " }}}
+
 
 " ==============================================================================
 " Smart key-mappings
@@ -772,7 +789,7 @@ if g:Tex_SmartKeyDot
 
 	function! <SID>SmartDots()
 		if strpart(getline('.'), col('.')-3, 2) == '..' && 
-			\ g:Tex_package_detected =~ '\<amsmath\>'
+			\ g:Tex_package_detected =~ '\<amsmath\|ellipsis\>'
 			return "\<bs>\<bs>\\dots"
 		elseif synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^texMath'
 			\&& strpart(getline('.'), col('.')-3, 2) == '..' 

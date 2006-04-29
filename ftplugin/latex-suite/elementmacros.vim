@@ -35,17 +35,13 @@ if !exists('s:definedFuncs') " {{{
 	let s:definedFuncs = 1
 
 	" Tex_RemoveElementMenus: remove the elements menu {{{
-	"
 	function! Tex_RemoveElementMenus()
 		exe 'silent! aunmenu '.s:lastElementsLocation.'Font.'
 		exe 'silent! aunmenu '.s:lastElementsLocation.'Dimension.'
 		exe 'silent! aunmenu '.s:lastElementsLocation.'Counters.'
 		exe 'silent! aunmenu '.s:lastElementsLocation.'Various.'
-	endfunction
-
-	" }}}
+	endfunction " }}}
 	" Tex_FontFamily: sets up font menus {{{
-	"
 	function! <SID>Tex_FontFamily(font,fam)
 		let vislhs = matchstr(tolower(a:font), '^.\zs.*')
 
@@ -65,11 +61,8 @@ if !exists('s:definedFuncs') " {{{
 				\" \<C-\\>\<C-N>:call VEnclose('\\text".vislhs."{', '}', '{\\".vislhs.a:fam." ', '}')<CR>"
 		endif
 
-	endfunction
-
-	" }}}
+	endfunction " }}}
 	" Tex_FontDiacritics: sets up menus for diacritics. {{{
-	"
 	function! <SID>Tex_FontDiacritics(name, rhs)
 		let location = s:fontMenuLoc.'&Diacritics.'.a:name.'<tab>'
 		exe 'amenu '.location.
@@ -78,14 +71,12 @@ if !exists('s:definedFuncs') " {{{
 			\" \<C-\\>\<C-n>:call VEnclose('\\".a:rhs."{', '}', '', '')<CR>" 
 	endfunction " }}}
 	" Tex_FontSize: sets up size fonts {{{
-	"
 	function! <SID>Tex_FontSize(name)
 		let location = s:fontMenuLoc.'&Size.'.a:name.'<tab>'
 		exe 'amenu '.location." <plug>\\".a:name
 		exe 'vunmenu '.location
 	endfunction " }}}
 	" Tex_Fontfont: sets up the 'font' part of font menus {{{
-	" 
 	function! <SID>Tex_Fontfont(desc, lhs)
 		let location = s:fontMenuLoc.'&font.'.a:desc.'<tab>'
 		exe "amenu ".location."  <plug><C-r>=IMAP_PutTextWithMovement('".a:lhs."')<CR>"
@@ -109,6 +100,7 @@ if !exists('s:definedFuncs') " {{{
 		exe "amenu ".location." <plug><C-r>=IMAP_PutTextWithMovement('".a:lhs."')<CR>"
 		exe "vunmenu ".location
 	endfunction " }}}
+
 endif
 " }}}
 
