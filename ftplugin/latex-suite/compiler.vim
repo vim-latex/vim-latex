@@ -34,6 +34,12 @@ function! Tex_SetTeXCompilerTarget(type, target)
 	elseif Tex_GetVarValue('Tex_'.a:type.'RuleComplete_'.target) != ''
 		let s:target = target
 
+	elseif a:type == 'View' && has('macunix')
+		" On the mac, we can have empty view rules, so do not complain when
+		" both Tex_ViewRule_target and Tex_ViewRuleComplete_target are
+		" empty. On other platforms, we will complain... see below.
+		let s:target = target
+
 	else
 		let curd = getcwd()
 		exe 'cd '.expand('%:p:h')
