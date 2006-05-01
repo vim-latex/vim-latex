@@ -287,7 +287,7 @@ let g:environmentshortcuts = ''
 \."\n <mapleader> is a value of g:Tex_Leader2"
 \."\n I     v&V                       I     v&V"
 \."\n ELI   ".g:Tex_Leader2."li   list                EQN   ".g:Tex_Leader2."qn   quotation"
-\."\n EDE   ".g:Tex_Leader2."de   description         ESB   ".g:Tex_Leader2."sb   sloppybar"
+\."\n EDE   ".g:Tex_Leader2."de   description         ESP   ".g:Tex_Leader2."sb   sloppypar"
 \."\n EEN   ".g:Tex_Leader2."en   enumerate           ETI   ".g:Tex_Leader2."ti   theindex"
 \."\n EIT   ".g:Tex_Leader2."it   itemize             ETP   ".g:Tex_Leader2."tp   titlepage"
 \."\n ETI   ".g:Tex_Leader2."ti   theindex            EVM   ".g:Tex_Leader2."vm   verbatim"
