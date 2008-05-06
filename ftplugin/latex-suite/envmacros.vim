@@ -503,7 +503,7 @@ function! Tex_thebibliography(env)
 	else
 		return IMAP_PutTextWithMovement(
 			\ "\\begin{thebibliography}\<CR>".
-			\ "\\item[<+biblabel+>]{<+bibkey+>} <++>\<CR>".
+			\ "\\bibitem[<+biblabel+>]{<+bibkey+>} <++>\<CR>".
 			\ "<++>\<CR>".
 			\ "\\end{thebibliography}<++>")
 	endif
@@ -926,7 +926,7 @@ endfunction
 TexLet g:Tex_ItemStyle_itemize = '\item '
 TexLet g:Tex_ItemStyle_enumerate = '\item '
 TexLet g:Tex_ItemStyle_theindex = '\item '
-TexLet g:Tex_ItemStyle_thebibliography = '\item[<+biblabel+>]{<+bibkey+>} <++>'
+TexLet g:Tex_ItemStyle_thebibliography = '\bibitem[<+biblabel+>]{<+bibkey+>} <++>'
 TexLet g:Tex_ItemStyle_description = '\item[<+label+>] <++>'
 
 function! Tex_InsertItem()
