@@ -284,7 +284,7 @@ function! MakeTexFolds(force)
 					" In other words, the pattern is safe, but not exact.
 					call AddSyntaxFoldItem('^\s*\\'.s.'{[^{}]*$','^[^}]*}',0,0)
 				else
-					call AddSyntaxFoldItem('^\s*\\begin{'.s,'^\s*\\end{'.s,0,0)
+					call AddSyntaxFoldItem('^\s*\\begin{'.s,'\(^\|\s\)\s*\\end{'.s,0,0)
 				endif
 			endif
 		endwhile
@@ -362,7 +362,9 @@ function! TexFoldTextFunction()
 				end
 			elseif getline(i) =~ '\\label'
 				let label = matchstr(getline(i), '\\label{\zs.*')
-				let label = substitute(label, '\zs}[^}]*$', '', '')
+				" :FIXME: this does not work when \label contains a
+				" newline or a }-character
+				let label = substitute(label, '\([^}]*\)}.*$', '\1', '')
 			end
 
 			let i = i + 1
