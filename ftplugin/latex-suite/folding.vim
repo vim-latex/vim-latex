@@ -377,7 +377,7 @@ function! TexFoldTextFunction()
 		end
 
 		let retText = matchstr(ftxto, '^[^:]*').': '.header.
-						\ ' ('.label.') : '.caption
+						\ ' ('.label.'): '.caption
 		return leadingSpace.retText
 
 	elseif getline(v:foldstart) =~ '^%' && getline(v:foldstart) !~ '^%%fake'
