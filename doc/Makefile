@@ -9,7 +9,7 @@ xsltproc=xsltproc
 db2vim=../../db2vim/db2vim
 
 # Use for debugging:
-#xsltproc=trace -e trace=file xsltproc --nonet --load-trace 
+#xsltproc=strace -e trace=file xsltproc --nonet --load-trace 
 # export XML_DEBUG_CATALOG = 1
 
 # Specify local catalog to not use system installed dtd/xsl files
