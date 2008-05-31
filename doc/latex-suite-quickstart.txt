@@ -109,7 +109,7 @@ before the \begin{document} line (The portion of the document before the
 preamble, type the single word amsmath and then press <F5> in normal mode. The
 line will change to  >
     \usepackage[]{amsmath}<++>
-with the cursor positioned conviniently between the []'s. For now, do not worry
+with the cursor positioned conveniently between the []'s. For now, do not worry
 about the trailing <++> at the end of this line. Assume we want to provide the
 sumlimits options to amsmath. You can either type in this option manually, or
 choose from a menu of package options which Latex-Suite automatically creates
@@ -120,7 +120,7 @@ The package line should get converted to:  >
 
 
 with the cursor before ]. Press <C-j> in insert mode. You will see the cursor
-jump to the end of the package line and the trailing <++> will dissapear. What
+jump to the end of the package line and the trailing <++> will disappear. What
 just happened?! You had your first taste of _Placeholders_. Read more about them
 (later) here |lq_u_3|. In short, pressing <C-j> in insert mode takes you to the
 next <++> in the text.
@@ -246,7 +246,7 @@ sprout two new windows and it should look like below:  >
          16 true:
          17 +--  4 lines: eqnarray (eqn:simple) :  \label{eqn:simple}---------------------
          21 This is my contribution to mathematics.
-         22 This is a reference to (\ref{}&lt;++&gt;)&lt;++&gt;
+         22 This is a reference to (\ref{}<++>)<++>
          23 \end{document}
     ~
     ~
@@ -284,7 +284,7 @@ just position the cursor on the relevant line in the middle window and press
     This is a reference to (\ref{eqn:euler})
 <and the bottom windows close automatically.
 
-The <F9> key also works for inserting \cite commands to reference bibliographich
+The <F9> key also works for inserting \cite commands to reference bibliographic
 entries, inserting file names for the \inputgraphics command and just plain
 searching for words. Click here |lq_u_5| for more information.
 
@@ -384,7 +384,7 @@ Performing inverse searches                                   *lq_9_2* *lq_a_bn*
 
 Most DVI viewers also support inverse searching, whereby you can make the DVI
 viewer ask vim to display the tex source corresponding to the DVI file being
-shown. This is extremeley helpful while proofreading large documents.
+shown. This is extremely helpful while proofreading large documents.
 
 Simply double-click anywhere in the viewer window. If the viewer supports it,
 then it will attempt to open an editor window at the location corresponding to
