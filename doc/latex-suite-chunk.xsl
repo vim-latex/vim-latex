@@ -6,7 +6,7 @@
 
   <!-- $Id$ -->
 
-  <xsl:import href="docbook-xsl/xhtml/chunk.xsl"/>
+  <xsl:import href="http://docbook.sourceforge.net/release/xsl/current/xhtml/chunk.xsl"/>
 
   <!-- import common customizations -->
   <xsl:import href="latex-suite-common.xsl"/>
