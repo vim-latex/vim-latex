@@ -1434,8 +1434,8 @@ This sorts the entries according to that field.
 NOTE: <F9> will also work in a similar way after any command which contains the
       word cite in it. For example, pressing <F9> will also work with \citenum
       etc.
-
-
+      
+      
 The following logic is applied to find out which bibliographic entries are
 included in the completion.
 
