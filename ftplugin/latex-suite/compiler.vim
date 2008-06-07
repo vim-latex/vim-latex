@@ -251,7 +251,8 @@ function! Tex_ViewLaTeX()
 		" that this particular vim and yap are connected.
 		let execString = 'start '.s:viewer.' "$*.'.s:target.'"'
 
-	elseif has('macunix')
+	elseif (has('macunix') && Tex_GetVarValue('Tex_TreatMacViewerAsUNIX') != 1)
+
 		if strlen(s:viewer)
 			let s:viewer = '-a '.s:viewer
 		endif
@@ -270,24 +271,29 @@ function! Tex_ViewLaTeX()
 						\ (s:viewer == "xdvi" || s:viewer == "xdvik")
 
 				let execString = s:viewer.' -editor "gvim --servername '.v:servername.
-							\ ' --remote-silent +\%l \%f" $*.dvi &'
+							\ ' --remote-silent +\%l \%f" $*.dvi'
 
 			elseif Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1 &&
 						\ s:viewer == "kdvi"
 
-				let execString = 'kdvi --unique $*.dvi &'
+				let execString = 'kdvi --unique $*.dvi'
 
 			else
 
-				let execString = s:viewer.' $*.dvi &'
+				let execString = s:viewer.' $*.dvi'
 
 			endif
 
 		else
 
-			let execString = s:viewer.' $*.'.s:target.' &'
+			let execString = s:viewer.' $*.'.s:target
 
 		endif
+
+		if( Tex_GetVarValue('Tex_ExecuteUNIXViewerInForeground') != 1 )
+			let execString = execString.' &' 
+		endif
+
 	end
 
 	let execString = substitute(execString, '\V$*', mainfname, 'g')
@@ -304,7 +310,7 @@ endfunction
 
 " }}}
 " Tex_ForwardSearchLaTeX: searches for current location in dvi file. {{{
-" Description: if the DVI viewr is compatible, then take the viewer to that
+" Description: if the DVI viewer is compatible, then take the viewer to that
 "              position in the dvi file. see docs for Tex_RunLaTeX() to set a
 "              master file if this is an \input'ed file. 
 " Tip: With YAP on Windows, it is possible to do forward and inverse searches
@@ -316,52 +322,90 @@ endfunction
 "      will work.
 function! Tex_ForwardSearchLaTeX()
 	if &ft != 'tex'
-		echo "calling Tex_ViewLaTeX from a non-tex file"
+		echo "calling Tex_ForwardSeachLaTeX from a non-tex file"
 		return
 	end
 
-	" only know how to do forward search for yap on windows and xdvik (and
-	" some newer versions of xdvi) on unices. Therefore forward searching will
-	" automatically open the DVI viewer irrespective of what the user chose as
-	" the default view format.
-	if Tex_GetVarValue('Tex_ViewRule_dvi') == ''
+	if Tex_GetVarValue('Tex_ViewRule_'.s:target) == ''
 		return
 	endif
-	let viewer = Tex_GetVarValue('Tex_ViewRule_dvi')
+	let viewer = Tex_GetVarValue('Tex_ViewRule_'.s:target)
 	
 	let curd = getcwd()
 
 	let mainfname = Tex_GetMainFileName(':t')
 	let mainfnameRoot = fnamemodify(Tex_GetMainFileName(), ':t:r')
+	let mainfnameFull = Tex_GetMainFileName(':p:r')
 	" cd to the location of the file to avoid problems with directory name
 	" containing spaces.
 	call Tex_CD(Tex_GetMainFileName(':p:h'))
 	
 	" inverse search tips taken from Dimitri Antoniou's tip and Benji Fisher's
 	" tips on vim.sf.net (vim.sf.net tip #225)
-	if has('win32')
+	if (has('win32') && (viewer == "yap" || viewer == "YAP" || viewer == "Yap"))
 
 		let execString = 'silent! !start '. viewer.' -s '.line('.').expand('%').' '.mainfnameRoot
 
-	else
-		if Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1 &&
-					\ exists('v:servername') &&
-					\ (viewer == "xdvi" || viewer == "xdvik") 
 
-			let execString = 'silent! !'.viewer.' -name xdvi -sourceposition '.line('.').expand("%").
-						\ ' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.
-						\ mainfnameRoot.'.dvi &'
+	elseif (has('macunix') && (viewer == "Skim" || viewer == "PDFView" || viewer == "TeXniscope"))
+		" We're on a Mac using a traditional Mac viewer
 
-		elseif Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1 && viewer == "kdvi"
+		if viewer == "Skim"
 
-			let execString = 'silent! !kdvi --unique file:'.mainfnameRoot.'.dvi\#src:'.line('.').expand("%").' &'
+				let execString = 'silent! !/Applications/Skim.app/Contents/SharedSupport/displayline '.
+					\ line('.').' "'.mainfnameFull.'.'.s:target.'" "'.expand("%:p").'"'
 
-		else
+		elseif viewer == "PDFView"
 
-			let execString = 'silent! !'.viewer.' -name xdvi -sourceposition '.line('.').expand("%").' '.mainfnameRoot.'.dvi &'
+				let execString = 'silent! !/Applications/PDFView.app/Contents/MacOS/gotoline.sh '.
+					\ line('.').' "'.mainfnameFull.'.'.s:target.'" "'.expand("%:p").'"'
+
+		elseif viewer == "TeXniscope"
+
+				let execString = 'silent! !/Applications/TeXniscope.app/Contents/Resources/forward-search.sh '.
+					\ line('.').' "'.expand("%:p").'" "'.mainfnameFull.'.'.s:target.'"'
 
 		endif
-	end
+
+	else
+		" We're either UNIX or Mac and using a UNIX-type viewer
+
+		" Check for the special DVI viewers first
+		if (viewer == "xdvi" || viewer == "xdvik" || viewer == "kdvi" )
+
+			if Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1 &&
+						\ exists('v:servername') &&
+						\ (viewer == "xdvi" || viewer == "xdvik") 
+
+				let execString = 'silent! !'.viewer.' -name xdvi -sourceposition '.line('.').expand("%").
+							\ ' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.
+							\ mainfnameRoot.'.dvi'
+
+			elseif viewer == "kdvi"
+
+				let execString = 'silent! !kdvi --unique file:'.mainfnameRoot.'.dvi\#src:'.line('.').expand("%")
+
+			elseif (viewer == "xdvi" || viewer = "xdvik" )
+
+				let execString = 'silent! !'.viewer.' -name xdvi -sourceposition '.line('.').expand("%").' '.mainfnameRoot.'.dvi'
+
+			endif
+
+		else
+			" We must be using a generic UNIX viewer
+			" syntax is: viewer TARGET_FILE LINE_NUMBER SOURCE_FILE
+
+			let execString = 'silent! !'.viewer.' "'.mainfnameRoot.'.'.s:target.'" '.line('.').' "'.expand('%').'"'
+
+		endif
+
+		" See if we should add &. On Mac (at least in MacVim), it seems
+		" like this should NOT be added...
+		if( Tex_GetVarValue('Tex_ExecuteUNIXViewerInForeground') != 1 )
+			let execString = execString.' &' 
+		endif
+
+	endif
 
 	call Tex_Debug("Tex_ForwardSearchLaTeX: execString = ".execString, "comp")
 	execute execString

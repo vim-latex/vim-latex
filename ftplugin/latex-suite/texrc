@@ -146,6 +146,9 @@ elseif has('macunix')
 	TexLet g:Tex_ViewRule_pdf = ''
 	" TexLet g:Tex_ViewRule_pdf = 'Acrobat\ Reader\ 5.1'
 	TexLet g:Tex_ViewRule_dvi = ''
+	" Set this to 1 to disable opening a viewer with 'open -a'
+	" Note: If you do this, you need to specify viewers above
+	" TexLet g:Tex_TreatMacViewerAsUNIX = 1
 else
 	TexLet g:Tex_ViewRule_ps = 'ghostview'
 	TexLet g:Tex_ViewRule_pdf = 'xpdf'
@@ -155,6 +158,9 @@ else
 	" #225)
 	TexLet g:Tex_UseEditorSettingInDVIViewer = 0
 endif
+" For unix systems or macunix systens with enabled Tex_TreatMacViewerAsUNIX:
+" Set this to 1 if you do not want to execute the viewer in the background
+" TexLet g:Tex_ExecuteUNIXViewerInForeground = 1
 
 " Tex_ViewRuleComplete_{format}
 "

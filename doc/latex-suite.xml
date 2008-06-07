@@ -2180,23 +2180,106 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'</programlisting>
     attempting to view. See the link above for how to set this according to
     your system.
    </para>
+   <note>
+    <para>
+     On Windows and OS/X, you can leave the view rule empty to open the document
+     with the default viewer on your system. On Linux/UNIX systems, you can use
+     the <literal>xdg-open</literal> command to open the document with the default
+     viewer.
+    </para>
+   </note>
    <para>
     In addition to viewing the files, &ls; also supports forward and inverse
-    searching for certain common tools for viewing DVI documents. At the
-    moment, there is built-in support for YAP on windows (which ships with
-    MikTeX), and the popular <literal>xdvi</literal> on *nix platforms. See
-    the next few sections for details on forward and inverse searching.
+    searching for certain common tools for viewing documents.
+    See the next few sections for details on forward and inverse searching,
+    including an overview of viewers.
    </para>
   </section>
   <section id="forward-searching">
-   <title>Forward Searching DVI documents</title>
+   <title>Forward Searching documents</title>
    <para>
-    Forward searching refers to making a DVI viewer display a given document
-    at a given location from within &vim;. At present, this functionality is
-    supported for <literal>YAP</literal> on windows and
-    <literal>xdvi</literal> on *nix machines. Pressing
-    <literal>\ls</literal> from within &vim; should make the DVI viewer
-    display the portion of the document where your cursor is placed.
+    Forward searching refers to making a viewer display a given document at
+    a given location from within &vim;. At present, these viewers are known to support
+    forward searching, but viewers that are not listed here may work, too:
+     <informaltable frame="all">
+      <tgroup cols="3">
+       <thead>
+        <row>
+         <entry>Viewer</entry>
+         <entry>OS</entry>
+         <entry>Supported documents</entry>
+         <entry>Comment</entry>
+        </row>
+       </thead>
+       <tbody>
+        <row>
+         <entry><ulink url="http://skim-app.sourceforge.net/">Skim</ulink></entry>
+         <entry>Apple / OS X Tiger</entry>
+         <entry>PDF</entry>
+         <entry>Supports also inverse searching</entry>
+        </row>
+        <row>
+         <entry><ulink url="http://pdfview.sourceforge.net/">PDFView</ulink></entry>
+         <entry>Apple / OS X</entry>
+         <entry>PDF</entry>
+         <entry>No longer in development, supports also inverse searching</entry>
+        </row>
+        <row>
+         <entry><ulink url="http://www2.ing.unipi.it/~d9615/homepage/texniscope.html">TeXniscope</ulink></entry>
+         <entry>Apple</entry>
+         <entry>PDF, DVI</entry>
+         <entry></entry>
+        </row>
+        <row>
+         <entry><ulink url="http://www.miktex.org/">YAP</ulink></entry>
+         <entry>Windows</entry>
+         <entry>DVI, PS</entry>
+         <entry>ships with MikTex</entry>
+        </row>
+        <row>
+         <entry><ulink url="http://blog.kowalczyk.info/software/sumatrapdf/">Sumatra PDF</ulink></entry>
+         <entry>Windows</entry>
+         <entry>PDF</entry>
+         <entry></entry>
+        </row>
+        <row>
+         <entry><ulink url="http://developer.kde.org/~kdvi/">kdvi</ulink></entry>
+         <entry>Linux/UNIX</entry>
+         <entry>DVI</entry>
+         <entry></entry>
+        </row>
+        <row>
+         <entry><ulink url="http://okular.kde.org/">okular</ulink></entry>
+         <entry>Linux/UNIX</entry>
+         <entry>DVI, PDF, PS and many more</entry>
+         <entry>Included in KDE 4</entry>
+        </row>
+        <row>
+         <entry><ulink url="http://math.berkeley.edu/~vojta/xdvi.html">xdvi</ulink></entry>
+         <entry>Linux/UNIX</entry>
+         <entry>DVI</entry>
+         <entry></entry>
+        </row>
+        <row>
+         <entry><ulink url="http://xdvi.sourceforge.net/">xdvik</ulink></entry>
+         <entry>Linux/UNIX</entry>
+         <entry>DVI</entry>
+         <entry></entry>
+        </row>
+       </tbody>
+      </tgroup>
+     </informaltable>
+    
+    Pressing <literal>\ls</literal> from within &vim;
+    should make the viewer display the portion of the document where your
+    cursor is placed.
+   <note>
+    <para>
+     OS/X users need to set the <literal>g:TreatMacViewerAsUNIX</literal> flag
+     to <literal>1</literal> and provide a UNIX-like viewrule, that expects as
+     arguments the document, the linenumber and the sourcefile in this order.
+    </para>
+   </note>
    </para>
    <anchor id="enabling-searching" />
    <note>
@@ -2210,14 +2293,17 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'</programlisting>
      <literal><link
        linkend="Tex_CompileRule_format">g:Tex_CompileRule_dvi</link></literal>
      to find out how this option can be set.
+
+     For pdf viewers you need to use the <ulink url="http://itexmac.sourceforge.net/pdfsync.html">pdfsync</ulink>
+     package in your LaTeX document.
     </para>
    </note>
   </section>
   <section id="inverse-searching">
    <title>Inverse Searching</title>
    <para>
-    Inverse searching refers to the DVI viewer telling &vim; to display the
-    &latex; source file at a given location when you double-click in the DVI
+    Inverse searching refers to the viewer telling &vim; to display the
+    &latex; source file at a given location when you double-click in the 
     viewer window.
    </para>
    <para>
