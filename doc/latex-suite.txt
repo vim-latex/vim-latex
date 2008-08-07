@@ -121,6 +121,11 @@ Make sure that you create a few necessary settings in your ~/.vimrc.  >
     " OPTIONAL: This enables automatic indentation as you type.
     filetype indent on
     
+    " OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
+    " 'plaintex' instead of 'latex', which results in vim-latex not being loaded.
+    " The following changes the default filetype back to 'latex':
+    let g:tex_flavor='latex'
+    
 
 
 In addition, the following settings could go in your ~/.vim/ftplugin/tex.vim
