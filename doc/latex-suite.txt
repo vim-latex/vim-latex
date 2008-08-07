@@ -122,8 +122,8 @@ Make sure that you create a few necessary settings in your ~/.vimrc.  >
     filetype indent on
     
     " OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
-    " 'plaintex' instead of 'latex', which results in vim-latex not being loaded.
-    " The following changes the default filetype back to 'latex':
+    " 'plaintex' instead of 'tex', which results in vim-latex not being loaded.
+    " The following changes the default filetype back to 'tex':
     let g:tex_flavor='latex'
     
 
