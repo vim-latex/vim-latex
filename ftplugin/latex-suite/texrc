@@ -104,7 +104,8 @@ TexLet g:Tex_MultipleCompileFormats = 'dvi'
 " values, but if use some other compiler, then you will want to change this.
 " As CompileFlags value you'd perhaps like to use, e.g., '-src-specials',
 " but it is known that it can sometimes give different results in the output,
-" so use it with care.
+" so use it with care. The '-file-line-error' flag helps sanitize LaTeX error
+" messages for processing by Vim.
 TexLet g:Tex_CompileRule_dvi = 'latex -interaction=nonstopmode $*'
 TexLet g:Tex_EscapeChars = '{}\'
 

@@ -70,7 +70,7 @@ let b:doneTexCompiler = 1
 " ==============================================================================
 " Customization of 'efm':  {{{
 " This section contains the customization variables which the user can set.
-" g:Tex_IgnoredWarnings: This variable contains a ก seperated list of
+" g:Tex_IgnoredWarnings: This variable contains a ยก seperated list of
 " patterns which will be ignored in the TeX compiler's output. Use this
 " carefully, otherwise you might end up losing valuable information.
 if !exists('g:Tex_IgnoredWarnings')
@@ -202,6 +202,7 @@ function! <SID>SetLatexEfm()
 
 	setlocal efm+=%E!\ LaTeX\ %trror:\ %m
 	setlocal efm+=%E!\ %m
+	setlocal efm+=%E%f:%l:\ %m
 
 	setlocal efm+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
 	setlocal efm+=%+W%.%#\ at\ lines\ %l--%*\\d
@@ -290,4 +291,4 @@ endif
 
 call Tex_Debug("compiler/tex.vim: sourcing this file", "comp")
 
-" vim: fdm=marker:commentstring=\ \"\ %s
+" vim:fdm=marker:ff=unix:noet:ts=4:sw=4
