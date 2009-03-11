@@ -766,7 +766,7 @@ function! Tex_StartOutlineCompletion()
 
 		0put!=retval
 	else
-		exec '0r!'.s:path.'/outline.py '.mainfname.' '.s:prefix
+		exec '0r!'.shellescape(s:path.'/outline.py').' '.mainfname.' '.s:prefix
 	endif
 
 	0
