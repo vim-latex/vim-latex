@@ -254,9 +254,11 @@ function! Tex_ViewLaTeX()
 	elseif (has('macunix') && Tex_GetVarValue('Tex_TreatMacViewerAsUNIX') != 1)
 
 		if strlen(s:viewer)
-			let s:viewer = '-a '.s:viewer
+			let appOpt = '-a '
+		else
+			let appOpt = ''
 		endif
-		let execString = 'open '.s:viewer.' $*.'.s:target
+		let execString = 'open '.appOpt.s:viewer.' $*.'.s:target
 
 	else
 		" taken from Dimitri Antoniou's tip on vim.sf.net (tip #225).
