@@ -387,7 +387,7 @@ function! Tex_ForwardSearchLaTeX()
 
 				let execString = 'silent! !kdvi --unique file:'.mainfnameRoot.'.dvi\#src:'.line('.').expand("%")
 
-			elseif (viewer == "xdvi" || viewer = "xdvik" )
+			elseif (viewer == "xdvi" || viewer == "xdvik" )
 
 				let execString = 'silent! !'.viewer.' -name xdvi -sourceposition '.line('.').expand("%").' '.mainfnameRoot.'.dvi'
 
