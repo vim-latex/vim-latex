@@ -380,10 +380,10 @@ endfunction " }}}
 function! s:Tex_CompleteRefCiteCustom(type)
 
 	if a:type =~ 'cite'
-		if getline('.') =~ '\\bibitem{'
-			let bibkey = matchstr(getline('.'), '\\bibitem{\zs.\{-}\ze}')
+		if getline('.') =~ '\\bibitem\s*{'
+			let bibkey = matchstr(getline('.'), '\\bibitem\s*{\zs.\{-}\ze}')
 		else
-			let bibkey = matchstr(getline('.'), '{\zs.\{-}\ze\(,\|$\)')
+			let bibkey = matchstr(getline('.'), '\\bibitem\s*\[.\{-}\]\s*{\zs.\{-}\ze}')
 		endif
 		let completeword = strpart(bibkey, strlen(s:prefix))
 
@@ -616,7 +616,7 @@ function! Tex_ScanFileForCite(prefix)
 		split
 		lcd %:p:h
 		call Tex_Debug("silent! grepadd! ".Tex_EscapeForGrep('\\bibitem{'.a:prefix)." %", 'view')
-		call Tex_Grepadd('\\bibitem{'.a:prefix, "%")
+		call Tex_Grepadd('\\bibitem\s*[\[|{]'.a:prefix, "%")
 		q
 		
 		return 1
