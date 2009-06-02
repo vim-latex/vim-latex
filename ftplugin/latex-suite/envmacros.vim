@@ -10,7 +10,7 @@ if !g:Tex_EnvironmentMaps && !g:Tex_EnvironmentMenus
 	finish
 endif
 
-exe 'so '.expand('<sfile>:p:h').'/wizardfuncs.vim'
+exe 'so '.fnameescape(expand('<sfile>:p:h').'/wizardfuncs.vim')
 
 nmap <silent> <script> <plug> i
 imap <silent> <script> <C-o><plug> <Nop>

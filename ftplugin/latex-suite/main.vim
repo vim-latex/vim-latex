@@ -29,7 +29,7 @@ let s:path = expand('<sfile>:p:h')
 " set up personal defaults.
 runtime ftplugin/tex/texrc
 " set up global defaults.
-exe "so ".s:path.'/texrc'
+exe "so ".fnameescape(s:path.'/texrc')
 
 " }}}
 
@@ -805,39 +805,39 @@ endif
 " }}}
 
 " source texproject.vim before other files
-exe 'source '.s:path.'/texproject.vim'
+exe 'source '.fnameescape(s:path.'/texproject.vim')
 
 " source all the relevant files.
-exe 'source '.s:path.'/texmenuconf.vim'
-exe 'source '.s:path.'/envmacros.vim'
-exe 'source '.s:path.'/elementmacros.vim'
+exe 'source '.fnameescape(s:path.'/texmenuconf.vim')
+exe 'source '.fnameescape(s:path.'/envmacros.vim')
+exe 'source '.fnameescape(s:path.'/elementmacros.vim')
 
 " source utf-8 or plain math menus
 if exists("g:Tex_UseUtfMenus") && g:Tex_UseUtfMenus != 0 && has("gui_running")
-	exe 'source '.s:path.'/mathmacros-utf.vim'
+	exe 'source '.fnameescape(s:path.'/mathmacros-utf.vim')
 else
-	exe 'source '.s:path.'/mathmacros.vim'
+	exe 'source '.fnameescape(s:path.'/mathmacros.vim')
 endif
 
-exe 'source '.s:path.'/multicompile.vim'
-exe 'source '.s:path.'/compiler.vim'
-exe 'source '.s:path.'/folding.vim'
-exe 'source '.s:path.'/templates.vim'
-exe 'source '.s:path.'/custommacros.vim'
-exe 'source '.s:path.'/bibtex.vim'
+exe 'source '.fnameescape(s:path.'/multicompile.vim')
+exe 'source '.fnameescape(s:path.'/compiler.vim')
+exe 'source '.fnameescape(s:path.'/folding.vim')
+exe 'source '.fnameescape(s:path.'/templates.vim')
+exe 'source '.fnameescape(s:path.'/custommacros.vim')
+exe 'source '.fnameescape(s:path.'/bibtex.vim')
 
 " source advanced math functions
 if g:Tex_AdvancedMath == 1
-	exe 'source '.s:path.'/brackets.vim'
-	exe 'source '.s:path.'/smartspace.vim'
+	exe 'source '.fnameescape(s:path.'/brackets.vim')
+	exe 'source '.fnameescape(s:path.'/smartspace.vim')
 endif
 
 if g:Tex_Diacritics != 0
-	exe 'source '.s:path.'/diacritics.vim'
+	exe 'source '.fnameescape(s:path.'/diacritics.vim')
 endif
 
-exe 'source '.s:path.'/texviewer.vim'
-exe 'source '.s:path.'/version.vim'
+exe 'source '.fnameescape(s:path.'/texviewer.vim')
+exe 'source '.fnameescape(s:path.'/version.vim')
 
 " ==============================================================================
 " Finally set up the folding, options, mappings and quit.
@@ -921,7 +921,7 @@ endif
 let g:Tex_completion_explorer = ','
 
 " Mappings defined in package files will overwrite all other
-exe 'source '.s:path.'/packages.vim'
+exe 'source '.fnameescape(s:path.'/packages.vim')
 
 " ==============================================================================
 " These functions are used to immitate certain operating system type functions

@@ -89,7 +89,7 @@ function! Tex_MenuConfigure(type, action) " {{{
 	if a:type == 'math'
 		if a:action == 1
 			let g:Tex_MathMenus = 1
-			exe 'so '.s:path.'/mathmacros.vim'
+			exe 'so '.fnameescape(s:path.'/mathmacros.vim')
 			exe 'amenu disable '.menuloc.'Add\ Math\ Menu'
 			exe 'amenu enable '.menuloc.'Remove\ Math\ Menu'
 		elseif a:action == 0
@@ -107,11 +107,11 @@ function! Tex_MenuConfigure(type, action) " {{{
 			exe 'amenu enable '.menuloc.'Expand\ Elements'
 			exe 'amenu disable '.menuloc.'Compress\ Elements'
 		endif
-		exe 'source '.s:path.'/elementmacros.vim'
+		exe 'source '.fnameescape(s:path.'/elementmacros.vim')
 	elseif a:type == 'packages'
 		if a:action == 1
 			let g:Tex_PackagesMenu = 1
-			exe 'so '.s:path.'/packages.vim'
+			exe 'so '.fnameescape(s:path.'/packages.vim')
 			exe 'amenu disable '.menuloc.'Load\ Packages\ Menu'
 		endif
 	endif
