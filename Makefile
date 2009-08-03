@@ -1,5 +1,6 @@
-VIMDIR = /usr/share/vim
-BINDIR = /usr/bin
+PREFIX = /usr
+VIMDIR = $(PREFIX)/share/vim
+BINDIR = $(PREFIX)/bin
 
 VERSION=1.5
 
