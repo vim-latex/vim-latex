@@ -1,11 +1,12 @@
-PREFIX = /usr
+PREFIX = /usr/local
 VIMDIR = $(PREFIX)/share/vim
 BINDIR = $(PREFIX)/bin
 
 VERSION=1.5
-
+REVISION=$(shell svn info 2>/dev/null| head -n 5 | tail -n 1 | cut -d" " -f2)
 DATE = $(shell date +%Y%m%d)
-SNAPSHOTNAME = vim-latex-$(VERSION)-$(DATE)
+
+SNAPSHOTNAME = vim-latex-$(VERSION)-$(DATE)-r$(REVISION)
 
 snapshot:
 	rm -rf -- ./$(SNAPSHOTNAME)
