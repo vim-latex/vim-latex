@@ -9,7 +9,7 @@ SNAPSHOTNAME = vim-latex-$(VERSION)-$(DATE)
 snapshot:
 	rm -rf -- ./$(SNAPSHOTNAME)
 	svn export . $(SNAPSHOTNAME)
-	tar cvzf ./$(SNAPSHOTNAME).tgz ./$(SNAPSHOTNAME)
+	tar cvzf ./$(SNAPSHOTNAME).tar.gz ./$(SNAPSHOTNAME)
 	rm -rf -- ./$(SNAPSHOTNAME)
 
 install:
