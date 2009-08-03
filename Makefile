@@ -25,3 +25,6 @@ install:
 
 	install -d "$(DESTDIR)$(BINDIR)"
 	install latextags ltags "$(DESTDIR)$(BINDIR)"
+
+upload: snapshot
+	scp "$(SNAPSHOTNAME).tar.gz" frs.sourceforge.net:/home/frs/project/v/vi/vim-latex/snapshots
