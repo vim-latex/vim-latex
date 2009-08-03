@@ -11,6 +11,7 @@ SNAPSHOTNAME = vim-latex-$(VERSION)-$(DATE)-r$(REVISION)
 snapshot:
 	rm -rf -- ./$(SNAPSHOTNAME)
 	svn export . $(SNAPSHOTNAME)
+	make -C $(SNAPSHOTNAME)/doc
 	tar cvzf ./$(SNAPSHOTNAME).tar.gz ./$(SNAPSHOTNAME)
 	rm -rf -- ./$(SNAPSHOTNAME)
 
