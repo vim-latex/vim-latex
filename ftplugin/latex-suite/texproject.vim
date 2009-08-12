@@ -7,7 +7,7 @@
 "  Description: Handling tex projects.
 "=============================================================================
 
-let s:path = expand("<sfile>:p:h")
+let s:path = fnameescape(expand("<sfile>:p:h"))
 
 command! -nargs=0 TProjectEdit  :call <SID>Tex_ProjectEdit()
 
@@ -21,7 +21,7 @@ function! s:Tex_ProjectEdit()
 	let file = expand("%:p")
 	let mainfname = Tex_GetMainFileName()
 	if glob(mainfname.'.latexmain') != ''
-		exec 'split '.Tex_EscapeSpaces(mainfname.'.latexmain')
+		exec 'split '.fnameescape(mainfname.'.latexmain')
 	else
 		echohl WarningMsg
 		echomsg "Master file not found."
@@ -34,15 +34,15 @@ endfunction " }}}
 " Tex_ProjectLoad: loads the .latexmain file {{{
 " Description: If a *.latexmain file exists, then sources it
 function! Tex_ProjectLoad()
-	let curd = getcwd()
-	call Tex_CD(expand('%:p:h'))
+	let s:origdir = fnameescape(getcwd())
+	exe 'cd '.fnameescape(expand('%:p:h'))
 
 	if glob(Tex_GetMainFileName(':p').'.latexmain') != ''
 		call Tex_Debug("Tex_ProjectLoad: sourcing [".Tex_GetMainFileName().".latexmain]", "proj")
 		exec 'source 'fnameescape(.Tex_GetMainFileName().'.latexmain')
 	endif
 	
-	call Tex_CD(curd)
+	exe 'cd '.s:origdir
 endfunction " }}}
 
 augroup LatexSuite
