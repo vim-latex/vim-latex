@@ -44,8 +44,8 @@ function! Tex_Complete(what, where)
 	" Change to the directory of the file being edited before running all the
 	" :grep commands. We will change back to the original directory after we
 	" finish with the grep.
-	let s:origdir = getcwd()
-	cd %:p:h
+	let s:origdir = fnameescape(getcwd())
+	exe 'cd '.fnameescape(expand('%:p:h'))
 
 	let s:pos = Tex_GetPos()
 
@@ -89,7 +89,7 @@ function! Tex_Complete(what, where)
 
 			elseif Tex_GetVarValue('Tex_ProjectSourceFiles') != ''
 				call Tex_Debug('Tex_Complete: searching for \\labels in all Tex_ProjectSourceFiles', 'view')
-				call Tex_CD(Tex_GetMainFileName(':p:h'))
+				exec 'cd '.fnameescape(Tex_GetMainFileName(':p:h'))
 				call Tex_Grep('\\label{'.s:prefix, Tex_GetVarValue('Tex_ProjectSourceFiles'))
 				call <SID>Tex_SetupCWindow()
 
@@ -110,12 +110,12 @@ function! Tex_Complete(what, where)
 			if has('python') && Tex_GetVarValue('Tex_UsePython') 
 				\ && Tex_GetVarValue('Tex_UseCiteCompletionVer2') == 1
 
-				call Tex_CD(s:origdir)
+				cd s:origdir
 				silent! call Tex_StartCiteCompletion()
 
 			elseif Tex_GetVarValue('Tex_UseJabref') == 1
 
-				call Tex_CD(s:origdir)
+				cd s:origdir
 				let g:Remote_WaitingForCite = 1
 				let citation = input('Enter citation from jabref (<enter> to leave blank): ')
 				let g:Remote_WaitingForCite = 0
@@ -614,7 +614,7 @@ function! Tex_ScanFileForCite(prefix)
 		let foundCiteFile = 1
 
 		split
-		lcd %:p:h
+		lcd fnameescape(expand('%:p:h'))
 		call Tex_Debug("silent! grepadd! ".Tex_EscapeForGrep('\\bibitem{'.a:prefix)." %", 'view')
 		call Tex_Grepadd('\\bibitem\s*[\[|{]'.a:prefix, "%")
 		q
@@ -657,7 +657,7 @@ endfunction " }}}
 function! Tex_ScanFileForLabels(prefix)
 	call Tex_Debug("+Tex_ScanFileForLabels: grepping in file [".bufname('%')."]", "view")
 
-	lcd %:p:h
+	lcd fnameescape(expand('%:p:h'))
 	call Tex_Grepadd('\\label{'.a:prefix, "%")
 
 	" Then recursively grep for all \include'd or \input'ed files.
