@@ -25,7 +25,7 @@ let s:doneFunctionDefinitions = 1
 
 " get the place where this plugin resides for setting cpt and dict options.
 " these lines need to be outside the function.
-let s:path = expand('<sfile>:p:h')
+let s:path = fnameescape(expand('<sfile>:p:h'))
 " set up personal defaults.
 runtime ftplugin/tex/texrc
 " set up global defaults.
@@ -412,23 +412,24 @@ function! Tex_GetMainFileName(...)
 		return retval
 	endif
 
-	let curd = getcwd()
+	let s:origdir = fnameescape(getcwd())
 
 	let dirmodifier = '%:p:h'
-	let dirLast = expand(dirmodifier)
-	call Tex_CD(dirLast)
+	let dirLast = fnameescape(expand(dirmodifier))
+	exe 'cd '.dirLast
 
 	" move up the directory tree until we find a .latexmain file.
 	" TODO: Should we be doing this recursion by default, or should there be a
 	"       setting?
 	while glob('*.latexmain') == ''
 		let dirmodifier = dirmodifier.':h'
+		let dirNew = fnameescape(expand(dirmodifier))
 		" break from the loop if we cannot go up any further.
-		if expand(dirmodifier) == dirLast
+		if dirNew == dirLast
 			break
 		endif
-		let dirLast = expand(dirmodifier)
-		call Tex_CD(dirLast)
+		let dirLast = dirNew
+		exe 'cd '.dirLast
 	endwhile
 
 	let lheadfile = glob('*.latexmain')
@@ -442,12 +443,12 @@ function! Tex_GetMainFileName(...)
 		let lheadfile = expand('%'.modifier)
 	endif
 
-	call Tex_CD(curd)
+	exe 'cd '.s:origdir
 
-	" NOTE: The caller of this function needs to escape spaces in the
-	"       file name as appropriate. The reason its not done here is that
-	"       escaping spaces is not safe if this file is to be used as part of
-	"       an external command on certain platforms.
+	" NOTE: The caller of this function needs to escape the file name with
+	"       fnameescape() . The reason its not done here is that escaping is not
+	"       safe if this file is to be used as part of an external command on
+	"       certain platforms.
 	return lheadfile
 endfunction 
 
