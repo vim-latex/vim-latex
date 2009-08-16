@@ -13,7 +13,7 @@ if !g:Tex_PackagesMenu || exists('s:doneOnce')
 endif
 let s:doneOnce = 1
 
-let s:path = expand("<sfile>:p:h")
+let s:path = fnameescape(expand("<sfile>:p:h"))
 
 let s:menu_div = 20
 
