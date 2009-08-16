@@ -11,7 +11,7 @@
 "               directory.
 "=============================================================================
 
-let s:path = expand("<sfile>:p:h")
+let s:path = fnameescape(expand("<sfile>:p:h"))
 
 " SetTemplateMenu: sets up the menu for templates {{{
 function! <SID>SetTemplateMenu()
