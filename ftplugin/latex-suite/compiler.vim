@@ -41,8 +41,8 @@ function! Tex_SetTeXCompilerTarget(type, target)
 		let s:target = target
 
 	else
-		let curd = getcwd()
-		exe 'cd '.expand('%:p:h')
+		let s:origdir = fnameescape(getcwd())
+		exe 'cd '.fnameescape(expand('%:p:h'))
 		if !Tex_GetVarValue('Tex_UseMakefile') || (glob('makefile*') == '' && glob('Makefile*') == '')
 			if has('gui_running')
 				call confirm(
@@ -63,7 +63,7 @@ function! Tex_SetTeXCompilerTarget(type, target)
 			echomsg 'Assuming target is for makefile'
 			let s:target = target
 		endif
-		exe 'cd '.curd
+		exe 'cd '.s:origdir
 	endif
 endfunction 
 
