@@ -110,12 +110,12 @@ function! Tex_Complete(what, where)
 			if has('python') && Tex_GetVarValue('Tex_UsePython') 
 				\ && Tex_GetVarValue('Tex_UseCiteCompletionVer2') == 1
 
-				cd s:origdir
+				exe 'cd '.s:origdir
 				silent! call Tex_StartCiteCompletion()
 
 			elseif Tex_GetVarValue('Tex_UseJabref') == 1
 
-				cd s:origdir
+				exe 'cd '.s:origdir
 				let g:Remote_WaitingForCite = 1
 				let citation = input('Enter citation from jabref (<enter> to leave blank): ')
 				let g:Remote_WaitingForCite = 0
