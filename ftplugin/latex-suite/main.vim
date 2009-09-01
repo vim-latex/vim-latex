@@ -25,7 +25,7 @@ let s:doneFunctionDefinitions = 1
 
 " get the place where this plugin resides for setting cpt and dict options.
 " these lines need to be outside the function.
-let s:path = fnameescape(expand('<sfile>:p:h'))
+let s:path = expand('<sfile>:p:h')
 " set up personal defaults.
 runtime ftplugin/tex/texrc
 " set up global defaults.
@@ -851,7 +851,7 @@ function! <SID>SetTeXOptions()
 	endif
 	let b:doneSetTeXOptions = 1
 
-	exe 'setlocal dict^='.s:path.'/dictionaries/dictionary'
+	exe 'setlocal dict^='.fnameescape(s:path.'/dictionaries/dictionary')
 
 	call Tex_Debug('SetTeXOptions: sourcing maps', 'main')
 	" smart functions
@@ -1037,6 +1037,6 @@ if !has('python') || !g:Tex_UsePython
 	finish
 endif
 
-exec 'pyfile '.expand('<sfile>:p:h').'/pytools.py'
+exec 'pyfile '.fnameescape(expand('<sfile>:p:h')).'/pytools.py'
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4:nowrap
