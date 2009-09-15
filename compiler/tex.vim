@@ -194,7 +194,7 @@ function! <SID>SetLatexEfm()
 
 	let pm = ( g:Tex_ShowallLines == 1 ? '+' : '-' )
 
-	set efm=
+	setlocal efm=
 
 	if !g:Tex_ShowallLines
 		call s:IgnoreWarnings()
