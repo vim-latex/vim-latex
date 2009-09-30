@@ -668,7 +668,10 @@ endif
 augroup LatexSuite
 	au LatexSuite User LatexSuiteFileType 
 		\ call Tex_Debug('packages.vim: Catching LatexSuiteFileType event', 'pack') | 
-		\ call Tex_pack_updateall(0)
+		\ let s:save_clipboard = &clipboard |
+		\ set clipboard= |
+		\ call Tex_pack_updateall(0) |
+		\ let &clipboard=s:save_clipboard
 augroup END
 
 " vim:fdm=marker:ts=4:sw=4:noet:ff=unix
