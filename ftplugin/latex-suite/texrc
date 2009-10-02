@@ -151,9 +151,15 @@ elseif has('macunix')
 	" Note: If you do this, you need to specify viewers above
 	" TexLet g:Tex_TreatMacViewerAsUNIX = 1
 else
-	TexLet g:Tex_ViewRule_ps = 'ghostview'
-	TexLet g:Tex_ViewRule_pdf = 'xpdf'
-	TexLet g:Tex_ViewRule_dvi = 'xdvi'
+	if executable('xdg-open')
+		TexLet g:Tex_ViewRule_ps = 'xdg-open'
+		TexLet g:Tex_ViewRule_pdf = 'xdg-open'
+		TexLet g:Tex_ViewRule_dvi = 'xdg-open'
+	else
+		TexLet g:Tex_ViewRule_ps = 'gv'
+		TexLet g:Tex_ViewRule_pdf = 'xpdf'
+		TexLet g:Tex_ViewRule_dvi = 'xdvi'
+	endif
 	" the option below specifies an editor for the dvi viewer while starting
 	" up the dvi viewer according to Dimitri Antoniou's tip on vim.sf.net (tip
 	" #225)
