@@ -260,6 +260,8 @@ function! Tex_CompleteFileName(filename, ext, root)
 
 	if a:ext == 'noext'
 		let completeword = fnamemodify(a:filename, ':r')
+	else
+		let completeword = a:filename
 	endif
 	let completeword = Tex_RelPath(completeword, root)
 
