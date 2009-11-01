@@ -2774,13 +2774,12 @@ endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
 \end{document}</programlisting>
   </para>
   <para>
-   <anchor id="latex-master-file-specification" />
-   In such situations, you will need to convey to &ls; that
-   <literal>main.tex</literal> is the main file which
-   <literal>\input</literal>s the other files. This is done by creating a
-   file called <literal>main.tex.latexmain</literal> in the same directory
-   in which <literal>main.tex</literal> resides. This file is called the
-   <emphasis>master file</emphasis> in this manual. See <link
+   <anchor id="latex-master-file-specification" /> In such situations, you will
+   need to convey to &ls; that <literal>main.tex</literal> is the main file
+   which <literal>\input</literal>s the other files. This is done by creating
+   an empty file called <literal>main.tex.latexmain</literal> in the same
+   directory in which <literal>main.tex</literal> resides. This file is called
+   the <emphasis>master file</emphasis> in this manual. See <link
     linkend="Tex_MainFileExpression">Tex_MainFileExpression</link> for an
    alternative way of specifying the master file.
   </para>
