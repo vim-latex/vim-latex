@@ -39,7 +39,7 @@ function! Tex_ProjectLoad()
 
 	if glob(Tex_GetMainFileName(':p').'.latexmain') != ''
 		call Tex_Debug("Tex_ProjectLoad: sourcing [".Tex_GetMainFileName().".latexmain]", "proj")
-		exec 'source 'fnameescape(.Tex_GetMainFileName().'.latexmain')
+               exec 'source '.fnameescape(Tex_GetMainFileName().'.latexmain')
 	endif
 	
 	exe 'cd '.s:origdir
