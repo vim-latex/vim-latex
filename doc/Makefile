@@ -53,8 +53,10 @@ mr-proper: clean
 	rm -f $(txtfiles)
 
 upload: $(all)
-	rsync --delete -lrtvz  $(all) shell.sourceforge.net:/home/groups/v/vi/vim-latex/htdocs/documentation/
-# Make sure that directories are group writeable, depends on bash beeing the remote shell
-	ssh shell.sourceforge.net chmod g+w "/home/groups/v/vi/vim-latex/htdocs/documentation/latex-suite{,-quickstart}"
+# vim-latex-web is configured in ~/.ssh/config
+#Host vim-latex-web
+#    Hostname  web.sourceforge.net
+#    User SOURCEFORGE_USERNAME,vim-latex
+	rsync --perms --chmod g+w,o-w --delete -lrtvz  $(all) vim-latex-web:/home/groups/v/vi/vim-latex/htdocs/documentation/
 
 # vim:nowrap
