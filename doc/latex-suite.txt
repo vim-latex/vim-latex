@@ -2195,10 +2195,10 @@ In the above case, main.tex will typically look like
 
                                      *latex-master-file-specification* *ls_a_eg*
 In such situations, you will need to convey to Latex-Suite that main.tex is the
-main file which \inputs the other files. This is done by creating a file called
-main.tex.latexmain in the same directory in which main.tex resides. This file is
-called the _master file_ in this manual. See Tex_MainFileExpression [|ls_a_eh|]
-for an alternative way of specifying the master file.
+main file which \inputs the other files. This is done by creating an empty file
+called main.tex.latexmain in the same directory in which main.tex resides. This
+file is called the _master file_ in this manual. See Tex_MainFileExpression
+[|ls_a_eh|] for an alternative way of specifying the master file.
 
 NOTE: Here main.tex.latexmain is (obviously) a different file from main.tex
       itself. main.tex need not be renamed. This ofcourse restricts each
