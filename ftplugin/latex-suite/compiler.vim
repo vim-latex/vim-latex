@@ -593,6 +593,7 @@ function! Tex_CompileMultipleTimes()
 		let runCount = runCount + 1
 	endwhile
 
+	redraw!
 	call Tex_Debug("Tex_CompileMultipleTimes: Ran latex ".runCount." time(s)", "comp")
 	echomsg "Ran latex ".runCount." time(s)"
 
