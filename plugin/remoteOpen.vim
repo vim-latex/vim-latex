@@ -30,8 +30,8 @@
 " opens in the present session.
 
 " Enclose <args> in single quotes so it can be passed as a function argument.
-com -nargs=1 RemoteOpen :call RemoteOpen('<args>')
-com -nargs=? RemoteInsert :call RemoteInsert('<args>')
+com! -nargs=1 RemoteOpen :call RemoteOpen('<args>')
+com! -nargs=? RemoteInsert :call RemoteInsert('<args>')
 
 " RemoteOpen: open a file remotely (if possible) {{{
 " Description: checks all open vim windows to see if this file has been opened
