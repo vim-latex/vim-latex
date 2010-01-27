@@ -58,7 +58,6 @@ function! Tex_Complete(what, where)
 
 	if a:where == "text"
 		" What to do after <F9> depending on context
-		let s:curfile = expand("%:p")
 		let s:curline = strpart(getline('.'), 0, col('.'))
 		let s:prefix = matchstr(s:curline, '.*{\zs.\{-}\(}\|$\)')
 		" a command is of the type
