@@ -119,7 +119,7 @@ function! Tex_Complete(what, where)
 				let g:Remote_WaitingForCite = 1
 				let citation = input('Enter citation from jabref (<enter> to leave blank): ')
 				let g:Remote_WaitingForCite = 0
-				call Tex_CompleteWord(citation)
+				call Tex_CompleteWord(citation, strlen(s:prefix))
 			
 			else
 				" grep! nothing % 
@@ -219,11 +219,19 @@ endfunction
 " Description: This function is meant to be called when the user press
 " 	``<enter>`` in one of the [Error List] windows which shows the list of
 " 	matches. completeword is the rest of the word which needs to be inserted.
-function! Tex_CompleteWord(completeword)
+" 	prefixlength characters are deleted before completeword is inserted
+function! Tex_CompleteWord(completeword, prefixlength)
 	call Tex_SetPos(s:pos)
 
 	" Complete word, check if add closing }
-	exe 'normal! a'.a:completeword."\<Esc>"
+	if a:prefixlength > 0
+		if a:prefixlength > 1
+			exe 'normal! '.(a:prefixlength-1).'h'
+		endif
+		exe 'normal! '.a:prefixlength.'s'.a:completeword."\<Esc>"
+	else
+		exe 'normal! a'.a:completeword."\<Esc>"
+	endif
 
 	if getline('.')[col('.')-1] !~ '{' && getline('.')[col('.')] !~ '}'
 		exe "normal! a}\<Esc>"
@@ -266,7 +274,7 @@ function! Tex_CompleteFileName(filename, ext, root)
 	let completeword = Tex_RelPath(completeword, root)
 
 	call Tex_Debug(":Tex_CompleteFileName: completing with ".completeword, "view")
-	call Tex_CompleteWord(completeword)
+	call Tex_CompleteWord(completeword, strlen(s:prefix))
 endfunction " }}}
 " Tex_Common: common part of strings {{{
 function! s:Tex_Common(path1, path2)
@@ -381,27 +389,30 @@ endfunction " }}}
 "
 function! s:Tex_CompleteRefCiteCustom(type)
 
+	let prefixlength=strlen(s:prefix)
 	if a:type =~ 'cite'
 		if getline('.') =~ '\\bibitem\s*{'
 			let bibkey = matchstr(getline('.'), '\\bibitem\s*{\zs.\{-}\ze}')
 		else
 			let bibkey = matchstr(getline('.'), '\\bibitem\s*\[.\{-}\]\s*{\zs.\{-}\ze}')
 		endif
-		let completeword = strpart(bibkey, strlen(s:prefix))
+		let completeword = bibkey
 
 	elseif a:type =~ 'ref'
 		let label = matchstr(getline('.'), '\\label{\zs.\{-}\ze}')
-		let completeword = strpart(label, strlen(s:prefix))
+		let completeword = label
 
 	elseif a:type =~ '^plugin_'
 		let type = substitute(a:type, '^plugin_', '', '')
 		let completeword = <SID>Tex_DoCompletion(type)
+		" use old behaviour for plugins because of backward compatibility
+		let prefixlength=0
 		
 	endif
 
 	call Tex_CloseSmallWindows()
 	call Tex_Debug(":Tex_CompleteRefCiteCustom: completing with ".completeword, "view")
-	call Tex_CompleteWord(completeword)
+	call Tex_CompleteWord(completeword, prefixlength)
 endfunction " }}}
 " Tex_SyncPreviewWindow: synchronize quickfix and preview window {{{
 " Description: Usually quickfix engine takes care about most of these things
@@ -823,9 +834,8 @@ function! Tex_FinishOutlineCompletion()
 		let ref_complete = matchstr(getline(line('.')-1), '^>\s\+\zs\S\+\ze')
 	endif
 
-	let ref_remaining = strpart(ref_complete, strlen(s:prefix))
 	close
-	call Tex_CompleteWord(ref_remaining)
+	call Tex_CompleteWord(ref_complete, strlen(s:prefix))
 endfunction " }}}
 
 " ==============================================================================
@@ -1056,7 +1066,7 @@ function! Tex_CompleteCiteEntry()
 	let ref = matchstr(getline('.'), '\[\zs\S\+\ze\]$')
 	close
 	call Tex_Debug(":Tex_CompleteCiteEntry: completing with ".ref, "view")
-	call Tex_CompleteWord(strpart(ref, strlen(s:prefix)))
+	call Tex_CompleteWord(ref, strlen(s:prefix))
 endfunction " }}}
 
 com! -nargs=0 TClearCiteHist unlet! s:citeSearchHistory
