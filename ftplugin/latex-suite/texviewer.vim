@@ -526,7 +526,7 @@ function! Tex_GrepHelper(prefix, what)
 	if mainfname == expand('%:p')
 		split
 	else
-		exec 'split '.Tex_EscapeSpaces(mainfname)
+		exec 'split '.fnameescape(mainfname)
 	endif
 
 	let pos = Tex_GetPos()
@@ -770,7 +770,7 @@ function! Tex_StartOutlineCompletion()
 
 	if has('python') && Tex_GetVarValue('Tex_UsePython')
 		exec 'python retval = outline.main('
-			\. 'r"' . fnamemodify(mainfname, ':p') . '", '
+			\. 'r"' . fnameescape(fnamemodify(mainfname, ':p')) . '", '
 			\. 'r"' . s:prefix . '")'
 
 		" transfer variable from python to a local variable.
@@ -778,7 +778,7 @@ function! Tex_StartOutlineCompletion()
 
 		0put!=retval
 	else
-		exec '0r!'.shellescape(s:path.'/outline.py').' '.mainfname.' '.s:prefix
+		exec '0r!'.shellescape(s:path.'/outline.py').' '.fnameescape(mainfname).' '.s:prefix
 	endif
 
 	0
@@ -846,7 +846,7 @@ function! Tex_FindBibFiles()
 
 	let mainfname = Tex_GetMainFileName(':p')
 	wincmd n
-	exec 'silent! e '.mainfname
+	exec 'silent! e '.fnameescape(mainfname)
 
 	if search('\\\(no\)\?bibliography{', 'w')
 
