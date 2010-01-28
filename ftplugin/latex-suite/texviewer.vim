@@ -843,6 +843,7 @@ endfunction " }}}
 " Tex_FindBibFiles: finds all .bib files used by the main file {{{
 " Description: 
 function! Tex_FindBibFiles()
+	call Tex_Debug(":Tex_FindBibFiles: ", "view")
 
 	let mainfname = Tex_GetMainFileName(':p')
 	wincmd n
