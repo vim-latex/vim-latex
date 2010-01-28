@@ -2338,12 +2338,12 @@ remap keys.
                                                      *Plug_Tex_MathBF* *ls_a_en*
                                                     *Plug_Tex_MathCal* *ls_a_eo*
                                                   *Plug_Tex_LeftRight* *ls_a_ep*
-                                                 *Plug_Tex_InsertItem* *ls_a_eq*
-Plug Mapping            Default Key~
-<Plug>Tex_MathBF        <Alt-B>
-<Plug>Tex_MathCal       <Alt-C>
-<Plug>Tex_LeftRight     <Alt-L>
-<Plug>Tex_InsertItem    <Alt-I>
+                                       *Plug_Tex_InsertItemOnThisLine* *ls_a_eq*
+Plug Mapping                      Default Key~
+<Plug>Tex_MathBF                  <Alt-B>
+<Plug>Tex_MathCal                 <Alt-C>
+<Plug>Tex_LeftRight               <Alt-L>
+<Plug>Tex_InsertItemOnThisLine    <Alt-I>
 
 --------------------------------------------------------------------------------
 Latex Suite Commands                                         *ls_10_2* *ls_a_cy*

@@ -2974,7 +2974,7 @@ endif</programlisting>
     <anchor id="Plug_Tex_MathBF" />
     <anchor id="Plug_Tex_MathCal" />
     <anchor id="Plug_Tex_LeftRight" />
-    <anchor id="Plug_Tex_InsertItem" />
+    <anchor id="Plug_Tex_InsertItemOnThisLine" />
     <informaltable frame="all">
      <tgroup cols="2">
       <thead>
@@ -2997,7 +2997,7 @@ endif</programlisting>
         <entry><literal>&lt;Alt-L&gt;</literal></entry>
        </row>
        <row>
-        <entry><literal>&lt;Plug&gt;Tex_InsertItem</literal></entry>
+        <entry><literal>&lt;Plug&gt;Tex_InsertItemOnThisLine</literal></entry>
         <entry><literal>&lt;Alt-I&gt;</literal></entry>
        </row>
       </tbody>
