@@ -68,7 +68,7 @@ function! Tex_Complete(what, where)
 		" from which we need to extract
 		" 	s:type = 'psfig'
 		" 	s:typeoption = '[option=value]'
-		let pattern = '.*\\\(\w\{-}\)\(\[.\{-}\]\)\?{\(\S\+\)\?$'
+		let pattern = '.*\\\(\w\{-}\)\(\[.\{-}\]\)*{\([^ [\]\t]\+\)\?$'
 		if s:curline =~ pattern
 			let s:type = substitute(s:curline, pattern, '\1', 'e')
 			let s:typeoption = substitute(s:curline, pattern, '\2', 'e')
