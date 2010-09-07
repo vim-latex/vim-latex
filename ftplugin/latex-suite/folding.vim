@@ -54,7 +54,7 @@ function! Tex_FoldSections(lst, endpat)
 	if s =~ '%%fakesection'
 		let s = '^\s*' . s
 	else
-		let s = '^\s*\\' . s . '\W'
+		let s = '^\s*\\' . s . '\W\|^\s*%%fake' . s
 	endif
 	let endpat = s . '\|' . a:endpat
 	if i > 0
@@ -119,7 +119,7 @@ function! MakeTexFolds(force)
 	endif
 	
     if !exists('g:Tex_FoldedSections')
-		let g:Tex_FoldedSections = 'part,chapter,section,%%fakesection,'
+		let g:Tex_FoldedSections = 'part,chapter,section,'
 								\. 'subsection,subsubsection,paragraph'
 	endif
 
