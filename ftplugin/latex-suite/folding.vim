@@ -30,7 +30,7 @@ function! Tex_SetFoldOptions()
 		call MakeTexFolds(0)
 	endif
 
-	let s:ml = exists('g:mapleader') ? g:mapleader : "\\"
+	let s:ml = '<Leader>'
 
 	call Tex_MakeMap(s:ml."rf", "<Plug>Tex_RefreshFolds", 'n', '<silent> <buffer>')
 

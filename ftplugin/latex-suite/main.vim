@@ -41,7 +41,7 @@ imap <silent> <script> <C-o><plug> <Nop>
 " ==============================================================================
 " {{{
 " calculate the mapleader character.
-let s:ml = exists('g:mapleader') ? g:mapleader : '\'
+let s:ml = '<Leader>'
 
 if !exists('s:doneMappings')
 	let s:doneMappings = 1

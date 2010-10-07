@@ -842,7 +842,7 @@ function! <SID>Tex_SetCompilerMaps()
 	if exists('b:Tex_doneCompilerMaps')
 		return
 	endif
-	let s:ml = exists('g:mapleader') ? g:mapleader : "\\"
+	let s:ml = '<Leader>'
 
 	nnoremap <buffer> <Plug>Tex_Compile :call Tex_RunLaTeX()<cr>
 	vnoremap <buffer> <Plug>Tex_Compile :call Tex_PartCompile()<cr>
