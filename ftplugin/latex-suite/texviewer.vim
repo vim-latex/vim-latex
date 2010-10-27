@@ -610,7 +610,7 @@ function! Tex_ScanFileForCite(prefix)
 		let foundCiteFile = 1
 
 		split
-		lcd fnameescape(expand('%:p:h'))
+		exec 'lcd'.fnameescape(expand('%:p:h'))
 		call Tex_Debug("silent! grepadd! ".Tex_EscapeForGrep('\\bibitem{'.a:prefix)." %", 'view')
 		call Tex_Grepadd('\\bibitem\s*[\[|{]'.a:prefix, "%")
 		q
@@ -653,7 +653,7 @@ endfunction " }}}
 function! Tex_ScanFileForLabels(prefix)
 	call Tex_Debug("+Tex_ScanFileForLabels: grepping in file [".bufname('%')."]", "view")
 
-	lcd fnameescape(expand('%:p:h'))
+	exec 'lcd'.fnameescape(expand('%:p:h'))
 	call Tex_Grepadd('\\label{'.a:prefix, "%")
 
 	" Then recursively grep for all \include'd or \input'ed files.
