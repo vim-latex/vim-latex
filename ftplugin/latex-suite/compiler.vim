@@ -373,7 +373,7 @@ function! Tex_ForwardSearchLaTeX()
 		" We're either UNIX or Mac and using a UNIX-type viewer
 
 		" Check for the special DVI viewers first
-		if (viewer == "xdvi" || viewer == "xdvik" || viewer == "kdvi" )
+		if (viewer == "xdvi" || viewer == "xdvik" || viewer == "kdvi" || viewer == "okular")
 
 			if Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1 &&
 						\ exists('v:servername') &&
@@ -390,6 +390,11 @@ function! Tex_ForwardSearchLaTeX()
 			elseif (viewer == "xdvi" || viewer == "xdvik" )
 
 				let execString = 'silent! !'.viewer.' -name xdvi -sourceposition "'.line('.').' '.expand("%").'" '.mainfnameRoot.'.dvi'
+
+			elseif viewer == "okular"
+
+				let execString = 'silent! !okular '.mainfnameRoot.'.dvi\#src:'.line('.').expand("%")
+
 
 			endif
 
