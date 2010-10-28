@@ -195,6 +195,11 @@ function! <SID>SetLatexEfm()
 	let pm = ( g:Tex_ShowallLines == 1 ? '+' : '-' )
 
 	setlocal efm=
+	" remove default error formats that cause issues with revtex, where they
+	" match version messages
+	" Reference: http://bugs.debian.org/582100
+	setlocal efm-=%f:%l:%m
+	setlocal efm-=%f:%l:%c:%m
 
 	if !g:Tex_ShowallLines
 		call s:IgnoreWarnings()
