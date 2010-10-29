@@ -2,7 +2,6 @@
 " 	     File: folding.vim
 "      Author: Srinath Avadhanula
 "      		   modifications/additions by Zhang Linbo
-" 	      CVS: $Id$
 "     Created: Tue Apr 23 05:00 PM 2002 PST
 " 
 "  Description: functions to interact with Syntaxfolds.vim

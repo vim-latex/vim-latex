@@ -3,7 +3,6 @@
 "          Srinath Avadhanula incorporated it into latex-suite with
 "          significant modifications.
 "          Parts of this file may be copyrighted by others as noted.
-" CVS: $Id$
 " Description:
 " 	This ftplugin provides the following maps:
 " . <M-b> encloses the previous character in \mathbf{}

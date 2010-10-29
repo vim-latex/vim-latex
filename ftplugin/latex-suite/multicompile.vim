@@ -6,7 +6,6 @@
 "              right.
 "     License: Vim Charityware License
 "              Part of vim-latexSuite: http://vim-latex.sourceforge.net
-"         CVS: $Id$
 " ============================================================================
 
 " The contents of this file have been moved to compiler.vim, the file which

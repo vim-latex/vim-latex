@@ -5,7 +5,6 @@
 " Description: make a viewer for various purposes: \cite{, \ref{
 "     License: Vim Charityware License
 "              Part of vim-latexSuite: http://vim-latex.sourceforge.net
-"         CVS: $Id$
 " ============================================================================
 " Tex_SetTexViewerMaps: sets maps for this ftplugin {{{
 function! Tex_SetTexViewerMaps()

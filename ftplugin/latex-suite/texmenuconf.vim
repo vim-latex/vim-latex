@@ -3,7 +3,6 @@
 "      Author: Srinath Avadhanula
 "   Copyright: Vim charityware license. :help license
 " Description: 
-"         CVS: $Id$
 " 
 "=============================================================================
 

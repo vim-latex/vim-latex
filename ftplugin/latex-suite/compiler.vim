@@ -4,7 +4,6 @@
 "     Created: Tue Apr 23 05:00 PM 2002 PST
 " 
 "  Description: functions for compiling/viewing/searching latex documents
-"          CVS: $Id$
 "=============================================================================
 
 " Tex_SetTeXCompilerTarget: sets the 'target' for the next call to Tex_RunLaTeX() {{{

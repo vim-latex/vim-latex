@@ -7,7 +7,7 @@
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
 "
-"     $Id$
+"     $Id: imaps.vim 997 2006-03-20 09:45:45Z srinathava $
 "
 " Documentation: {{{
 "

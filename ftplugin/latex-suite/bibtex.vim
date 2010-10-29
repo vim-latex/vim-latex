@@ -4,7 +4,6 @@
 "        Author: Alan G Isaac <aisaac@american.edu>
 "                modified by Srinath Avadhanula for latex-suite.
 "       License: Vim Charityware license.
-"           CVS: $Id$
 "=============================================================================
 
 " Fields:

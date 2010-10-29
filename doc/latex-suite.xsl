@@ -4,8 +4,6 @@
   xmlns="http://www.w3.org/TR/xhtml1/transitional"
   exclude-result-prefixes="#default">
 
-  <!-- $Id$ -->
-
   <xsl:import href="http://docbook.sourceforge.net/release/xsl/current/xhtml/docbook.xsl"/>
 
   <!-- import common customizations -->

@@ -1,7 +1,6 @@
 " LaTeX filetype
 "	  Language: LaTeX (ft=tex)
 "	Maintainer: Srinath Avadhanula
-"		   CVS: $Id$
 "		   URL: 
 
 " line continuation used here.
