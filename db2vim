@@ -21,7 +21,6 @@ LONG OPTIONS
     numbers. Default to 'ls_' if unsupplied.
 """
 
-"$Id$"
 
 import xml.dom.minidom
 import getopt
