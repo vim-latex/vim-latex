@@ -86,7 +86,7 @@ class Bibliography(dict):
                 mn = re.search(r',|$', body)
                 value = m.group(2) + body[:(mn.start(0))].rstrip()
 
-            self[field] = re.sub(r'\s+', ' ', value)
+            self[field.lower()] = re.sub(r'\s+', ' ', value)
             body = body[(mn.start(0)+1):]
 
             self['bodytext'] += ('  %s: %s\n' % (field, value))
