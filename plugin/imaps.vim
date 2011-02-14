@@ -515,7 +515,7 @@ function! VEnclose(vstart, vend, VStart, VEnd)
 	" 1. characterwise selection and valid values for vstart and vend.
 	" OR
 	" 2. linewise selection and invalid values for VStart and VEnd
-	if (visualmode() == 'v' && (a:vstart != '' || a:vend != '')) || (a:VStart == '' && a:VEnd == '')
+	if (visualmode() ==# 'v' && (a:vstart != '' || a:vend != '')) || (a:VStart == '' && a:VEnd == '')
 
 		let newline = ""
 		let _r = @r
