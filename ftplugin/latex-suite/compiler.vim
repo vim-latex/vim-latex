@@ -343,7 +343,7 @@ function! Tex_ForwardSearchLaTeX()
 	
 	" inverse search tips taken from Dimitri Antoniou's tip and Benji Fisher's
 	" tips on vim.sf.net (vim.sf.net tip #225)
-	if (has('win32') && (viewer == "yap" || viewer == "YAP" || viewer == "Yap"))
+	if (has('win32') && (viewer ==? "yap"))
 
 		let execString = 'silent! !start '. viewer.' -s '.line('.').expand('%').' '.mainfnameRoot
 
