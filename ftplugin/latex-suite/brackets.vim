@@ -87,7 +87,7 @@ function! Tex_LeftRight()
 		let rhs = matchstr(matchedbrackets, char.'\zs.\ze')
 		return "\<BS>".IMAP_PutTextWithMovement('\left'.add.char.'<++>\right'.add.rhs.'<++>')
 	elseif char == '<'
-		return "\<BS>".IMAP_PutTextWithMovement('langle<++>\rangle<++>')
+		return "\<BS>".IMAP_PutTextWithMovement('\langle <++>\rangle<++>')
 	elseif char == 'q'
 		return "\<BS>".IMAP_PutTextWithMovement('\lefteqn{<++>}<++>')
 	else
