@@ -2280,7 +2280,7 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'</programlisting>
     cursor is placed.
    <note>
     <para>
-     OS/X users need to set the <literal>g:TreatMacViewerAsUNIX</literal> flag
+     OS/X users need to set the <literal>g:Tex_TreatMacViewerAsUNIX</literal> flag
      to <literal>1</literal> and provide a UNIX-like viewrule, that expects as
      arguments the document, the linenumber and the sourcefile in this order.
     </para>

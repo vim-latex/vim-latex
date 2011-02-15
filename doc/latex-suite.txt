@@ -1820,9 +1820,9 @@ xdvi |ls_u_12|          Linux/UNIX            DVI
 xdvik |ls_u_13|         Linux/UNIX            DVI                    
 
 Pressing \ls from within Vim should make the viewer display the portion of the
-document where your cursor is placed.NOTE: OS/X users need to set the g:TreatMacViewerAsUNIX flag to 1 and provide a
-      UNIX-like viewrule, that expects as arguments the document, the linenumber
-      and the sourcefile in this order.
+document where your cursor is placed.NOTE: OS/X users need to set the g:Tex_TreatMacViewerAsUNIX flag to 1 and
+      provide a UNIX-like viewrule, that expects as arguments the document, the
+      linenumber and the sourcefile in this order.
       
       
 
