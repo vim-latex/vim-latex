@@ -2,6 +2,8 @@ CVSUSER = srinathava
 SSHCMD = ssh1
 DIR1 = $(PWD)
 
+.PHONY: latexs clean release updoc uphtdocs ltt changelog install stallin sync
+
 # The main target. This creates a latex suite archive (zip and tar.gz
 # format) ensuring that all the files in the archive are in unix format so
 # unix people can use it too...
@@ -87,7 +89,7 @@ updoc:
 # cd /home/groups/v/vi/vim-latex/htdocs/packages; cvs -q update
 uphtdocs:
 	$(SSHCMD) $(CVSUSER)@vim-latex.sf.net /home/groups/v/vi/vim-latex/bin/uphtdocs
-	
+
 # Automatically generate the Changelog file using the cvs2cl utility
 #
 # Arguments:
@@ -121,13 +123,11 @@ VIMFILES=${HOME}/.vim
 EXCLUDE="--exclude='*~' --exclude='*.swp' --exclude='makefile'"
 
 install:
-	rsync -CrtW ${EXCLUDE}	. ${VIMFILES}
+	rsync -CrtW ${EXCLUDE} . ${VIMFILES}
 
 # stallin = reverse install
 # If you can think of a better name for this target, be my guest!
 stallin:
 	rsync -CrtW --existing ${VIMFILES}/ .
 
-sync:
-	rsync -CrtuW ${EXCLUDE}	. ${VIMFILES}
-	rsync -CrtuW --existing ${VIMFILES}/ .
+sync: install stallin
