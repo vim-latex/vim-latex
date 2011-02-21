@@ -4136,7 +4136,7 @@ endif</programlisting>
     </para>
    </section>
    <section id="Tex_UseMakefile">
-    <title>Tex_UseMakefile</title>
+    <title>g:Tex_UseMakefile</title>
     <para>
      <informaltable frame="all">
       <tgroup cols="2">
