@@ -827,8 +827,7 @@ function! Tex_FindBibFiles()
 	call Tex_Debug(":Tex_FindBibFiles: ", "view")
 
 	let mainfname = Tex_GetMainFileName(':p')
-	wincmd n
-	exec 'silent! e '.fnameescape(mainfname)
+	exec 'new ' . fnameescape(mainfname)
 
 	if search('\\\(no\)\?bibliography{', 'w')
 
