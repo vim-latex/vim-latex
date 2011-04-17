@@ -350,7 +350,7 @@ And this is $\another$</programlisting>
    </imageobject>
    <para>
     The middle window is an <emphasis>Error List</emphasis> window
-    showing you the errors which the latex compiler found. Th bottom
+    showing you the errors which the latex compiler found. The bottom
     window is a <emphasis>Log Preview</emphasis> window, which shows you
     the context of the error made by displaying the relevant portion of
     the <literal>.log</literal> file created during the latex
