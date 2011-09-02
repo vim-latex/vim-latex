@@ -6,7 +6,7 @@ all = $(projects) $(htmlfiles) $(cssfiles) $(txtfiles)
 
 
 xsltproc=xsltproc
-db2vim=../../db2vim/db2vim
+db2vim=db2vim/db2vim
 
 # Use for debugging:
 #xsltproc=strace -e trace=file xsltproc --nonet --load-trace 
