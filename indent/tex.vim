@@ -66,7 +66,7 @@
 " * g:tex_noindent_env
 "
 "   A list of environment names. separated with '\|', where no indentation is 
-"   required. The default is 'document\|verbatim'.
+"   required. The default is 'document\|verbatim\|comment\|lstlisting'.
 "
 " }}} 
 "
@@ -117,7 +117,7 @@ else
 endif
 
 if !exists("g:tex_noindent_env")
-    let g:tex_noindent_env = 'document\|verbatim'
+    let g:tex_noindent_env = 'document\|verbatim\|comment\|lstlisting'
 endif
 
 setlocal autoindent
