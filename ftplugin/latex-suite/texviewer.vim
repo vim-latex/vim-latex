@@ -815,6 +815,7 @@ function! Tex_FinishOutlineCompletion()
 	endif
 
 	close
+	exec "normal \<C-W>" . s:winnum . "\<C-W>"
 	call Tex_CompleteWord(ref_complete, strlen(s:prefix))
 endfunction " }}}
 
@@ -827,7 +828,8 @@ function! Tex_FindBibFiles()
 	call Tex_Debug(":Tex_FindBibFiles: ", "view")
 
 	let mainfname = Tex_GetMainFileName(':p')
-	exec 'new ' . fnameescape(mainfname)
+	new
+	exec 'e ' . fnameescape(mainfname)
 
 	if search('\\\(no\)\?bibliography{', 'w')
 
@@ -890,12 +892,12 @@ function! Tex_StartCiteCompletion()
 	exec 'python Tex_BibFile.addfilter("key ^'.s:prefix.'")'
 	call Tex_DisplayBibList()
 
-	nnoremap <Plug>Tex_JumpToNextBibEntry :call search('^\S.*\]$', 'W')<CR>:call Tex_EchoBibShortcuts()<CR>z.
-	nnoremap <Plug>Tex_JumpToPrevBibEntry :call search('^\S.*\]$', 'bW')<CR>:call Tex_EchoBibShortcuts()<CR>z.
-	nnoremap <Plug>Tex_FilterBibEntries   :call Tex_HandleBibShortcuts('filter')<CR>
-	nnoremap <Plug>Tex_RemoveBibFilters   :call Tex_HandleBibShortcuts('remove_filters')<CR>
-	nnoremap <Plug>Tex_SortBibEntries	  :call Tex_HandleBibShortcuts('sort')<CR>
-	nnoremap <Plug>Tex_CompleteCiteEntry  :call Tex_CompleteCiteEntry()<CR>
+	nnoremap <buffer> <Plug>Tex_JumpToNextBibEntry :call search('^\S.*\]$', 'W')<CR>:call Tex_EchoBibShortcuts()<CR>z.
+	nnoremap <buffer> <Plug>Tex_JumpToPrevBibEntry :call search('^\S.*\]$', 'bW')<CR>:call Tex_EchoBibShortcuts()<CR>z.
+	nnoremap <buffer> <Plug>Tex_FilterBibEntries   :call Tex_HandleBibShortcuts('filter')<CR>
+	nnoremap <buffer> <Plug>Tex_RemoveBibFilters   :call Tex_HandleBibShortcuts('remove_filters')<CR>
+	nnoremap <buffer> <Plug>Tex_SortBibEntries	  :call Tex_HandleBibShortcuts('sort')<CR>
+	nnoremap <buffer> <Plug>Tex_CompleteCiteEntry  :call Tex_CompleteCiteEntry()<CR>
 
 	nmap <buffer> <silent> n 		<Plug>Tex_JumpToNextBibEntry
 	nmap <buffer> <silent> p 		<Plug>Tex_JumpToPrevBibEntry
@@ -1047,6 +1049,7 @@ function! Tex_CompleteCiteEntry()
 	let ref = matchstr(getline('.'), '\[\zs\S\+\ze\]$')
 	close
 	call Tex_Debug(":Tex_CompleteCiteEntry: completing with ".ref, "view")
+	exec "normal \<C-W>" . s:winnum . "\<C-W>"
 	call Tex_CompleteWord(ref, strlen(s:prefix))
 endfunction " }}}
 
