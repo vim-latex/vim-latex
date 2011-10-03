@@ -836,8 +836,8 @@ function! Tex_FindBibFiles()
 	call Tex_Debug(":Tex_FindBibFiles: ", "view")
 
 	let mainfname = Tex_GetMainFileName(':p')
-	new
-	exec 'e ' . fnameescape(mainfname)
+	split
+	exec 'silent! e '.fnameescape(mainfname)
 
 	if search('\(%.*\)\@<!\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){', 'w')
 
