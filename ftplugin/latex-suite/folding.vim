@@ -53,7 +53,13 @@ function! Tex_FoldSections(lst, endpat)
 	if s =~ '%%fakesection'
 		let s = '^\s*' . s
 	else
-		let s = '^\s*\\' . s . '\W\|^\s*%%fake' . s
+		let pattern = ''
+		let prefix = ''
+		for label in split(s, "|")
+			let pattern .= prefix . '^\s*\\' . label . '\W\|^\s*%%fake' . label
+			let prefix = '\W\|'
+		endfor
+		let s = pattern
 	endif
 	let endpat = s . '\|' . a:endpat
 	if i > 0
