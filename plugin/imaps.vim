@@ -428,26 +428,30 @@ function! IMAP_Jumpfunc(direction, inclusive)
 		\          '\V\^'.phsUser.'\zs\.\{-}\ze\('.pheUser.'\|\$\)')
 	let placeHolderEmpty = !strlen(template)
 
+	" Search for the end placeholder.
+	let [lnum, lcol] = searchpos('\V'.pheUser, 'ne')
+	" How many characters should be selected?
+	let nmove = lcol - col('.')
+
 	" If we are selecting in exclusive mode, then we need to move one step to
 	" the right
-	let extramove = ''
 	if &selection == 'exclusive'
-		let extramove = 'l'
+		let nmove += 1
 	endif
 
 	" Select till the end placeholder character.
-	let movement = "\<C-o>v/\\V".pheUser."/e\<CR>".extramove
+	let movement = "\<C-o>v".nmove."l"
 
-	" First remember what the search pattern was. s:RemoveLastHistoryItem will
-	" reset @/ to this pattern so we do not create new highlighting.
-	let g:Tex_LastSearchPattern = @/
+	" Leave (insert)-visual mode and reselect.
+	let movement .= "\<C-\>\<C-N>gv"
 
 	" Now either goto insert mode or select mode.
 	if placeHolderEmpty && g:Imap_DeleteEmptyPlaceHolders
-		" delete the empty placeholder into the blackhole.
-		return movement."\"_c\<C-o>:".s:RemoveLastHistoryItem."\<CR>"
+		" Delete the empty placeholder into the blackhole.
+		return movement . '"_c'
 	else
-		return movement."\<C-\>\<C-N>:".s:RemoveLastHistoryItem."\<CR>gv\<C-g>"
+		" Go to select mode
+		return movement . "\<C-g>"
 	endif
 	
 endfunction
