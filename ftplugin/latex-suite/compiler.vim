@@ -269,15 +269,15 @@ function! Tex_ViewLaTeX()
 
 			if Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1 &&
 						\ v:servername != '' &&
-						\ (s:viewer == "xdvi" || s:viewer == "xdvik")
+						\ s:viewer =~ '^ *xdvik\?\( \|$\)'
 
 				let execString = s:viewer.' -editor "gvim --servername '.v:servername.
 							\ ' --remote-silent +\%l \%f" $*.dvi'
 
 			elseif Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1 &&
-						\ s:viewer == "kdvi"
+						\ s:viewer =~ '^ *kdvi\( \|$\)'
 
-				let execString = 'kdvi --unique $*.dvi'
+				let execString = s:viewer.' --unique $*.dvi'
 
 			else
 
@@ -343,25 +343,25 @@ function! Tex_ForwardSearchLaTeX()
 	
 	" inverse search tips taken from Dimitri Antoniou's tip and Benji Fisher's
 	" tips on vim.sf.net (vim.sf.net tip #225)
-	if (has('win32') && (viewer ==? "yap"))
+	if (has('win32') && (viewer =~? "^ *yap\( \|$\)"))
 
 		let execString = 'silent! !start '. viewer.' -s '.line('.').expand('%').' '.mainfnameRoot
 
 
-	elseif (has('macunix') && (viewer == "Skim" || viewer == "PDFView" || viewer == "TeXniscope"))
+	elseif (has('macunix') && (viewer =~ "^ *\(Skim\|PDFView\|TeXniscope\)\( \|$\)"))
 		" We're on a Mac using a traditional Mac viewer
 
-		if viewer == "Skim"
+		if viewer =~ "^ *Skim"
 
 				let execString = 'silent! !/Applications/Skim.app/Contents/SharedSupport/displayline '.
 					\ line('.').' "'.mainfnameFull.'.'.s:target.'" "'.expand("%:p").'"'
 
-		elseif viewer == "PDFView"
+		elseif viewer =~ "^ *PDFView"
 
 				let execString = 'silent! !/Applications/PDFView.app/Contents/MacOS/gotoline.sh '.
 					\ line('.').' "'.mainfnameFull.'.'.s:target.'" "'.expand("%:p").'"'
 
-		elseif viewer == "TeXniscope"
+		elseif viewer =~ "^ *TeXniscope"
 
 				let execString = 'silent! !/Applications/TeXniscope.app/Contents/Resources/forward-search.sh '.
 					\ line('.').' "'.expand("%:p").'" "'.mainfnameFull.'.'.s:target.'"'
@@ -372,27 +372,27 @@ function! Tex_ForwardSearchLaTeX()
 		" We're either UNIX or Mac and using a UNIX-type viewer
 
 		" Check for the special DVI viewers first
-		if (viewer == "xdvi" || viewer == "xdvik" || viewer == "kdvi" || viewer == "okular")
+		if viewer =~ '^ *\(xdvi\|xdvik\|kdvi\|okular\)\( \|$\)'
 
 			if Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1 &&
 						\ exists('v:servername') &&
-						\ (viewer == "xdvi" || viewer == "xdvik") 
+						\ viewer =~ '^ *xdvik\?\( \|$\)'
 
 				let execString = 'silent! !'.viewer.' -name xdvi -sourceposition "'.line('.').' '.expand("%").'"'.
 							\ ' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.
 							\ mainfnameRoot.'.dvi'
 
-			elseif viewer == "kdvi"
+			elseif viewer =~ "^ *kdvi"
 
-				let execString = 'silent! !kdvi --unique file:'.mainfnameRoot.'.dvi\#src:'.line('.').expand("%")
+				let execString = 'silent! !'.viewer.' --unique file:'.mainfnameRoot.'.dvi\#src:'.line('.').expand("%")
 
-			elseif (viewer == "xdvi" || viewer == "xdvik" )
+			elseif viewer =~ '^ *xdvik\?\( \|$\)'
 
 				let execString = 'silent! !'.viewer.' -name xdvi -sourceposition "'.line('.').' '.expand("%").'" '.mainfnameRoot.'.dvi'
 
-			elseif viewer == "okular"
+			elseif viewer =~ "^ *okular"
 
-				let execString = 'silent! !okular '.mainfnameRoot.'.dvi\#src:'.line('.').expand("%")
+				let execString = 'silent! !'.viewer.' '.mainfnameRoot.'.dvi\#src:'.line('.').expand("%")
 
 
 			endif
