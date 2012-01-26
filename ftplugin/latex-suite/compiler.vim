@@ -343,25 +343,25 @@ function! Tex_ForwardSearchLaTeX()
 	
 	" inverse search tips taken from Dimitri Antoniou's tip and Benji Fisher's
 	" tips on vim.sf.net (vim.sf.net tip #225)
-	if (has('win32') && (viewer =~? "^ *yap\( \|$\)"))
+	if (has('win32') && (viewer =~? '^ *yap\( \|$\)'))
 
 		let execString = 'silent! !start '. viewer.' -s '.line('.').expand('%').' '.mainfnameRoot
 
 
-	elseif (has('macunix') && (viewer =~ "^ *\(Skim\|PDFView\|TeXniscope\)\( \|$\)"))
+	elseif (has('macunix') && (viewer =~ '^ *\(Skim\|PDFView\|TeXniscope\)\( \|$\)'))
 		" We're on a Mac using a traditional Mac viewer
 
-		if viewer =~ "^ *Skim"
+		if viewer =~ '^ *Skim'
 
 				let execString = 'silent! !/Applications/Skim.app/Contents/SharedSupport/displayline '.
 					\ line('.').' "'.mainfnameFull.'.'.s:target.'" "'.expand("%:p").'"'
 
-		elseif viewer =~ "^ *PDFView"
+		elseif viewer =~ '^ *PDFView'
 
 				let execString = 'silent! !/Applications/PDFView.app/Contents/MacOS/gotoline.sh '.
 					\ line('.').' "'.mainfnameFull.'.'.s:target.'" "'.expand("%:p").'"'
 
-		elseif viewer =~ "^ *TeXniscope"
+		elseif viewer =~ '^ *TeXniscope'
 
 				let execString = 'silent! !/Applications/TeXniscope.app/Contents/Resources/forward-search.sh '.
 					\ line('.').' "'.expand("%:p").'" "'.mainfnameFull.'.'.s:target.'"'
@@ -382,7 +382,7 @@ function! Tex_ForwardSearchLaTeX()
 							\ ' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.
 							\ mainfnameRoot.'.dvi'
 
-			elseif viewer =~ "^ *kdvi"
+			elseif viewer =~ '^ *kdvi'
 
 				let execString = 'silent! !'.viewer.' --unique file:'.mainfnameRoot.'.dvi\#src:'.line('.').expand("%")
 
@@ -390,7 +390,7 @@ function! Tex_ForwardSearchLaTeX()
 
 				let execString = 'silent! !'.viewer.' -name xdvi -sourceposition "'.line('.').' '.expand("%").'" '.mainfnameRoot.'.dvi'
 
-			elseif viewer =~ "^ *okular"
+			elseif viewer =~ '^ *okular'
 
 				let execString = 'silent! !'.viewer.' '.mainfnameRoot.'.dvi\#src:'.line('.').expand("%")
 
