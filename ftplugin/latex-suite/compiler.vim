@@ -380,20 +380,19 @@ function! Tex_ForwardSearchLaTeX()
 
 				let execString = 'silent! !'.viewer.' -name xdvi -sourceposition "'.line('.').' '.expand("%").'"'.
 							\ ' -editor "gvim --servername '.v:servername.' --remote-silent +\%l \%f" '.
-							\ mainfnameRoot.'.'.s:target
+							\ mainfnameRoot.'.dvi'
 
 			elseif viewer =~ '^ *kdvi'
 
-				let execString = 'silent! !'.viewer.' --unique file:'.mainfnameRoot.'.'.s:target.'\#src:'.line('.').expand("%")
+				let execString = 'silent! !'.viewer.' --unique file:'.mainfnameRoot.'.dvi\#src:'.line('.').expand("%")
 
 			elseif viewer =~ '^ *xdvik\?\( \|$\)'
 
-				let execString = 'silent! !'.viewer.' -name xdvi -sourceposition "'.line('.').' '.expand("%").'" '.mainfnameRoot.'.'.s:target
+				let execString = 'silent! !'.viewer.' -name xdvi -sourceposition "'.line('.').' '.expand("%").'" '.mainfnameRoot.'.dvi'
 
 			elseif viewer =~ '^ *okular'
 
 				let execString = 'silent! !'.viewer.' --unique '.mainfnameRoot.'.'.s:target.'\#src:'.line('.').expand("%")
-
 
 			endif
 
