@@ -204,7 +204,7 @@ function! Tex_RunLaTeX()
 
 		let i = i + 1
 	endwhile
-	
+
 	let s:target = initTarget
 	let s:origwinnum = winnr()
 	call Tex_SetupErrorWindow()
@@ -223,9 +223,9 @@ function! Tex_ViewLaTeX()
 		echo "calling Tex_ViewLaTeX from a non-tex file"
 		return
 	end
-	
+
 	let s:origdir = fnameescape(getcwd())
-	
+
 	" If b:fragmentFile is set, it means this file was compiled as a fragment
 	" using Tex_PartCompile, which means that we want to ignore any
 	" *.latexmain or makefile's.
@@ -331,7 +331,7 @@ function! Tex_ForwardSearchLaTeX()
 		return
 	endif
 	let viewer = Tex_GetVarValue('Tex_ViewRule_'.s:target)
-	
+
 	let s:origdir = fnameescape(getcwd())
 
 	let mainfname = Tex_GetMainFileName(':t')
@@ -340,7 +340,7 @@ function! Tex_ForwardSearchLaTeX()
 	" cd to the location of the file to avoid problems with directory name
 	" containing spaces.
 	call Tex_CD(Tex_GetMainFileName(':p:h'))
-	
+
 	" inverse search tips taken from Dimitri Antoniou's tip and Benji Fisher's
 	" tips on vim.sf.net (vim.sf.net tip #225)
 	if (has('win32') && (viewer =~? '^ *yap\( \|$\)'))
@@ -473,7 +473,7 @@ function! Tex_PartCompile() range
 	" append the \end{document} line.
 	$ put ='\end{document}'
 	w
-	
+
 	" set this as a fragment file.
 	let b:fragmentFile = 1
 
@@ -536,7 +536,7 @@ function! Tex_CompileMultipleTimes()
 		echomsg "latex run number : ".(runCount+1)
 		call Tex_Debug("Tex_CompileMultipleTimes: latex run number : ".(runCount+1), "comp")
 		silent! call Tex_CompileLatex()
-		
+
 		" If there are errors in any latex compilation step, immediately
 		" return. For now, do not bother with warnings because those might go
 		" away after compiling again or after bibtex is run etc.
