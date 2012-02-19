@@ -392,7 +392,7 @@ function! Tex_ForwardSearchLaTeX()
 
 			elseif viewer =~ '^ *okular'
 
-				let execString = 'silent! !'.viewer.' --unique '.mainfnameRoot.'.'.s:target.'\#src:'.line('.').expand("%")
+				let execString = 'silent! !'.viewer.' --unique '.mainfnameRoot.'.'.s:target.'\#src:'.line('.').expand("%:p")
 
 			endif
 
