@@ -161,33 +161,76 @@ function GetTeXIndent()
 
     " Add a 'shiftwidth' after beginning of environments.
     " Don't add it for \begin{document} and \begin{verbatim}
-    ""if line =~ '^\s*\\begin{\(.*\)}'  && line !~ 'verbatim' 
+    ""if line =~ '^\s*\\begin{\(.*\)}'  && line !~ 'verbatim'
     " LH modification : \begin does not always start a line
-    if line =~ '\\begin{.*}'  && line !~ g:tex_noindent_env
+    let current_regexp = '\\begin'
+    while 1
+        let match_list = matchlist(line, current_regexp.'\s*{\(.*\)}')
+        if (empty(match_list))
+            break
+        endif
+        let environment_type = get(match_list, 1)
+        if environment_type !~ '^\s*verbatim'
+           \ && environment_type !~ '^\s*document'
+           \ && environment_type !~ '^\s*comment'
 
-        let ind = ind + &sw
+            let ind = ind + &sw
 
-        if g:tex_indent_items
-            " Add another sw for item-environments
-            if line =~ g:tex_itemize_env
-                let ind = ind + &sw
+            if g:tex_indent_items == 1
+                " Add another sw for item-environments
+                if line =~ 'itemize\|description\|enumerate\|thebibliography'
+                    let ind = ind + &sw
+                endif
             endif
         endif
-    endif
-
+        " Make the regexp match the following begin
+        let current_regexp = current_regexp.'.*\\begin'
+    endwhile
 
     " Subtract a 'shiftwidth' when an environment ends
-    if cline =~ '^\s*\\end' && cline !~ g:tex_noindent_env
+    if cline =~ '^\s*\\end' && cline !~ 'verbatim'
+          \&& cline !~ 'document'
+          \&& cline !~ 'comment'
 
-        if g:tex_indent_items
+        if g:tex_indent_items == 1
             " Remove another sw for item-environments
-            if cline =~ g:tex_itemize_env
+            if cline =~ 'itemize\|description\|enumerate\|thebibliography'
                 let ind = ind - &sw
             endif
         endif
 
         let ind = ind - &sw
     endif
+
+    " Subtract a 'shiftwidth' when an environment ended
+    " the previous line but the shiftwidth wasn't
+    " applied because it didn't begin the line
+    let current_regexp = '\\end'
+    while 1
+        let match_list = matchlist(line, current_regexp.'\s*{\(.*\)}')
+        if (empty(match_list))
+            break
+        endif
+        let environment_type = get(match_list, 1)
+        if environment_type !~ '^\s*verbatim'
+           \ && environment_type !~ '^\s*document'
+           \ && environment_type !~ '^\s*comment'
+           \ && (current_regexp != '\\end' || line !~ '^\s*\\end')
+           " If the end begin the line, the shift width has already
+           " been subtracted at the previous line
+
+            let ind = ind - &sw
+
+            if g:tex_indent_items == 1
+                " Add another sw for item-environments
+                if line =~ 'itemize\|description\|enumerate\|thebibliography'
+                    let ind = ind - &sw
+                endif
+            endif
+        endif
+        " Make the regexp match the following end
+        let current_regexp = current_regexp.'.*\\end'
+    endwhile
 
     if g:tex_indent_brace
       " Add a 'shiftwidth' after a "{" or "[" while there are not "}" and "]"
