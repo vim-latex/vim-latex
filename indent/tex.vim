@@ -240,7 +240,7 @@ function GetTeXIndent()
         endif
       " Remove a 'shiftwidth' after a "}" or "]" while there are not "{" and "["
       " before them. \m for magic
-        if cline =~ '\m^\(\([^\[]*\]\)\|\([^{]*}\)\)'
+        if cline =~ '\m^\(\([^[]*\]\)\|\([^{]*}\)\)'
             let ind = ind - &sw
         endif
     endif
