@@ -28,7 +28,7 @@ class Bibliography(dict):
             for k, v in macros.iteritems():
                 txt = txt.replace(k, '{'+v+'}')
         
-        m = re.match(r'\s*@(\w+){((\S+),)?(.*)}\s*', txt, re.MULTILINE | re.DOTALL)
+        m = re.match(r'\s*@(\w+){\s*((\S+),)?(.*)}\s*', txt, re.MULTILINE | re.DOTALL)
         if not m:
             return None
 
