@@ -2307,9 +2307,10 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'</programlisting>
   <section id="inverse-searching">
    <title>Inverse Searching</title>
    <para>
-    Inverse searching refers to the viewer telling &vim; to display the
-    &latex; source file at a given location when you double-click in the 
-    viewer window.
+    Inverse searching refers to the viewer telling &vim; to display the &latex;
+    source file at a given location. Usually this happens with double-clicking
+    or clicking while pressing the shift button  in the viewer window. The
+    actual method depends on the viewer application.
    </para>
    <para>
     You will need to <link linkend="enabling-searching">enable

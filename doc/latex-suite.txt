@@ -1845,7 +1845,9 @@ Inverse Searching                                             *ls_7_3* *ls_a_ch*
                                                              *inverse-searching*
 
 Inverse searching refers to the viewer telling Vim to display the LaTeX source
-file at a given location when you double-click in the viewer window.
+file at a given location. Usually this happens with double-clicking or clicking
+while pressing the shift button in the viewer window. The actual method depends
+on the viewer application.
 
 You will need to enable searching [|ls_a_ed|] in order to use this
 functionality.
