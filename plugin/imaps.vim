@@ -285,7 +285,8 @@ function! s:LookupCharacter(char)
 	" enough back-spaces to erase the left-hand side; -1 for the last
 	" character typed:
 	let bs = substitute(strpart(lhs, 1), ".", "\<bs>", "g")
-	return bs . IMAP_PutTextWithMovement(rhs, phs, phe)
+	" \<c-g>u inserts an undo point
+	return a:char . "\<c-g>u\<bs>" . bs . IMAP_PutTextWithMovement(rhs, phs, phe)
 endfunction
 
 " }}}
