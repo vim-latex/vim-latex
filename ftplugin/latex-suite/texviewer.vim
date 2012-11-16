@@ -39,14 +39,13 @@ function! Tex_Complete(what, where)
 
 	" Get info about current window and position of cursor in file
 	let s:winnum = winnr()
+	let s:pos = Tex_GetPos()
 
 	" Change to the directory of the file being edited before running all the
 	" :grep commands. We will change back to the original directory after we
 	" finish with the grep.
 	let s:origdir = fnameescape(getcwd())
 	exe 'cd '.fnameescape(expand('%:p:h'))
-
-	let s:pos = Tex_GetPos()
 
 	unlet! s:type
 	unlet! s:typeoption
@@ -213,6 +212,8 @@ endfunction
 " 	matches. completeword is the rest of the word which needs to be inserted.
 " 	prefixlength characters are deleted before completeword is inserted
 function! Tex_CompleteWord(completeword, prefixlength)
+	" Set cursor to window and position recorded when completion was invoked.
+	exe s:winnum.' wincmd w'
 	call Tex_SetPos(s:pos)
 
 	" Complete word, check if add closing }
@@ -432,6 +433,7 @@ function! s:Tex_SyncPreviewWindow()
 	" return as in complete process 
 	if v:errmsg =~ 'E32\>'
 		exe s:winnum.' wincmd w'
+		call Tex_SetPos(s:pos)
 		pclose!
 		cclose
 		if exists("s:prefix")
@@ -468,9 +470,9 @@ endfunction " }}}
 " Description:
 "
 function! Tex_CloseSmallWindows()
-	exe s:winnum.' wincmd w'
 	pclose!
 	cclose
+	exe s:winnum.' wincmd w'
 	call Tex_SetPos(s:pos)
 endfunction " }}}
 " Tex_GoToLocation: Go to chosen location {{{
@@ -815,7 +817,6 @@ function! Tex_FinishOutlineCompletion()
 	endif
 
 	close
-	exec "normal \<C-W>" . s:winnum . "\<C-W>"
 	call Tex_CompleteWord(ref_complete, strlen(s:prefix))
 endfunction " }}}
 
@@ -1049,7 +1050,6 @@ function! Tex_CompleteCiteEntry()
 	let ref = matchstr(getline('.'), '\[\zs\S\+\ze\]$')
 	close
 	call Tex_Debug(":Tex_CompleteCiteEntry: completing with ".ref, "view")
-	exec "normal \<C-W>" . s:winnum . "\<C-W>"
 	call Tex_CompleteWord(ref, strlen(s:prefix))
 endfunction " }}}
 
