@@ -464,35 +464,6 @@ function! Tex_ChooseFromPrompt(dialog, list, sep)
 		return inp
 	endif
 endfunction " }}}
-" Tex_ChooseFile: produces a file list and prompts for choice {{{
-" Description: 
-function! Tex_ChooseFile(dialog)
-	let files = glob('*')
-	if files == ''
-		return ''
-	endif
-	let s:incnum = 0
-	echo a:dialog
-	let filenames = substitute(files, "\\v(^|\n)", "\\=submatch(0).Tex_IncrementNumber(1).' : '", 'g')
-	echo filenames
-	let choice = input('Enter Choice : ')
-	let g:choice = choice
-	if choice == ''
-		return ''
-	endif
-	if choice =~ '^\s*\d\+\s*$'
-		let retval = Tex_Strntok(files, "\n", choice)
-	else
-		let filescomma = substitute(files, "\n", ",", "g")
-		let retval = GetListMatchItem(filescomma, choice)
-	endif
-	if retval == ''
-		return ''
-	endif
-	return retval
-endfunction 
-
-" }}}
 " Tex_IncrementNumber: returns an incremented number each time {{{
 " Description: 
 let s:incnum = 0
