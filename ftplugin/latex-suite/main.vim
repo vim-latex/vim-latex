@@ -187,18 +187,24 @@ function! Tex_Debug(str, ...)
 	else
 		let pattern = ''
 	endif
-	if !exists('s:debugString_'.pattern)
-		let s:debugString_{pattern} = ''
-	endif
-	let s:debugString_{pattern} = s:debugString_{pattern}.a:str."\n"
 
-	let s:debugString_ = (exists('s:debugString_') ? s:debugString_ : '')
-		\ . pattern.' : '.a:str."\n"
-
+	" If 'Tex_DebugLog' is given, write debug information into this file
+	" (preferred method).
+	" Otherwise, save it in a variable
 	if Tex_GetVarValue('Tex_DebugLog') != ''
 		exec 'redir! >> '.Tex_GetVarValue('Tex_DebugLog')
 		silent! echo pattern.' : '.a:str
 		redir END
+	else
+		if !exists('s:debugString_'.pattern)
+			let s:debugString_{pattern} = ''
+		endif
+		let s:debugString_{pattern} = s:debugString_{pattern}.a:str."\n"
+
+		if !exists('s:debugString_')
+			let s:debugString_ = ''
+		endif
+		let s:debugString_ = s:debugString_ . pattern.' : '.a:str."\n"
 	endif
 endfunction " }}}
 " Tex_PrintDebug: prings s:debugString {{{
