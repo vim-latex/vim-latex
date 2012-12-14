@@ -769,17 +769,17 @@ if g:Tex_PromptedEnvironments != ''
 		let start_line = line('.')
 		let start_col = virtcol('.')
 
-		if a:env == '['
+		if index(['[', '\[', '$$'], a:env) != -1
 			if b:DoubleDollars == 0
-				let first = '\\['
-				let second = '\\]'
+				let first = '\['
+				let second = '\]'
 			else
 				let first = '$$'
 				let second = '$$'
 			endif
 		else
-			let first = '\\begin{' . a:env . '}'
-			let second = '\\end{' . a:env . '}'
+			let first = '\begin{' . a:env . '}'
+			let second = '\end{' . a:env . '}'
 		endif
 
 		if b:DoubleDollars == 0
