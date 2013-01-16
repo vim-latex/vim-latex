@@ -160,8 +160,8 @@ function GetTeXIndent()
     endif
 
     " Add a 'shiftwidth' after beginning of environments.
-    " Don't add it for \begin{document} and \begin{verbatim}
-    ""if line =~ '^\s*\\begin{\(.*\)}'  && line !~ 'verbatim'
+    " Don't add it for environments identified by
+    " g:tex_noindent_env
     " LH modification : \begin does not always start a line
     let current_regexp = '\\begin'
     while 1
@@ -170,15 +170,12 @@ function GetTeXIndent()
             break
         endif
         let environment_type = get(match_list, 1)
-        if environment_type !~ '^\s*verbatim'
-           \ && environment_type !~ '^\s*document'
-           \ && environment_type !~ '^\s*comment'
-
+        if environment_type !~ g:tex_noindent_env
             let ind = ind + &sw
 
             if g:tex_indent_items == 1
                 " Add another sw for item-environments
-                if line =~ 'itemize\|description\|enumerate\|thebibliography'
+                if line =~ g:tex_itemize_env
                     let ind = ind + &sw
                 endif
             endif
@@ -188,13 +185,11 @@ function GetTeXIndent()
     endwhile
 
     " Subtract a 'shiftwidth' when an environment ends
-    if cline =~ '^\s*\\end' && cline !~ 'verbatim'
-          \&& cline !~ 'document'
-          \&& cline !~ 'comment'
+    if cline =~ '^\s*\\end' && cline !~ g:tex_noindent_env
 
         if g:tex_indent_items == 1
             " Remove another sw for item-environments
-            if cline =~ 'itemize\|description\|enumerate\|thebibliography'
+            if cline =~ g:tex_itemize_env
                 let ind = ind - &sw
             endif
         endif
@@ -212,9 +207,7 @@ function GetTeXIndent()
             break
         endif
         let environment_type = get(match_list, 1)
-        if environment_type !~ '^\s*verbatim'
-           \ && environment_type !~ '^\s*document'
-           \ && environment_type !~ '^\s*comment'
+        if environment_type !~ g:tex_noindent_env
            \ && (current_regexp != '\\end' || line !~ '^\s*\\end')
            " If the end begin the line, the shift width has already
            " been subtracted at the previous line
@@ -223,7 +216,7 @@ function GetTeXIndent()
 
             if g:tex_indent_items == 1
                 " Add another sw for item-environments
-                if line =~ 'itemize\|description\|enumerate\|thebibliography'
+                if line =~ g:tex_itemize_env
                     let ind = ind - &sw
                 endif
             endif
