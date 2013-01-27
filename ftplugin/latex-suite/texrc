@@ -104,7 +104,7 @@ TexLet g:Tex_MultipleCompileFormats = 'dvi'
 " but it is known that it can sometimes give different results in the output,
 " so use it with care. The '-file-line-error' flag helps sanitize LaTeX error
 " messages for processing by Vim.
-TexLet g:Tex_CompileRule_dvi = 'latex -interaction=nonstopmode $*'
+TexLet g:Tex_CompileRule_dvi = 'latex -interaction=nonstopmode -file-line-error-style $*'
 TexLet g:Tex_EscapeChars = '{}\'
 
 TexLet g:Tex_CompileRule_ps = 'dvips -Ppdf -o $*.ps $*.dvi'
@@ -112,7 +112,7 @@ TexLet g:Tex_CompileRule_ps = 'dvips -Ppdf -o $*.ps $*.dvi'
 " ways to generate pdf files. there are soo many...
 " NOTE: pdflatex generates the same output as latex. therefore quickfix is
 "       possible.
-TexLet g:Tex_CompileRule_pdf = 'pdflatex -interaction=nonstopmode $*'
+TexLet g:Tex_CompileRule_pdf = 'pdflatex -interaction=nonstopmode -file-line-error-style $*'
 
 " TexLet g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'
 " TexLet g:Tex_CompileRule_pdf = 'dvipdfm $*.dvi'
