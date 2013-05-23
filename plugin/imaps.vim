@@ -108,6 +108,9 @@ endif
 if !exists('g:Imap_DeleteEmptyPlaceHolders')
 	let g:Imap_DeleteEmptyPlaceHolders = 1
 endif
+if !exists('g:Imap_GoToSelectMode')
+	let g:Imap_GoToSelectMode = 1
+endif
 " }}}
 " Variables {{{
 " s:LHS_{ft}_{char} will be generated automatically.  It will look like
@@ -450,8 +453,13 @@ function! IMAP_Jumpfunc(direction, inclusive)
 		" Delete the empty placeholder into the blackhole.
 		return movement . '"_c'
 	else
-		" Go to select mode
-		return movement . "\<C-g>"
+		if g:Imap_GoToSelectMode
+			" Go to select mode
+			return movement . "\<C-g>"
+		else
+			" Do not go to select mode
+			return movement
+		endif
 	endif
 	
 endfunction
