@@ -4,8 +4,6 @@
   xmlns="http://www.w3.org/TR/xhtml1/transitional"
   exclude-result-prefixes="#default">
 
-  <!-- $Id: latex-suite-chunk.xsl 1036 2008-05-31 16:10:30Z tmaas $ -->
-
   <xsl:import href="http://docbook.sourceforge.net/release/xsl/current/xhtml/chunk.xsl"/>
 
   <!-- import common customizations -->

@@ -1,6 +1,5 @@
 " File: remoteOpen.vim
 " Author: Srinath Avadhanula <srinath AT fastmail DOT fm>
-" $Id: remoteOpen.vim 1080 2010-01-26 22:02:34Z tmaas $
 " 
 " Description:
 " Often times, an external program needs to open a file in gvim from the
