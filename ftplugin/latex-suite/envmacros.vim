@@ -719,7 +719,7 @@ if g:Tex_PromptedEnvironments != ''
 	"
 	function! Tex_ChangeEnvironments() 
 
-		let env_line = searchpair('$$\|\\[\|begin{', '', '$$\|\\]\|end{', "bn")
+		let env_line = searchpair('\$\$\|\\\[\|\\begin{', '', '\$\$\|\\\]\|\\end{.\{-}}\zs', "bncW")
 
 		if env_line != 0
 			if getline(env_line) !~ 'begin{'
@@ -828,9 +828,9 @@ if g:Tex_PromptedEnvironments != ''
 		endif
 
 		if exists('local_label') && local_label != ''
-			exe start_line + 1.' | normal! '.start_col.'|'
+			exe 'silent!' start_line + 1.' | silent! normal! '.start_col.'|'
 		else
-			exe start_line.' | normal! '.start_col.'|'
+			exe 'silent!' start_line.' | silent! normal! '.start_col.'|'
 		endif
 	endfunction " }}}
 
