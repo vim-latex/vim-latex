@@ -99,7 +99,7 @@ function! Tex_Complete(what, where)
 
 			redraw!
 
-		elseif exists("s:type") && s:type =~ 'cite'
+		elseif exists("s:type") && s:type =~ '[Cc]ite'
 
 			let s:prefix = matchstr(s:prefix, '\([^,]\+,\)*\zs\([^,]\+\)\ze$')
 			call Tex_Debug(":Tex_Complete: using s:prefix = ".s:prefix, "view")
