@@ -500,7 +500,7 @@ else
 endif
 " }}}
 
-nmap <silent> <script> <plug><+SelectRegion+> `<v`>
+nnoremap <silent> <script> <plug><+SelectRegion+> `<v`>
 
 " ============================================================================== 
 " enclosing selected region.
