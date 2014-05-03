@@ -3,6 +3,7 @@
 # http://vim-latex.sf.net
 
 import re
+import urllib
 
 
 class Bibliography(dict):
@@ -170,7 +171,7 @@ class BibFile:
                 self.addfile(f)
 
     def addfile(self, file):
-        fields = open(file).read().split('@')
+        fields = urllib.urlopen(file).read().split('@')
         for f in fields:
             if not (f and re.match('string', f, re.I)):
                 continue
