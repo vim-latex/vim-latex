@@ -971,9 +971,12 @@ else
 	endfunction
 endif " }}}
 " Tex_CatFile: returns the contents of a file in a <NL> seperated string {{{
-if has('*readfile')
+if exists('*readfile')
 	function! Tex_CatFile(filename)
-		return join(readfile(filename), "\n")
+		if glob(a:filename) == ''
+			return ''
+		endif
+		return join(readfile(a:filename), "\n")
 	endfunction
 elseif has('python') && g:Tex_UsePython
 	function! Tex_CatFile(filename)
