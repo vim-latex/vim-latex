@@ -40,7 +40,7 @@ function! Tex_SetTeXCompilerTarget(type, target)
 		let s:target = target
 
 	else
-		let s:origdir = fnameescape(getcwd())
+		let l:origdir = fnameescape(getcwd())
 		exe 'cd '.fnameescape(expand('%:p:h'))
 		if !Tex_GetVarValue('Tex_UseMakefile') || (glob('makefile*') == '' && glob('Makefile*') == '')
 			if has('gui_running')
@@ -62,7 +62,7 @@ function! Tex_SetTeXCompilerTarget(type, target)
 			echomsg 'Assuming target is for makefile'
 			let s:target = target
 		endif
-		exe 'cd '.s:origdir
+		exe 'cd '.l:origdir
 	endif
 endfunction
 
@@ -97,7 +97,7 @@ function! Tex_CompileLatex()
 	" close any preview windows left open.
 	pclose!
 
-	let s:origdir = fnameescape(getcwd())
+	let l:origdir = fnameescape(getcwd())
 
 	" Find the main file corresponding to this file. Always cd to the
 	" directory containing the file to avoid problems with the directory
@@ -142,7 +142,7 @@ function! Tex_CompileLatex()
 	endif
 	redraw!
 
-	exe 'cd '.s:origdir
+	exe 'cd '.l:origdir
 endfunction " }}}
 " Tex_RunLaTeX: compilation function {{{
 " this function runs the latex command on the currently open file. often times
@@ -158,7 +158,7 @@ function! Tex_RunLaTeX()
 	call Tex_Debug('+Tex_RunLaTeX, b:fragmentFile = '.exists('b:fragmentFile'), 'comp')
 
 	let dir = expand("%:p:h").'/'
-	let s:origdir = fnameescape(getcwd())
+	let l:origdir = fnameescape(getcwd())
 	call Tex_CD(expand("%:p:h"))
 
 	let initTarget = s:target
@@ -209,7 +209,7 @@ function! Tex_RunLaTeX()
 	let s:origwinnum = winnr()
 	call Tex_SetupErrorWindow()
 
-	exe 'cd '.s:origdir
+	exe 'cd '.l:origdir
 	call Tex_Debug("-Tex_RunLaTeX", "comp")
 endfunction
 
@@ -224,7 +224,7 @@ function! Tex_ViewLaTeX()
 		return
 	end
 
-	let s:origdir = fnameescape(getcwd())
+	let l:origdir = fnameescape(getcwd())
 
 	" If b:fragmentFile is set, it means this file was compiled as a fragment
 	" using Tex_PartCompile, which means that we want to ignore any
@@ -306,7 +306,7 @@ function! Tex_ViewLaTeX()
 		redraw!
 	endif
 
-	exe 'cd '.s:origdir
+	exe 'cd '.l:origdir
 endfunction
 
 " }}}
@@ -345,7 +345,7 @@ function! Tex_ForwardSearchLaTeX()
 	endif
 	let viewer = Tex_GetVarValue('Tex_ViewRule_'.s:target)
 
-	let s:origdir = fnameescape(getcwd())
+	let l:origdir = fnameescape(getcwd())
 
 	let mainfnameRoot = fnameescape(fnamemodify(Tex_GetMainFileName(), ':t:r'))
 	let mainfnameFull = fnameescape(Tex_GetMainFileName(':p:r'))
@@ -433,7 +433,7 @@ function! Tex_ForwardSearchLaTeX()
 		redraw!
 	endif
 
-	exe 'cd '.s:origdir
+	exe 'cd '.l:origdir
 endfunction
 
 " }}}
@@ -519,7 +519,7 @@ endfunction " }}}
 function! Tex_CompileMultipleTimes()
 	" Just extract the root without any extension because we want to construct
 	" the log file names etc from it.
-	let s:origdir = fnameescape(getcwd())
+	let l:origdir = fnameescape(getcwd())
 	let mainFileName_root = Tex_GetMainFileName(':p:t:r')
 	call Tex_CD(Tex_GetMainFileName(':p:h'))
 
@@ -622,7 +622,7 @@ function! Tex_CompileMultipleTimes()
 	" emptied because of bibtex/makeindex being run as the last step.
 	exec 'silent! cfile '.mainFileName_root.'.log'
 
-	exe 'cd '.s:origdir
+	exe 'cd '.l:origdir
 endfunction " }}}
 " Tex_GetAuxFile: get the contents of the AUX file {{{
 " Description: get the contents of the AUX file recursively including any

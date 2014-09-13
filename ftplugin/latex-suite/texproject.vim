@@ -34,7 +34,7 @@ endfunction " }}}
 " Tex_ProjectLoad: loads the .latexmain file {{{
 " Description: If a *.latexmain file exists, then sources it
 function! Tex_ProjectLoad()
-	let s:origdir = fnameescape(getcwd())
+	let l:origdir = fnameescape(getcwd())
 	exe 'cd '.fnameescape(expand('%:p:h'))
 
 	if glob(Tex_GetMainFileName(':p').'.latexmain') != ''
@@ -42,7 +42,7 @@ function! Tex_ProjectLoad()
                exec 'source '.fnameescape(Tex_GetMainFileName().'.latexmain')
 	endif
 	
-	exe 'cd '.s:origdir
+	exe 'cd '.l:origdir
 endfunction " }}}
 
 augroup LatexSuite

@@ -44,7 +44,7 @@ function! Tex_Complete(what, where)
 	" Change to the directory of the file being edited before running all the
 	" :grep commands. We will change back to the original directory after we
 	" finish with the grep.
-	let s:origdir = fnameescape(getcwd())
+	let l:origdir = fnameescape(getcwd())
 	exe 'cd '.fnameescape(expand('%:p:h'))
 
 	unlet! s:type
@@ -107,12 +107,12 @@ function! Tex_Complete(what, where)
 			if has('python') && Tex_GetVarValue('Tex_UsePython') 
 				\ && Tex_GetVarValue('Tex_UseCiteCompletionVer2') == 1
 
-				exe 'cd '.s:origdir
+				exe 'cd '.l:origdir
 				silent! call Tex_StartCiteCompletion()
 
 			elseif Tex_GetVarValue('Tex_UseJabref') == 1
 
-				exe 'cd '.s:origdir
+				exe 'cd '.l:origdir
 				let g:Remote_WaitingForCite = 1
 				let citation = input('Enter citation from jabref (<enter> to leave blank): ')
 				let g:Remote_WaitingForCite = 0
@@ -348,7 +348,7 @@ function! s:Tex_SetupCWindow(...)
 	if exists("s:type") && s:type =~ 'ref\|cite'
 		exec 'nnoremap <buffer> <silent> <cr> '
 			\ .':set scrolloff='.s:scrollOffVal.'<CR>'
-			\ .':cd '.s:origdir.'<CR>'
+			\ .':cd '.l:origdir.'<CR>'
 			\ .':silent! call <SID>Tex_CompleteRefCiteCustom("'.s:type.'")<CR>'
 
 	else
@@ -356,7 +356,7 @@ function! s:Tex_SetupCWindow(...)
 		" windows
 		exec 'nnoremap <buffer> <silent> <cr> '
 			\ .':set scrolloff='.s:scrollOffVal.'<CR>'
-			\ .':cd '.s:origdir.'<CR>'
+			\ .':cd '.l:origdir.'<CR>'
 			\ .':call <SID>Tex_GoToLocation()<cr>'
 
 	endif
@@ -368,7 +368,7 @@ function! s:Tex_SetupCWindow(...)
 	" Exit the quickfix window without doing anything.
 	exe 'nnoremap <buffer> <silent> q '
 		\ .':set scrolloff='.s:scrollOffVal.'<CR>'
-		\ .':cd '.s:origdir.'<CR>'
+		\ .':cd '.l:origdir.'<CR>'
 		\ .':call Tex_CloseSmallWindows()<CR>'
 
 endfunction " }}}
@@ -775,10 +775,10 @@ function! Tex_StartOutlineCompletion()
     call Tex_SetupOutlineSyntax()
 
 	exec 'nnoremap <buffer> <cr> '
-		\ .':cd '.s:origdir.'<CR>'
+		\ .':cd '.l:origdir.'<CR>'
 		\ .':call Tex_FinishOutlineCompletion()<CR>'
 	exec 'nnoremap <buffer> q '
-		\ .':cd '.s:origdir.'<CR>'
+		\ .':cd '.l:origdir.'<CR>'
 		\ .':close<CR>'
 		\ .':call Tex_SwitchToInsertMode()<CR>'
 
