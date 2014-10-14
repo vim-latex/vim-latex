@@ -774,10 +774,10 @@ function! Tex_StartOutlineCompletion()
 
     call Tex_SetupOutlineSyntax()
 
-	exec 'nnoremap <buffer> <cr> '
+	exec 'nnoremap <buffer> <silent> <cr> '
 		\ .':cd '.s:origdir.'<CR>'
 		\ .':call Tex_FinishOutlineCompletion()<CR>'
-	exec 'nnoremap <buffer> q '
+	exec 'nnoremap <buffer> <silent> q '
 		\ .':cd '.s:origdir.'<CR>'
 		\ .':close<CR>'
 		\ .':call Tex_SwitchToInsertMode()<CR>'
