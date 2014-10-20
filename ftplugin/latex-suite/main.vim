@@ -583,7 +583,7 @@ endfunction " }}}
 "              us to create temporary files in a specified directory.
 function! Tex_GetTempName(dirname)
 	let prefix = 'latexSuiteTemp'
-	let slash = (a:dirname =~ '\\\|/$' ? '' : '/')
+	let slash = (a:dirname =~ '\\$\|/$' ? '' : '/')
 	let i = 0
 	while filereadable(a:dirname.slash.prefix.i.'.tex') && i < 1000
 		let i = i + 1
