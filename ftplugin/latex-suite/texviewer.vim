@@ -575,7 +575,7 @@ function! Tex_ScanFileForCite(prefix)
 
 			" first try to find if a .bib file exists. If so do not search in
 			" the corresponding .bbl file. (because the .bbl file will most
-			" probly be generated automatically from the .bib file with
+			" probably be generated automatically from the .bib file with
 			" bibtex).
 			
 			let fname = Tex_FindFile(bibname, '.,'.g:Tex_BIBINPUTS, '.bib')
@@ -603,7 +603,7 @@ function! Tex_ScanFileForCite(prefix)
 	endif
 
 	" If we have a thebibliography environment, then again assume that this is
-	" the only file which defines the bib-keys. Aand convey this information
+	" the only file which defines the bib-keys. And convey this information
 	" upwards by returning 1.
 	if search('^\s*\\begin{thebibliography}', 'w')
 		call Tex_Debug('got a thebibliography environment in '.bufname('%'), 'view')
