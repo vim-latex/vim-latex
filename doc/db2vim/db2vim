@@ -16,7 +16,7 @@ SHORT OPTIONS
 
 LONG OPTIONS
 
---prefix=<prefix> 
+--prefix=<prefix>
     This is a string like "ls_" which will be prepended to the section
     numbers. Default to 'ls_' if unsupplied.
 """
@@ -41,7 +41,7 @@ COL_SPACE = 2
 #
 # TOC_HASH['section 1.1 label'] = 'ls_1_1'
 #
-# LEVEL_HASH['section 1.1 label'] = 1 
+# LEVEL_HASH['section 1.1 label'] = 1
 #       (top level article has level 0)
 #
 # TITLE_HASH['section 1.1 label'] = 'Title of section 1.1'
@@ -63,26 +63,23 @@ URL_HASH = {}
 DEBUG = 0
 STDERR = sys.stderr
 STRICT = 0
-NUM_ANCHORS = {0:1}
+NUM_ANCHORS = {0: 1}
 
-################################################################################
+###############################################################################
 # Miscellaneous utility functions
-################################################################################
-# encodeTo52(num) {{{
-def encodeTo52(num):
-    ret = ''
+###############################################################################
 
+
+def encodeTo52(num):
     if num < 26:
         return unichr(ord('a') + num)
     elif num < 52:
         return unichr(ord('A') + num - 26)
     else:
-        return encodeTo52(int(num/52)) + encodeTo52(num % 52)
-# }}}
-# makeTocHash(rootElement) {{{
+        return encodeTo52(int(num / 52)) + encodeTo52(num % 52)
+
+
 def makeTocHash(rootElement, width, prefix='', level=0):
-    retText = ""
-    sectionsTable = []
     lastLabelUsed = 0
 
     for section in rootElement.getChildrenByTagName('section'):
@@ -97,49 +94,47 @@ def makeTocHash(rootElement, width, prefix='', level=0):
             sectionid = thisLabel
 
         NUM_ANCHORS[0] += 1
-        ANCHOR_HASH[sectionid] = TOC_PREFIX + 'a_' + encodeTo52(NUM_ANCHORS[0] + 52)
+        ANCHOR_HASH[sectionid] = TOC_PREFIX + 'a_' + encodeTo52(
+            NUM_ANCHORS[0] + 52)
 
         TOC_HASH[sectionid] = thisLabel
         LEVEL_HASH[sectionid] = level
         TITLE_HASH[sectionid] = titleText
 
         if section.getChildrenByTagName('section'):
-            childText = makeTocHash(section, width - 5,
-                prefix = prefix+str(lastLabelUsed) + '_',
-                level = level + 1)
+            makeTocHash(section, width - 5, prefix=prefix +
+                        str(lastLabelUsed) + '_', level=level + 1)
 
-# }}}
-# makeAnchorHash(rootElement) {{{
+
 def makeAnchorHash(rootElement):
-    anchors = rootElement.getElementsByTagName('anchor') + rootElement.getElementsByTagName('note')
-    numAnchors = 0
+    anchors = rootElement.getElementsByTagName(
+        'anchor') + rootElement.getElementsByTagName('note')
     for anchor in anchors:
         if not anchor.getAttribute('id'):
             continue
 
         NUM_ANCHORS[0] += 1
-        if ANCHOR_HASH.has_key(anchor.getAttribute('id')) or TOC_HASH.has_key(anchor.getAttribute('id')):
-            print >> STDERR, "Warning: anchor [%s] multiply defined" % anchor.getAttribute('id')
+        if anchor.getAttribute('id') in ANCHOR_HASH or \
+                anchor.getAttribute('id') in TOC_HASH:
+            sys.stderr.write("Warning: anchor [%s] multiply defined\n" %
+                             anchor.getAttribute('id'))
 
-        ANCHOR_HASH[anchor.getAttribute('id')] = TOC_PREFIX + 'a_' + encodeTo52(NUM_ANCHORS[0] + 52)
-    
-# }}}
-# makeURLHash(rootElement) {{{
+        ANCHOR_HASH[anchor.getAttribute(
+            'id')] = TOC_PREFIX + 'a_' + encodeTo52(NUM_ANCHORS[0] + 52)
+
+
 def makeURLHash(rootElement):
     urls = rootElement.getElementsByTagName('ulink')
     numURLs = 0
     for url in urls:
-        if not url.getAttribute('url') or URL_HASH.has_key(url.getAttribute('url')):
+        if not url.getAttribute('url') or url.getAttribute('url') in URL_HASH:
             continue
         numURLs += 1
         URL_HASH[url.getAttribute('url')] = TOC_PREFIX + 'u_' + str(numURLs)
 
-# }}}
-# makeTOC(node, width, prefix='', level=0, maxleve=1): {{{
+
 def makeTOC(node, width, maxlevel=1):
     retText = ""
-    sectionsTable = []
-    lastLabelUsed = 0
 
     for section in node.getChildrenByTagName('section'):
 
@@ -149,21 +144,22 @@ def makeTOC(node, width, maxlevel=1):
         level = LEVEL_HASH.get(sectionid, 10)
 
         if level <= maxlevel:
-            retText += '|' + thisLabel + '| ' +  titleText + '\n'
+            retText += '|' + thisLabel + '| ' + titleText + '\n'
 
         if level < maxlevel and section.getChildrenByTagName('section'):
-            childText = makeTOC(section, width-5)
+            childText = makeTOC(section, width - 5)
             retText += VertCatString("    ", 4, childText) + '\n'
 
         retText = re.sub(r'\s+$', r'\n', retText)
 
     return retText
-# }}}
 
-################################################################################
+
+###############################################################################
 # Generalized function for handling dom elements.
-################################################################################
-# IsInlineTag(self): {{{
+###############################################################################
+
+
 def IsInlineTag(self):
     if self.nodeType == self.TEXT_NODE:
         return 1
@@ -173,11 +169,11 @@ def IsInlineTag(self):
         return 0
 
 
-# }}}
-# getChildrenByTagName(self, name): {{{
-# Description: extension to the xml.dom.minidom.Element class.
-#              returns all direct descendants of this Element.
 def getChildrenByTagName(self, name):
+    """
+        extension to the xml.dom.minidom.Element class.  returns all direct
+        descendants of this Element.
+    """
     nodeList = []
 
     child = self.firstChild
@@ -192,12 +188,8 @@ def getChildrenByTagName(self, name):
 xml.dom.minidom.Element.getChildrenByTagName = getChildrenByTagName
 
 
-# }}}
-# handleElement(rootElement, width=TEXT_WIDTH): {{{
 def handleElement(rootElement, width=TEXT_WIDTH):
     """
-    handleElement(rootElement, width=TEXT_WIDTH):
-
     Generalized function to handle an Element node in a DOM tree.
     """
 
@@ -213,18 +205,18 @@ def handleElement(rootElement, width=TEXT_WIDTH):
 
         # if the child is an Element and if a handler exists, then call it.
         if not isinline \
-        and child.nodeType == child.ELEMENT_NODE \
-        and handlerMaps.has_key(child.tagName):
+            and child.nodeType == child.ELEMENT_NODE \
+                and child.tagName in handlerMaps:
             # offset the child text by the current indentation value
             printerr('making recursive call to known child.')
             retText += handlerMaps[child.tagName](child, width)
             child = child.nextSibling
 
         elif not isinline \
-        and child.nodeType == child.PROCESSING_INSTRUCTION_NODE \
-        and child.target == 'vimhelp':
+            and child.nodeType == child.PROCESSING_INSTRUCTION_NODE \
+                and child.target == 'vimhelp':
 
-            if handlerMaps.has_key(child.data):
+            if child.data in handlerMaps:
                 retText += handlerMaps[child.data](child, width)
 
             child = child.nextSibling
@@ -238,7 +230,7 @@ def handleElement(rootElement, width=TEXT_WIDTH):
                 if child.nodeType == child.TEXT_NODE:
                     text += child.data
                 elif child.nodeType == child.ELEMENT_NODE:
-                    if handlerMaps.has_key(child.tagName):
+                    if child.tagName in handlerMaps:
                         text += handlerMaps[child.tagName](child, width)
                     else:
                         text += GetText(child.childNodes)
@@ -259,12 +251,12 @@ def handleElement(rootElement, width=TEXT_WIDTH):
 
     return retText
 
-# }}}
 
-################################################################################
+###############################################################################
 # Functions for handling various xml tags
-################################################################################
-# handleArticleInfo(articleinfo, width): {{{
+###############################################################################
+
+
 def handleArticleInfo(articleinfo, width):
 
     makeTocHash(articleinfo.parentNode, width)
@@ -289,15 +281,14 @@ def handleArticleInfo(articleinfo, width):
             surname = GetTextFromElementNode(author, 'surname')[0]
         if author.getElementsByTagName('email'):
             email = GetTextFromElementNode(author, 'email')[0]
-        authorText = authorText + firstname + ' ' + surname + ' <' + email + '>\n'
-        
+        authorText = authorText + firstname + ' ' + surname + \
+            ' <' + email + '>\n'
 
     abstractText = ''
     abstract = articleinfo.getChildrenByTagName('abstract')
     if abstract is not None:
         abstractText = '\n\n' + CenterText('Abstract\n========', width)
         abstractText += handleElement(abstract[0], width) + '\n'
-
 
     retText = CenterText(name + '\n*' + FILENAME + '*\n' + authorText, width)
     retText += abstractText
@@ -317,16 +308,16 @@ See |usr_28.txt| for an introduction to folding and |fold-commands| for key
 sequences and commands to work with folds.
 '''
 
-    return retText + '\n' + RightJustify('*' + FILENAME + '-toc*', width) + '\n' + toc + foldwarn
+    return retText + '\n' + RightJustify('*' + FILENAME + '-toc*', width) + \
+        '\n' + toc + foldwarn
 
-# }}}
-# handleOption(option, width): {{{
+
 def handleOption(option, width):
     retText = ""
     names = GetTextFromElementNode(option, "name")
 
     for name in names:
-        retText += string.rjust("*"+name+"*", width) + "\n"
+        retText += string.rjust("*" + name + "*", width) + "\n"
 
     nameTexts = ""
     maxNameLen = -1
@@ -335,21 +326,19 @@ def handleOption(option, width):
         nameTexts += name + "    \n"
 
     desc = option.getChildrenByTagName("desc")[0]
-    descText = handleElement(desc, width=width-maxNameLen)
+    descText = handleElement(desc, width=width - maxNameLen)
 
     retText += VertCatString(nameTexts + "    ", None, descText)
 
     return retText + "\n"
 
-# }}}
-# handleOptionDefault(default, width): {{{
+
 def handleOptionDefault(default, width):
     type = string.join(GetTextFromElementNode(default, "type"), "\n")
     extra = string.join(GetTextFromElementNode(default, "extra"), "\n")
     return type + "\t(" + extra + ")"
 
-# }}}
-# handleTableRoot(root, width): {{{
+
 def handleTableRoot(root, width):
     tgroup = root.getChildrenByTagName('tgroup')[0]
     if tgroup is None:
@@ -370,16 +359,16 @@ def handleTableRoot(root, width):
     headText = text[0:numHeadRows]
     bodyText = text[numHeadRows:]
 
-    headTable = FormatTable(headText, ROW_SPACE = 1, COL_SPACE =
-                    COL_SPACE, justify = 0, widths = widths)
+    headTable = FormatTable(headText, ROW_SPACE=1, COL_SPACE=
+                            COL_SPACE, justify=0, widths=widths)
     if headTable:
         headTable = re.sub(r'\n|$', '\g<0>~', headTable)
-    bodyTable = FormatTable(bodyText, ROW_SPACE = 1, COL_SPACE =
-                    COL_SPACE, justify = 0, widths = widths)
+    bodyTable = FormatTable(bodyText, ROW_SPACE=1, COL_SPACE=
+                            COL_SPACE, justify=0, widths=widths)
 
-    return headTable + '\n'+ re.sub(r'\n+$', '', bodyTable) + '\n\n'
+    return headTable + '\n' + re.sub(r'\n+$', '', bodyTable) + '\n\n'
 
-# calculateColumnWidths(rows, width): {{{
+
 def calculateColumnWidths(rows, alloc_widths):
     widths = {}
     text = []
@@ -396,8 +385,8 @@ def calculateColumnWidths(rows, alloc_widths):
             rowtext.append(coltext)
             # This is the 'width' of the current cell including the
             # whitespace padding.
-            colwidths.append(max(map(len, coltext.split("\n"))) \
-                                + COL_SPACE)
+            colwidths.append(max(map(len, coltext.split("\n")))
+                             + COL_SPACE)
 
         text.append(rowtext)
 
@@ -408,11 +397,10 @@ def calculateColumnWidths(rows, alloc_widths):
 
     return widths, text
 
-# }}}
-# calculateColumnWidthsDoublePass(rows, width): {{{
+
 def calculateColumnWidthsDoublePass(rows, width):
     maxwidths, text = calculateColumnWidths(rows, [width])
-    if reduce(lambda x, y: x+y, maxwidths.values()) <= width:
+    if reduce(lambda x, y: x + y, maxwidths.values()) <= width:
         return maxwidths, text
 
     # now find out how many columns exceed the maximum permitted width.
@@ -421,13 +409,13 @@ def calculateColumnWidthsDoublePass(rows, width):
     nlarge = 0
     remainingWidth = width
     for colwidth in maxwidths.values():
-        if colwidth > width/len(maxwidths):
+        if colwidth > width / len(maxwidths):
             nlarge += 1
         else:
             remainingWidth += -colwidth
 
     # newmaxwidth: width which each of the large columns is allowed.
-    newmaxwidth = remainingWidth/max(nlarge, 1)
+    newmaxwidth = remainingWidth / max(nlarge, 1)
 
     newcolwidths = []
     for colwidth in maxwidths.values():
@@ -439,16 +427,12 @@ def calculateColumnWidthsDoublePass(rows, width):
 
     return newmaxwidth, newtext
 
-# }}}
-# }}}
-# handleCode(code, width): {{{
+
 def handleCode(code, width):
-    retText =  GetText(code.childNodes)
+    retText = GetText(code.childNodes)
     return " &codebegin;\n" + VertCatString("    ", 4, retText) + "&codeend;"
 
 
-# }}}
-# handleList(list, width, marker=0): {{{
 def handleList(list, width, marker=0):
     if list.tagName == 'simplelist':
         child = 'member'
@@ -474,8 +458,7 @@ def handleList(list, width, marker=0):
 
     return retText
 
-# }}}
-# handleNote(note, width): {{{
+
 def handleNote(note, width):
     title = None
     if note.getChildrenByTagName('title'):
@@ -487,19 +470,18 @@ def handleNote(note, width):
     if note.getAttribute('id'):
         noteTagText = '*' + note.getAttribute('id') + '* '
         noteTagText += '*' + ANCHOR_HASH[note.getAttribute('id')] + '*'
-        noteTagText = IndentParagraphs(noteTagText, width/2)
+        noteTagText = IndentParagraphs(noteTagText, width / 2)
         noteid = RightJustify(noteTagText, width) + '\n'
 
-    noteText = handleElement(note, width-len("NOTE: "))
+    noteText = handleElement(note, width - len("NOTE: "))
     if title is not None:
-        noteText = name + '\n' +('-' * len(name)) + '\n' + noteText
+        noteText = name + '\n' + ('-' * len(name)) + '\n' + noteText
 
     noteText = noteid + VertCatString("NOTE: ", None, noteText)
 
     return noteText + "\n"
 
-# }}}
-# handleParagraph(paragraph, width): {{{
+
 def handleParagraph(paragraph, width):
     partext = handleElement(paragraph, width)
 
@@ -508,8 +490,7 @@ def handleParagraph(paragraph, width):
 
     return partext + "\n\n"
 
-# }}}
-# handleFormalParagraph(paragraph, width): {{{
+
 def handleFormalParagraph(formalparagraph, width):
     title = None
     if formalparagraph.getChildrenByTagName('title'):
@@ -526,20 +507,18 @@ def handleFormalParagraph(formalparagraph, width):
 
     return partext + "\n\n"
 
-# }}}
-# handleBlockQuote(block, width): {{{
+
 def handleBlockQuote(block, width):
     text = handleElement(block, width - BLOCK_QUOTE)
-    text = VertCatString(" "*BLOCK_QUOTE,  \
+    text = VertCatString(" " * BLOCK_QUOTE,
                          BLOCK_QUOTE, text)
 
     return text + "\n"
 
-# }}}
-# handleLink(link, width): {{{
+
 def handleLink(link, width):
     linkend = link.getAttribute('linkend')
-    if not ANCHOR_HASH.has_key(linkend):
+    if linkend not in ANCHOR_HASH:
         print >> STDERR, "Warning: Link ID [%s] not found in TOC" % linkend
     text = handleElement(link, width)
     anchorpt = ANCHOR_HASH.get(linkend)
@@ -548,29 +527,27 @@ def handleLink(link, width):
 
     return text + ' [|' + anchorpt + '|]'
 
-# }}}
-# handleAnchor(anchor, width): {{{
-def handleAnchor(anchor, width):
-    anchorText = '*'+anchor.getAttribute('id')+'* '
-    anchorText += '*'+ANCHOR_HASH[anchor.getAttribute('id')]+'*'
-    return RightJustify(anchorText, width) \
-        + "\n"
 
-# }}}
-# handleSection(section, width): {{{
+def handleAnchor(anchor, width):
+    anchorText = '*' + anchor.getAttribute('id') + '* '
+    anchorText += '*' + ANCHOR_HASH[anchor.getAttribute('id')] + '*'
+    return RightJustify(anchorText, width) + "\n"
+
+
 def handleSection(section, width):
     title = section.getChildrenByTagName('title')[0]
     name = handleElement(title, width)
 
     sectionid = section.getAttribute('id')
     tagsformatted = ''
-    if TOC_HASH.has_key(sectionid):
+    if sectionid in TOC_HASH:
         tagsformatted = '*%s* ' % TOC_HASH[sectionid]
 
-    if ANCHOR_HASH.has_key(sectionid):
+    if sectionid in ANCHOR_HASH:
         tagsformatted += '*%s* ' % ANCHOR_HASH[sectionid]
 
-    if sectionid and TOC_HASH.has_key(sectionid) and sectionid != TOC_HASH[sectionid]:
+    if sectionid and sectionid in TOC_HASH and \
+            sectionid != TOC_HASH[sectionid]:
         tagsformatted += '*%s*' % sectionid
 
     # try to indent to a width of 20
@@ -579,7 +556,7 @@ def handleSection(section, width):
 
     # width(name) + nspaces + width(tags) = 80
     if len(tagsformatted) > 2:
-        header = VertCatString(name, 80-tagswidth, tagsformatted)
+        header = VertCatString(name, 80 - tagswidth, tagsformatted)
     else:
         header = name
 
@@ -602,10 +579,10 @@ def handleSection(section, width):
         thisTOC = makeTOC(section, width, maxlevel=1)
 
     return "\n" + (delim * TEXT_WIDTH) + \
-        "\n" + header + newlines + thisTOC + newlines + re.sub(r'\n+$', '', text) + "\n"
+        "\n" + header + newlines + thisTOC + newlines + re.sub(
+            r'\n+$', '', text) + "\n"
 
-# }}}
-# handleUlink(ulink, width) {{{
+
 def handleUlink(ulink, width):
     url = ulink.getAttribute('url')
     text = handleElement(ulink)
@@ -616,20 +593,17 @@ def handleUlink(ulink, width):
         print >> STDERR, "Warning: url attribute empty for [%s]" % text
         return text
 
-# }}}
-# handleIndexTerm(indexterm, width)  {{{
-def handleIndexTerm(indexterm, width) :
+
+def handleIndexTerm(indexterm, width):
     return ''
-# }}}
-# handleEmphasis(emphasis, width) {{{
+
+
 def handleEmphasis(emphasis, width):
     return '_' + GetText(emphasis.childNodes) + '_'
-# }}}
 
-################################################################################
+###############################################################################
 # A dictionary for mapping xml tags to functions.
-################################################################################
-# {{{
+###############################################################################
 handlerMaps = {
     'articleinfo': handleArticleInfo,
     'table': handleTableRoot,
@@ -650,21 +624,22 @@ handlerMaps = {
     'emphasis': handleEmphasis,
     'indexterm': handleIndexTerm
 }
-inlineTags = {'tag':1, 'literal':1, 'link':1, 
-    'ulink':1, 'citetitle':1, 'indexterm':1,
-    'emphasis':1, 'filename':1 }
-# }}}
+inlineTags = {'tag': 1, 'literal': 1, 'link': 1,
+              'ulink': 1, 'citetitle': 1, 'indexterm': 1,
+              'emphasis': 1, 'filename': 1}
 
-# helper functions for usage() and printerr() {{{
+# helper functions for usage() and printerr()
+
+
 def usage():
     print __doc__
+
 
 def printerr(statement):
     if DEBUG:
         print >> STDERR, statement
 
-# }}}
-# replaceComment(matchobj) {{{
+
 def replaceComment(matchobj):
     initspace = matchobj.group(1)
     firstsent = matchobj.group(2)
@@ -676,12 +651,11 @@ def replaceComment(matchobj):
         else:
             lastspace = '<' + initspace[:-1]
     else:
-	lastspace = initspace
+        lastspace = initspace
 
     return '\n' + initspace + firstsent + ' >\n' + code + '\n' + lastspace
-    
-# }}}
-# main function {{{
+
+
 if __name__ == "__main__":
     option = {}
     try:
@@ -693,12 +667,12 @@ if __name__ == "__main__":
         print >> STDERR, "Usage error: db2vim --help for usage"
         sys.exit(1)
 
-    if option.has_key('--help'):
-        usage();
-        sys.exit(0);
+    if '--help' in option:
+        usage()
+        sys.exit(0)
 
     TOC_PREFIX = option.get('--prefix', 'ls_')
-    DEBUG = option.has_key('-d')
+    DEBUG = '-d' in option
 
     if len(args) != 1:
         print >> STDERR, "Usage error: db2vim --help for usage"
@@ -712,7 +686,7 @@ if __name__ == "__main__":
     except:
         print "Error opening xml file"
 
-    dom = xml.dom.minidom.parse(fp) 
+    dom = xml.dom.minidom.parse(fp)
 
     modeline = r'''
 ================================================================================
@@ -736,9 +710,10 @@ vim:foldexpr=getline(v\:lnum-1)=~'-\\{80}'?'>2'\:getline(v\:lnum-1)=~'=\\{80}'?'
 vim:foldtext=substitute(v\:folddashes.substitute(getline(v\:foldstart),'\\s*\\*.*',"",""),'^--','\ \ \ \ \ \ ','')
 ================================================================================'''
 
-    STRICT = option.has_key('-s')
+    STRICT = '-s' in option
 
-    pattern = re.compile(r'\n([< ]*)([^\n]+)&codebegin;\n(.*?)&codeend;', re.DOTALL)
+    pattern = re.compile(
+        r'\n([< ]*)([^\n]+)&codebegin;\n(.*?)&codeend;', re.DOTALL)
 
     processedDoc = handleElement(dom.documentElement)
     while re.search('&codebegin;', processedDoc):
@@ -756,6 +731,4 @@ URLs used in this file
 
     processedDoc = processedDoc + urlsection + modeline
     print processedDoc.encode('iso-8859-1')
-
-# }}}
-# vim:et:sts=4:fdm=marker
+# vim:et:sts=4

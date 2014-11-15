@@ -4,6 +4,7 @@
 
 import re
 
+
 class Bibliography(dict):
     def __init__(self, txt, macros={}):
         """
@@ -23,12 +24,13 @@ class Bibliography(dict):
                   timestamp = {2006.01.02},
                 }
         """
-        
+
         if macros:
             for k, v in macros.iteritems():
-                txt = txt.replace(k, '{'+v+'}')
-        
-        m = re.match(r'\s*@(\w+){\s*((\S+),)?(.*)}\s*', txt, re.MULTILINE | re.DOTALL)
+                txt = txt.replace(k, '{' + v + '}')
+
+        m = re.match(r'\s*@(\w+){\s*((\S+),)?(.*)}\s*', txt,
+                     re.MULTILINE | re.DOTALL)
         if not m:
             return None
 
@@ -45,7 +47,7 @@ class Bibliography(dict):
 
             field = m.group(1)
 
-            body = body[(m.start(2)+1):]
+            body = body[(m.start(2) + 1):]
             if m.group(2) == '{':
                 # search for the next closing brace. This is not simply a
                 # matter of searching for the next closing brace since
@@ -87,21 +89,20 @@ class Bibliography(dict):
                 value = m.group(2) + body[:(mn.start(0))].rstrip()
 
             self[field.lower()] = re.sub(r'\s+', ' ', value)
-            body = body[(mn.start(0)+1):]
+            body = body[(mn.start(0) + 1):]
 
             self['bodytext'] += ('  %s: %s\n' % (field, value))
             if self['bibtype'].lower() == 'string':
                 self['macro'] = {field: value}
 
         self['bodytext'] = self['bodytext'].rstrip()
-        
 
     def __getitem__(self, key):
         try:
             return dict.__getitem__(self, key)
         except KeyError:
             return ''
-        
+
     def __str__(self):
         if self['bibtype'].lower() == 'string':
             return 'String: %(macro)s' % self
@@ -119,21 +120,21 @@ class Bibliography(dict):
                     'IN In %(booktitle)s, %(year)s') % self
 
         elif self['bibtype'].lower() == 'mastersthesis':
-            return ('Masters [%(key)s]\n' + 
-                    'TI "%(title)s"\n' + 
-                    'AU %(author)s\n' + 
+            return ('Masters [%(key)s]\n' +
+                    'TI "%(title)s"\n' +
+                    'AU %(author)s\n' +
                     'IN In %(school)s, %(year)s') % self
 
         elif self['bibtype'].lower() == 'phdthesis':
-            return ('PhD [%(key)s]\n' + 
-                    'TI "%(title)s"\n' + 
-                    'AU %(author)s\n' + 
+            return ('PhD [%(key)s]\n' +
+                    'TI "%(title)s"\n' +
+                    'AU %(author)s\n' +
                     'IN In %(school)s, %(year)s') % self
 
         elif self['bibtype'].lower() == 'book':
             return ('Book [%(key)s]\n' +
-                    'TI "%(title)s"\n' + 
-                    'AU %(author)s\n' + 
+                    'TI "%(title)s"\n' +
+                    'AU %(author)s\n' +
                     'IN %(publisher)s, %(year)s') % self
 
         else:
@@ -143,7 +144,8 @@ class Bibliography(dict):
             if self['author']:
                 s += 'AU %(author)s\n' % self
             for k, v in self.iteritems():
-                if k not in ['title', 'author', 'bibtype', 'key', 'id', 'file', 'body', 'bodytext']:
+                if k not in ['title', 'author', 'bibtype', 'key', 'id', 'file',
+                             'body', 'bodytext']:
                     s += 'MI %s: %s\n' % (k, v)
 
             return s.rstrip()
@@ -154,6 +156,7 @@ class Bibliography(dict):
                 return False
 
         return True
+
 
 class BibFile:
 
@@ -184,7 +187,6 @@ class BibFile:
                 b['file'] = file
                 b['id'] = len(self.bibentries)
                 self.bibentries += [b]
-
 
     def addfilter(self, filterspec):
         self.filters += [filterspec.split()]
