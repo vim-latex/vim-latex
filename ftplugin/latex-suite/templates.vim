@@ -81,7 +81,7 @@ function! <SID>ReadTemplate(...)
 	exec "normal! i\<C-r>=IMAP_PutTextWithMovement(@a, '".s:phsTemp."', '".s:pheTemp."')\<CR>"
 
 	let &fo = _fo
-	let @a = _a
+	call setreg("a", _a, "c")
 
 	call Tex_Debug('phs = '.s:phsTemp.', phe = '.s:pheTemp.', exe = '.s:exeTemp.', com = '.s:comTemp, 'templates')
 

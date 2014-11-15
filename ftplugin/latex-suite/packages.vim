@@ -397,8 +397,8 @@ function! Tex_ScanForPackages(...)
 		call Tex_Debug(":Tex_ScanForPackages: found package(s) [".@a."] on line ".line('.'), "pack")
 
 		" restore @a
-		let @a = saveA
-		let @" = saveUnnamed
+		call setreg("a", saveA, "c")
+		call setreg("\"", saveUnnamed, "c")
 	endwhile
 	call Tex_Debug(":Tex_ScanForPackages: End scan \\usepackage, detected packages = ".g:Tex_package_detected, "pack")
 

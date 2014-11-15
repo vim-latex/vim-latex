@@ -248,11 +248,11 @@ function! s:LookupCharacter(char)
 				call IMAP_Debug('getting abbreviationRHS = ['.abbreviationRHS.']', 'imap')
 
 				if @a =~ "No abbreviation found" || abbreviationRHS == ""
-					let @a = _a
+					call setreg("a", _a, "c")
 					return a:char
 				endif
 
-				let @a = _a
+				call setreg("a", _a, "c")
 				let abbreviationRHS = escape(abbreviationRHS, '\<"')
 				exec 'let abbreviationRHS = "'.abbreviationRHS.'"'
 
@@ -561,7 +561,7 @@ function! VEnclose(vstart, vend, VStart, VEnd)
 
 		silent! exe normcmd
 		" this is to restore the r register.
-		let @r = _r
+		call setreg("r", _r, "c")
 		" and finally, this is to restore the search history.
 		execute s:RemoveLastHistoryItem
 

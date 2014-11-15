@@ -209,7 +209,7 @@ function! <SID>ReadMacro(...)
 
 	let @a = substitute(@a, '['."\n\r\t ".']*$', '', '')
 	let textWithMovement = IMAP_PutTextWithMovement(@a)
-	let @a = _a
+	call setreg("a", _a, "c")
 
 	return textWithMovement
 
