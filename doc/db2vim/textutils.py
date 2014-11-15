@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 """Contains functions to do word-wrapping on text paragraphs."""
 
 import random
