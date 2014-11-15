@@ -549,17 +549,17 @@ function! Tex_ScanFileForCite(prefix)
 	let presBufNum = bufnr('%')
 
 	let foundCiteFile = 0
-	" First find out if this file has a \bibliography or a \addbibresource
+	" First find out if this file has a \(no)bibliography or a \addbibresource
 	" (biblatex) command in it. If so, assume that this is the only file
 	" in the project which defines a bibliography.
-	if search('\\\(no\)\?\(bibliography\|addbibresource\(\[.*\]\)\?\){', 'w')
+	if search('\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){', 'w')
 		call Tex_Debug('Tex_ScanFileForCite: found bibliography command in '.bufname('%'), 'view')
 		" convey that we have found a bibliography command. we do not need to
 		" proceed any further.
 		let foundCiteFile = 1
 
 		" extract the bibliography filenames from the command.
-		let bibnames = matchstr(getline('.'), '\\\(no\)\?\(bibliography\|addbibresource\(\[.*\]\)\?\){\zs.\{-}\ze}')
+		let bibnames = matchstr(getline('.'), '\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){\zs.\{-}\ze}')
 		let bibnames = substitute(bibnames, '\s', '', 'g')
 
 		call Tex_Debug('trying to search through ['.bibnames.']', 'view')
@@ -839,12 +839,12 @@ function! Tex_FindBibFiles()
 	new
 	exec 'e ' . fnameescape(mainfname)
 
-	if search('\\\(no\)\?\(bibliography\|addbibresource\(\[.*\]\)\?\){', 'w')
+	if search('\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){', 'w')
 
 		call Tex_Debug('Tex_FindBibFiles: found bibliography command in '.bufname('%'), 'view')
 
 		" extract the bibliography filenames from the command.
-		let bibnames = matchstr(getline('.'), '\\\(no\)\?\(bibliography\|addbibresource\(\[.*\]\)\?\){\zs.\{-}\ze}')
+		let bibnames = matchstr(getline('.'), '\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){\zs.\{-}\ze}')
 		let bibnames = substitute(bibnames, '\s', '', 'g')
 
 		call Tex_Debug(':Tex_FindBibFiles: trying to search through ['.bibnames.']', 'view')
