@@ -5,7 +5,7 @@ BINDIR=$(PREFIX)/bin
 VERSION=1.8.23
 DATE=$(shell date +%Y%m%d)
 COMMIT_COUNT=$(shell git log --oneline | wc -l)
-ABBREV_HASH=$(shell git log --oneline | head -n 1 | cut -d\  -f 1)
+ABBREV_HASH=$(shell git rev-parse --short=7 HEAD)
 
 SNAPSHOTNAME=vim-latex-$(VERSION)-$(DATE).$(COMMIT_COUNT)-git$(ABBREV_HASH)
 
