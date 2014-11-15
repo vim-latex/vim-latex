@@ -318,7 +318,7 @@ the cursor automatically lands on $\mistake$. In addition, 2 new windows will
 appear as shown here:
 
 The middle window is an _Error List_ window showing you the errors which the
-latex compiler found. Th bottom window is a _Log Preview_ window, which shows
+latex compiler found. The bottom window is a _Log Preview_ window, which shows
 you the context of the error made by displaying the relevant portion of the .log
 file created during the latex compilation procedure. Jump to the _Error List_
 window and try scrolling around in it using either the j, k keys or the arrow
