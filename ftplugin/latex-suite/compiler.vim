@@ -370,17 +370,17 @@ function! Tex_ForwardSearchLaTeX()
 		if viewer =~ '^ *Skim'
 
 				let execString .= '/Applications/Skim.app/Contents/SharedSupport/displayline '
-				let execString .= join([curlLine, target_file, sourcefileFull])
+				let execString .= join([linenr, target_file, sourcefileFull])
 
 		elseif viewer =~ '^ *PDFView'
 
 				let execString .= '/Applications/PDFView.app/Contents/MacOS/gotoline.sh '
-				let execString .= join([curlLine, target_file, sourcefileFull])
+				let execString .= join([linenr, target_file, sourcefileFull])
 
 		elseif viewer =~ '^ *TeXniscope'
 
 				let execString .= '/Applications/TeXniscope.app/Contents/Resources/forward-search.sh '
-				let execString .= join([curlLine, sourcefileFull, target_file])
+				let execString .= join([linenr, sourcefileFull, target_file])
 
 		endif
 
