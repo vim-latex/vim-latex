@@ -145,8 +145,8 @@ function! Tex_Complete(what, where)
 				\ '', 
 				\ '^\.\\|\.tex$\\|\.bib$\\|\.bbl$\\|\.zip$\\|\.gz$', 
 				\ 'noext', 
-				\ Tex_GetVarValue('Tex_ImageDir', '.'), 
-				\ Tex_GetVarValue('Tex_ImageDir', ''))
+				\ Tex_GetVarValue('g:Tex_ImageDir', '.'),
+				\ Tex_GetVarValue('g:Tex_ImageDir', ''))
 			
 		elseif exists("s:type") && s:type == 'bibliography'
 			call Tex_SetupFileCompletion(
