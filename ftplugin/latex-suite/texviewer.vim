@@ -145,8 +145,8 @@ function! Tex_Complete(what, where)
 				\ '', 
 				\ '^\.\\|\.tex$\\|\.bib$\\|\.bbl$\\|\.zip$\\|\.gz$', 
 				\ 'noext', 
-				\ Tex_GetVarValue('Tex_ImageDir', '.'), 
-				\ Tex_GetVarValue('Tex_ImageDir', ''))
+				\ Tex_GetVarValue('g:Tex_ImageDir', '.'), 
+				\ Tex_GetVarValue('g:Tex_ImageDir', ''))
 			
 		elseif exists("s:type") && s:type == 'bibliography'
 			call Tex_SetupFileCompletion(
@@ -235,7 +235,7 @@ function! Tex_CompleteWord(completeword, prefixlength)
 endfunction " }}}
 
 " ==============================================================================
-" File name completion helper functons
+" File name completion helper functions
 " ============================================================================== 
 " Tex_SetupFileCompletion:  {{{
 " Description: 
