@@ -792,12 +792,12 @@ function! IMAP_GetVal(name, ...)
 endfunction " }}}
 " s:MultiByteStrlen: Same as strlen() but counts multibyte characters {{{
 " instead of bytes.
-function s:MultiByteStrlen(str)
+function! s:MultiByteStrlen(str)
 	return strlen(substitute(a:str, ".", "x", "g"))
 endfunction " }}}
 " s:MultiByteStrpart: Same as strpart() but counts multibyte characters {{{
 " instead of bytes.
-function s:MultiByteStrpart(src,start,...)
+function! s:MultiByteStrpart(src,start,...)
 	let lensrc=s:MultiByteStrlen(a:src)
 	let start=a:start
 	let len=lensrc-a:start
