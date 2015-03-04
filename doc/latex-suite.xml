@@ -2298,33 +2298,42 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'</programlisting>
      <literal><link
        linkend="Tex_CompileRule_format">g:Tex_CompileRule_dvi</link></literal>
      to find out how this option can be set.
-
-     For pdf viewers you need to use the <ulink url="http://itexmac.sourceforge.net/pdfsync.html">pdfsync</ulink>
-     package in your LaTeX document.
+    </para>
+    <para>
+     Pdf viewers usually use a synctex(.gz) file. This can be enabled with the compiler flag
+     <programlisting>-synctex=1</programlisting> for pdflatex. 
+     Within this suite it is however enabled by default, unless you change 
+     <literal><link linkend="Tex_CompileRule_format">g:Tex_CompileRule_pdf</link></literal>. 
     </para>
    </note>
   </section>
   <section id="inverse-searching">
    <title>Inverse Searching</title>
    <para>
-    Inverse searching refers to the viewer telling &vim; to display the &latex;
-    source file at a given location. Usually this happens with double-clicking
-    or clicking while pressing the shift button  in the viewer window. The
-    actual method depends on the viewer application.
+    Inverse searching refers to a viewer (either <literal>pdf</literal> or <literal>dvi</literal>)
+    telling &vim; to display the &latex; source file at a given location. 
+    Usually this happens with double-clicking or clicking while pressing the shift/control button
+    in the viewer window. The actual method depends on the viewer application.
    </para>
    <para>
     You will need to <link linkend="enabling-searching">enable
      searching</link> in order to use this functionality.
    </para>
    <para>
-    You will also need to specify certain settings to the DVI viewer
+    You will also need to specify certain settings to the viewer
     conveying the syntax which it needs to use to tell &vim; how to display
-    the source file. In <literal>YAP</literal>, you can set this option in
-    <literal>View > Options > Inverse Search</literal>. The
-    <literal>Command Line</literal> field needs to be set as follows:
-    <programlisting>"C:\Program Files\vim\vim61\gvim" -c ":RemoteOpen +%l %f"</programlisting>
+    the source file. 
+   </para>
+   <para>
+    In windows you need to supply the following command in the apporpriate setting of your viewer:
+    <programlisting>"C:\Program Files\vim\vim74\gvim" -c ":RemoteOpen +%l %f"</programlisting>
+    Or if you have (g)&vim; added to your <literal>$PATH</literal> simply:
+    <programlisting>gvim -c ":RemoteOpen +%l %f"</programlisting>
     The command <literal>:RemoteOpen</literal> is supplied when you install
-    &ls;.
+    &ls;. In <literal>YAP</literal>, you can set this option under
+    <literal>View > Options > Inverse Search</literal> in the Command Line field.
+    And in <literal>SumatraPdf</literal> you can set this option under
+    <literal>Settings > Options > Set inverse search command-line</literal>.
    </para>
    <para>
     On *nix machines, &ls; attempts to call the DVI viewer in such a way
