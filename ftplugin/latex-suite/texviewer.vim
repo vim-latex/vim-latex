@@ -552,7 +552,7 @@ function! Tex_ScanFileForCite(prefix)
 	" First find out if this file has a \(no)bibliography or a \addbibresource
 	" (biblatex) command in it. If so, assume that this is the only file
 	" in the project which defines a bibliography.
-	if search('\(%\s*\)\@<!\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){', 'w')
+	if search('\(%.*\)\@<!\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){', 'w')
 		call Tex_Debug('Tex_ScanFileForCite: found bibliography command in '.bufname('%'), 'view')
 		" convey that we have found a bibliography command. we do not need to
 		" proceed any further.
@@ -839,7 +839,7 @@ function! Tex_FindBibFiles()
 	new
 	exec 'e ' . fnameescape(mainfname)
 
-	if search('\(%\s*\)\@<!\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){', 'w')
+	if search('\(%.*\)\@<!\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){', 'w')
 
 		call Tex_Debug('Tex_FindBibFiles: found bibliography command in '.bufname('%'), 'view')
 
