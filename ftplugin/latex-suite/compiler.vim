@@ -584,9 +584,10 @@ function! Tex_CompileMultipleTimes()
 			let needToRerun = 1
 		endif
 
-		" The first time we see if we need to run bibtex and if the .bbl file
+		" The first time we see if we need to generate the bibliography and if the .bbl file
 		" changes, we will rerun latex.
-		if runCount == 0 && Tex_IsPresentInFile('\\bibdata', mainFileName_root.'.aux')
+		" We use '\\bibdata' as a check for BibTeX and '\\abx' as a check for biber.
+		if runCount == 0 && Tex_IsPresentInFile('\\bibdata|\\abx', mainFileName_root.'.aux')
 			let bibFileName = mainFileName_root.'.bbl'
 
 			let biblinesBefore = Tex_CatFile(bibFileName)
