@@ -211,6 +211,7 @@ function! <SID>SetLatexEfm()
 	setlocal efm+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
 	setlocal efm+=%+W%.%#\ at\ lines\ %l--%*\\d
 	setlocal efm+=%+WLaTeX\ %.%#Warning:\ %m
+	setlocal efm+=%+WLaTeX\ Font\ Warning:\ %m,%Z(Font)\ %#%m\ on\ input\ line\ %l.,%C(Font)\ %#%m
 
 	exec 'setlocal efm+=%'.pm.'Cl.%l\ %m'
 	exec 'setlocal efm+=%'.pm.'Cl.%l\ '
