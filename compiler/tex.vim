@@ -227,21 +227,27 @@ function! <SID>SetLatexEfm()
 	exec 'setlocal efm+=%'.pm.'G%.%#\ (C)\ %.%#'
 	exec 'setlocal efm+=%'.pm.'G(see\ the\ transcript%.%#)'
 	exec 'setlocal efm+=%'.pm.'G\\s%#'
-	exec 'setlocal efm+=%'.pm.'O(%*[^()])%r'
+
+	" detect what file the messages are referring to
 	exec 'setlocal efm+=%'.pm.'P(%f%r'
 	exec 'setlocal efm+=%'.pm.'P\ %\\=(%f%r'
 	exec 'setlocal efm+=%'.pm.'P%*[^()](%f%r'
-	exec 'setlocal efm+=%'.pm.'P(%f%*[^()]'
 	exec 'setlocal efm+=%'.pm.'P[%\\d%[^()]%#(%f%r'
 	if g:Tex_IgnoreUnmatched && !g:Tex_ShowallLines
-		setlocal efm+=%-P%*[^()]
+		setlocal efm+=%-P%*[^()]%r
 	endif
 	exec 'setlocal efm+=%'.pm.'Q)%r'
 	exec 'setlocal efm+=%'.pm.'Q%*[^()])%r'
 	exec 'setlocal efm+=%'.pm.'Q[%\\d%*[^()])%r'
 	if g:Tex_IgnoreUnmatched && !g:Tex_ShowallLines
-		setlocal efm+=%-Q%*[^()]
+		setlocal efm+=%-Q%*[^()]%r
 	endif
+	exec 'setlocal efm+=%'.pm.'O(%f)%r'
+	exec 'setlocal efm+=%'.pm.'P(%f'
+	exec 'setlocal efm+=%'.pm.'P(%f%*[^()]'
+	exec 'setlocal efm+=%'.pm.'Q)'
+	exec 'setlocal efm+=%'.pm.'Q%*[^()])'
+
 	if g:Tex_IgnoreUnmatched && !g:Tex_ShowallLines
 		setlocal efm+=%-G%.%#
 	endif
