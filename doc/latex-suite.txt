@@ -1835,8 +1835,11 @@ NOTE: Enabling Forward and Inverse Searching
       Latex-Suite does not supply this argument to the compiler. See the section
       on to find out how this option can be set.
       
-      For pdf viewers you need to use the pdfsync |ls_u_14| package in your
-      LaTeX document.
+      Pdf viewers usually use a synctex(.gz) file. This can be enabled with the
+      compiler flag  >
+          -synctex=1
+<     for pdflatex. Within this suite it is however enabled by default, unless
+      you change .
       
       
 
@@ -1844,20 +1847,26 @@ NOTE: Enabling Forward and Inverse Searching
 Inverse Searching                                             *ls_7_3* *ls_a_ch*
                                                              *inverse-searching*
 
-Inverse searching refers to the viewer telling Vim to display the LaTeX source
-file at a given location. Usually this happens with double-clicking or clicking
-while pressing the shift button in the viewer window. The actual method depends
-on the viewer application.
+Inverse searching refers to a viewer (either pdf or dvi) telling Vim to display
+the LaTeX source file at a given location. Usually this happens with
+double-clicking or clicking while pressing the shift/control button in the
+viewer window. The actual method depends on the viewer application.
 
 You will need to enable searching [|ls_a_ed|] in order to use this
 functionality.
 
-You will also need to specify certain settings to the DVI viewer conveying the
-syntax which it needs to use to tell Vim how to display the source file. In YAP,
-you can set this option in View > Options > Inverse Search. The Command Line
-field needs to be set as follows:  >
-    "C:\Program Files\vim\vim61\gvim" -c ":RemoteOpen +%l %f"
-The command :RemoteOpen is supplied when you install Latex-Suite.
+You will also need to specify certain settings to the viewer conveying the
+syntax which it needs to use to tell Vim how to display the source file.
+
+In windows you need to supply the following command in the apporpriate setting
+of your viewer:  >
+    "C:\Program Files\vim\vim74\gvim" -c ":RemoteOpen +%l %f"
+Or if you have (g)Vim added to your $PATH simply:  >
+    gvim -c ":RemoteOpen +%l %f"
+The command :RemoteOpen is supplied when you install Latex-Suite. In YAP, you
+can set this option under View > Options > Inverse Search in the Command Line
+field. And in SumatraPdf you can set this option under Settings > Options > Set
+inverse search command-line.
 
 On *nix machines, Latex-Suite attempts to call the DVI viewer in such a way that
 it already knows how to communicate with Vim. If this does not seem to be
@@ -3430,7 +3439,6 @@ URLs used in this file
 *ls_u_11* : http://okular.kde.org/
 *ls_u_12* : http://math.berkeley.edu/~vojta/xdvi.html
 *ls_u_13* : http://xdvi.sourceforge.net/
-*ls_u_14* : http://itexmac.sourceforge.net/pdfsync.html
 *ls_u_2* : http://vim-latex.sourceforge.net/index.php?subject=download
 *ls_u_3* : http://www.cygwin.com
 *ls_u_4* : http://www.google.com/search?q=windows%20gnu%20grep
