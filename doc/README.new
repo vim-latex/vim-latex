@@ -10,8 +10,10 @@ You need:
 (*) These files will be downloaded every time you create the documentation,
 unless you install or download them.
 
-On Fedora, you can run as root:
+To install the required packages, you can run as root on Fedora:
 
 yum install libxslt docbook-style-xsl docbook-dtds
 
-to install the required packages.
+or on Arch Linux:
+
+pacman -S libxslt docbook-xml docbook-xsl
