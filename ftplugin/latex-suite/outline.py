@@ -13,8 +13,14 @@ import StringIO
 
 
 def getFileContents(fname):
+    old_dir = os.getcwd()
+
     if type(fname) is not str:
-        fname = fname.group(3)
+        if fname.group(4) is not None:
+            os.chdir(fname.group(3))
+            fname = fname.group(4)
+        else:
+            fname = fname.group(3)
 
     # If neither the file or file.tex exists, then we just give up.
     if not os.path.isfile(fname):
@@ -31,8 +37,11 @@ def getFileContents(fname):
         return ''
 
     # TODO what are all the ways in which a tex file can include another?
-    pat = re.compile(r'^\\(@?)(include|input){(.*?)}', re.M)
+    pat = re.compile(r'^\\(@?)(?:sub)?(include|input|import)(?:from)?{(.*?)}(?:{(.*?)})?', re.M)
     contents = re.sub(pat, getFileContents, contents)
+
+    if old_dir != os.getcwd():
+        os.chdir(old_dir)
 
     return ('%%==== FILENAME: %s' % fname) + '\n' + contents
 
