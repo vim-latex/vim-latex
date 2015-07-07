@@ -182,13 +182,20 @@ function! IMAP(lhs, rhs, ft, ...)
 
 	" map only the last character of the left-hand side.
 	if lastLHSChar == ' '
-		let lastLHSChar = '<space>'
-	end
-	exe 'inoremap <silent>'
-				\ escape(lastLHSChar, '|')
-				\ '<C-r>=<SID>LookupCharacter("' .
-				\ escape(lastLHSChar, '\|"') .
-				\ '")<CR>'
+		for lastLHSChar in ['<space>', '<s-space>', '<c-space>', '<cs-space>']
+			exe 'inoremap <silent>'
+						\ escape(lastLHSChar, '|')
+						\ '<C-r>=<SID>LookupCharacter("' .
+						\ escape(lastLHSChar, '\|"') .
+						\ '")<CR>'
+		endfor
+	else
+		exe 'inoremap <silent>'
+					\ escape(lastLHSChar, '|')
+					\ '<C-r>=<SID>LookupCharacter("' .
+					\ escape(lastLHSChar, '\|"') .
+					\ '")<CR>'
+	endif
 endfunction
 
 " }}}
