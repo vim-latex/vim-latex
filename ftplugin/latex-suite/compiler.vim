@@ -395,7 +395,7 @@ function! Tex_ForwardSearchLaTeX()
 		" We're either UNIX or Mac and using a UNIX-type viewer
 
 		" Check for the special DVI viewers first
-		if viewer =~ '^ *\(xdvi\|xdvik\|kdvi\|okular\)\( \|$\)'
+		if viewer =~ '^ *\(xdvi\|xdvik\|kdvi\|okular\|zathura\)\( \|$\)'
 			let execString .= viewer." "
 
 			if Tex_GetVarValue('Tex_UseEditorSettingInDVIViewer') == 1 &&
@@ -415,6 +415,10 @@ function! Tex_ForwardSearchLaTeX()
 			elseif viewer =~ '^ *okular'
 
 				let execString .= Tex_Stringformat('--unique %s\#src:%s%s', target_file, linenr, sourcefileFull)
+
+			elseif viewer =~ '^ *zathura'
+
+				let execString .= Tex_Stringformat('--synctex-forward %s:1:%s %s', linenr, sourcefileFull, target_file)
 
 			endif
 
