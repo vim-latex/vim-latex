@@ -176,7 +176,7 @@ def VertCatString(string1, width1, string2):
         returns string
 
     Concatenates string1 and string2 vertically. The lines are assumed to
-    be "\n" seperated.
+    be "\n" separated.
 
     width1 is the width of the string1 column (It is calculated if left out).
     (Width refers to the maximum length of each line of a string)
