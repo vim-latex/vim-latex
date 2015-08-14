@@ -7,6 +7,16 @@
 "              Part of vim-latexSuite: http://vim-latex.sourceforge.net
 " ============================================================================
 " Tex_SetTexViewerMaps: sets maps for this ftplugin {{{
+
+if has('python')
+	let s:haspython=1
+	let s:pythoncmd='python'
+elseif has('python3')
+	let s:haspython=1
+	let s:pythoncmd='python3'
+else
+	let s:haspython=0
+endif
 function! Tex_SetTexViewerMaps()
 	inoremap <silent> <Plug>Tex_Completion <Esc>:call Tex_Complete("default","text")<CR>
 	if !hasmapto('<Plug>Tex_Completion', 'i')
@@ -104,7 +114,7 @@ function! Tex_Complete(what, where)
 			let s:prefix = matchstr(s:prefix, '\([^,]\+,\)*\zs\([^,]\+\)\ze$')
 			call Tex_Debug(":Tex_Complete: using s:prefix = ".s:prefix, "view")
 
-			if has('python') && Tex_GetVarValue('Tex_UsePython') 
+			if s:haspython && Tex_GetVarValue('Tex_UsePython') 
 				\ && Tex_GetVarValue('Tex_UseCiteCompletionVer2') == 1
 
 				exe 'cd '.s:origdir
@@ -733,6 +743,10 @@ if has('python') && Tex_GetVarValue('Tex_UsePython')
 	python import sys, re
 	exec "python sys.path += [r'". s:path . "']"
 	python import outline
+elseif has('python3') && Tex_GetVarValue('Tex_UsePython')
+	python3 import sys, re
+	exec "python3 sys.path += [r'". s:path . "']"
+	python3 import outline
 endif
 
 function! Tex_StartOutlineCompletion()
@@ -751,6 +765,11 @@ function! Tex_StartOutlineCompletion()
 
 		" transfer variable from python to a local variable.
 		python vim.command("""let retval = "%s" """ % re.sub(r'"|\\', r'\\\g<0>', retval))
+	elseif has('python3') && Tex_GetVarValue('Tex_UsePython')
+		python3 retval = outline.main(vim.eval("Tex_GetMainFileName(':p')"), vim.eval("s:prefix"))
+
+		" transfer variable from python to a local variable.
+		python3 vim.command("""let retval = "%s" """ % re.sub(r'"|\\', r'\\\g<0>', retval))
 	else
 		let retval = system(shellescape(s:path.'/outline.py').' '.shellescape(mainfname).' '.shellescape(s:prefix))
 	endif
@@ -881,6 +900,10 @@ if has('python') && Tex_GetVarValue('Tex_UsePython')
 	python import sys, re
 	exec "python sys.path += [r'". s:path . "']"
 	python import bibtools
+elseif has('python3') && Tex_GetVarValue('Tex_UsePython')
+	python3 import sys, re
+	exec "python3 sys.path += [r'". s:path . "']"
+	python3 import bibtools
 endif
 
 function! Tex_StartCiteCompletion()
@@ -896,12 +919,19 @@ function! Tex_StartCiteCompletion()
     bot split __OUTLINE__
 	exec Tex_GetVarValue('Tex_OutlineWindowHeight', 15).' wincmd _'
 
-	exec 'python Tex_BibFile = bibtools.BibFile("""'.bibfiles.'""")'
-	exec 'python Tex_BibFile.addfilter("key ^'.s:prefix.'")'
+	if has('python')
+	    exec 'python Tex_BibFile = bibtools.BibFile("""'.bibfiles.'""")'
+	    exec 'python Tex_BibFile.addfilter("key ^'.s:prefix.'")'
+	elseif has('python3')
+	    exec 'python3 Tex_BibFile = bibtools.BibFile("""'.bibfiles.'""")'
+	    exec 'python3 Tex_BibFile.addfilter("key ^'.s:prefix.'")'
+	endif
+	
 	call Tex_DisplayBibList()
+	"call Tex_EchoBibShortcuts()
 
-	nnoremap <buffer> <Plug>Tex_JumpToNextBibEntry :call search('^\S.*\]$', 'W')<CR>:call Tex_EchoBibShortcuts()<CR>z.
-	nnoremap <buffer> <Plug>Tex_JumpToPrevBibEntry :call search('^\S.*\]$', 'bW')<CR>:call Tex_EchoBibShortcuts()<CR>z.
+	nnoremap <buffer> <Plug>Tex_JumpToNextBibEntry :call search('^\S.*\]$', 'W')<CR>z.:call Tex_EchoBibShortcuts()<CR>
+	nnoremap <buffer> <Plug>Tex_JumpToPrevBibEntry :call search('^\S.*\]$', 'bW')<CR>z.:call Tex_EchoBibShortcuts()<CR>
 	nnoremap <buffer> <Plug>Tex_FilterBibEntries   :call Tex_HandleBibShortcuts('filter')<CR>
 	nnoremap <buffer> <Plug>Tex_RemoveBibFilters   :call Tex_HandleBibShortcuts('remove_filters')<CR>
 	nnoremap <buffer> <Plug>Tex_SortBibEntries	  :call Tex_HandleBibShortcuts('sort')<CR>
@@ -939,8 +969,14 @@ function! Tex_DisplayBibList()
 	" delete everything in it to the blackhole
 	% d _
 
-	exec 'python Tex_CurBuf = vim.current.buffer'
-	exec 'python Tex_CurBuf[:] = str(Tex_BibFile).splitlines()'
+	if has('python')
+	    exec 'python Tex_CurBuf = vim.current.buffer'
+		exec 'python Tex_CurBuf_buf = Tex_BibFile.__str__()'
+	    exec 'python Tex_CurBuf[:] = Tex_CurBuf_buf.splitlines()'
+	elseif has('python3')
+	    exec 'python3 Tex_CurBuf = vim.current.buffer'
+	    exec 'python3 Tex_CurBuf[:] = str(Tex_BibFile).splitlines()'
+	endif
 
 	call Tex_SetupBibSyntax()
 
@@ -1024,18 +1060,18 @@ function! Tex_HandleBibShortcuts(command)
 			endif
 			call Tex_Debug(":Tex_HandleBibShortcuts: using inp = [".inp."]", "view")
 			if a:command == 'filter'
-				exec 'python Tex_BibFile.addfilter("'.inp.'")'
+				exec s:pythoncmd.' Tex_BibFile.addfilter("'.inp.'")'
 			elseif a:command == 'sort'
-				exec "python Tex_BibFile.addsortfield(\"".inp."\")"
-				exec 'python Tex_BibFile.sort()'
+				exec s:pythoncmd." Tex_BibFile.addsortfield(\"".inp."\")"
+				exec s:pythoncmd.' Tex_BibFile.sort()'
 			endif
 			silent! call Tex_DisplayBibList()
 		endif
 
 	elseif a:command == 'remove_filters'
 
-		exec 'python Tex_BibFile.rmfilters()'
-		exec 'python Tex_BibFile.addfilter("key ^'.s:prefix.'")'
+		exec s:pythoncmd.' Tex_BibFile.rmfilters()'
+		exec s:pythoncmd.' Tex_BibFile.addfilter("key ^'.s:prefix.'")'
 		call Tex_DisplayBibList()
 		
 	endif

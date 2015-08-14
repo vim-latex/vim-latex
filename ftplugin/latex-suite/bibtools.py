@@ -3,7 +3,13 @@
 # http://vim-latex.sf.net
 
 import re
-import urllib
+import os
+try:
+    from urllib.request import urlopen
+    from urllib.parse import quote
+except ImportError:
+    from urllib import urlopen
+    from urllib import quote
 
 
 class Bibliography(dict):
@@ -27,8 +33,12 @@ class Bibliography(dict):
         """
 
         if macros:
-            for k, v in macros.iteritems():
-                txt = txt.replace(k, '{' + v + '}')
+            try:
+                for k, v in macros.iteritems():
+                    txt = txt.replace(k, '{' + v + '}')
+            except AttributeError:
+                for k, v in macros.items():
+                    txt = txt.replace(k, '{' + v + '}')
 
         m = re.match(r'\s*@(\w+){\s*((\S+),)?(.*)}\s*', txt,
                      re.MULTILINE | re.DOTALL)
@@ -61,6 +71,12 @@ class Bibliography(dict):
                 while 1:
                     try:
                         mn = mniter.next()
+                    except AttributeError:
+                        try:
+                            mn = next(mniter)
+                        except StopIteration:
+                            return None
+
                     except StopIteration:
                         return None
 
@@ -144,10 +160,16 @@ class Bibliography(dict):
                 s += 'TI "%(title)s"\n' % self
             if self['author']:
                 s += 'AU %(author)s\n' % self
-            for k, v in self.iteritems():
-                if k not in ['title', 'author', 'bibtype', 'key', 'id', 'file',
-                             'body', 'bodytext']:
-                    s += 'MI %s: %s\n' % (k, v)
+            try:
+                for k, v in self.iteritems():
+                    if k not in ['title', 'author', 'bibtype', 'key', 'id', 'file',
+                                 'body', 'bodytext']:
+                        s += 'MI %s: %s\n' % (k, v)
+            except AttributeError:
+                for k, v in self.items():
+                    if k not in ['title', 'author', 'bibtype', 'key', 'id', 'file',
+                                 'body', 'bodytext']:
+                        s += 'MI %s: %s\n' % (k, v)
 
             return s.rstrip()
 
@@ -171,8 +193,9 @@ class BibFile:
                 self.addfile(f)
 
     def addfile(self, file):
-        fields = urllib.urlopen(file).read().split('@')
+        fields = urlopen('file://' + quote(os.path.abspath(file))).read().split(b'@')
         for f in fields:
+            f = f.decode('utf-8')
             if not (f and re.match('string', f, re.I)):
                 continue
 
@@ -180,6 +203,7 @@ class BibFile:
             self.macros.update(b['macro'])
 
         for f in fields:
+            f = f.decode('utf-8')
             if not f or re.match('string', f, re.I):
                 continue
 
@@ -221,4 +245,4 @@ if __name__ == "__main__":
     import sys
 
     bf = BibFile(sys.argv[1])
-    print bf
+    print(bf)

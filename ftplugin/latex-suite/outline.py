@@ -6,10 +6,15 @@
 # Description:
 #   This file implements a simple outline creation for latex documents.
 
+from __future__ import print_function
+
 import re
 import os
 import sys
-import StringIO
+if sys.version_info <= (3, 0):
+    from StringIO import StringIO
+else:
+    from io import StringIO
 
 
 def getFileContents(fname):
@@ -66,7 +71,7 @@ def getSectionLabels_Root(lineinfo, section_prefix, label_prefix):
     prev_txt = ''
     inside_env = 0
     prev_env = ''
-    outstr = StringIO.StringIO('')
+    outstr = StringIO('')
     pres_depth = len(section_prefix)
 
     #print '+getSectionLabels_Root: lineinfo = [%s]' % lineinfo
@@ -100,9 +105,11 @@ def getSectionLabels_Root(lineinfo, section_prefix, label_prefix):
             # :          e^{i\pi} + 1 = 0
             #
             # Use the current "section depth" for the leading indentation.
-            print >>outstr, '>%s%s\t\t<%s>' % (' ' * (2 * pres_depth + 2),
+            print('>%s%s\t\t<%s>' % (' ' * (2 * pres_depth + 2),
                                                m.group(1), fname)
-            print >>outstr, ':%s%s' % (' ' * (2 * pres_depth + 4), prev_txt)
+					       , file=outstr)
+            print(':%s%s' % (' ' * (2 * pres_depth + 4), prev_txt)
+					       , file=outstr)
             prev_txt = ''
 
         # If we just encoutered the start or end of an environment or a
@@ -190,4 +197,4 @@ if __name__ == "__main__":
     else:
         prefix = ''
 
-    print main(sys.argv[1], prefix)
+    print(main(sys.argv[1], prefix))
