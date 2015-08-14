@@ -1377,9 +1377,9 @@ NOTE: Latex-Suite works the same way if you press <F9> after any command which
 NOTE: Requirements
       ------------
       This method of preseting the \labels depends on Vim being compiled with
-      python support. To check if you have this, see the output of the :ver
-      command. If you see something like +python, you are all set. Failing this,
-      you will need to have python somewhere in your $PATH.
+      python[3] support. To check if you have this, see the output of the :ver
+      command. If you see something like +python or +python3, you are all set.
+      Failing this, you will need to have python somewhere in your $PATH.
       
       
 
@@ -2603,10 +2603,10 @@ Tex_UsePython                                              *ls_11_1_2* *ls_a_cS*
 Type             boolean
 Default Value    1
 
-If Latex-Suite detects that your vim is python enabled (using has('python')),
-then it tries to use python in certain places to speed things up. If this
-misbehaves, you can set this to zero, in which case, Latex-Suite will use
-vimscript to accomplish the same.
+If Latex-Suite detects that your vim is python enabled (using has('python') and
+has('python3')), then it tries to use python in certain places to speed things
+up. If this misbehaves, you can set this to zero, in which case, Latex-Suite
+will use vimscript to accomplish the same.
 
 --------------------------------------------------------------------------------
 Place-Holder Customization                                   *ls_11_2* *ls_a_cT*

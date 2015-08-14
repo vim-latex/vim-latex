@@ -1643,9 +1643,9 @@ newfile.tex [Preview]                                         11,3           21%
     <title>Requirements</title>
     <para>
      This method of preseting the <literal>\label</literal>s depends on Vim
-     being compiled with python support. To check if you have this, see the
+     being compiled with python[3] support. To check if you have this, see the
      output of the <literal>:ver</literal> command. If you see something
-     like <literal>+python</literal>, you are all set. Failing this, you
+     like <literal>+python</literal> or <literal>+python3</literal>, you are all set. Failing this, you
      will need to have <literal>python</literal> somewhere in your
      <literal>$PATH</literal>.
     </para>
@@ -3340,7 +3340,7 @@ endif</programlisting>
      </informaltable>
      <para>
       If &ls; detects that your vim is python enabled (using
-      <literal>has('python')</literal>), then it tries to use python in
+      <literal>has('python')</literal> and <literal>has('python3')</literal>), then it tries to use python in
       certain places to speed things up. If this misbehaves, you can set
       this to zero, in which case, &ls; will use vimscript to accomplish
       the same.

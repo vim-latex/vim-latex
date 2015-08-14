@@ -7,6 +7,7 @@
 "              Part of vim-latexSuite: http://vim-latex.sourceforge.net
 " ============================================================================
 " Tex_SetTexViewerMaps: sets maps for this ftplugin {{{
+
 function! Tex_SetTexViewerMaps()
 	inoremap <silent> <Plug>Tex_Completion <Esc>:call Tex_Complete("default","text")<CR>
 	if !hasmapto('<Plug>Tex_Completion', 'i')
@@ -104,7 +105,7 @@ function! Tex_Complete(what, where)
 			let s:prefix = matchstr(s:prefix, '\([^,]\+,\)*\zs\([^,]\+\)\ze$')
 			call Tex_Debug(":Tex_Complete: using s:prefix = ".s:prefix, "view")
 
-			if has('python') && Tex_GetVarValue('Tex_UsePython') 
+			if Tex_UsePython()
 				\ && Tex_GetVarValue('Tex_UseCiteCompletionVer2') == 1
 
 				exe 'cd '.s:origdir
@@ -730,10 +731,10 @@ endfunction " }}}
 " get the place where this plugin resides for setting cpt and dict options.
 " these lines need to be outside the function.
 let s:path = expand('<sfile>:p:h')
-if has('python') && Tex_GetVarValue('Tex_UsePython')
-	python import sys, re
-	exec "python sys.path += [r'". s:path . "']"
-	python import outline
+if g:Tex_HasPython
+	exec g:Tex_PythonCmd . " import sys, re"
+	exec g:Tex_PythonCmd . " sys.path += [r'". s:path . "']"
+	exec g:Tex_PythonCmd . " import outline"
 endif
 
 function! Tex_StartOutlineCompletion()
@@ -747,15 +748,6 @@ function! Tex_StartOutlineCompletion()
     set cmdheight=1
     set lazyredraw
 
-	if has('python') && Tex_GetVarValue('Tex_UsePython')
-		python retval = outline.main(vim.eval("Tex_GetMainFileName(':p')"), vim.eval("s:prefix"))
-
-		" transfer variable from python to a local variable.
-		python vim.command("""let retval = "%s" """ % re.sub(r'"|\\', r'\\\g<0>', retval))
-	else
-		let retval = system(shellescape(s:path.'/outline.py').' '.shellescape(mainfname).' '.shellescape(s:prefix))
-	endif
-
     bot split __OUTLINE__
 	exec Tex_GetVarValue('Tex_OutlineWindowHeight', 15).' wincmd _'
 
@@ -767,9 +759,16 @@ function! Tex_StartOutlineCompletion()
     setlocal foldmethod=marker
     setlocal foldmarker=<<<,>>>
 
-	" delete everything in it to the blackhole
-	% d _
-	0put!=retval
+	if Tex_UsePython()
+		exec g:Tex_PythonCmd . ' retval = outline.main("""' . mainfname . '""", """' . s:prefix . '""")'
+		exec g:Tex_PythonCmd . ' vim.current.buffer[:] = retval.splitlines()'
+	else
+		" delete everything in it to the blackhole
+		% d _
+
+		let retval = system(shellescape(s:path.'/outline.py').' '.shellescape(mainfname).' '.shellescape(s:prefix))
+		0put!=retval
+	endif
 
 	0
 
@@ -878,10 +877,10 @@ endfunction " }}}
 
 " get the place where this plugin resides for setting cpt and dict options.
 " these lines need to be outside the function.
-if has('python') && Tex_GetVarValue('Tex_UsePython')
-	python import sys, re
-	exec "python sys.path += [r'". s:path . "']"
-	python import bibtools
+if g:Tex_HasPython
+	exec g:Tex_PythonCmd . " import sys, re"
+	exec g:Tex_PythonCmd . " sys.path += [r'". s:path . "']"
+	exec g:Tex_PythonCmd . " import bibtools"
 endif
 
 function! Tex_StartCiteCompletion()
@@ -897,9 +896,11 @@ function! Tex_StartCiteCompletion()
     bot split __OUTLINE__
 	exec Tex_GetVarValue('Tex_OutlineWindowHeight', 15).' wincmd _'
 
-	exec 'python Tex_BibFile = bibtools.BibFile("""'.bibfiles.'""")'
-	exec 'python Tex_BibFile.addfilter("key ^'.s:prefix.'")'
+	exec g:Tex_PythonCmd . ' Tex_BibFile = bibtools.BibFile("""'.bibfiles.'""")'
+	exec g:Tex_PythonCmd . ' Tex_BibFile.addfilter("key ^'.s:prefix.'")'
+	
 	call Tex_DisplayBibList()
+	"call Tex_EchoBibShortcuts()
 
 	nnoremap <buffer> <Plug>Tex_JumpToNextBibEntry :call search('^\S.*\]$', 'W')<CR>z.:call Tex_EchoBibShortcuts()<CR>
 	nnoremap <buffer> <Plug>Tex_JumpToPrevBibEntry :call search('^\S.*\]$', 'bW')<CR>z.:call Tex_EchoBibShortcuts()<CR>
@@ -940,8 +941,7 @@ function! Tex_DisplayBibList()
 	" delete everything in it to the blackhole
 	% d _
 
-	exec 'python Tex_CurBuf = vim.current.buffer'
-	exec 'python Tex_CurBuf[:] = str(Tex_BibFile).splitlines()'
+	exec g:Tex_PythonCmd . ' vim.current.buffer[:] = Tex_BibFile.__str__().splitlines()'
 
 	call Tex_SetupBibSyntax()
 
@@ -1024,18 +1024,18 @@ function! Tex_HandleBibShortcuts(command)
 			endif
 			call Tex_Debug(":Tex_HandleBibShortcuts: using inp = [".inp."]", "view")
 			if a:command == 'filter'
-				exec 'python Tex_BibFile.addfilter("'.inp.'")'
+				exec g:Tex_PythonCmd . ' Tex_BibFile.addfilter("'.inp.'")'
 			elseif a:command == 'sort'
-				exec "python Tex_BibFile.addsortfield(\"".inp."\")"
-				exec 'python Tex_BibFile.sort()'
+				exec g:Tex_PythonCmd . " Tex_BibFile.addsortfield(\"".inp."\")"
+				exec g:Tex_PythonCmd . ' Tex_BibFile.sort()'
 			endif
 			silent! call Tex_DisplayBibList()
 		endif
 
 	elseif a:command == 'remove_filters'
 
-		exec 'python Tex_BibFile.rmfilters()'
-		exec 'python Tex_BibFile.addfilter("key ^'.s:prefix.'")'
+		exec g:Tex_PythonCmd . ' Tex_BibFile.rmfilters()'
+		exec g:Tex_PythonCmd . ' Tex_BibFile.addfilter("key ^'.s:prefix.'")'
 		call Tex_DisplayBibList()
 		
 	endif
