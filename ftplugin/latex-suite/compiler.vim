@@ -426,7 +426,7 @@ function! Tex_ForwardSearchLaTeX()
 			" We must be using a generic UNIX viewer
 			" syntax is: viewer TARGET_FILE LINE_NUMBER SOURCE_FILE
 
-			let execString .= join([target_file, linenr, sourcefile])
+			let execString .= join([viewer, target_file, linenr, sourcefile])
 
 		endif
 
