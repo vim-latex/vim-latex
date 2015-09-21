@@ -294,7 +294,9 @@ function! Tex_pack_one(...)
 					let retVal = retVal.'\usepackage{'.packname.'}'."\<CR>"
 				endif
 			else
-				let retVal = retVal.'\usepackage{'.packname.'}'."\<CR>"
+				" let retVal = retVal.'\usepackage{'.packname.'}'."\<CR>"
+				" I always want options
+				let retVal = retVal.'\usepackage[<++>]{'.packname.'}<++>'
 			endif
 			let omega = omega + 1
 		endwhile
