@@ -89,7 +89,7 @@ function! <SID>SetQuotes()
     if g:Tex_package_detected =~ '\<babel\>'
         if g:Tex_babel_options =~ '\<german\>'
             exec 'so '.s:path.'/german'
-		elseif g:Tex_babel_options =~ '\<ngerman\>'
+        elseif g:Tex_babel_options =~ '\<ngerman\>'
             exec 'so '.s:path.'/ngerman'
         endif
     endif
