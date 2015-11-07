@@ -81,13 +81,13 @@ function! Tex_Complete(what, where)
 			elseif Tex_GetVarValue('Tex_UseSimpleLabelSearch') == 1
 				call Tex_Debug("Tex_Complete: searching for \\labels in all .tex files in the present directory", "view")
 				call Tex_Debug("Tex_Complete: silent! grep! ".Tex_EscapeForGrep('\\label{'.s:prefix)." *.tex", 'view')
-				call Tex_Grep('\\label{'.s:prefix, '*.tex')
+				call Tex_Grep('\\label{\|\\nllabel{'.s:prefix, '*.tex')
 				call <SID>Tex_SetupCWindow()
 
 			elseif Tex_GetVarValue('Tex_ProjectSourceFiles') != ''
 				call Tex_Debug('Tex_Complete: searching for \\labels in all Tex_ProjectSourceFiles', 'view')
 				exec 'cd '.fnameescape(Tex_GetMainFileName(':p:h'))
-				call Tex_Grep('\\label{'.s:prefix, Tex_GetVarValue('Tex_ProjectSourceFiles'))
+				call Tex_Grep('\\label{\|\\nllabel{'.s:prefix, Tex_GetVarValue('Tex_ProjectSourceFiles'))
 				call <SID>Tex_SetupCWindow()
 
 			else
@@ -387,7 +387,7 @@ function! s:Tex_CompleteRefCiteCustom(type)
 		let completeword = bibkey
 
 	elseif a:type =~ 'ref'
-		let label = matchstr(getline('.'), '\\label{\zs.\{-}\ze}')
+		let label = matchstr(getline('.'), '\\label{\zs.\{-}\ze}\|\\nllabel{\zs.\{-}\ze}')
 		let completeword = label
 
 	elseif a:type =~ '^plugin_'
@@ -552,15 +552,17 @@ function! Tex_ScanFileForCite(prefix)
 	" First find out if this file has a \(no)bibliography or a \addbibresource
 	" (biblatex) command in it. If so, assume that this is the only file
 	" in the project which defines a bibliography.
-	if search('\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){', 'w')
+	if search('\(%.*\)\@<!\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){', 'w')
 		call Tex_Debug('Tex_ScanFileForCite: found bibliography command in '.bufname('%'), 'view')
 		" convey that we have found a bibliography command. we do not need to
 		" proceed any further.
 		let foundCiteFile = 1
 
 		" extract the bibliography filenames from the command.
-		let bibnames = matchstr(getline('.'), '\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){\zs.\{-}\ze}')
+        let bibblock = join(getline(line('.'), line('$')))
+		let bibnames = matchstr(bibblock, '\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){\zs.\{-}\ze}')
 		let bibnames = substitute(bibnames, '\s', '', 'g')
+		let bibnames = substitute(bibnames, '%', '', 'g')
 
 		call Tex_Debug('trying to search through ['.bibnames.']', 'view')
 
@@ -662,7 +664,7 @@ function! Tex_ScanFileForLabels(prefix)
 	call Tex_Debug("+Tex_ScanFileForLabels: grepping in file [".bufname('%')."]", "view")
 
 	exec 'lcd'.fnameescape(expand('%:p:h'))
-	call Tex_Grepadd('\\label{'.a:prefix, "%")
+	call Tex_Grepadd('\\label{\|\\nllabel{'.a:prefix, "%")
 
 	" Then recursively grep for all \include'd or \input'ed files.
 	exec 0
@@ -839,13 +841,16 @@ function! Tex_FindBibFiles()
 	new
 	exec 'e ' . fnameescape(mainfname)
 
-	if search('\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){', 'w')
+	if search('\(%.*\)\@<!\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){', 'w')
 
 		call Tex_Debug('Tex_FindBibFiles: found bibliography command in '.bufname('%'), 'view')
 
 		" extract the bibliography filenames from the command.
-		let bibnames = matchstr(getline('.'), '\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){\zs.\{-}\ze}')
+        let bibblock = join(getline(line('.'), line('$')))
+		"let bibnames = matchstr(getline('.'), '\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){\zs.\{-}\ze}')
+		let bibnames = matchstr(bibblock, '\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){\zs.\{-}\ze}')
 		let bibnames = substitute(bibnames, '\s', '', 'g')
+		let bibnames = substitute(bibnames, '%', '', 'g')
 
 		call Tex_Debug(':Tex_FindBibFiles: trying to search through ['.bibnames.']', 'view')
 

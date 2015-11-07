@@ -4,6 +4,7 @@
 
 import re
 import urllib
+import os
 
 
 class Bibliography(dict):
@@ -171,7 +172,11 @@ class BibFile:
                 self.addfile(f)
 
     def addfile(self, file):
+        if(file[0] == "."):
+            file = os.path.abspath(file)
+
         fields = urllib.urlopen(file).read().split('@')
+
         for f in fields:
             if not (f and re.match('string', f, re.I)):
                 continue
