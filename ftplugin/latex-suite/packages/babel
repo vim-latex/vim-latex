@@ -89,8 +89,13 @@ function! <SID>SetQuotes()
     if g:Tex_package_detected =~ '\<babel\>'
         if g:Tex_babel_options =~ '\<german\>'
             exec 'so '.s:path.'/german'
-		elseif g:Tex_babel_options =~ '\<ngerman\>'
+        elseif g:Tex_babel_options =~ '\<ngerman\>'
             exec 'so '.s:path.'/ngerman'
+        elseif g:Tex_babel_options =~ '\<english\|USenglish\|american\|UKenglish\|british\|canadian\>'
+          if g:Tex_inputenc_options =~ '\<utf8\>'
+            let b:Tex_SmartQuoteOpen = '“'
+            let b:Tex_SmartQuoteClose = '”'
+          endif
         endif
     endif
 endfunction " }}}
