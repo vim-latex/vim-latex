@@ -25,8 +25,11 @@ function! Tex_SetFoldOptions()
 
 	setlocal foldtext=TexFoldTextFunction()
 
-	if g:Tex_Folding && g:Tex_AutoFolding
+	if g:Tex_Folding
 		call MakeTexFolds(0)
+		if !g:Tex_AutoFolding
+			normal! zR
+		endif
 	endif
 
 	let s:ml = '<Leader>'
