@@ -371,20 +371,24 @@ function! Tex_ForwardSearchLaTeX()
 			let execString .= Tex_Stringformat('start %s "%s" -forward-search "%s" %s', viewer, target_file, sourcefileFull, linenr)
 		endif	
 
-	elseif (has('macunix') && (viewer =~ '^ *\(Skim\|PDFView\|TeXniscope\)\( \|$\)'))
+	elseif (has('macunix') && (viewer =~ '\(Skim\|PDFView\|TeXniscope\)'))
 		" We're on a Mac using a traditional Mac viewer
 
-		if viewer =~ '^ *Skim'
+		if viewer =~ 'Skim'
 
+			if executable('displayline')
+				let execString .= 'displayline '
+			else
 				let execString .= '/Applications/Skim.app/Contents/SharedSupport/displayline '
+			endif
 				let execString .= join([linenr, target_file, sourcefileFull])
 
-		elseif viewer =~ '^ *PDFView'
+		elseif viewer =~ 'PDFView'
 
 				let execString .= '/Applications/PDFView.app/Contents/MacOS/gotoline.sh '
 				let execString .= join([linenr, target_file, sourcefileFull])
 
-		elseif viewer =~ '^ *TeXniscope'
+		elseif viewer =~ 'TeXniscope'
 
 				let execString .= '/Applications/TeXniscope.app/Contents/Resources/forward-search.sh '
 				let execString .= join([linenr, sourcefileFull, target_file])
