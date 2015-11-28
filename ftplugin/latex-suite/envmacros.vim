@@ -705,7 +705,15 @@ if g:Tex_PromptedEnvironments != ''
 			let l = getline(".")
 			let pack = matchstr(l, '^\s*\zs.*')
 			normal!  0"_D
-			return Tex_pack_one(pack)
+
+			" If the g:Tex_PackagesMenu variable is set to zero,
+			" the function Tex_pack_one is not defined. In this case
+			" we use a very simple replacement.
+			if exists('*Tex_pack_one')
+				return Tex_pack_one(pack)
+			else
+				return IMAP_PutTextWithMovement('\usepackage{'.pack."}\<CR>", '<+', '+>')
+			endif
 		endif
 	endfunction 
 	
