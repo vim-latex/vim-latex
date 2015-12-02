@@ -559,7 +559,7 @@ function! Tex_ScanFileForCite(prefix)
 		let foundCiteFile = 1
 
 		" extract the bibliography filenames from the command.
-        let bibblock = join(getline(line('.'), line('$')))
+		let bibblock = join(getline(line('.'), line('$')))
 		let bibnames = matchstr(bibblock, '\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){\zs.\{-}\ze}')
 		let bibnames = substitute(bibnames, '\s', '', 'g')
 		let bibnames = substitute(bibnames, '%', '', 'g')
@@ -846,7 +846,7 @@ function! Tex_FindBibFiles()
 		call Tex_Debug('Tex_FindBibFiles: found bibliography command in '.bufname('%'), 'view')
 
 		" extract the bibliography filenames from the command.
-        let bibblock = join(getline(line('.'), line('$')))
+		let bibblock = join(getline(line('.'), line('$')))
 		"let bibnames = matchstr(getline('.'), '\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){\zs.\{-}\ze}')
 		let bibnames = matchstr(bibblock, '\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){\zs.\{-}\ze}')
 		let bibnames = substitute(bibnames, '\s', '', 'g')
