@@ -926,6 +926,15 @@ endfunction
 TexLet g:Tex_ItemStyle_itemize = '\item '
 TexLet g:Tex_ItemStyle_enumerate = '\item '
 TexLet g:Tex_ItemStyle_theindex = '\item '
+
+" paralist package
+TexLet g:Tex_ItemStyle_asparaenum = '\item '
+TexLet g:Tex_ItemStyle_asparaitem = '\item '
+TexLet g:Tex_ItemStyle_compactenum = '\item '
+TexLet g:Tex_ItemStyle_compactitem = '\item '
+TexLet g:Tex_ItemStyle_inparaenum = '\item '
+TexLet g:Tex_ItemStyle_inparaitem = '\item '
+
 TexLet g:Tex_ItemStyle_thebibliography = '\bibitem[<+biblabel+>]{<+bibkey+>} <++>'
 TexLet g:Tex_ItemStyle_description = '\item[<+label+>] <++>'
 
