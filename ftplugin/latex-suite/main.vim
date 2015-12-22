@@ -1,7 +1,7 @@
 " LaTeX filetype
 "	  Language: LaTeX (ft=tex)
 "	Maintainer: Srinath Avadhanula
-"		   URL: 
+"		   URL:
 
 " line continuation used here.
 let s:save_cpo = &cpo
@@ -149,10 +149,10 @@ if !exists('s:doneMappings')
 			endif
 			let i = i + 1
 		endwhile
-	endfunction 
+	endfunction
 	call s:ProtectLetters(32, 127)
 	" }}}
-	" vmaps: enclose selected region in brackets, environments {{{ 
+	" vmaps: enclose selected region in brackets, environments {{{
 	" The action changes depending on whether the selection is character-wise
 	" or line wise. for example, selecting linewise and pressing \v will
 	" result in the region being enclosed in \begin{verbatim}, \end{verbatim},
@@ -169,10 +169,10 @@ end
 
 " ==============================================================================
 " Helper functions for debugging
-" ============================================================================== 
+" ==============================================================================
 " Tex_Debug: appends the argument into s:debugString {{{
-" Description: 
-" 
+" Description:
+"
 " Do not want a memory leak! Set this to zero so that latex-suite always
 " starts out in a non-debugging mode.
 if !exists('g:Tex_Debug')
@@ -202,8 +202,8 @@ function! Tex_Debug(str, ...)
 	endif
 endfunction " }}}
 " Tex_PrintDebug: prings s:debugString {{{
-" Description: 
-" 
+" Description:
+"
 function! Tex_PrintDebug(...)
 	if a:0 > 0
 		let pattern = a:1
@@ -215,8 +215,8 @@ function! Tex_PrintDebug(...)
 	endif
 endfunction " }}}
 " Tex_ClearDebug: clears the s:debugString string {{{
-" Description: 
-" 
+" Description:
+"
 function! Tex_ClearDebug(...)
 	if a:0 > 0
 		let pattern = a:1
@@ -247,7 +247,7 @@ endfunction
 
 " ==============================================================================
 " Helper functions for grepping
-" ============================================================================== 
+" ==============================================================================
 " Tex_Grep: shorthand for :grep or :vimgrep {{{
 function! Tex_Grep(string, where)
 	if v:version >= 700
@@ -306,7 +306,7 @@ endfunction " }}}
 
 " ==============================================================================
 " Uncategorized helper functions
-" ============================================================================== 
+" ==============================================================================
 " Tex_Strntok: extract the n^th token from a list {{{
 " example: Strntok('1,23,3', ',', 2) = 23
 fun! Tex_Strntok(s, tok, n)
@@ -315,7 +315,7 @@ endfun
 
 " }}}
 " Tex_CreatePrompt: creates a prompt string {{{
-" Description: 
+" Description:
 " Arguments:
 "     promptList: This is a string of the form:
 "         'item1,item2,item3,item4'
@@ -341,7 +341,7 @@ function! Tex_CreatePrompt(promptList, cols, sep)
 		let j = 0
 		while j < a:cols && i + j <= num_common
 			let com = Tex_Strntok(a:promptList, a:sep, i+j)
-			let promptStr = promptStr.'('.(i+j).') '. 
+			let promptStr = promptStr.'('.(i+j).') '.
 						\ com."\t".( strlen(com) < 4 ? "\t" : '' )
 
 			let j = j + 1
@@ -352,7 +352,7 @@ function! Tex_CreatePrompt(promptList, cols, sep)
 		let i = i + a:cols
 	endwhile
 	return promptStr
-endfunction 
+endfunction
 
 " }}}
 " Tex_CleanSearchHistory: removes last search item from search history {{{
@@ -366,7 +366,7 @@ nmap <silent> <script> <plug>cleanHistory :call Tex_CleanSearchHistory()<CR>
 
 " }}}
 " Tex_GetVarValue: gets the value of the variable {{{
-" Description: 
+" Description:
 " 	See if a window-local, buffer-local or global variable with the given name
 " 	exists and if so, returns the corresponding value. If none exist, return
 " 	an empty string.
@@ -450,11 +450,11 @@ function! Tex_GetMainFileName(...)
 	"       safe if this file is to be used as part of an external command on
 	"       certain platforms.
 	return lheadfile
-endfunction 
+endfunction
 
 " }}}
 " Tex_ChooseFromPrompt: process a user input to a prompt string {{{
-" " Description: 
+" " Description:
 function! Tex_ChooseFromPrompt(dialog, list, sep)
 	let g:Tex_ASDF = a:dialog
 	let inp = input(a:dialog)
@@ -465,7 +465,7 @@ function! Tex_ChooseFromPrompt(dialog, list, sep)
 	endif
 endfunction " }}}
 " Tex_ChooseFile: produces a file list and prompts for choice {{{
-" Description: 
+" Description:
 function! Tex_ChooseFile(dialog)
 	let files = glob('*')
 	if files == ''
@@ -490,20 +490,20 @@ function! Tex_ChooseFile(dialog)
 		return ''
 	endif
 	return retval
-endfunction 
+endfunction
 
 " }}}
 " Tex_IncrementNumber: returns an incremented number each time {{{
-" Description: 
+" Description:
 let s:incnum = 0
 function! Tex_IncrementNumber(increm)
 	let s:incnum = s:incnum + a:increm
 	return s:incnum
-endfunction 
+endfunction
 
 " }}}
 " Tex_ResetIncrementNumber: increments s:incnum to zero {{{
-" Description: 
+" Description:
 function! Tex_ResetIncrementNumber(val)
 	let s:incnum = a:val
 endfunction " }}}
@@ -596,14 +596,14 @@ function! Tex_GetTempName(dirname)
 endfunction
 " }}}
 " Tex_MakeMap: creates a mapping from lhs to rhs if rhs is not already mapped {{{
-" Description:  
+" Description:
 function! Tex_MakeMap(lhs, rhs, mode, extraargs)
 	if !hasmapto(a:rhs, a:mode)
 		exec a:mode.'map '.a:extraargs.' '.a:lhs.' '.a:rhs
 	endif
 endfunction " }}}
 " Tex_CD: cds to given directory escaping spaces if necessary {{{
-" " Description: 
+" " Description:
 function! Tex_CD(dirname)
 	exec 'cd '.Tex_EscapeSpaces(a:dirname)
 endfunction " }}}
@@ -660,7 +660,7 @@ endfunction " }}}
 
 " ==============================================================================
 " Smart key-mappings
-" ============================================================================== 
+" ==============================================================================
 " TexQuotes: inserts `` or '' instead of " {{{
 if g:Tex_SmartKeyQuote
 
@@ -713,7 +713,7 @@ if g:Tex_SmartKeyQuote
 
 		" Eventually return q; set it to the default value now.
 		let q = open
-		let pattern = 
+		let pattern =
 			\ escape(open, '\~') .
 			\ boundary .
 			\ escape(close, '\~') .
@@ -727,7 +727,7 @@ if g:Tex_SmartKeyQuote
 				break
 			endif
 		endwhile
-		
+
 		" Now, test whether we actually found a _preceding_ quote; if so, is it
 		" an open quote?
 		if ( line(".") < l || line(".") == l && col(".") < c )
@@ -751,7 +751,7 @@ if g:Tex_SmartKeyQuote
 endif
 " }}}
 " SmartBS: smart backspacing {{{
-if g:Tex_SmartKeyBS 
+if g:Tex_SmartKeyBS
 
 	" SmartBS: smart backspacing
 	" SmartBS lets you treat diacritic characters (those \'{a} thingies) as a
@@ -769,7 +769,7 @@ if g:Tex_SmartKeyBS
 	endfun
 
 	" This function comes from Benji Fisher <benji@e-math.AMS.org>
-	" http://vim.sourceforge.net/scripts/download.php?src_id=409 
+	" http://vim.sourceforge.net/scripts/download.php?src_id=409
 	" (modified/patched by Lubomir Host 'rajo' <host8 AT keplerDOTfmphDOTuniba.sk>)
 	function! s:SmartBS(pat)
 		let init = strpart(getline("."), 0, col(".")-1)
@@ -781,7 +781,7 @@ if g:Tex_SmartKeyBS
 			return "\<bs>"
 		endif
 	endfun
-	
+
 endif " }}}
 " SmartDots: inserts \cdots instead of ... in math mode otherwise \ldots {{{
 " if amsmath package is detected then just use \dots and let amsmath take care
@@ -789,18 +789,18 @@ endif " }}}
 if g:Tex_SmartKeyDot
 
 	function! <SID>SmartDots()
-		if strpart(getline('.'), col('.')-3, 2) == '..' && 
+		if strpart(getline('.'), col('.')-3, 2) == '..' &&
 			\ g:Tex_package_detected =~ '\<amsmath\|ellipsis\>'
 			return "\<bs>\<bs>\\dots"
 		elseif synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^texMath'
-			\&& strpart(getline('.'), col('.')-3, 2) == '..' 
+			\&& strpart(getline('.'), col('.')-3, 2) == '..'
 			return "\<bs>\<bs>\\cdots"
-		elseif strpart(getline('.'), col('.')-3, 2) == '..' 
+		elseif strpart(getline('.'), col('.')-3, 2) == '..'
 			return "\<bs>\<bs>\\ldots"
 		else
 			return '.'
 		endif
-	endfunction 
+	endfunction
 
 endif
 " }}}
@@ -842,7 +842,7 @@ exe 'source '.fnameescape(s:path.'/version.vim')
 
 " ==============================================================================
 " Finally set up the folding, options, mappings and quit.
-" ============================================================================== 
+" ==============================================================================
 " SetTeXOptions: sets options/mappings for this file. {{{
 function! <SID>SetTeXOptions()
 	" Avoid reinclusion.
@@ -855,7 +855,7 @@ function! <SID>SetTeXOptions()
 
 	call Tex_Debug('SetTeXOptions: sourcing maps', 'main')
 	" smart functions
-	if g:Tex_SmartKeyQuote 
+	if g:Tex_SmartKeyQuote
 		inoremap <buffer> <silent> " "<Left><C-R>=<SID>TexQuotes()<CR>
 	endif
 	if g:Tex_SmartKeyBS
@@ -873,8 +873,8 @@ function! <SID>SetTeXOptions()
 endfunction
 
 augroup LatexSuite
-	au LatexSuite User LatexSuiteFileType 
-		\ call Tex_Debug('main.vim: Catching LatexSuiteFileType event', 'main') | 
+	au LatexSuite User LatexSuiteFileType
+		\ call Tex_Debug('main.vim: Catching LatexSuiteFileType event', 'main') |
 		\ call <SID>SetTeXOptions()
 augroup END
 
@@ -882,10 +882,10 @@ augroup END
 
 " ==============================================================================
 " Settings for taglist.vim plugin
-" ============================================================================== 
+" ==============================================================================
 " Sets Tlist_Ctags_Cmd for taglist.vim and regexps for ctags {{{
-if exists("g:Tex_TaglistSupport") && g:Tex_TaglistSupport == 1 
-	if !exists("g:tlist_tex_settings") 
+if exists("g:Tex_TaglistSupport") && g:Tex_TaglistSupport == 1
+	if !exists("g:tlist_tex_settings")
 		let g:tlist_tex_settings = 'tex;s:section;c:chapter;l:label;r:ref'
 	endif
 
@@ -917,7 +917,7 @@ if exists("g:Tex_TaglistSupport") && g:Tex_TaglistSupport == 1
 endif
 
 " }}}
- 
+
 " commands to completion
 let g:Tex_completion_explorer = ','
 
@@ -933,7 +933,7 @@ exe 'source '.fnameescape(s:path.'/packages.vim')
 "
 " If python is available (and allowed), then these functions utilize python
 " library functions without making calls to external programs.
-" ============================================================================== 
+" ==============================================================================
 " Tex_GotoTempFile: open a temp file. reuse from next time on {{{
 function! Tex_GotoTempFile()
 	if !exists('s:tempFileName')
@@ -1014,15 +1014,15 @@ else
 endif
 " }}}
 " Tex_DeleteFile: removes a file if present {{{
-" Description: 
+" Description:
 if has('python') && g:Tex_UsePython
 	function! Tex_DeleteFile(filename)
 		exec 'python deleteFile(r"'.a:filename.'")'
-		
+
 		if exists('retval')
 			return retval
 		endif
-	endfunction 
+	endfunction
 else
 	function! Tex_DeleteFile(filename)
 		if filereadable(a:filename)

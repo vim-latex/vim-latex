@@ -8,7 +8,7 @@
 
 " Fields:
 " Define what field type each letter denotes {{{
-" 
+"
 let s:w_standsfor = 'address'
 let s:a_standsfor = 'author'
 let s:b_standsfor = 'booktitle'
@@ -34,7 +34,7 @@ let s:z_standsfor = 'note'
 
 " }}}
 " Define the fields required for the various entry types {{{
-" 
+"
 " s:{type}_required defines the required fields
 " s:{type}_optional1 defines common optional fields
 " s:{type}_optional2 defines uncommmon optional fields
@@ -153,7 +153,7 @@ function BibT(type, options, prompt)
 	if a:type != ''
 		let choosetype = a:type
 	else
-		let types = 
+		let types =
 			\ 'article'."\n".
 			\ 'booklet'."\n".
 			\ 'book'."\n".
@@ -197,7 +197,7 @@ function BibT(type, options, prompt)
 		let fields = fields . s:{choosetype}_optional1
 	endif
 	if options =~ "O" && exists('s:'.choosetype.'_optional2')
-		if options !~ 'o'&& exists('s:'.choosetype.'_optional1') 
+		if options !~ 'o'&& exists('s:'.choosetype.'_optional1')
 			let fields = fields . s:{choosetype}_optional1
 		endif
 		let fields = fields . s:{choosetype}_optional2
@@ -210,7 +210,7 @@ function BibT(type, options, prompt)
 	endif
 
 	let retval = s:{choosetype}_retval
-	
+
 	let i = 0
 	while i < strlen(fields)
 		let field = strpart(fields, i, 1)
@@ -222,7 +222,7 @@ function BibT(type, options, prompt)
 
 		let i = i + 1
 	endwhile
-	
+
 	" If the user wants even more fine-tuning...
 	if Tex_GetVarValue('Bib_'.choosetype.'_extrafields') != ''
 
@@ -258,7 +258,7 @@ function! s:Input(prompt, ask) " {{{
 	else
 		return "<++>"
 	endif
-endfunction 
+endfunction
 
 " }}}
 
