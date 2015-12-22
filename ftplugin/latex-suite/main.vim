@@ -310,7 +310,7 @@ endfunction " }}}
 " Tex_Strntok: extract the n^th token from a list {{{
 " example: Strntok('1,23,3', ',', 2) = 23
 fun! Tex_Strntok(s, tok, n)
-	return matchstr( a:s.a:tok[0], '\v(\zs([^'.a:tok.']*)\ze['.a:tok.']){'.a:n.'}')
+	return latexsuite#main#Tex_Strntok(a:s, a:tok, a:n)
 endfun
 
 " }}}
@@ -371,17 +371,7 @@ nmap <silent> <script> <plug>cleanHistory :call Tex_CleanSearchHistory()<CR>
 " 	exists and if so, returns the corresponding value. If none exist, return
 " 	an empty string.
 function! Tex_GetVarValue(varname, ...)
-	if exists('w:'.a:varname)
-		return w:{a:varname}
-	elseif exists('b:'.a:varname)
-		return b:{a:varname}
-	elseif exists('g:'.a:varname)
-		return g:{a:varname}
-	elseif a:0 > 0
-		return a:1
-	else
-		return ''
-	endif
+	return call('latexsuite#main#Tex_GetVarValue', [a:varname]+a:000)
 endfunction " }}}
 " Tex_GetMainFileName: gets the name of the main file being compiled. {{{
 " Description:  returns the full path name of the main file.
@@ -456,13 +446,7 @@ endfunction
 " Tex_ChooseFromPrompt: process a user input to a prompt string {{{
 " " Description:
 function! Tex_ChooseFromPrompt(dialog, list, sep)
-	let g:Tex_ASDF = a:dialog
-	let inp = input(a:dialog)
-	if inp =~ '\d\+'
-		return Tex_Strntok(a:list, a:sep, inp)
-	else
-		return inp
-	endif
+	return latexsuite#main#Tex_ChooseFromPrompt(a:dialog, a:list, a:sep)
 endfunction " }}}
 " Tex_ChooseFile: produces a file list and prompts for choice {{{
 " Description:

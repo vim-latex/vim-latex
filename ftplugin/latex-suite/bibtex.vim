@@ -168,10 +168,10 @@ function BibT(type, options, prompt)
 			\ 'proceedings'."\n".
 			\ 'techreport'."\n".
 			\ 'unpublished'
-		let choosetype = Tex_ChooseFromPrompt(
-					\ "Choose the type of bibliographic entry: \n" . 
-					\ Tex_CreatePrompt(types, 3, "\n") .
-					\ "\nEnter number or filename :", 
+		let choosetype = latexsuite#main#Tex_ChooseFromPrompt(
+					\ "Choose the type of bibliographic entry: \n" .
+					\ latexsuite#main#Tex_CreatePrompt(types, 3, "\n") .
+					\ "\nEnter number or filename :",
 					\ types, "\n")
 		if choosetype == ''
 			let choosetype = 'article'
@@ -224,13 +224,13 @@ function BibT(type, options, prompt)
 	endwhile
 
 	" If the user wants even more fine-tuning...
-	if Tex_GetVarValue('Bib_'.choosetype.'_extrafields') != ''
+	if latexsuite#main#Tex_GetVarValue('Bib_'.choosetype.'_extrafields') != ''
 
-		let extrafields = Tex_GetVarValue('Bib_'.choosetype.'_extrafields')
-		
+		let extrafields = latexsuite#main#Tex_GetVarValue('Bib_'.choosetype.'_extrafields')
+
 		let i = 1
 		while 1
-			let field_name = Tex_Strntok(extrafields, "\n", i)
+			let field_name = latexsuite#main#Tex_Strntok(extrafields, "\n", i)
 			if field_name == ''
 				break
 			endif
