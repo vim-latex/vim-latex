@@ -86,13 +86,7 @@ let g:listSep = ","
 "String containing array values, including newItem.
 "**
 function AddListItem( array, newItem, index )
-	if a:index == 0
-		if a:array == ""
-			return a:newItem
-		endif
-		return a:newItem . g:listSep . a:array
-	endif
-	return substitute( a:array, '\(\%(^\|' . g:listSep . '\)[^' . g:listSep . ']\+\)\{' . a:index . '\}', '\0' . g:listSep . a:newItem , "" )
+	return latexsuite#liblist#AddListItem(a:array, a:newItem, a:index)
 endfunction
 
 "**
@@ -106,11 +100,7 @@ endfunction
 "String representing the item.
 "**
 function GetListItem( array, index )
-	if a:index == 0
-		return matchstr( a:array, '^[^' . g:listSep . ']\+' )
-	else
-		return matchstr( a:array, "[^" . g:listSep . "]\\+", matchend( a:array, '\(\%(^\|' . g:listSep . '\)[^' . g:listSep . ']\+\)\{' . a:index . '\}' . g:listSep ) )
-	endif
+	return latexsuite#liblist#GetListItem(a:array, a:index)
 endfunction
 
 "**
@@ -125,7 +115,7 @@ endfunction
 "String representing the first item that matches the pattern.
 "**
 function GetListMatchItem( array, pattern )
-	return matchstr( a:array, '[^' . g:listSep . ']*' . a:pattern . '[^' . g:listSep . ']*' )
+	return latexsuite#liblist#GetListMatchItem(a:array, a:pattern)
 endfunction
 
 "**
@@ -140,11 +130,7 @@ endfunction
 "String containing array values.
 "**
 function ReplaceListItem( array, index, item )
-	if a:index == 0
-		return substitute( a:array, '^[^' .g:listSep. ']\+', a:item, "" )
-	else
-		return substitute( a:array, '\(\%(\%(^\|' . g:listSep . '\)[^' . g:listSep . ']\+\)\{' . a:index . '\}\)' . g:listSep . '[^' . g:listSep . ']\+', '\1' . g:listSep . a:item , "" )
-	endif
+	return latexsuite#liblist#ReplaceListItem(a:array, a:index, a:item)
 endfunction
 
 "**
@@ -158,11 +144,7 @@ endfunction
 "String containing array values, except the removed one.
 "**
 function RemoveListItem( array, index )
-	if a:index == 0
-		return substitute( a:array, '^[^' .g:listSep. ']\+\(' . g:listSep . '\|$\)', "", "" )
-	else
-		return substitute( a:array, '\(\%(\%(^\|' . g:listSep . '\)[^' . g:listSep . ']\+\)\{' . a:index . '\}\)' . g:listSep . '[^' . g:listSep . ']\+', '\1', "" )
-	endif
+	return latexsuite#liblist#RemoveListItem(a:array, a:index)
 endfunction
 
 "**
@@ -178,9 +160,7 @@ endfunction
 "String containing array values.
 "**
 function ExchangeListItems( array, item1Index, item2Index )
-	let item1 = GetListItem( a:array, a:item1Index )
-	let array = ReplaceListItem( a:array, a:item1Index, GetListItem( a:array, a:item2Index ) )
-	return ReplaceListItem( array, a:item2Index, item1 )
+	return latexsuite#liblist#ExchangeListItems(a:array, a:item1Index, a:item2Index)
 endfunction
 
 "**
@@ -193,14 +173,7 @@ endfunction
 "Index of last item is GetListCount(array)-1.
 "**
 function GetListCount( array )
-	if a:array == "" | return 0 | endif
-	let pos = 0
-	let cnt = 0
-	while pos != -1
-		let pos = matchend( a:array, g:listSep, pos )
-		let cnt = cnt + 1
-	endwhile
-	return cnt
+	return latexsuite#liblist#GetListCount(a:array)
 endfunction
 
 "**
@@ -214,36 +187,7 @@ endfunction
 "String containing array values with indicated range of items sorted.
 "**
 function QuickSortList( array, beg, end )
-	let array = a:array
-	let pivot = GetListItem( array, a:beg )
-	let l = a:beg
-	let r = a:end
-	while l < r
-		while GetListItem( array, r ) > pivot
-			let r = r - 1
-		endwhile
-		if l != r
-			let array = ReplaceListItem( array, l, GetListItem( array, r ) )
-			let array = ReplaceListItem( array, r, pivot )
-			let l = l + 1
-		endif
-
-		while GetListItem( array, l ) < pivot
-			let l = l + 1
-		endwhile
-		if l != r
-			let array = ReplaceListItem( array, r, GetListItem( array, l ) )
-			let array = ReplaceListItem( array, l, pivot )
-			let r = r - 1
-		endif
-	endwhile
-	if a:beg < l-1
-		let array = QuickSortList( array, a:beg, l-1 )
-	endif
-	if a:end > l+1
-		let array = QuickSortList( array, l+1, a:end )
-	endif
-	return array
+	return latexsuite#liblist#QuickSortList(a:array, a:beg, a:end)
 endfunction
 
 
