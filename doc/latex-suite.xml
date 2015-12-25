@@ -109,8 +109,8 @@ set iskeyword+=:
   </para>
   <para>
    When &ls; first starts up, it scans the
-   <literal>$VIM/ftplugin/latex-suite/templates/</literal>
-   directory and creates menu items based on the files found there. When
+   <link linkend="Tex_CustomTemplateFolder">template directory</link>
+   and creates menu items based on the files found there. When
    you select a template from this menu, the file will be read in above
    the first line of the current file.
   </para>
@@ -122,10 +122,9 @@ set iskeyword+=:
   </para>
   <para>
    You can place your own templates in the
-   <literal>$VIM/ftplugin/latex-suite/templates/</literal> directory in
-   order for them to be available via the menu. Unless &ls; releases a
-   template with the same name, these files should not get over-written
-   when you install a new release over an existing one.
+   <link linkend="Tex_CustomTemplateFolder">template directory</link>
+   in
+   order for them to be available via the menu.
   </para>
   <note>
    <para>
@@ -4554,6 +4553,30 @@ let g:Tex_ViewRuleComplete_html = 'start MozillaFirebird $*/index.html'</program
     <para>
      This string should be set in the syntax accepted by &vim;'s native
      <literal>'path'</literal> setting.
+    </para>
+   </section>
+  </section>
+  <section id="customizing-directories">
+   <title>Template Directory Customization</title>
+   <para>
+    This setting describes the directories scanned by &ls; to search for
+    templates.
+   </para>
+   <section id="Tex_CustomTemplateFolder">
+    <title>g:Tex_CustomTemplateFolder</title>
+    <informaltable frame="all">
+     <tgroup cols="2">
+      <tbody>
+       <row><entry>Type</entry><entry>string</entry></row>
+       <row><entry>Default Value</entry>
+        <entry><literal>''</literal></entry></row>
+      </tbody>
+     </tgroup>
+    </informaltable>
+    <para>
+      A comma separated list of directories.
+      If left empty, &ls; searches in 
+      <literal>$VIM/ftplugin/latex-suite/templates/</literal>.
     </para>
    </section>
   </section>

@@ -14,7 +14,7 @@ let s:path = fnameescape(expand("<sfile>:p:h"))
 
 " SetTemplateMenu: sets up the menu for templates {{{
 function! <SID>SetTemplateMenu()
-	let flist = Tex_FindInRtp('', 'templates')
+	let flist = <SID>FindInTemplateDir('')
 	let i = 1
 	while 1
 		let fname = Tex_Strntok(flist, ',', i)
@@ -37,7 +37,7 @@ function! <SID>ReadTemplate(...)
 	if a:0 > 0
 		let filename = a:1
 	else
-		let filelist = Tex_FindInRtp('', 'templates')
+		let filelist = <SID>FindInTemplateDir('')
 		let filename = 
 					\ Tex_ChooseFromPrompt("Choose a template file:\n" . 
 					\ Tex_CreatePrompt(filelist, 2, ',') . 
@@ -45,7 +45,7 @@ function! <SID>ReadTemplate(...)
 					\ filelist, ',')
 	endif
 
-	let fname = Tex_FindInRtp(filename.'.tex', 'templates', ':p')
+	let fname = <SID>FindInTemplateDir(filename.'.tex', ':p')
 	call Tex_Debug("0read ".fname, 'templates')
 
 	silent! exe "0read ".fname
@@ -88,6 +88,66 @@ function! <SID>ReadTemplate(...)
 endfunction
 
 " }}}
+" FindInTemplateDir: Searches for template files. {{{
+" Description:	This function looks for template files either in a custom
+" 				directory, or in the latex-suite default directory.
+" 				If an optional argument is given, it specifies how to expand
+" 				each filename found. For example, '%:p' will return a list of
+" 				the complete paths to the files. By default returns trailing
+" 				path-names without extenions.
+" 				The function was derived from 'Tex_FindInRtp'.
+" 				NOTE:	This function is very slow when a large number of
+" 						matches are found because of a while loop which modifies
+" 						each filename found. Some speedup was acheived by using
+" 						a tokenizer approach rather than using Tex_Strntok which
+" 						would have been more obvious.
+function! <SID>FindInTemplateDir(filename, ...)
+	" how to expand each filename. ':p:t:r' modifies each filename to its
+	" trailing part without extension.
+	let expand = (a:0 > 0 ? a:1 : ':p:t:r')
+
+	" The pattern used... An empty filename should be regarded as '*.tex'
+	let pattern = (a:filename != '' ? a:filename : '*.tex')
+
+	" get list of files from template directory
+	if exists("g:Tex_CustomTemplateDirectory") && g:Tex_CustomTemplateDirectory != ''
+		let filelist = globpath(g:Tex_CustomTemplateDirectory, pattern)."\n"
+	else
+		let filelist = globpath(&rtp, 'ftplugin/latex-suite/templates/'.pattern)."\n"
+	endif
+
+	if filelist == "\n"
+		return ''
+	endif
+
+	if a:filename != ''
+		return fnamemodify(Tex_Strntok(filelist, "\n", 1), expand)
+	endif
+
+	" Now cycle through the files modifying each filename in the desired
+	" manner.
+	let retfilelist = ''
+	let i = 1
+	while 1
+		" Extract the portion till the next newline. Then shorten the filelist
+		" by removing till the newline.
+		let nextnewline = stridx(filelist, "\n")
+		if nextnewline == -1
+			break
+		endif
+		let filename = strpart(filelist, 0, nextnewline)
+		let filelist = strpart(filelist, nextnewline+1)
+
+		" The actual modification.
+		if fnamemodify(filename, expand) != ''
+			let retfilelist = retfilelist.fnamemodify(filename, expand).","
+		endif
+		let i = i + 1
+	endwhile
+
+	return substitute(retfilelist, ',$', '', '')
+endfunction
+" }}}
 " ProcessTemplate: processes the special characters in template file. {{{
 "                  This implementation follows from Gergely Kontra's
 "                  mu-template.vim
@@ -125,12 +185,12 @@ if v:version >= 602
 		\| :startinsert
 
 	" Tex_CompleteTemplateName: for completing names in TTemplate command {{{
-	"	Description: get list of template names with Tex_FindInRtp(), remove full path
+	"	Description: get list of template names with FindInTemplateDir(), remove full path
 	"	and return list of names separated with newlines.
 	"
 	function! Tex_CompleteTemplateName(A,P,L)
 		" Get name of macros from all runtimepath directories
-		let tmplnames = Tex_FindInRtp('', 'templates')
+		let tmplnames = <SID>FindInTemplateDir('')
 		" Separate names with \n not ,
 		let tmplnames = substitute(tmplnames,',','\n','g')
 		return tmplnames

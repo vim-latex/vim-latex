@@ -11,7 +11,7 @@ Latex-Suite attempts to provide a comprehensive set of tools to view, edit and
 compile LaTeX documents in Vim. Together, they provide tools starting from
 macros to speed up editing LaTeX documents to functions for forward searching
 .dvi documents. Latex-Suite has been possible because of the contributions of
-many people. Please see latex-suite-credits [|ls_a_dV|] for a list of people who
+many people. Please see latex-suite-credits [|ls_a_dX|] for a list of people who
 have helped.
 
 Latex-Suite is released under the Vim charityware license. For license and
@@ -81,6 +81,7 @@ Homepage: http://vim-latex.sourceforge.net |ls_u_1|
     |ls_11_8| Menu Customization
     |ls_11_9| Folding Customization
     |ls_11_10| Package Handling Customization
+    |ls_11_11| Template Directory Customization
 |ls_12| Credits
 
 ================================================================================
@@ -149,20 +150,18 @@ Inserting Templates                                             *ls_2* *ls_a_bd*
 This functionality is available via the TeX-Suite > Templates menu. This module
 provides a way to insert custom templates at the beginning of the current file.
 
-When Latex-Suite first starts up, it scans the
-$VIM/ftplugin/latex-suite/templates/ directory and creates menu items based on
-the files found there. When you select a template from this menu, the file will
-be read in above the first line of the current file.
+When Latex-Suite first starts up, it scans the template directory [|ls_a_dW|]
+and creates menu items based on the files found there. When you select a
+template from this menu, the file will be read in above the first line of the
+current file.
 
 A template file can utilize placeholders for initializing the cursor position
 when the template is read in and subsequent movement. In addition, template
 files can contain dynamic elements such as the time of creation of a file etc,
 by using vim expressions.
 
-You can place your own templates in the $VIM/ftplugin/latex-suite/templates/
-directory in order for them to be available via the menu. Unless Latex-Suite
-releases a template with the same name, these files should not get over-written
-when you install a new release over an existing one.
+You can place your own templates in the template directory [|ls_a_dW|] in order
+for them to be available via the menu.
 
 NOTE: Templates are also accessible for non-gui users with the command
       |:TTemplate|. The argument should be name of the corresponding template
@@ -202,8 +201,8 @@ NOTE: These mappings are are not standard mappings in the sense that only the
       movement or backspace key to correct yourself unlike normal mappings.
       
       
-                                                        *place-holder* *ls_a_dW*
-                                                       *place-holders* *ls_a_eE*
+                                                        *place-holder* *ls_a_dY*
+                                                       *place-holders* *ls_a_eG*
 NOTE: Place Holders
       -------------
       Almost all macros provided in Latex-Suite implement Stephen Riem's
@@ -224,7 +223,7 @@ NOTE: Place Holders
       for typing in the caption. This saves on a lot of key presses.
       
       
-                                                   *overriding-macros* *ls_a_eF*
+                                                   *overriding-macros* *ls_a_eH*
 NOTE: Over-riding Latex-Suite Macros
       ------------------------------
       If you wish to change these macros from their default values, for example,
@@ -248,7 +247,7 @@ NOTE: Over-riding Latex-Suite Macros
             
             
       
-                                                       *pausing-imaps* *ls_a_eG*
+                                                       *pausing-imaps* *ls_a_eI*
 NOTE: Pausing Macro expansion
       -----------------------
       If you wish to temporarily suspend the imaps functionality, then you can
@@ -406,8 +405,8 @@ commands.
 Inserting LaTeX commands                                    *ls_3_2_1* *ls_a_bp*
                                                             *inserting-commands*
 
-                                                          *ls-imap-f7* *ls_a_dX*
-                                                        *ls-imap-s-f7* *ls_a_dY*
+                                                          *ls-imap-f7* *ls_a_dZ*
+                                                        *ls-imap-s-f7* *ls_a_ea*
 Pressing <F7> in insert or normal mode while the cursor is touching a word will
 insert a command formed from the word touching the cursor.
 
@@ -439,7 +438,7 @@ encloses the visually selected portion in the chosen command.
 Changing commands                                           *ls_3_2_3* *ls_a_br*
                                                              *changing-commands*
 
-                                                          *ls-vmap-f7* *ls_a_dZ*
+                                                          *ls-vmap-f7* *ls_a_eb*
 In both insert and normal mode <S-F7> will find out if you are presently within
 an environment and then prompt you with a list of commands to change it to.
 
@@ -447,7 +446,7 @@ an environment and then prompt you with a list of commands to change it to.
 Font Mappings                                     *ls_3_3* *ls_a_bs* *font-maps*
 
 These mappings insert font descriptions such as: \textsf{<++>}<++> with the
-cursor left in place of the first placeholder [|ls_a_eE|] (the <++> characters).
+cursor left in place of the first placeholder [|ls_a_eG|] (the <++> characters).
 
 Mnemonic:
 1. first letter is always F (F for font)
@@ -575,7 +574,7 @@ where <l> is an alphabet.
   >
     +}       expands to \"{a}
     +:       expands to \^{o}
-Latex-Suite also ships with smart backspacing [|ls_a_ea|] functionality which
+Latex-Suite also ships with smart backspacing [|ls_a_ec|] functionality which
 provides another convenience while editing languages with diacritics.
 
 NOTE: Diacritics are disabled by default in Latex-Suite because they can
@@ -708,7 +707,7 @@ Latex-Suite ships with the following smart keys:
 
 Smart Backspace
 ---------------
-                                                     *smart-backspace* *ls_a_ea*
+                                                     *smart-backspace* *ls_a_ec*
 Pressing <BS> in insert mode checks to see whether we are just after something
 like \'{a} and if so, deletes all of it. i.e, diacritics are treated as single
 characters for backspacing.
@@ -832,7 +831,7 @@ inserting customized macros into the current file via the menu.
 When Latex-Suite starts up, it scans the $VIM/ftplugin/latex-suite/macros/
 directory and creates a menu from the files found there. Each file is considered
 as a single macro. You can place your own macros in this directory, using
-placeholders [|ls_a_eE|] if wanted.
+placeholders [|ls_a_eG|] if wanted.
 
 When you choose a macro from the menu, the corresponding file is read into the
 current buffer after the current cursor position. In non-gui mode, you can use
@@ -940,7 +939,7 @@ rhs         The "right-hand-side" of the mapping. This is the expansion you will
             that if you have filetype indentation set up, then the right hand side
             will also be indented just as if you had typed it in normally.
             
-                                              *IMAP_PutTextWithMovement* *ls_a_eb*
+                                              *IMAP_PutTextWithMovement* *ls_a_ed*
             You can also set up a Latex-Suite style mapping which calls a custom
             function as follows:  >
                 :call IMAP('FOO', "\<C-r>=MyFoonction()\<CR>", 'tex')
@@ -989,7 +988,7 @@ phs, phe    If you prefer to write the rhs with characters other than <+ and +> 
             will be displayed for the placeholders when the mapping is actually
             triggered. What characters are used to display place-holders when you
             trigger an IMAP are controlled by the Imap_PlaceHolderStart
-            [|ls_a_cV|] and Imap_PlaceHolderEnd [|ls_a_es|] settings.
+            [|ls_a_cV|] and Imap_PlaceHolderEnd [|ls_a_eu|] settings.
             
             
 
@@ -1065,13 +1064,13 @@ from that file.
 
 For example, the SIUnits package has a custom dictionary.
 
-                                              *latex-package-scanning* *ls_a_ec*
+                                              *latex-package-scanning* *ls_a_ee*
 If a package detected at startup is found by Latex-Suite in the current
 directory or in a location specified by the g:Tex_TEXINPUTS [|ls_a_dU|]
 variable, Latex-Suite will scan the package for \newenvironment and newcommand
 lines and also append any commands and environments found to the list of
 commands and environments which you are prompted with when you press <F5>
-[|ls_a_bh|] or <F7> [|ls_a_dX|] in insert mode.
+[|ls_a_bh|] or <F7> [|ls_a_dZ|] in insert mode.
 In addition, the TeX-Suite > Packages menu also contains the following submenus
 
 Update
@@ -1232,7 +1231,7 @@ try to list the \label's in the present directory. Pressing it when you are in a
 which need a file name argument and will put up an explorer window for you to
 choose a filename.
 
-                                                      *ls-set-grepprg* *ls_a_eH*
+                                                      *ls-set-grepprg* *ls_a_eJ*
 NOTE: Before you start with Latex-Suite's completion function...
       ----------------------------------------------------------
       All of Latex-Suite's completion capabilities depend on a external program
@@ -1475,7 +1474,7 @@ included in the completion.
 Caching the \cite completion results                        *ls_5_3_1* *ls_a_bV*
                                                            *cite-search-caching*
 
-                                                      *TClearCiteHist* *ls_a_ed*
+                                                      *TClearCiteHist* *ls_a_ef*
 Often times, the editing cycle proceeds by first laying out a comprehensive
 bibliography and then completing all the \cite commands in one session. In such
 situations, it is inefficient to scan the whole list of bibliography files for
@@ -1826,7 +1825,7 @@ document where your cursor is placed.NOTE: OS/X users need to set the g:Tex_Trea
       
       
 
-                                                  *enabling-searching* *ls_a_ee*
+                                                  *enabling-searching* *ls_a_eg*
 NOTE: Enabling Forward and Inverse Searching
       --------------------------------------
       Most DVI viewers need "source-special" information in order to do forward
@@ -1852,7 +1851,7 @@ the LaTeX source file at a given location. Usually this happens with
 double-clicking or clicking while pressing the shift/control button in the
 viewer window. The actual method depends on the viewer application.
 
-You will need to enable searching [|ls_a_ee|] in order to use this
+You will need to enable searching [|ls_a_eg|] in order to use this
 functionality.
 
 You will also need to specify certain settings to the viewer conveying the
@@ -2069,7 +2068,7 @@ In the above case, this means that a \section is folded first and then its
 interior is not examined further. The correct value should have been
 "section,subsection"
 
-                                                 *fold-setting-adding* *ls_a_ef*
+                                                 *fold-setting-adding* *ls_a_eh*
 Each of the fold setting variables Tex_FoldedSections, Tex_FoldedEnvironments
 etc., as explained previously is a comma separated string of variables. However,
 to make it easier to _add_ to the default settings without having to repeat the
@@ -2186,7 +2185,7 @@ Multiple file LaTeX projects                                    *ls_9* *ls_a_cr*
 |ls_9_2| Specifying which file to compile
 
 
-                                               *latex-project-example* *ls_a_eg*
+                                               *latex-project-example* *ls_a_ei*
 Many LaTeX projects contain multiple source files which are \included from a
 master file. A typical example of this situation is a directory layout such as
 the following
@@ -2224,12 +2223,12 @@ In the above case, main.tex will typically look like
     \end{document}
 
 
-                                     *latex-master-file-specification* *ls_a_eh*
+                                     *latex-master-file-specification* *ls_a_ej*
 In such situations, you will need to convey to Latex-Suite that main.tex is the
 main file which \inputs the other files. This is done by creating an empty file
 called main.tex.latexmain in the same directory in which main.tex resides. This
 file is called the _master file_ in this manual. See Tex_MainFileExpression
-[|ls_a_ei|] for an alternative way of specifying the master file.
+[|ls_a_ek|] for an alternative way of specifying the master file.
 
 NOTE: Here main.tex.latexmain is (obviously) a different file from main.tex
       itself. main.tex need not be renamed. This ofcourse restricts each
@@ -2260,15 +2259,15 @@ Tex_ProjectSourceFiles [|ls_a_du|]
 Specifying which file to compile                              *ls_9_2* *ls_a_ct*
                                                              *latex-master-file*
 
-In the example described previously [|ls_a_eg|], if you are editing
+In the example described previously [|ls_a_ei|], if you are editing
 intro/intro.tex and press \ll, then you still want Latex-Suite to compile
 main.tex, because intro/intro.tex is merely a fragment which is \input'ed into
 main.tex. If the master file is already specified using the *.latexmain
-convention described previously [|ls_a_eg|], then Latex-Suite will automatically
+convention described previously [|ls_a_ei|], then Latex-Suite will automatically
 compile the master file when you are editing any of its \input'ed fragments.
 Thus pressing \ll while editing intro/intro.tex will compile main.tex.
 
-                                              *Tex_MainFileExpression* *ls_a_ei*
+                                              *Tex_MainFileExpression* *ls_a_ek*
 If you wish to use some different logic to specify the main file name, you can
 specify a custom expression via the Tex_MainFileExpression variable. This is a
 string containing a valid vim expression. In addition, you can use a variable
@@ -2301,7 +2300,7 @@ describes a way to change the map sequences according to your preference.
 Latex-Suite Maps                                             *ls_10_1* *ls_a_cv*
                                                               *latex-suite-maps*
 
-                                          *remapping-latex-suite-keys* *ls_a_ej*
+                                          *remapping-latex-suite-keys* *ls_a_el*
 Most of the mappings used in Latex-Suite can be mapped to a different key
 combination to suit your particular needs. An example best explains the
 procedure for doing this. Suppose you want to remap the <C-j> key which
@@ -2328,13 +2327,13 @@ IMAP mappings                                              *ls_10_1_1* *ls_a_cw*
                                                            *customize-imap-maps*
 
 These mappings are utilized for jumping between placeholders as described here
-[|ls_a_eE|]. See the parent section [|ls_a_cv|] to find out how to use this
+[|ls_a_eG|]. See the parent section [|ls_a_cv|] to find out how to use this
 information to change the default maps.
 
-                                               *Plug_IMAP_JumpForward* *ls_a_ek*
-                                                  *Plug_IMAP_JumpBack* *ls_a_el*
-                                      *Plug_IMAP_DeleteAndJumpForward* *ls_a_em*
-                                          *Plug_IMAP_DeleteAndJumBack* *ls_a_en*
+                                               *Plug_IMAP_JumpForward* *ls_a_em*
+                                                  *Plug_IMAP_JumpBack* *ls_a_en*
+                                      *Plug_IMAP_DeleteAndJumpForward* *ls_a_eo*
+                                          *Plug_IMAP_DeleteAndJumBack* *ls_a_ep*
 Plug map                           Default Key~
 <Plug>IMAP_JumpForward             <C-j>
 <Plug>IMAP_JumpBack                (none)
@@ -2342,9 +2341,9 @@ Plug map                           Default Key~
 <Plug>IMAP_DeleteAndJumpBack       (none)
 
 <Plug>IMAP_JumpForward takes you to the location of the next place-holder
-[|ls_a_eE|].
+[|ls_a_eG|].
 
-<Plug>IMAP_JumpBack takes you to the previous place-holder [|ls_a_eE|].
+<Plug>IMAP_JumpBack takes you to the previous place-holder [|ls_a_eG|].
 
 <Plug>IMAP_DeleteAndJumpForward deletes the presently selected place-holder and
 jumps to the next place-holder irrespective of whether the present placeholder
@@ -2363,13 +2362,13 @@ Alt-Key mappings                                           *ls_10_1_2* *ls_a_cx*
                                                         *customize-alt-key-maps*
 
 These mappings are are described in the section Alt key macros [|ls_a_bA|]. See
-the parent section [|ls_a_ej|] to see how to use the following information to
+the parent section [|ls_a_el|] to see how to use the following information to
 remap keys.
 
-                                                     *Plug_Tex_MathBF* *ls_a_eo*
-                                                    *Plug_Tex_MathCal* *ls_a_ep*
-                                                  *Plug_Tex_LeftRight* *ls_a_eq*
-                                       *Plug_Tex_InsertItemOnThisLine* *ls_a_er*
+                                                     *Plug_Tex_MathBF* *ls_a_eq*
+                                                    *Plug_Tex_MathCal* *ls_a_er*
+                                                  *Plug_Tex_LeftRight* *ls_a_es*
+                                       *Plug_Tex_InsertItemOnThisLine* *ls_a_et*
 Plug Mapping                      Default Key~
 <Plug>Tex_MathBF                  <Alt-B>
 <Plug>Tex_MathCal                 <Alt-C>
@@ -2580,6 +2579,7 @@ Customizing Latex-Suite                                        *ls_11* *ls_a_cP*
 |ls_11_8| Menu Customization
 |ls_11_9| Folding Customization
 |ls_11_10| Package Handling Customization
+|ls_11_11| Template Directory Customization
 
 
 Customizing Latex-Suite is done by defining certain global variables in
@@ -2632,7 +2632,7 @@ will use vimscript to accomplish the same.
 Place-Holder Customization                                   *ls_11_2* *ls_a_cT*
                                                      *customizing-place-holders*
 
-Latex-Suite uses place-holders [|ls_a_eE|] to minimize using the movement keys
+Latex-Suite uses place-holders [|ls_a_eG|] to minimize using the movement keys
 while typing. The following settings affect how place-holders are used.
 
 NOTE: These setting need to be set in your ~/.vimrc, not $VIM/ftplugin/tex.vim
@@ -2655,7 +2655,7 @@ Setting this to zero completely disables using place-holders.
 g:Imap_PlaceHolderStart & g:Imap_PlaceHolderEnd            *ls_11_2_2* *ls_a_cV*
                                                          *Imap_PlaceHolderStart*
 
-                                                 *Imap_PlaceHolderEnd* *ls_a_es*
+                                                 *Imap_PlaceHolderEnd* *ls_a_eu*
 Setting                  Type      Value~
 Imap_PlaceHolderStart    String    '<+'
 Imap_PlaceHolderEnd      String    '+>'
@@ -2736,7 +2736,7 @@ double-quotes and use the "\<key>" notation for special keys. Backslashes have
 to be doubled.
 
 You could even use strings returned by functions as the expansion by using the
-IMAP_PutTextWithMovement() [|ls_a_eb|] function.
+IMAP_PutTextWithMovement() [|ls_a_ed|] function.
 
 If the name of the environment contains special characters (for example, the
 eqnarray* environment), then use the following form:  >
@@ -2770,12 +2770,12 @@ The following variables disable various parts of the macro functionality of
 Latex-Suite. See the links to the relevant sections to see what functionality
 setting each of the variables to zero will take away.
 
-                                                 *Tex_EnvironmentMaps* *ls_a_et*
-                                                *Tex_EnvironmentMenus* *ls_a_eu*
-                                                        *Tex_FontMaps* *ls_a_ev*
-                                                       *Tex_FontMenus* *ls_a_ew*
-                                                     *Tex_SectionMaps* *ls_a_ex*
-                                                    *Tex_SectionMenus* *ls_a_ey*
+                                                 *Tex_EnvironmentMaps* *ls_a_ev*
+                                                *Tex_EnvironmentMenus* *ls_a_ew*
+                                                        *Tex_FontMaps* *ls_a_ex*
+                                                       *Tex_FontMenus* *ls_a_ey*
+                                                     *Tex_SectionMaps* *ls_a_ez*
+                                                    *Tex_SectionMenus* *ls_a_eA*
 Setting                   Link to relevant section            Default Value~
 g:Tex_EnvironmentMaps     Environment Mappings [|ls_a_bf|]    1
 g:Tex_EnvironmentMenus                                        1
@@ -2795,7 +2795,7 @@ Default Value    0
 If this variable is set to 1, then when an environment is chosen from the menu
 then for selected environments, Latex-Suite asks a series of questions on the
 command line and inserts a template with the corresponding fields already filled
-in. Setting this to zero will insert a template with place-holders [|ls_a_eE|]
+in. Setting this to zero will insert a template with place-holders [|ls_a_eG|]
 marking off the places where fields need to be filled.
 
 
@@ -2982,10 +2982,10 @@ Window size settings                                       *ls_11_5_1* *ls_a_dr*
 
 These three settings affect the aesthetics of the completion functionality.
 
-                                             *Tex_ViewerCwindowHeight* *ls_a_ez*
-                                             *Tex_ViewerPreviewHeight* *ls_a_eA*
-                                                  *Tex_ExplorerHeight* *ls_a_eB*
-                                                        *Tex_ImageDir* *ls_a_eC*
+                                             *Tex_ViewerCwindowHeight* *ls_a_eB*
+                                             *Tex_ViewerPreviewHeight* *ls_a_eC*
+                                                  *Tex_ExplorerHeight* *ls_a_eD*
+                                                        *Tex_ImageDir* *ls_a_eE*
 Setting                      Explanation                         Default Value~
 g:Tex_ViewerCwindowHeight    The height of the cwindow which     5
                              displays the list of \labels        
@@ -3414,8 +3414,27 @@ directory is always scanned for custom packages.
 
 This string should be set in the syntax accepted by Vim's native 'path' setting.
 
+--------------------------------------------------------------------------------
+Template Directory Customization                            *ls_11_11* *ls_a_dV*
+                                                       *customizing-directories*
+
+This setting describes the directories scanned by Latex-Suite to search for
+templates.
+
+
+
+g:Tex_CustomTemplateFolder                                *ls_11_11_1* *ls_a_dW*
+                                                      *Tex_CustomTemplateFolder*
+
+
+Type             string
+Default Value    ''
+
+A comma separated list of directories. If left empty, Latex-Suite searches in
+$VIM/ftplugin/latex-suite/templates/.
+
 ================================================================================
-Credits                                                        *ls_12* *ls_a_dV*
+Credits                                                        *ls_12* *ls_a_dX*
                                                            *latex-suite-credits*
 
 
@@ -3452,7 +3471,7 @@ of those people might have been missed here. Each function should however have
 the author's name/e-mail above it. Thats the more authoritative place to check
 out who has done what.
 
-                                              *latex-suite-maintainer* *ls_a_eD*
+                                              *latex-suite-maintainer* *ls_a_eF*
 The current maintainer(s) of Latex-Suite is(are)
 
 
