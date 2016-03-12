@@ -368,7 +368,7 @@ function! Tex_ForwardSearchLaTeX()
 		elseif (viewer =~? "^sumatrapdf")
 			" Forward search in sumatra has these arguments (-reuse-instance is optional):
 			" SumatraPDF -reuse-instance "pdfPath" -forward-search "texPath" lineNumber
-			let execString .= Tex_Stringformat('start %s "%s" -forward-search "%s" %s', viewer, target_file, mainfnameFull.".tex", linenr)
+			let execString .= Tex_Stringformat('start %s "%s" -forward-search "%s" %s', viewer, target_file, sourcefileFull, linenr)
 		endif	
 
 	elseif (has('macunix') && (viewer =~ '^ *\(Skim\|PDFView\|TeXniscope\)\( \|$\)'))
