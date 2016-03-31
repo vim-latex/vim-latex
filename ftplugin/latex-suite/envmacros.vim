@@ -970,6 +970,7 @@ endfunction " }}}
 
 TexLet g:Tex_Com_{'newtheorem'} = '\newtheorem{<+name+>}{<+caption+>}[<+within+>]'
 TexLet g:Tex_Com_{'frac'} = '\frac{<+n+>}{<+d+>}<++>'
+TexLet g:Tex_Com_{'tfrac'} = '\tfrac{<+n+>}{<+d+>}<++>'
 
 " }}}
 " PromptForCommand: prompts for a command {{{
