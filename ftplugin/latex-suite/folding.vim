@@ -1,7 +1,7 @@
 "=============================================================================
 " 	     File: folding.vim
 "      Author: Srinath Avadhanula
-"      		   modifications/additions by Zhang Linbo
+"      		   modifications/additions by Zhang Linbo, Gerd Wachsmuth
 "     Created: Tue Apr 23 05:00 PM 2002 PST
 " 
 "  Description: functions to interact with Syntaxfolds.vim
@@ -38,7 +38,6 @@ function! Tex_SetFoldOptions()
 
 endfunction " }}}
 " Tex_FoldSections: creates section folds {{{
-" Author: Zhang Linbo
 " Description:
 " 	This function takes a comma seperated list of "sections" and creates fold
 " 	definitions for them. The first item is supposed to be the "shallowest" field
@@ -58,17 +57,19 @@ function! Tex_FoldSections(lst, endpat)
 	else
 		let pattern = ''
 		let prefix = ''
-		for label in split(s, "|")
-			let pattern .= prefix . '^\s*\\' . label . '\W\|^\s*%%fake' . label
-			let prefix = '\W\|'
+		for label in split( s, "|" )
+			let pattern .= prefix . '\\' . label . '\|' . '%%fake' . label
+			let prefix = '\|'
 		endfor
-		let s = pattern
+		" The line before the pattern could contain a mixture of "% =_" (within a
+		" comment).
+		" The pattern itself is ended by a non-word character "\W" or a newline.
+		let s = '^\%(%[% =-]*\n\)\?\s*' . '\%(' . pattern . '\)' . '\%(\W\|\n\)'
 	endif
 	let endpat = s . '\|' . a:endpat
 	if i > 0
 		call Tex_FoldSections(strpart(a:lst,i+1), endpat)
 	endif
-	let endpat = '^\s*\\appendix\W\|' . endpat
 	call AddSyntaxFoldItem(s, endpat, 0, -1)
 endfunction
 " }}}
@@ -108,7 +109,7 @@ function! MakeTexFolds(force)
 	" requires a regexp which will match unbalanced curly braces and that is
 	" apparently not doable with regexps.
 	let s = ''
-    if !exists('g:Tex_FoldedCommands')
+	if !exists('g:Tex_FoldedCommands')
 		let g:Tex_FoldedCommands = s
 	elseif g:Tex_FoldedCommands[0] == ','
 		let g:Tex_FoldedCommands = s . g:Tex_FoldedCommands
@@ -118,7 +119,7 @@ function! MakeTexFolds(force)
 
 	let s = 'verbatim,comment,eq,gather,align,figure,table,thebibliography,'
 			\. 'keywords,abstract,titlepage'
-    if !exists('g:Tex_FoldedEnvironments')
+	if !exists('g:Tex_FoldedEnvironments')
 		let g:Tex_FoldedEnvironments = s
 	elseif g:Tex_FoldedEnvironments[0] == ','
 		let g:Tex_FoldedEnvironments = s . g:Tex_FoldedEnvironments
@@ -126,7 +127,7 @@ function! MakeTexFolds(force)
 		let g:Tex_FoldedEnvironments = g:Tex_FoldedEnvironments . s
 	endif
 	
-    if !exists('g:Tex_FoldedSections')
+	if !exists('g:Tex_FoldedSections')
 		let g:Tex_FoldedSections = 'part,chapter,section,'
 								\. 'subsection,subsubsection,paragraph'
 	endif
@@ -292,7 +293,12 @@ function! MakeTexFolds(force)
 					" In other words, the pattern is safe, but not exact.
 					call AddSyntaxFoldItem('^\s*\\'.s.'{[^{}]*$','^[^}]*}',0,0)
 				else
-					call AddSyntaxFoldItem('^\s*\\begin{'.s,'\(^\|\s\)\s*\\end{'.s,0,0)
+					if s =~ 'itemize\|enumerate\|description'
+						" These environments can nest.
+						call AddSyntaxFoldItem('^\s*\\begin{'.s,'\(^\|\s\)\s*\\end{'.s,0,0,'^\s*\\begin{'.s,'\(^\|\s\)\s*\\end{'.s)
+					else
+						call AddSyntaxFoldItem('^\s*\\begin{'.s,'\(^\|\s\)\s*\\end{'.s,0,0,'','')
+					endif
 				endif
 			endif
 		endwhile
@@ -303,9 +309,10 @@ function! MakeTexFolds(force)
 	" Sections {{{
 	if g:Tex_FoldedSections != '' 
 		call Tex_FoldSections(g:Tex_FoldedSections,
-			\ '^\s*\\frontmatter\|^\s*\\mainmatter\|^\s*\\backmatter\|'
+			\ '^\s*\\\%(frontmatter\|mainmatter\|backmatter\)\|'
 			\. '^\s*\\begin{thebibliography\|>>>\|^\s*\\endinput\|'
-			\. '^\s*\\begin{slide\|^\s*\\end{document')
+			\. '^\s*\\begin{slide\|^\s*\\\%(begin\|end\){document\|'
+			\. '^\s*\\\%(\%(begin\|end\){appendix}\|appendix\)')
 	endif
 	" }}} 
 	
@@ -343,16 +350,25 @@ function! MakeTexFolds(force)
 	" }}}
 	
 	call MakeSyntaxFolds(a:force)
-	normal! zv
 endfunction
 
 " }}}
 " TexFoldTextFunction: create fold text for folds {{{
 function! TexFoldTextFunction()
-	let leadingSpace = matchstr('                                       ', ' \{,'.indent(v:foldstart).'}')
+	" The dashes indicating the foldlevel together with
+	" the number of lines are aligned to width '7'.
+	let lines = v:foldend - v:foldstart + 1
+	let myfoldtext = repeat('-', v:foldlevel-1) . '+'
+				\. repeat(' ', 7-(v:foldlevel-1)-len(lines))
+				\. lines . ' lines: '
+
+	" Add some indent per foldlevel
+	let myfoldtext .= repeat('> ', v:foldlevel-1)
+
 	if getline(v:foldstart) =~ '^\s*\\begin{'
 		let header = matchstr(getline(v:foldstart),
 							\ '^\s*\\begin{\zs\([:alpha:]*\)[^}]*\ze}')
+		let title = ''
 		let caption = ''
 		let label = ''
 		let i = v:foldstart
@@ -373,29 +389,59 @@ function! TexFoldTextFunction()
 				" :FIXME: this does not work when \label contains a
 				" newline or a }-character
 				let label = substitute(label, '\([^}]*\)}.*$', '\1', '')
+			elseif header =~ 'frame' && getline(i) =~ '\\begin{frame}.*{[^{}]*}\|\\frametitle\|%'
+				if getline(i) =~ '\\begin{frame}'
+					" The first argument inside {} is the frame title (the
+					" second one is a subtitle)
+					let title = matchstr(getline(i), '\\begin{frame}.\{-}{\zs[^{}]*\ze}')
+				elseif getline(i) =~ '\\frametitle'
+					let title = matchstr(getline(i), '\\frametitle{\zs[^}]*\ze}')
+				elseif getline(i) =~ '%' && title == ''
+					let title = substitute(getline(i), '^\(\s\|%\)*', '', '')
+				endif
 			end
 
 			let i = i + 1
 		endwhile
 
-		let ftxto = foldtext()
+		if header =~ 'frame'
+			if title == ''
+				let title = getline(v:foldstart + 1)
+			end
+			" Count frames
+			let frnum = 0
+			for line in getline(1,v:foldstart)
+				if line =~ '\\begin{frame}'
+					let frnum=frnum+1
+				endif
+			endfor
+			" Pad with spaces to length 2
+			let frnum = repeat(' ', 2-len(frnum)) . frnum
+			return myfoldtext . ': Frame ' . frnum . ': ' . title
+		end
+
 		" if no caption found, then use the second line.
 		if caption == ''
 			let caption = getline(v:foldstart + 1)
 		end
 
-		let retText = matchstr(ftxto, '^[^:]*').': '.header.
-						\ ' ('.label.'): '.caption
-		return leadingSpace.retText
+		return myfoldtext . header.  ' ('.label.'): '.caption
 
-	elseif getline(v:foldstart) =~ '^%' && getline(v:foldstart) !~ '^%%fake'
-		let ftxto = foldtext()
-		return leadingSpace.substitute(ftxto, ':', ': % ', '')
+	elseif getline(v:foldstart) =~ '^\s*%\+[% =-]*$'
+		" Useless comment. Use the next line.
+		return myfoldtext . getline(v:foldstart+1)
+	elseif getline(v:foldstart) =~ '^\s*%%fake'
+		" Just strip one '%' from the fakesection.
+		return myfoldtext . substitute(getline(v:foldstart), '^\s*%%fake', '%', '')
+	elseif getline(v:foldstart) =~ '^\s*%'
+		" It's any other comment. Use it.
+		return myfoldtext . getline(v:foldstart)
 	elseif getline(v:foldstart) =~ '^\s*\\document\(class\|style\).*{'
-		let ftxto = leadingSpace.foldtext()
-		return substitute(ftxto, ':', ': Preamble: ', '')
+		" This is the preamble.
+		return myfoldtext . 'Preamble: ' . getline(v:foldstart)
 	else
-		return leadingSpace.foldtext()
+		" This is something.
+		return myfoldtext . getline(v:foldstart)
 	end
 endfunction
 " }}}
