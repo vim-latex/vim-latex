@@ -1889,8 +1889,8 @@ i.e newly created syntax items are not automatically folded up. (This is a
 compromise between speed and convenience).
 
 When you open up a LaTeX file, all the portions will be automatically folded up.
-However, no new folds will be created until you press <F6> or \rf. (rf stands
-for "refresh folds").
+However, no new folds will be created until you press \rf. (rf stands for
+"refresh folds").
 
 The fold-text is set to the first line of the folded text unless the fold is a
 table, figure etc. (an environment). In this case, if a \caption and/or a label
@@ -1919,20 +1919,28 @@ will be shown as:  >
 Default Folding Scheme in Latex-Suite                         *ls_8_1* *ls_a_cj*
                                                                *default-folding*
 
-By default Latex-Suite creates folds in the following manner:
+By default, Latex-Suite creates folds in the following manner:
 
   >
-    \chapter
-    \section
-    %%fakesection
-        \subsection
-            \subsubsection
-                \item
-                    \equation
-                    \eqnarray
-                    \figure
-                    \table
-                    \footnote
+    
+    \part
+    %%fakepart
+        \chapter
+        %%fakechapter
+            \section
+            %%fakesection
+                \subsection
+                %%fakesubsection
+                    \subsubsection
+                    %%fakesubsubsection
+                        \paragraph
+                        %%fakeparagraph
+                            \item
+                                \equation
+                                \eqnarray
+                                \figure
+                                \table
+                                \footnote
 The indentation shows the "nestedness" of the folding scheme. See the next
 section [|ls_a_ck|] to see how you can change this scheme.
 
@@ -1950,13 +1958,25 @@ Tex_FoldedSections                                          *ls_8_2_1* *ls_a_cl*
 
 This entry defines which sections will be folded. This setting is a comma
 separated list of section names. The default value is:  >
-    part,chapter,section,%%fakesection,
-    subsection,subsubsection,paragraph
-Each of the entries in the list will fold up a section of the corresponding
-name. The %%fakesection section is provided as a means for the user to group
-lines into "fake" sections. A %%fakesection is assumed to start on a line which
-begins with the string %%fakesection and continue till the start of the next
-\section, \subsection or any other section.
+    part,chapter,section,subsection,subsubsection,paragraph
+Each of the entries in the list will fold up a section of the corresponding name
+and the corresponding %%fakesection. The %%fakesection section is provided as a
+means for the user to group lines into "fake" sections. In particular, it is
+useful to fold the introduction of a section that is not part of a subsection:  >
+    
+    \section{Latex-Suite}
+    %%fakesubsection Introduction
+    A short introduction of the features of Latex-Suite.
+    \subsection{Installation}
+    Installation instructions.
+Without the %%fakesubsection the introduction would not be folded separately
+from the section.
+
+It is also possible, to add section names at the same level of hierarchy. These
+have to be separated by "|". This is, e.g., useful for the KOMA classes, which
+add "\addcap":  >
+    " let g:Tex_FoldedSections = 'part|addpart,chapter|addchap,section|addsec,subsection,subsubsection,paragraph,subparagraph'
+
 
 See also advanced fold settings [|ls_a_cp|].
 
@@ -3344,7 +3364,7 @@ Folding Customization                                        *ls_11_9* *ls_a_dQ*
                                                            *customizing-folding*
 
 The following settings control the folding [|ls_a_ci|] functionality of
-Latex-Suite.
+Latex-Suite, see also Customizing what to fold [|ls_a_ck|].
 
 
 
