@@ -109,6 +109,7 @@ function! Tex_Complete(what, where)
 
 				exe 'cd '.s:origdir
 				silent! call Tex_StartCiteCompletion()
+				call Tex_EchoBibShortcuts()
 
 			elseif Tex_GetVarValue('Tex_UseJabref') == 1
 
@@ -900,8 +901,8 @@ function! Tex_StartCiteCompletion()
 	exec 'python Tex_BibFile.addfilter("key ^'.s:prefix.'")'
 	call Tex_DisplayBibList()
 
-	nnoremap <buffer> <Plug>Tex_JumpToNextBibEntry :call search('^\S.*\]$', 'W')<CR>:call Tex_EchoBibShortcuts()<CR>z.
-	nnoremap <buffer> <Plug>Tex_JumpToPrevBibEntry :call search('^\S.*\]$', 'bW')<CR>:call Tex_EchoBibShortcuts()<CR>z.
+	nnoremap <buffer> <Plug>Tex_JumpToNextBibEntry :call search('^\S.*\]$', 'W')<CR>z.:call Tex_EchoBibShortcuts()<CR>
+	nnoremap <buffer> <Plug>Tex_JumpToPrevBibEntry :call search('^\S.*\]$', 'bW')<CR>z.:call Tex_EchoBibShortcuts()<CR>
 	nnoremap <buffer> <Plug>Tex_FilterBibEntries   :call Tex_HandleBibShortcuts('filter')<CR>
 	nnoremap <buffer> <Plug>Tex_RemoveBibFilters   :call Tex_HandleBibShortcuts('remove_filters')<CR>
 	nnoremap <buffer> <Plug>Tex_SortBibEntries	  :call Tex_HandleBibShortcuts('sort')<CR>
@@ -945,7 +946,6 @@ function! Tex_DisplayBibList()
 	call Tex_SetupBibSyntax()
 
 	0
-	call Tex_EchoBibShortcuts()
 
 	" once the buffer is initialized, go back to the original settings.
 	setlocal nomodifiable
