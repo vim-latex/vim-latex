@@ -314,6 +314,19 @@ fun! Tex_Strntok(s, tok, n)
 endfun
 
 " }}}
+" Tex_CountMatches: count number of matches of pat in string {{{
+fun! Tex_CountMatches( string, pat )
+	let pos = 0
+	let cnt = 0
+	while pos >= 0
+		let pos = matchend(a:string, a:pat, pos)
+		let cnt = cnt + 1
+	endwhile
+	" We have counted one match to much
+	return cnt - 1
+endfun
+
+" }}}
 " Tex_CreatePrompt: creates a prompt string {{{
 " Description: 
 " Arguments:
@@ -329,9 +342,8 @@ endfun
 "
 " This string can be used in the input() function.
 function! Tex_CreatePrompt(promptList, cols, sep)
-
-	let g:listSep = a:sep
-	let num_common = GetListCount(a:promptList)
+	" There is one more item than matches of the seperator
+	let num_common = Tex_CountMatches( a:promptList, a:sep ) + 1
 
 	let i = 1
 	let promptStr = ""
