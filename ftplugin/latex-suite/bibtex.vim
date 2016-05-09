@@ -249,17 +249,5 @@ function BibT(type, options, prompt)
 endfunction
 
 " }}}
-function! s:Input(prompt, ask) " {{{
-	if a:ask == 1
-		let retval = input(a:prompt)
-		if retval == ''
-			return "<++>"
-		endif
-	else
-		return "<++>"
-	endif
-endfunction 
-
-" }}}
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4
