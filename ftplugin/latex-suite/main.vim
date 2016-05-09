@@ -927,7 +927,7 @@ function! Tex_GotoTempFile()
 	endif
 	exec 'silent! split '.s:tempFileName
 endfunction " }}}
-" Tex_IsPresentInFile: finds if a string str, is present in filename {{{
+" Tex_IsPresentInFile: finds if a regexp, is present in filename {{{
 if has('python') && g:Tex_UsePython
 	function! Tex_IsPresentInFile(regexp, filename)
 		exec 'python isPresentInFile(r"'.a:regexp.'", r"'.a:filename.'")'
@@ -947,7 +947,8 @@ else
 		let &report = _report
 		let &sc = _sc
 
-		if search(a:regexp, 'w')
+		" Use very magic to digest usual regular expressions.
+		if search('\v' . a:regexp, 'w')
 			let retval = 1
 		else
 			let retval = 0
