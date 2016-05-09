@@ -470,6 +470,9 @@ endfunction
 function! Tex_ChooseFromPrompt(dialog, list, sep)
 	let g:Tex_ASDF = a:dialog
 	let inp = input(a:dialog)
+	" This is a workaround for a bug(?) in vim, see
+	" https://github.com/vim/vim/issues/778
+	redraw
 	if inp =~ '\d\+'
 		return Tex_Strntok(a:list, a:sep, inp)
 	else
