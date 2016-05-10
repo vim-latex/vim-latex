@@ -493,10 +493,12 @@ endfunction
 function! Tex_ResetIncrementNumber(val)
 	let s:incnum = a:val
 endfunction " }}}
-" Tex_FindInRtp: check if file exists in &rtp {{{
-" Description:	Checks if file exists in globpath(&rtp, ...) and cuts off the
-" 				rest of returned names. This guarantees that sourced file is
-" 				from $HOME.
+" Tex_FindInDirectory: check if file exists in a directory {{{
+" Description:	Checks if file exists in globpath(directory, ...) and cuts off
+" 				the rest of returned names. This guarantees that sourced file
+" 				is from $HOME.
+"               If the argument a:rtp is set, we interpret a:directory as a
+"               subdirectory of &rtp/ftplugin/latex-suite/.
 "               If an optional argument is given, it specifies how to expand
 "               each filename found. For example, '%:p' will return a list of
 "               the complete paths to the files. By default returns trailing
@@ -506,20 +508,26 @@ endfunction " }}}
 "                     each filename found. Some speedup was acheived by using
 "                     a tokenizer approach rather than using Tex_Strntok which
 "                     would have been more obvious.
-function! Tex_FindInRtp(filename, directory, ...)
+function! Tex_FindInDirectory(filename, rtp, directory, ...)
 	" how to expand each filename. ':p:t:r' modifies each filename to its
 	" trailing part without extension.
 	let expand = (a:0 > 0 ? a:1 : ':p:t:r')
 	" The pattern used... An empty filename should be regarded as '*'
 	let pattern = (a:filename != '' ? a:filename : '*')
 
-	let filelist = globpath(&rtp, 'ftplugin/latex-suite/'.a:directory.'/'.pattern)."\n"
+	if a:rtp
+		let filelist = globpath(&rtp, 'ftplugin/latex-suite/'.a:directory.'/'.pattern)."\n"
+	else
+		let filelist = globpath(a:directory, pattern)."\n"
+	endif
 
 	if filelist == "\n"
 		return ''
 	endif
 
-	if a:filename != ''
+	if pattern !~ '\*'
+		" If we are not looking for a 'real' pattern, we return the first
+		" match.
 		return fnamemodify(Tex_Strntok(filelist, "\n", 1), expand)
 	endif
 
@@ -545,6 +553,13 @@ function! Tex_FindInRtp(filename, directory, ...)
 	endwhile
 
 	return substitute(retfilelist, ',$', '', '')
+endfunction
+
+" }}}
+" Tex_FindInRtp: check if file exists in &rtp {{{
+" Description:	Wrapper around Tex_FindInDirectory, using a:rtp
+function! Tex_FindInRtp(filename, directory, ...)
+	return call("Tex_FindInDirectory", [ a:filename, 1, a:directory ] + a:000 )
 endfunction
 
 " }}}

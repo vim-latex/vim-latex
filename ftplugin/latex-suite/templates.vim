@@ -91,61 +91,16 @@ endfunction
 " FindInTemplateDir: Searches for template files. {{{
 " Description:	This function looks for template files either in a custom
 " 				directory, or in the latex-suite default directory.
-" 				If an optional argument is given, it specifies how to expand
-" 				each filename found. For example, '%:p' will return a list of
-" 				the complete paths to the files. By default returns trailing
-" 				path-names without extenions.
-" 				The function was derived from 'Tex_FindInRtp'.
-" 				NOTE:	This function is very slow when a large number of
-" 						matches are found because of a while loop which modifies
-" 						each filename found. Some speedup was acheived by using
-" 						a tokenizer approach rather than using Tex_Strntok which
-" 						would have been more obvious.
+" 				Uses Tex_FindInDirectory().
 function! <SID>FindInTemplateDir(filename, ...)
-	" how to expand each filename. ':p:t:r' modifies each filename to its
-	" trailing part without extension.
-	let expand = (a:0 > 0 ? a:1 : ':p:t:r')
-
 	" The pattern used... An empty filename should be regarded as '*.tex'
 	let pattern = (a:filename != '' ? a:filename : '*.tex')
 
-	" get list of files from template directory
 	if exists("g:Tex_CustomTemplateDirectory") && g:Tex_CustomTemplateDirectory != ''
-		let filelist = globpath(g:Tex_CustomTemplateDirectory, pattern)."\n"
+		return call("Tex_FindInDirectory", [pattern, 0, g:Tex_CustomTemplateDirectory] + a:000)
 	else
-		let filelist = globpath(&rtp, 'ftplugin/latex-suite/templates/'.pattern)."\n"
+		return call("Tex_FindInDirectory", [pattern, 1, 'templates'] + a:000 )
 	endif
-
-	if filelist == "\n"
-		return ''
-	endif
-
-	if a:filename != ''
-		return fnamemodify(Tex_Strntok(filelist, "\n", 1), expand)
-	endif
-
-	" Now cycle through the files modifying each filename in the desired
-	" manner.
-	let retfilelist = ''
-	let i = 1
-	while 1
-		" Extract the portion till the next newline. Then shorten the filelist
-		" by removing till the newline.
-		let nextnewline = stridx(filelist, "\n")
-		if nextnewline == -1
-			break
-		endif
-		let filename = strpart(filelist, 0, nextnewline)
-		let filelist = strpart(filelist, nextnewline+1)
-
-		" The actual modification.
-		if fnamemodify(filename, expand) != ''
-			let retfilelist = retfilelist.fnamemodify(filename, expand).","
-		endif
-		let i = i + 1
-	endwhile
-
-	return substitute(retfilelist, ',$', '', '')
 endfunction
 " }}}
 " ProcessTemplate: processes the special characters in template file. {{{
