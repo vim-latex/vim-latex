@@ -934,6 +934,12 @@ if has('python') && g:Tex_UsePython
 
 		return retval
 	endfunction
+elseif has('python3') && g:Tex_UsePython
+	function! Tex_IsPresentInFile(regexp, filename)
+		exec 'python3 isPresentInFile(r"'.a:regexp.'", r"'.a:filename.'")'
+
+		return retval
+	endfunction
 else
 	function! Tex_IsPresentInFile(regexp, filename)
 		call Tex_GotoTempFile()
@@ -969,6 +975,13 @@ elseif has('python') && g:Tex_UsePython
 	function! Tex_CatFile(filename)
 		" catFile assigns a value to retval
 		exec 'python catFile("'.a:filename.'")'
+
+		return retval
+	endfunction
+elseif has('python3') && g:Tex_UsePython
+	function! Tex_CatFile(filename)
+		" catFile assigns a value to retval
+		exec 'python3 catFile("'.a:filename.'")'
 
 		return retval
 	endfunction
@@ -1010,6 +1023,14 @@ if has('python') && g:Tex_UsePython
 			return retval
 		endif
 	endfunction 
+elseif has('python3') && g:Tex_UsePython
+	function! Tex_DeleteFile(filename)
+		exec 'python3 deleteFile(r"'.a:filename.'")'
+		
+		if exists('retval')
+			return retval
+		endif
+	endfunction 
 else
 	function! Tex_DeleteFile(filename)
 		if filereadable(a:filename)
@@ -1023,10 +1044,12 @@ endif
 let &cpo = s:save_cpo
 
 " Define the functions in python if available.
-if !has('python') || !g:Tex_UsePython
+if (!has('python') && !has('python3')) || !g:Tex_UsePython
 	finish
+elseif has('python')
+    exec 'pyfile '.fnameescape(expand('<sfile>:p:h')).'/pytools.py'
+elseif has('python3')
+    exec 'py3file '.fnameescape(expand('<sfile>:p:h')).'/pytools.py'
 endif
-
-exec 'pyfile '.fnameescape(expand('<sfile>:p:h')).'/pytools.py'
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4:nowrap
