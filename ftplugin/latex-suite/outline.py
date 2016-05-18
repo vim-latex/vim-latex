@@ -81,11 +81,11 @@ def getSectionLabels_Root(lineinfo, section_prefix, label_prefix):
         line = m.group(2).lstrip()
 
         # we found a label!
-        m = re.search(r'\\label{(%s.*?)}' % label_prefix, line)
+        m = re.search(r'\\(label|nllabel){(%s.*?)}' % label_prefix, line)
         if m:
             # add the current line (except the \label command) to the text
             # which will be displayed below this label
-            prev_txt += re.search(r'(^.*?)\\label{', line).group(1)
+            prev_txt += re.search(r'(^.*?)\\(label|nllabel){', line).group(1)
 
             # for the figure environment however, just display the caption.
             # instead of everything since the \begin command.
@@ -101,7 +101,7 @@ def getSectionLabels_Root(lineinfo, section_prefix, label_prefix):
             #
             # Use the current "section depth" for the leading indentation.
             print >>outstr, '>%s%s\t\t<%s>' % (' ' * (2 * pres_depth + 2),
-                                               m.group(1), fname)
+                                               m.group(2), fname)
             print >>outstr, ':%s%s' % (' ' * (2 * pres_depth + 4), prev_txt)
             prev_txt = ''
 
@@ -115,7 +115,7 @@ def getSectionLabels_Root(lineinfo, section_prefix, label_prefix):
             prev_env = re.search(r'\\begin{(.*?)}', line).group(1)
             inside_env = 1
 
-        elif re.search(r'\\label', line):
+        elif re.search(r'\\(label|nllabel)', line):
             prev_txt = ''
 
         elif re.search(r'\\end{(equation|eqnarray|align|figure)', line):
