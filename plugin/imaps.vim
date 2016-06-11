@@ -295,7 +295,7 @@ function! s:LookupCharacter(char)
 	" character typed:
 	let bs = substitute(s:MultiByteStrpart(lhs, 1), ".", "\<bs>", "g")
 	" \<c-g>u inserts an undo point
-	return a:char . "\<c-g>u\<bs>" . bs . IMAP_PutTextWithMovement(rhs, phs, phe)
+	return "\<c-v>" . a:char . "\<c-g>u\<bs>" . bs . IMAP_PutTextWithMovement(rhs, phs, phe)
 endfunction
 
 " }}}
