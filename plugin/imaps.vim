@@ -294,8 +294,16 @@ function! s:LookupCharacter(char)
 	" enough back-spaces to erase the left-hand side; -1 for the last
 	" character typed:
 	let bs = substitute(s:MultiByteStrpart(lhs, 1), ".", "\<bs>", "g")
+
 	" \<c-g>u inserts an undo point
-	return "\<c-v>" . a:char . "\<c-g>u\<bs>" . bs . IMAP_PutTextWithMovement(rhs, phs, phe)
+	let result = a:char . "\<c-g>u\<bs>" . bs . IMAP_PutTextWithMovement(rhs, phs, phe)
+
+	if a:char !~? '[a-z0-9]'
+		" If 'a:char' is not a letter or number, insert it literally.
+		let result = "\<c-v>" . result
+	endif
+
+	return result
 endfunction
 
 " }}}
