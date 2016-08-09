@@ -6,11 +6,9 @@ import re
 import os
 
 try:
-    from urllib.request import urlopen
-    from urllib.parse import quote
+    from urllib.request import urlopen, pathname2url
 except ImportError:
-    from urllib import urlopen
-    from urllib import quote
+    from urllib import urlopen, pathname2url
 
 # Compatibility functions
 # Check for existence of builtin function next()
@@ -196,7 +194,7 @@ class BibFile:
                 self.addfile(f)
 
     def addfile(self, file):
-        fields = urlopen('file://' + quote(os.path.abspath(file))).read().decode('utf-8').split('@')
+        fields = urlopen('file://' + pathname2url(os.path.abspath(file))).read().decode('utf-8').split('@')
         for f in fields:
             if not (f and re.match('string', f, re.I)):
                 continue
