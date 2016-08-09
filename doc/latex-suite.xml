@@ -109,7 +109,7 @@ set iskeyword+=:
   </para>
   <para>
    When &ls; first starts up, it scans the
-   <link linkend="Tex_CustomTemplateFolder">template directory</link>
+   <link linkend="Tex_CustomTemplateDirectory">template directory</link>
    and creates menu items based on the files found there. When
    you select a template from this menu, the file will be read in above
    the first line of the current file.
@@ -122,7 +122,7 @@ set iskeyword+=:
   </para>
   <para>
    You can place your own templates in the
-   <link linkend="Tex_CustomTemplateFolder">template directory</link>
+   <link linkend="Tex_CustomTemplateDirectory">template directory</link>
    in
    order for them to be available via the menu.
   </para>
@@ -4562,8 +4562,8 @@ let g:Tex_ViewRuleComplete_html = 'start MozillaFirebird $*/index.html'</program
     This setting describes the directories scanned by &ls; to search for
     templates.
    </para>
-   <section id="Tex_CustomTemplateFolder">
-    <title>g:Tex_CustomTemplateFolder</title>
+   <section id="Tex_CustomTemplateDirectory">
+    <title>g:Tex_CustomTemplateDirectory</title>
     <informaltable frame="all">
      <tgroup cols="2">
       <tbody>
