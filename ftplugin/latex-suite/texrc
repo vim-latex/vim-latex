@@ -728,7 +728,7 @@ TexLet g:Tex_Folding = 1
 " Setting this to zero means that a file is not folded up as soon as its
 " opened.
 " NOTE: the MakeTeXFolds() function will still be available (unless disabled
-"       by g:Tex_Folding), so you can do <F6> or \rf to refresh/create folds.
+"       by g:Tex_Folding), so you can do \rf to refresh/create folds.
 TexLet g:Tex_AutoFolding = 1 
 
 " }}}
