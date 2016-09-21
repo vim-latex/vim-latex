@@ -102,14 +102,7 @@ function! Tex_section_adv(...) "{{{
 endfunction "}}}
 function! s:Tex_section_detection() "{{{
 	let pos = Tex_GetPos()
-	let last_section1 = search("\\\\\subparagraph\\|\\\\paragraph\\|\\\\subsubsection\\|\\\\subsection\\|\\\\section\\|\\\\chapter\\|\\\part\)", "b")
-	call Tex_SetPos(pos)
-	let last_section2 = search("\\\\\part\\|\\\\chapter\\|\\\\section\\|\\\\subsection\\|\\\\subsubsection\\|\\\\paragraph\\|\\\subparagraph\)", "b")
-	if last_section1 > last_section2
-		let last_section = last_section1
-	else
-		let last_section = last_section2
-	endif
+	let last_section = search("\\\\part\\|\\\\chapter\\|\\\\section\\|\\\\subsection\\|\\\\subsubsection\\|\\\\paragraph\\|\\\\subparagraph", "bW")
 	if last_section != 0
 		exe last_section
 		if getline(".") =~ "\\\\part"
