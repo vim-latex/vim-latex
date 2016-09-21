@@ -654,7 +654,6 @@ if g:Tex_PromptedEnvironments != ''
 			" the file, then a part of the file is the preamble.
 
 			" search for where the document begins.
-			call Tex_SetPos(pos)
 			let begin_line = search('\\begin{document}')
 			" if the document begins after where we are presently, then we are
 			" in the preamble.
