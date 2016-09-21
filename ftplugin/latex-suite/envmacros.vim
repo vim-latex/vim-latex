@@ -648,13 +648,13 @@ if g:Tex_PromptedEnvironments != ''
 		" decide if we are in the preamble of the document. If we are then
 		" insert a package, otherwise insert an environment.
 		"
-		if search('\\documentclass', 'bW') && search('\\begin{document}')
+		if search('\C\\documentclass', 'bW') && search('\C\\begin{document}', 'W')
 
 			" If there is a \documentclass line and a \begin{document} line in
 			" the file, then a part of the file is the preamble.
 
 			" search for where the document begins.
-			let begin_line = search('\\begin{document}')
+			let begin_line = search('\C\\begin{document}', 'cW')
 			" if the document begins after where we are presently, then we are
 			" in the preamble.
 			if start_line < begin_line
@@ -668,7 +668,7 @@ if g:Tex_PromptedEnvironments != ''
 				return Tex_DoEnvironment()
 			endif
 
-		elseif search('\\documentclass')
+		elseif search('\C\\documentclass', 'bW')
 			" if there is only a \documentclass but no \begin{document}, then
 			" the entire file is a preamble. Put a package.
 
