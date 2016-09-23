@@ -3,7 +3,7 @@ VIMDIR=$(PREFIX)/share/vim
 BINDIR=$(PREFIX)/bin
 APPDATADIR=$(PREFIX)/share/appdata
 
-VERSION=1.8.23
+VERSION=1.9.0
 DATE=$(shell date +%Y%m%d)
 COMMIT_COUNT=$(shell git log --oneline | wc -l)
 ABBREV_HASH=$(shell git rev-parse --short=7 HEAD)
