@@ -234,6 +234,7 @@ set iskeyword+=:
    &ls; provides a rich set of mappings to insert, enclose and modify
    &latex; environments, i.e, <literal>\begin{...} ... \end{...}</literal>
    pairs.
+   There are several possibilities for the customization of the inserted environments, see <link linkend="customizing-macros-environments">the section about customizations</link>.
    <section id="inserting-environments">
     <title>Inserting Environments</title>
     <para>
@@ -3489,69 +3490,279 @@ endif</programlisting>
   </section>
   <section id="customizing-macros">
    <title>Macro Customization</title>
-   <section id="Tex_Env_name">
-    <title>Tex_Env_name</title>
-     <para>
-      If you wish to wish to expand certain environments differently from
-      the way &ls; does it, you can define custom expansions using global
-      variables of the form <literal>Tex_Env_{name}</literal> where
-      <literal>name</literal> corresponds to the environment.
-     </para>
-     <para>
-      For example, if you press <literal>&lt;F5&gt;</literal> after typing
-      <literal>theorem</literal>, &ls; will by default expand it to
-      <programlisting>\begin{theorem}
-     \label{&ph;}&ph;
-\end{theorem}&ph;</programlisting>
-       However, if you wish change this to
-      <programlisting>\begin{theorem}
-     &ph;
-\end{theorem}&ph;</programlisting>
-       then define the following variable
-      <programlisting>let g:Tex_Env_theorem = "\\begin{theorem}\&lt;CR&gt;&ph;\&lt;CR&gt;\\end{theorem}"</programlisting>
+   <section id="customizing-macros-environments">
+    <title>Customizing the macros concerning environments</title>
+    <section id="Tex_Env_name">
+     <title>Tex_Env_name</title>
+      <para>
+       If you wish to wish to expand certain environments differently from
+       the way &ls; does it, you can define custom expansions using global
+       variables of the form <literal>Tex_Env_{name}</literal> where
+       <literal>name</literal> corresponds to the environment.
       </para>
+      <para>
+       For example, if you press <literal>&lt;F5&gt;</literal> after typing
+       <literal>theorem</literal>, &ls; will by default expand it to
+       <programlisting>\begin{theorem}
+      \label{&ph;}&ph;
+\end{theorem}&ph;</programlisting>
+        However, if you wish change this to
+       <programlisting>\begin{theorem}
+      &ph;
+\end{theorem}&ph;</programlisting>
+        then define the following variable
+       <programlisting>let g:Tex_Env_theorem = "\\begin{theorem}\&lt;CR&gt;&ph;\&lt;CR&gt;\\end{theorem}"</programlisting>
+       </para>
+      <para>
+       If the expansion uses special keys such as carriage return etc, then
+       use double-quotes and use the <literal>"\&lt;key&gt;"</literal>
+       notation for special keys. Backslashes have to be doubled.
+      </para>
+      <para>
+       You could even use strings returned by functions as the expansion by
+       using the <link
+        linkend="IMAP_PutTextWithMovement">IMAP_PutTextWithMovement()</link>
+       function.
+      </para>
+      <para>
+       If the name of the environment contains special characters (for
+       example, the <literal>eqnarray*</literal> environment), then use the
+       following form:
+       <programlisting>let g:Tex_Env_{'eqnarray*'} =
+         \ "\\begin{eqnarray*}\&lt;CR&gt;&ph; &amp;=&amp; &ph;\&lt;CR&gt;\\end{eqnarray*}&ph;"</programlisting>
+        This will make pressing <literal>&lt;F5&gt;</literal> after
+        <literal>eqnarray*</literal> expand to
+        <programlisting>\begin{eqnarray*}
+     &ph; &amp;=&amp; &ph;
+ \end{eqnarray*}&ph;</programlisting>
+      </para>
+    </section>
+    <section id="Tex_EnvLabelprefix_name">
+     <title>Tex_EnvLabelprefix_name</title>
+      <para>
+       By default, &ls; inserts labels without prefixes.
+       The setting <literal>Tex_EnvLabelprefix_{name}</literal>, where <literal>name</literal>
+       corresponds to the environment, is used to create labels with prefixes automatically.
+       For instance, if you use
+       <programlisting>
+let g:Tex_EnvLabelprefix_equation = "eq:"</programlisting>
+       the prefix <literal>eq:</literal> is inserted in all labels in generated equations:
+       <programlisting>
+\begin{equation}
+      &ph;
+      \label{eq:&ph;}
+\end{equation}&ph;</programlisting>
+       This setting works for the environments
+       <literal>figure</literal>,
+       <literal>table</literal>,
+       <literal>theorem</literal>,
+       <literal>definition</literal>,
+       <literal>lemma</literal>,
+       <literal>proposition</literal>,
+       <literal>corollary</literal>,
+       <literal>assumption</literal>,
+       <literal>remark</literal>,
+       <literal>equation</literal>,
+       <literal>eqnarray</literal>,
+       <literal>align</literal> and
+       <literal>multline</literal>.
+      </para>
+    </section>
+    <section id="Tex_EnvEndWithCR">
+     <title>Tex_EnvEndWithCR</title>
+     <informaltable frame="all">
+      <tgroup cols="2">
+       <tbody>
+        <row><entry>Type</entry><entry>Boolean</entry></row>
+        <row><entry>Default Value</entry>
+         <entry><literal>0</literal></entry></row>
+       </tbody>
+      </tgroup>
+     </informaltable>
+      <para>
+       If <literal>Tex_EnvEndWithCR</literal> is set to <literal>1</literal>, a carriage return (i.e., line break)
+       is inserted between <literal>\end{environment}</literal> and the last placeholder:
+       <programlisting>
+\begin{equation}
+      &ph;
+      \label{&ph;}
+\end{equation}
+&ph;</programlisting>
+      </para>
+    </section>
+    <section id="Tex_LabelAfterContent">
+     <title>Tex_LabelAfterContent</title>
+     <informaltable frame="all">
+      <tgroup cols="2">
+       <tbody>
+        <row><entry>Type</entry><entry>Boolean</entry></row>
+        <row><entry>Default Value</entry>
+         <entry><literal>1</literal></entry></row>
+       </tbody>
+      </tgroup>
+     </informaltable>
+      <para>
+       If <literal>Tex_LabelAfterContent</literal> is set to <literal>0</literal>, the label is placed before the content of the environment:
+       <programlisting>
+\begin{equation}
+      \label{&ph;}
+      &ph;
+\end{equation}&ph;</programlisting>
+      </para>
+    </section>
+    <section id="Tex_UseMenuWizard">
+     <title>g:Tex_UseMenuWizard</title>
+     <informaltable frame="all">
+      <tgroup cols="2">
+       <tbody>
+        <row><entry>Type</entry><entry>Boolean</entry></row>
+        <row><entry>Default Value</entry>
+         <entry><literal>0</literal></entry></row>
+       </tbody>
+      </tgroup>
+     </informaltable>
      <para>
-      If the expansion uses special keys such as carriage return etc, then
-      use double-quotes and use the <literal>"\&lt;key&gt;"</literal>
-      notation for special keys. Backslashes have to be doubled.
+      If this variable is set to 1, then when an environment is chosen from the
+      menu then for selected environments, &ls; asks a series of
+      questions on the command line and inserts a template with the
+      corresponding fields already filled in.  Setting this to zero will insert
+      a template with <link linkend="place-holders">place-holders</link>
+      marking off the places where fields need to be filled.
+     </para>
+    </section>
+    <section id="Tex_PromptedEnvironments">
+     <title>g:Tex_PromptedEnvironments</title>
+     <informaltable frame="all">
+      <tgroup cols="2">
+       <tbody>
+        <row><entry>Type</entry><entry>String</entry></row>
+        <row><entry>Default Value</entry> <entry><literal>'eqnarray*,eqnarray,equation,equation*,\[,$$,align,align*'</literal></entry></row>
+       </tbody>
+      </tgroup>
+     </informaltable>
+     <para>
+      This string represents a comma separated list of fields corresponding to
+      environments. Pressing <literal>&lt;F5&gt;</literal> in insert-mode in
+      the body of the document asks you to choose from one of these
+      environments to insert.
      </para>
      <para>
-      You could even use strings returned by functions as the expansion by
-      using the <link
-       linkend="IMAP_PutTextWithMovement">IMAP_PutTextWithMovement()</link>
-      function.
+      Leaving this string empty will leave the <literal>&lt;F5&gt;</literal>
+      key unmapped
+     </para>
+    </section>
+    <section id="Tex_HotKeyMappings">
+     <title>g:Tex_HotKeyMappings</title>
+     <informaltable frame="all">
+      <tgroup cols="2">
+       <tbody>
+        <row><entry>Type</entry><entry>String</entry></row>
+        <row><entry>Default Value</entry>
+         <entry><literal>'eqnarray*,eqnarray,bmatrix'</literal></entry></row>
+       </tbody>
+      </tgroup>
+     </informaltable>
+     <para>
+      This string represents a comma separated list of environments which are
+      mapped to <literal>&lt;Shift-F-1&gt;</literal> through
+      <literal>&lt;Shift-F-4&gt;</literal>. For example, pressing
+      <literal>&lt;Shift-F-2&gt;</literal> with this setting inserts the
+      <literal>eqnarray</literal> environment.
      </para>
      <para>
-      If the name of the environment contains special characters (for
-      example, the <literal>eqnarray*</literal> environment), then use the
-      following form:
-      <programlisting>let g:Tex_Env_{'eqnarray*'} = 
-        \ "\\begin{eqnarray*}\&lt;CR&gt;&ph; &amp;=&amp; &ph;\&lt;CR&gt;\\end{eqnarray*}&ph;"</programlisting>
-       This will make pressing <literal>&lt;F5&gt;</literal> after
-       <literal>eqnarray*</literal> expand to
-       <programlisting>\begin{eqnarray*}
-    &ph; &amp;=&amp; &ph;
-\end{eqnarray*}&ph;</programlisting>
+      Leaving this string empty will leave <literal>&lt;Shift-F-1&gt;</literal> through
+      <literal>&lt;Shift-F-4&gt;</literal> unmapped.
      </para>
+     <note>
+      <para>
+       Only the first four fields of this list are used. The rest are silently
+       ignored.
+      </para>
+     </note>
+    </section>
    </section>
-   <section id="Tex_Com_name">
-    <title>Tex_Com_name</title>
-    <para>
-     If you wish to define new expansions for fast command insertion as
-     described <link linkend="latex-command-maps">here</link>, or redefine
-     expansions from the default values in &ls;, you will need to define
-     variables of the form <literal>g:Tex_Com_{name}</literal> where
-     <literal>name</literal> is a command name. For example, with the
-     setting
-     <programlisting>let g:Tex_Com_frac = "\\frac{&ph;}{&ph;}&ph;"</programlisting>
-     pressing <literal>&lt;F7&gt;</literal> after typing
-     <literal>frac</literal> will change it to <literal>\frac{&ph;}{&ph;}&ph;</literal>
-    </para>
-    <para>
-     See <link linkend="Tex_Env_name">Tex_Env_name</link> for additional
-     details on how to create this setting in various special
-     circumstances.
-    </para>
+   <section id="customizing-macros-commands">
+    <title>Customizing the macros concerning commands</title>
+    <section id="Tex_Com_name">
+     <title>Tex_Com_name</title>
+     <para>
+      If you wish to define new expansions for fast command insertion as
+      described <link linkend="latex-command-maps">here</link>, or redefine
+      expansions from the default values in &ls;, you will need to define
+      variables of the form <literal>g:Tex_Com_{name}</literal> where
+      <literal>name</literal> is a command name. For example, with the
+      setting
+      <programlisting>let g:Tex_Com_frac = "\\frac{&ph;}{&ph;}&ph;"</programlisting>
+      pressing <literal>&lt;F7&gt;</literal> after typing
+      <literal>frac</literal> will change it to <literal>\frac{&ph;}{&ph;}&ph;</literal>
+     </para>
+     <para>
+      See <link linkend="Tex_Env_name">Tex_Env_name</link> for additional
+      details on how to create this setting in various special
+      circumstances.
+     </para>
+    </section>
+    <section id="Tex_PromptedCommands">
+     <title>g:Tex_PromptedCommands</title>
+     <informaltable frame="all">
+      <tgroup cols="2">
+       <tbody>
+        <row><entry>Type</entry><entry>String</entry></row>
+        <row><entry>Default Value</entry>
+         <entry>
+          <literal>'footnote,cite,pageref,label'</literal>
+         </entry>
+        </row>
+       </tbody>
+      </tgroup>
+     </informaltable>
+     <para>
+      This string represents a comma separated list of &latex; commands
+      which &ls; uses for the <literal>&lt;F7&gt;</literal> and
+      <literal>&lt;S-F7&gt;</literal> maps as described <link
+       linkend="latex-command-maps">here</link>.
+     </para>
+     <para>
+      Leaving this string empty will leave the <literal>&lt;F7&gt;</literal>
+      key unmapped.
+     </para>
+    </section>
+    <section id="Tex_ItemStyle_environment">
+     <title>Tex_ItemStyle_environment</title>
+     <para>
+      This setting affects the style which &ls; uses to insert an
+      <literal>\item</literal> when <literal>&lt;Alt-I&gt;</literal> is
+      pressed as described <link linkend="Alt-I">here</link>. By default
+      &ls; defines styles for the following environments:
+     </para>
+     <informaltable frame="all">
+      <tgroup cols="2">
+       <thead>
+        <row>
+         <entry>Environment</entry>
+         <entry>Style</entry>
+        </row>
+       </thead>
+       <tbody>
+        <row><entry>itemize</entry><entry>\item </entry></row>
+        <row><entry>enumerate</entry><entry>\item </entry></row>
+        <row><entry>theindex</entry><entry>\item </entry></row>
+        <row><entry>thebibliography</entry><entry>\item[&lt;+biblabel+&gt;]{&lt;+bibkey+&gt;} &lt;++&gt;</entry></row>
+        <row><entry>description</entry><entry>\item[&lt;+label+&gt;] &lt;++&gt;</entry></row>
+       </tbody>
+      </tgroup>
+     </informaltable>
+     <para>
+      Each style is defined by a variable of the form
+      <literal>g:Tex_ItemStyle_{envname}</literal> where
+      <literal>envname</literal> is the name of the environment for which
+      the style is defined. For example, by default
+      <programlisting>g:Tex_ItemStyle_description = '\item[&lt;+label+&gt;] &lt;++&gt;'</programlisting>
+      Redefining the style for a particular environment or defining a style
+      for an entirely new environment is simply a matter of setting the
+      value of a variable of the corresponding name.
+     </para>
+    </section>
    </section>
    <section id="macro-enabling">
     <title>Enabling / disabling macros</title>
@@ -3583,26 +3794,6 @@ endif</programlisting>
      </tgroup>
     </informaltable>
    </section>
-   <section id="Tex_UseMenuWizard">
-    <title>g:Tex_UseMenuWizard</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>Boolean</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>0</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     If this variable is set to 1, then when an environment is chosen from the
-     menu then for selected environments, &ls; asks a series of
-     questions on the command line and inserts a template with the
-     corresponding fields already filled in.  Setting this to zero will insert
-     a template with <link linkend="place-holders">place-holders</link>
-     marking off the places where fields need to be filled.
-    </para>
-   </section>
    <section id="Imap_FreezeImap">
     <title>g:Imap_FreezeImap</title>
     <para>
@@ -3620,7 +3811,7 @@ endif</programlisting>
       expansion. It might be useful when you are using some other keymap
       which is causing excessive macro expansion. Use a buffer-local
       variable of the same name if you wish to affect just the present
-      buffer. 
+      buffer.
      </para>
     </para>
    </section>
@@ -3700,117 +3891,6 @@ endif</programlisting>
      provided, the <link linkend="enclosing-env-threeletter">visual mode
       macros for environments</link> and sections start with a character
      different from <literal>g:Tex_Leader</literal>.
-    </para>
-   </section>
-   <section id="Tex_PromptedEnvironments">
-    <title>g:Tex_PromptedEnvironments</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>String</entry></row>
-       <row><entry>Default Value</entry> <entry><literal>'eqnarray*,eqnarray,equation,equation*,\[,$$,align,align*'</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     This string represents a comma separated list of fields corresponding to
-     environments. Pressing <literal>&lt;F5&gt;</literal> in insert-mode in
-     the body of the document asks you to choose from one of these
-     environments to insert.
-    </para>
-    <para>
-     Leaving this string empty will leave the <literal>&lt;F5&gt;</literal>
-     key unmapped
-    </para>
-   </section>
-   <section id="Tex_HotKeyMappings">
-    <title>g:Tex_HotKeyMappings</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>String</entry></row>
-       <row><entry>Default Value</entry>
-        <entry><literal>'eqnarray*,eqnarray,bmatrix'</literal></entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     This string represents a comma separated list of environments which are
-     mapped to <literal>&lt;Shift-F-1&gt;</literal> through
-     <literal>&lt;Shift-F-4&gt;</literal>. For example, pressing
-     <literal>&lt;Shift-F-2&gt;</literal> with this setting inserts the
-     <literal>eqnarray</literal> environment.
-    </para>
-    <para>
-     Leaving this string empty will leave <literal>&lt;Shift-F-1&gt;</literal> through
-     <literal>&lt;Shift-F-4&gt;</literal> unmapped.
-    </para>
-    <note>
-     <para>
-      Only the first four fields of this list are used. The rest are silently
-      ignored.
-     </para>
-    </note>
-   </section>
-   <section id="Tex_PromptedCommands">
-    <title>g:Tex_PromptedCommands</title>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <tbody>
-       <row><entry>Type</entry><entry>String</entry></row>
-       <row><entry>Default Value</entry> 
-        <entry>
-         <literal>'footnote,cite,pageref,label'</literal>
-        </entry>
-       </row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     This string represents a comma separated list of &latex; commands
-     which &ls; uses for the <literal>&lt;F7&gt;</literal> and
-     <literal>&lt;S-F7&gt;</literal> maps as described <link
-      linkend="latex-command-maps">here</link>.
-    </para>
-    <para>
-     Leaving this string empty will leave the <literal>&lt;F7&gt;</literal>
-     key unmapped.
-    </para>
-   </section>
-   <section id="Tex_ItemStyle_environment">
-    <title>Tex_ItemStyle_environment</title>
-    <para>
-     This setting affects the style which &ls; uses to insert an
-     <literal>\item</literal> when <literal>&lt;Alt-I&gt;</literal> is
-     pressed as described <link linkend="Alt-I">here</link>. By default
-     &ls; defines styles for the following environments:
-    </para>
-    <informaltable frame="all">
-     <tgroup cols="2">
-      <thead>
-       <row>
-        <entry>Environment</entry>
-        <entry>Style</entry>
-       </row>
-      </thead>
-      <tbody>
-       <row><entry>itemize</entry><entry>\item </entry></row>
-       <row><entry>enumerate</entry><entry>\item </entry></row>
-       <row><entry>theindex</entry><entry>\item </entry></row>
-       <row><entry>thebibliography</entry><entry>\item[&lt;+biblabel+&gt;]{&lt;+bibkey+&gt;} &lt;++&gt;</entry></row>
-       <row><entry>description</entry><entry>\item[&lt;+label+&gt;] &lt;++&gt;</entry></row>
-      </tbody>
-     </tgroup>
-    </informaltable>
-    <para>
-     Each style is defined by a variable of the form
-     <literal>g:Tex_ItemStyle_{envname}</literal> where
-     <literal>envname</literal> is the name of the environment for which
-     the style is defined. For example, by default
-     <programlisting>g:Tex_ItemStyle_description = '\item[&lt;+label+&gt;] &lt;++&gt;'</programlisting>
-     Redefining the style for a particular environment or defining a style
-     for an entirely new environment is simply a matter of setting the
-     value of a variable of the corresponding name.
     </para>
    </section>
   </section>

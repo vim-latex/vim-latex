@@ -380,6 +380,15 @@ TexLet g:Tex_Leader2 = ','
 TexLet g:Tex_EnvironmentMaps  = 1
 TexLet g:Tex_EnvironmentMenus = 1
 
+" Customizations:
+" Should a environment mapping end with a carriage return after "\end{...}"?
+TexLet g:Tex_EnvEndWithCR = 0
+" Should the label placed before or after the content?
+TexLet g:Tex_LabelAfterContent = 1
+
+" Set up standard prefixes for labels.
+TexLet g:Tex_EnvLabelprefix_table = "tab:"
+TexLet g:Tex_EnvLabelprefix_figure = "fig:"
 
 " }}}
 " Font Macros: {{{

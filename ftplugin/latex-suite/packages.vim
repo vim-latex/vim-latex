@@ -14,6 +14,12 @@ let s:doneOnce = 1
 
 let s:path = fnameescape(expand("<sfile>:p:h"))
 
+if Tex_GetVarValue('Tex_EnvEndWithCR')
+	let s:end_with_cr = "\<CR>"
+else
+	let s:end_with_cr = ""
+end
+
 let s:menu_div = 20
 
 com! -nargs=0 TPackageUpdate :silent! call Tex_pack_updateall(1)
@@ -605,9 +611,9 @@ let s:CommandSpec_nor = '\<+replace+>'
 let s:CommandSpec_noo = '\<+replace+>[<++>]'
 let s:CommandSpec_nob = '\<+replace+>[<++>]{<++>}{<++>}<++>'
 
-let s:CommandSpec_env = '\begin{<+replace+>}'."\<CR><++>\<CR>".'\end{<+replace+>}<++>'
-let s:CommandSpec_ens = '\begin{<+replace+>}<+extra+>'."\<CR><++>\<CR>".'\end{<+replace+>}<++>'
-let s:CommandSpec_eno = '\begin[<++>]{<+replace+>}'."\<CR><++>\<CR>".'\end{<+replace+>}'
+let s:CommandSpec_env = '\begin{<+replace+>}'."\<CR><++>\<CR>".'\end{<+replace+>}'.s:end_with_cr.'<++>'
+let s:CommandSpec_ens = '\begin{<+replace+>}<+extra+>'."\<CR><++>\<CR>".'\end{<+replace+>}'.s:end_with_cr.'<++>'
+let s:CommandSpec_eno = '\begin[<++>]{<+replace+>}'."\<CR><++>\<CR>".'\end{<+replace+>}'.s:end_with_cr.'<++>'
 
 let s:CommandSpec_spe = '<+replace+>'
 let s:CommandSpec_    = '\<+replace+>'
