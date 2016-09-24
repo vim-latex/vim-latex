@@ -3423,13 +3423,8 @@ templates.
 
 
 
-<<<<<<< HEAD
-g:Tex_CustomTemplateFolder                                *ls_11_11_1* *ls_a_dW*
-                                                      *Tex_CustomTemplateFolder*
-=======
-g:Tex_CustomTemplateDirectory                             *ls_11_11_1* *ls_a_ec*
+g:Tex_CustomTemplateDirectory                             *ls_11_11_1* *ls_a_dW*
                                                    *Tex_CustomTemplateDirectory*
->>>>>>> 6d63903... Fix documentation (Tex_CustomTemplateDirectory)
 
 
 Type             string
