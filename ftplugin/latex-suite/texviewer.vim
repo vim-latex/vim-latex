@@ -1044,12 +1044,9 @@ endfunction " }}}
 " Tex_CompleteCiteEntry: completes cite entry {{{
 " Description: 
 function! Tex_CompleteCiteEntry()
-	normal! 0
-	call search('\[\S\+\]$', 'W')
-	if getline('.') !~ '\[\S\+\]$'
-		call search('\[\S\+\]$', 'bW')
-	endif
-	
+	normal! $
+	call search('\[\S\+\]$', 'bc')
+
 	if getline('.') !~ '\[\S\+\]$'
 		return
 	endif
