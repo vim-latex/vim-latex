@@ -364,7 +364,7 @@ of each |\note|.
 
 If you specify more than one option, they must be separated by a comma.
 
-\usepackage[options]{pkg} 			*\usepackage*
+\usepackage[options]{pkg} 			*\usepackage* *package*
 		Additional packages are loaded by this. If you
 		specify more than one package, they must be separated by a
 		comma.
@@ -416,7 +416,7 @@ a. |array| 		Math arrays
 b. |center| 		Centred lines
 c. |description| 	Labelled lists
 d. |enumerate|		Numbered lists
-e. |eqnarray| 		Sequences of aligned equations
+e. |align| 		Sequences of aligned equations
 f. |equation| 		Displayed equation
 g. |figure| 		Floating figures
 h. |flushleft| 		Flushed left lines
@@ -526,19 +526,19 @@ section |latex-counters|). The type of numbering can be changed by redefining
 \theenumi etc.
 
 ==============================================================================
-e. eqnarray					*eqnarray*
+e. align					*align*
 >
-	\begin{eqnarray}
+	\begin{align}
 		math formula 1 \\
 		math formula 2 \\
 		.
 		.
 		.
-	\end{eqnarray}
+	\end{align}
 
-The |eqnarray| environment is used to display a sequence of equations or
-inequalities. It is very much like a three-column |array| environment, with
-consecutive rows separated by |\\| and consecutive items within a row separated
+The |align| environment (from the amsmath |package|) is used to display a sequence of equations or
+inequalities. It is very much like an |array| environment, with
+consecutive rows separated by |\\| and the sides of the equation within a row are separated
 by an |&|.
 
 \nonumber					*\nonumber*

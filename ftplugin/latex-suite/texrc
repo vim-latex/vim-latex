@@ -463,7 +463,7 @@ TexLet g:Tex_SectionMenus = 1
 "       <F5> key unmapped
 
 TexLet g:Tex_PromptedEnvironments =
-	\ 'eqnarray*,eqnarray,equation,equation*,\[,$$,align,align*'
+	\ 'equation,equation*,align,align*,enumerate,itemize,figure,table'
 
 " Another quick way of inserting environments is to press one of the shifted
 " function keys from <F1> through <F4>.
@@ -476,7 +476,7 @@ TexLet g:Tex_PromptedEnvironments =
 " The number of items in this list decides how many shifted function keys are
 " mapped.
 TexLet g:Tex_HotKeyMappings = 
-	\ 'eqnarray*,eqnarray,bmatrix'
+	\ 'equation*,equation,bmatrix'
 
 " Similar to above mechanisms works <F7> key. It prompts for command with list
 " of commands from g:Tex_PromptedCommands. There are not HotKeys for commands.

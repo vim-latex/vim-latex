@@ -295,7 +295,7 @@ set iskeyword+=:
        are the first letters of the 2 words.  Example:
        <programlisting>flushleft  (_f_lush + _l_eft)  ---&gt; EFL
 flushright (_f_lush + _r_ight) ---&gt; EFR
-eqnarray   (_e_qn + _a_rray)   ---&gt; EEA</programlisting>
+minipage   (_m_ini  + _p_age)  ---&gt; EMP</programlisting>
        If on the other hand, the environment name cannot be broken
        up into 2 distinct words, then the next 2 letters are the
        first 2 letters of the name of the environment.
@@ -376,19 +376,19 @@ quotation (_q_uotatio_n_)      ---&gt; EQN</programlisting>
      environment the cursor is presently located in and prompts you to
      replace it with a new one. The innermost environment is detected. For
      example, in the following source:
-     <programlisting>\begin{eqnarray}
+     <programlisting>\begin{equation}
   \begin{array}{ccc}
     2 &amp; 3 &amp; 4
   \end{array}
-\end{eqnarray}</programlisting>
+\end{equation}</programlisting>
      if you are located in the middle "2 &amp; 3 &amp; 4" line, then pressing
      <literal>&lt;S-F5&gt;</literal> will prompt you to change the array
-     environment, not the eqnarray environment. In addition, &ls; will also
+     environment, not the equation environment. In addition, &ls; will also
      try to change lines within the environment to be consistent with the
      new environment. For example, if the original environment was an
-     <literal>eqnarray</literal> environment with a
+     <literal>equation</literal> environment with a
      <literal>\label</literal> command, then changing it to an
-     <literal>eqnarray*</literal> environment will delete the
+     <literal>equation*</literal> environment will delete the
      <literal>\label</literal>.
     </para>
     <para>
@@ -1503,7 +1503,7 @@ Command can be also given without prefix:. The result is
     in as shown in the figure below. 
     <programlisting>
       8 These are a couple of equations:
-      9 +--  4 lines: eqnarray (eqn:euler) :   e^{j\pi} + 1 &amp;=&amp; 0---------------
+      9 +--  4 lines: equation (eqn:euler) :   e^{j\pi} + 1 = 0-----------------
      13 +--  4 lines: equation (eqn:einstein) :   E = m c^2---------------------
      17
      18 These are a couple of figures:
@@ -1525,10 +1525,10 @@ newfile.tex|15| \label{eqn:einstein}
 [Error List]                                                  1,1            All
       7
       8 These are a couple of equations:
-      9 \begin{eqnarray}
-     10   e^{j\pi} + 1 &amp;=&amp; 0
+      9 \begin{equation}
+     10   e^{j\pi} + 1 = 0
      11   \label{eqn:euler}
-     12 \end{eqnarray}
+     12 \end{equation}
      13 \begin{equation}
      14   E = m c^2
      15   \label{eqn:einstein}
@@ -1607,7 +1607,7 @@ newfile.tex [Preview]                                         11,3           21%
                eqn:wingnormal-pos
                  \nhat =  T_z(\theta_2) T_y(\theta_y)T_x(\theta_x)\nhat_0,
                eqn:T-1
-                 T_1(\theta_2) &amp;=&amp; T_z(\theta_2)
+                 T_1(\theta_2) &amp;= T_z(\theta_2)
     </programlisting>
     The <literal>&lt;Tab&gt;</literal> key is mapped in this window to
     toggle folds so that you can quickly open/close folds in order to
@@ -2371,15 +2371,15 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'</programlisting>
     \label{fig:slidercrank}
 \end{figure}
 % a LaTeX comment.
-\begin{eqnarray}
+\begin{equation}
     \sin(\pi) = 0
-\end{eqnarray}</programlisting>
+\end{equation}</programlisting>
   </para>
   <para>
    will be shown as:
    <programlisting>+---  5 lines: figure (fig:slidercrank) : The Slider Crank Mechanism. -----
 % a LaTeX comment.
-+---  3 lines: eqnarray () : \sin(\pi) = 0 --------------------------------</programlisting>
++---  3 lines: equation () : \sin(\pi) = 0 --------------------------------</programlisting>
   </para>
   <section id="default-folding">
    <title>Default Folding Scheme in &ls;</title>
@@ -2401,7 +2401,7 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'</programlisting>
                     %%fakeparagraph
                         \item
                             \equation
-                            \eqnarray
+                            \align
                             \figure
                             \table
                             \footnote</programlisting>
@@ -2462,12 +2462,12 @@ keywords,abstract,titlepage</programlisting>
      The words need not be standard Latex environments. You can
      add any word you like. Also, each word will fold up all
      environments whose name begins with that word. For example, in
-     the setting above, the word <literal>"eq"</literal> folds up the
-     <literal>\begin{equation}</literal>,
-     <literal>\begin{eqnarray}</literal>,
-     <literal>\begin{eqnarray*}</literal> environments. To avoid
-     this, you can replace the word <literal>"eq"</literal> with
-     <literal>"eq}"</literal>.
+     the setting above, the word <literal>"align"</literal> folds up the
+     <literal>\begin{align}</literal>,
+     <literal>\begin{align*}</literal>,
+     <literal>\begin{aligned}</literal> environments. To avoid
+     this, you can replace the word <literal>"align"</literal> with
+     <literal>"align}"</literal>.
     </para>
     <para>
      See also <link linkend="fold-setting-advanced">advanced fold
@@ -3526,15 +3526,15 @@ endif</programlisting>
       </para>
       <para>
        If the name of the environment contains special characters (for
-       example, the <literal>eqnarray*</literal> environment), then use the
+       example, the <literal>align*</literal> environment), then use the
        following form:
-       <programlisting>let g:Tex_Env_{'eqnarray*'} =
-         \ "\\begin{eqnarray*}\&lt;CR&gt;&ph; &amp;=&amp; &ph;\&lt;CR&gt;\\end{eqnarray*}&ph;"</programlisting>
+       <programlisting>let g:Tex_Env_{'align*'} =
+         \ "\\begin{align*}\&lt;CR&gt;&ph; &amp;= &ph;\&lt;CR&gt;\\end{align*}&ph;"</programlisting>
         This will make pressing <literal>&lt;F5&gt;</literal> after
-        <literal>eqnarray*</literal> expand to
-        <programlisting>\begin{eqnarray*}
-     &ph; &amp;=&amp; &ph;
- \end{eqnarray*}&ph;</programlisting>
+        <literal>align*</literal> expand to
+        <programlisting>\begin{align*}
+     &ph; &amp;= &ph;
+ \end{align*}&ph;</programlisting>
       </para>
     </section>
     <section id="Tex_EnvLabelprefix_name">
@@ -3563,7 +3563,6 @@ let g:Tex_EnvLabelprefix_equation = "eq:"</programlisting>
        <literal>assumption</literal>,
        <literal>remark</literal>,
        <literal>equation</literal>,
-       <literal>eqnarray</literal>,
        <literal>align</literal> and
        <literal>multline</literal>.
       </para>
@@ -3636,7 +3635,7 @@ let g:Tex_EnvLabelprefix_equation = "eq:"</programlisting>
       <tgroup cols="2">
        <tbody>
         <row><entry>Type</entry><entry>String</entry></row>
-        <row><entry>Default Value</entry> <entry><literal>'eqnarray*,eqnarray,equation,equation*,\[,$$,align,align*'</literal></entry></row>
+        <row><entry>Default Value</entry> <entry><literal>'equation,equation*,align,align*,enumerate,itemize,figure,table'</literal></entry></row>
        </tbody>
       </tgroup>
      </informaltable>
@@ -3658,7 +3657,7 @@ let g:Tex_EnvLabelprefix_equation = "eq:"</programlisting>
        <tbody>
         <row><entry>Type</entry><entry>String</entry></row>
         <row><entry>Default Value</entry>
-         <entry><literal>'eqnarray*,eqnarray,bmatrix'</literal></entry></row>
+         <entry><literal>'equation*,equation,bmatrix'</literal></entry></row>
        </tbody>
       </tgroup>
      </informaltable>
@@ -3667,7 +3666,7 @@ let g:Tex_EnvLabelprefix_equation = "eq:"</programlisting>
       mapped to <literal>&lt;Shift-F-1&gt;</literal> through
       <literal>&lt;Shift-F-4&gt;</literal>. For example, pressing
       <literal>&lt;Shift-F-2&gt;</literal> with this setting inserts the
-      <literal>eqnarray</literal> environment.
+      <literal>equation</literal> environment.
      </para>
      <para>
       Leaving this string empty will leave <literal>&lt;Shift-F-1&gt;</literal> through

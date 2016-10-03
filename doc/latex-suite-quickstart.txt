@@ -134,14 +134,13 @@ Inserting an Environment                                        *lq_4* *lq_a_bf*
 Now let us type in a simple formula in LaTeX. Move back to the body of the
 document (The portion of the document between \begin{document} and
 \end{document} is called the body). Type in a few simple sentences and then on
-an empty line, type the single word eqnarray. Escape to normal mode and press
+an empty line, type the single word equation. Escape to normal mode and press
 <F5>. (Remember: <F5> is very useful!) This time, the line will change to:  >
-    \begin{eqnarray}
-        \label{}<++>
-    \end{eqnarray}<++>
-<with the cursor between the {}. Enter a label. We will use eqn:euler. After
-typing in eqn:euler, press <C-j>. This will take you outside the curly-braces.
-Another time you used a Placeholder!
+    \begin{equation}
+    	<+content+>
+    	\label{<+label+>}
+    \end{equation}<++>
+<with the cursor on the <+content+>.
 
 ================================================================================
 A few keyboard shortcuts                                        *lq_5* *lq_a_bg*
@@ -150,27 +149,30 @@ A few keyboard shortcuts                                        *lq_5* *lq_a_bg*
 
 
 Now to type in the famous Euler formula. Our aim is to type  >
-    e^{j\pi} + 1 &=& 0
+    e^{j\pi} + 1 = 0
 Instead of typing this blindly, let us use a few shortcuts to reduce movement.
 Start out by typing e^. Now instead of typing {, type another ^. You will see
-the e^^ change instantly to e^{}<++> with the cursor between {}'s. (The ^^
+the e^^ change instantly to e^{}<++> with the cursor on <+content+>. (The ^^
 changed to ^{}<++>.) Continue with the following sequence of letters: j`p. This
 will change instantly to j\pi. (The `p changed to \pi.) Having typed in all we
 need to type between the {}'s, press <C-j>. You will pop back out of the
-curly-braces. Continue typing the rest of the formula. You can use == as a
-shortcut for &=&. Latex-Suite provides a large number of such shortcuts which
-should making typing much more fun and fast if you get acquainted with them. A
-list is provided here |lq_u_4|. Definitely spend some time getting a feel for
-them. Most of them are pretty intuitive like `/ for \frac{}{}, `8 for \infty
-etc.
+curly-braces. Continue typing the rest of the formula. Latex-Suite provides a
+large number of shortcuts which should making typing much more fun and fast if
+you get acquainted with them. A list is provided here |lq_u_4|. Definitely spend
+some time getting a feel for them. Most of them are pretty intuitive like `/ for
+\frac{}{}, `8 for \infty etc.
+
+Now enter a label. Press <C-j> to jump to <+label+>. We will use eqn:euler.
+After typing in eqn:euler, press <C-j>. This will take you outside the
+curly-braces. Another time you used a Placeholder!
 
 In order to understand the next section better, it will be helpful to have one
 more \label. Lets use the handy <F5> key to insert another equation. This time
 something simple like the following will do:  >
-    \begin{eqnarray}
+    \begin{equation}
       \label{eqn:simple}
       1 + 1 = 2
-    \end{eqnarray}
+    \end{equation}
 
 
 ================================================================================
@@ -190,17 +192,17 @@ something like this:  >
           7 \usepackage[sumlimits,]{amsmath}
           8 
           9 \begin{document}
-         10 \begin{eqnarray}
+         10 \begin{equation}
          11 	\label{eqn:euler}
-         12 	e^{j\pi} + 1 &=& 0
-         13 \end{eqnarray}
+         12 	e^{j\pi} + 1 = 0
+         13 \end{equation}
          14 This is the famous euler equation. I
          15 will type another equation, just as
          16 true:
-         17 \begin{eqnarray}
+         17 \begin{equation}
          18 	\label{eqn:simple}
-         19 	1 + 1 &=& 2
-         20 \end{eqnarray}
+         19 	1 + 1 = 2
+         20 \end{equation}
          21 This is my contribution to mathematics.
          22 \end{document}
     
@@ -213,11 +215,11 @@ the file looking as below:  >
           4 %
           5 +--  4 lines: Preamble:   \documentclass[a4paper]{article} -----
           9 \begin{document}
-         10 +--  4 lines: eqnarray (eqn:euler) \label{eqn:euler} -----------
+         10 +--  4 lines: equation (eqn:euler) \label{eqn:euler} -----------
          14 This is the famous euler equation. I
          15 will type another equation, just as
          16 true:
-         10 +--  4 lines: eqnarray (eqn:simple) \label{eqn:simple} ---------
+         10 +--  4 lines: equation (eqn:simple) \label{eqn:simple} ---------
          21 This is my contribution to mathematics.
          22 \end{document}
     
@@ -240,11 +242,11 @@ With the cursor between the {} press <F9> in insert mode. Your vim session will
 sprout two new windows and it should look like below:  >
     
           9 \begin{document}
-         10 +--  4 lines: eqnarray (eqn:euler) :  \label{eqn:euler}-----------------------
+         10 +--  4 lines: equation (eqn:euler) :  \label{eqn:euler}-----------------------
          14 This is the famous euler equation. I
          15 will type another equation, just as
          16 true:
-         17 +--  4 lines: eqnarray (eqn:simple) :  \label{eqn:simple}---------------------
+         17 +--  4 lines: equation (eqn:simple) :  \label{eqn:simple}---------------------
          21 This is my contribution to mathematics.
          22 This is a reference to (\ref{}<++>)<++>
          23 \end{document}
@@ -261,10 +263,10 @@ sprout two new windows and it should look like below:  >
           7 \usepackage[sumlimits,]{amsmath}
           8
           9 \begin{document}
-         10 \begin{eqnarray}
+         10 \begin{equation}
          11     \label{eqn:euler}
-         12     e^{j\pi} + 1 &=& 0
-         13 \end{eqnarray}
+         12     e^{j\pi} + 1 = 0
+         13 \end{equation}
          14 This is the famous euler equation. I
          15 will type another equation, just as
          16 true:

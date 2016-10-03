@@ -319,7 +319,7 @@ following rules:
    words. Example:  >
        flushleft  (_f_lush + _l_eft)  ---> EFL
        flushright (_f_lush + _r_ight) ---> EFR
-       eqnarray   (_e_qn + _a_rray)   ---> EEA
+       minipage   (_m_ini  + _p_age)  ---> EMP
 <  If on the other hand, the environment name cannot be broken up into 2
    distinct words, then the next 2 letters are the first 2 letters of the name
    of the environment. Example:  >
@@ -382,17 +382,17 @@ Changing Environments                                       *ls_3_1_3* *ls_a_bn*
 Pressing <S-F5> in normal mode detects which environment the cursor is presently
 located in and prompts you to replace it with a new one. The innermost
 environment is detected. For example, in the following source:  >
-    \begin{eqnarray}
+    \begin{equation}
       \begin{array}{ccc}
         2 & 3 & 4
       \end{array}
-    \end{eqnarray}
+    \end{equation}
 if you are located in the middle "2 & 3 & 4" line, then pressing <S-F5> will
-prompt you to change the array environment, not the eqnarray environment. In
+prompt you to change the array environment, not the equation environment. In
 addition, Latex-Suite will also try to change lines within the environment to be
 consistent with the new environment. For example, if the original environment
-was an eqnarray environment with a \label command, then changing it to an
-eqnarray* environment will delete the \label.
+was an equation environment with a \label command, then changing it to an
+equation* environment will delete the \label.
 
 Pressing <F5> in normal mode has the same effect as pressing <F5> in
 insert-mode, namely you will be prompted to choose an environment to insert.
@@ -1267,7 +1267,7 @@ placed after eqn:, press <F9>. This will bring up two new windows beneath the
 main window you were working in as shown in the figure below.  >
     
           8 These are a couple of equations:
-          9 +--  4 lines: eqnarray (eqn:euler) :   e^{j\pi} + 1 &=& 0---------------
+          9 +--  4 lines: equation (eqn:euler) :   e^{j\pi} + 1 = 0-----------------
          13 +--  4 lines: equation (eqn:einstein) :   E = m c^2---------------------
          17
          18 These are a couple of figures:
@@ -1289,10 +1289,10 @@ main window you were working in as shown in the figure below.  >
     [Error List]                                                  1,1            All
           7
           8 These are a couple of equations:
-          9 \begin{eqnarray}
-         10   e^{j\pi} + 1 &=& 0
+          9 \begin{equation}
+         10   e^{j\pi} + 1 = 0
          11   \label{eqn:euler}
-         12 \end{eqnarray}
+         12 \end{equation}
          13 \begin{equation}
          14   E = m c^2
          15   \label{eqn:einstein}
@@ -1904,15 +1904,15 @@ the name of the environment. In other words, the following  >
         \label{fig:slidercrank}
     \end{figure}
     % a LaTeX comment.
-    \begin{eqnarray}
+    \begin{equation}
         \sin(\pi) = 0
-    \end{eqnarray}
+    \end{equation}
 
 
 will be shown as:  >
     +---  5 lines: figure (fig:slidercrank) : The Slider Crank Mechanism. -----
     % a LaTeX comment.
-    +---  3 lines: eqnarray () : \sin(\pi) = 0 --------------------------------
+    +---  3 lines: equation () : \sin(\pi) = 0 --------------------------------
 
 
 
@@ -1938,7 +1938,7 @@ By default, Latex-Suite creates folds in the following manner:
                         %%fakeparagraph
                             \item
                                 \equation
-                                \eqnarray
+                                \align
                                 \figure
                                 \table
                                 \footnote
@@ -1993,9 +1993,9 @@ is  >
     keywords,abstract,titlepage
 The words need not be standard Latex environments. You can add any word you
 like. Also, each word will fold up all environments whose name begins with that
-word. For example, in the setting above, the word "eq" folds up the
-\begin{equation}, \begin{eqnarray}, \begin{eqnarray*} environments. To avoid
-this, you can replace the word "eq" with "eq}".
+word. For example, in the setting above, the word "align" folds up the
+\begin{align}, \begin{align*}, \begin{aligned} environments. To avoid this, you
+can replace the word "align" with "align}".
 
 See also advanced fold settings [|ls_a_cp|].
 
@@ -2746,13 +2746,13 @@ You could even use strings returned by functions as the expansion by using the
 IMAP_PutTextWithMovement() [|ls_a_ei|] function.
 
 If the name of the environment contains special characters (for example, the
-eqnarray* environment), then use the following form:  >
-    let g:Tex_Env_{'eqnarray*'} =
-             \ "\\begin{eqnarray*}\<CR><++> &=& <++>\<CR>\\end{eqnarray*}<++>"
-This will make pressing <F5> after eqnarray* expand to  >
-    \begin{eqnarray*}
-         <++> &=& <++>
-     \end{eqnarray*}<++>
+align* environment), then use the following form:  >
+    let g:Tex_Env_{'align*'} =
+             \ "\\begin{align*}\<CR><++> =& <++>\<CR>\\end{align*}<++>"
+This will make pressing <F5> after align* expand to  >
+    \begin{align*}
+         <++> =& <++>
+     \end{align*}<++>
 
 
 
@@ -2771,8 +2771,7 @@ the prefix eq: is inserted in all labels in generated equations:  >
           \label{eq:<++>}
     \end{equation}<++>
 This setting works for the environments figure, table, theorem, definition,
-lemma, proposition, corollary, assumption, remark, equation, eqnarray, align and
-multline.
+lemma, proposition, corollary, assumption, remark, equation, align and multline.
 
 
 Tex_EnvEndWithCR                                         *ls_11_3_1_3* *ls_a_dd*
@@ -2829,7 +2828,7 @@ g:Tex_PromptedEnvironments                               *ls_11_3_1_6* *ls_a_dg*
 
 
 Type             String
-Default Value    'eqnarray*,eqnarray,equation,equation*,\[,$$,align,align*'
+Default Value    'equation,equation*,align,align*,enumerate,itemize,figure,table'
 
 This string represents a comma separated list of fields corresponding to
 environments. Pressing <F5> in insert-mode in the body of the document asks you
@@ -2843,11 +2842,11 @@ g:Tex_HotKeyMappings                                     *ls_11_3_1_7* *ls_a_dh*
 
 
 Type             String
-Default Value    'eqnarray*,eqnarray,bmatrix'
+Default Value    'equation*,equation,bmatrix'
 
 This string represents a comma separated list of environments which are mapped
 to <Shift-F-1> through <Shift-F-4>. For example, pressing <Shift-F-2> with this
-setting inserts the eqnarray environment.
+setting inserts the equation environment.
 
 Leaving this string empty will leave <Shift-F-1> through <Shift-F-4> unmapped.
 

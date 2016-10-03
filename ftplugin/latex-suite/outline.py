@@ -117,7 +117,7 @@ def getSectionLabels_Root(lineinfo, section_prefix, label_prefix):
         # NOTE: This assumes that there is no equation text on the same
         # line as the \begin or \end command. The text on the same line as
         # the \label was already handled.
-        if re.search(r'\\begin{(equation|eqnarray|align|figure)', line):
+        if re.search(r'\\begin{(equation|align|figure)', line):
             prev_txt = ''
             prev_env = re.search(r'\\begin{(.*?)}', line).group(1)
             inside_env = 1
@@ -125,7 +125,7 @@ def getSectionLabels_Root(lineinfo, section_prefix, label_prefix):
         elif re.search(r'\\label', line):
             prev_txt = ''
 
-        elif re.search(r'\\end{(equation|eqnarray|align|figure)', line):
+        elif re.search(r'\\end{(equation|align|figure)', line):
             inside_env = 0
             prev_env = ''
 

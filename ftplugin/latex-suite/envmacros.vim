@@ -229,10 +229,9 @@ call s:Tex_SpecialMacros('', '&Tables.', 'tabular*', s:tabular_star)
 " }}}
 " Math {{{
 call s:Tex_EnvMacros('EAL', '&Math.', 'align')
+call s:Tex_EnvMacros('EAS', '&Math.', 'align*')
 call s:Tex_EnvMacros('EAR', '&Math.', 'array')
 call s:Tex_EnvMacros('EDM', '&Math.', 'displaymath')
-call s:Tex_EnvMacros('EEA', '&Math.', 'eqnarray')
-call s:Tex_EnvMacros('',    '&Math.', 'eqnarray*')
 call s:Tex_EnvMacros('EEQ', '&Math.', 'equation')
 call s:Tex_EnvMacros('EMA', '&Math.', 'math')
 " }}}
@@ -411,8 +410,8 @@ function! Tex_tabular(env)
 	endif
 endfunction
 " }}} 
-" Tex_eqnarray: {{{
-function! Tex_eqnarray(env)
+" Tex_standard_env: Provides a 'standard environment' including a label {{{
+function! Tex_standard_env(env)
 	if g:Tex_UseMenuWizard == 1
 		if a:env !~ '\*'
 			let label = input('Label?  ')
@@ -578,9 +577,9 @@ function! Tex_PutEnvironment(env)
 			return IMAP_PutTextWithMovement(b:Tex_Env_{a:env})
 		elseif exists("g:Tex_Env_{'".a:env."'}")
 			return IMAP_PutTextWithMovement(g:Tex_Env_{a:env})
-		elseif a:env =~ 'theorem\|definition\|lemma\|proposition\|corollary\|assumption\|remark\|equation\|eqnarray\|align\*\|align\>\|multline'
+		elseif a:env =~ 'theorem\|definition\|lemma\|proposition\|corollary\|assumption\|remark\|equation\|align\*\|align\>\|multline'
 			let g:aa = a:env
-			return Tex_eqnarray(a:env)
+			return Tex_standard_env(a:env)
 		elseif a:env =~ "enumerate\\|itemize\\|theindex\\|trivlist"
 			return Tex_itemize(a:env)
 		elseif a:env =~ "table\\|table*"
@@ -745,12 +744,10 @@ if g:Tex_PromptedEnvironments != ''
 		exe 'echomsg "You are within a '.env_name.' environment."'
 		let change_env = PromptForEnvironment('What do you want to change it to? ')
 
-		if change_env == 'eqnarray'
-			call <SID>Change('eqnarray', 1, '', env_name =~ '\*$')
+		if change_env == 'equation'
+			call <SID>Change('equation', 1, '&\|\\\\', env_name =~ '\*$')
 		elseif change_env == 'align'
 			call <SID>Change('align', 1, '', env_name =~ '\*$')
-		elseif change_env == 'eqnarray*'
-			call <SID>Change('eqnarray*', 0, '\\nonumber', 0)
 		elseif change_env == 'align*'
 			call <SID>Change('align*', 0, '\\nonumber', 0)
 		elseif change_env == 'equation*'
@@ -775,7 +772,7 @@ if g:Tex_PromptedEnvironments != ''
 	"   label : if 1, then insert a \label at the end of the environment.
 	"           otherwise, delete any \label line found.
 	"   delete : a pattern which is to be deleted from the original environment.
-	"            for example, going to a eqnarray* environment means we need to
+	"            for example, going to a equation* environment means we need to
 	"            delete \label's.
 	"   putInNonumber : whether we need to put a \nonumber before the end of the
 	"                 environment.

@@ -141,40 +141,37 @@
    <literal>\begin{document}</literal> and
    <literal>\end{document}</literal> is called the body). Type in a few
    simple sentences and then on an empty line, type the single word
-   <literal>eqnarray</literal>. Escape to normal mode and press
+   <literal>equation</literal>. Escape to normal mode and press
    <literal>&lt;F5&gt;</literal>. (Remember:
    <literal>&lt;F5&gt;</literal> is very useful!) This time, the line will
    change to:
-  <programlisting>\begin{eqnarray}
-    \label{}&ph;
-\end{eqnarray}&ph;</programlisting>
-   with the cursor between the <literal>{}</literal>. Enter a label. We
-   will use <literal>eqn:euler</literal>. After typing in
-   <literal>eqn:euler</literal>, press <literal>&lt;C-j&gt;</literal>. This
-   will take you outside the curly-braces.  Another time you used a
-   Placeholder!
+   <programlisting>\begin{equation}
+	&lt;+content+&gt;
+	\label{&lt;+label+&gt;}
+\end{equation}&ph;</programlisting>
+   with the cursor on the <literal>&lt;+content+&gt;</literal>.
   </para>
  </section>
  <section id="lsq-keyboard-shortcuts">
   <title>A few keyboard shortcuts</title> 
   <para>
    Now to type in the famous Euler formula. Our aim is to type
-   <programlisting>e^{j\pi} + 1 &amp;=&amp; 0</programlisting> Instead
+   <programlisting>e^{j\pi} + 1 = 0</programlisting> Instead
    of typing this blindly, let us use a few shortcuts to reduce
    movement.  Start out by typing <literal>e^</literal>. Now instead of
    typing <literal>{</literal>, type another <literal>^</literal>. You
    will see the <literal>e^^</literal> change instantly to
-   <literal>e^{}&ph;</literal> with the cursor between
-   <literal>{}</literal>'s. (The <literal>^^</literal> changed to
+   <literal>e^{}&ph;</literal> with the cursor on
+   <literal>&lt;+content+&gt;</literal>. (The <literal>^^</literal> changed to
    <literal>^{}&ph;</literal>.) Continue with the following sequence of
    letters: <literal>j`p</literal>. This will change instantly to
    <literal>j\pi</literal>. (The <literal>`p</literal> changed to
    <literal>\pi</literal>.) Having typed in all we need to type between
    the <literal>{}</literal>'s, press <literal>&lt;C-j&gt;</literal>.
    You will pop back out of the curly-braces. Continue typing the rest
-   of the formula. You can use <literal>==</literal> as a shortcut for
-   <literal>&amp;=&amp;</literal>. Latex-Suite provides a large number
-   of such shortcuts which should making typing much more fun and fast
+   of the formula.
+   Latex-Suite provides a large number
+   of shortcuts which should making typing much more fun and fast
    if you get acquainted with them. A list is provided <ulink
     url="http://vim-latex.sourceforge.net/documentation/latex-suite/auc-tex-mappings.html">here</ulink>. Definitely spend some time getting a feel for
    them. Most of them are pretty intuitive like <literal>`/</literal>
@@ -182,15 +179,25 @@
    <literal>\infty</literal> etc.
   </para>
   <para>
+   Now enter a label.
+   Press <literal>&lt;C-j&gt;</literal> to jump to
+   <literal>&lt;+label+&gt;</literal>.
+   We
+   will use <literal>eqn:euler</literal>. After typing in
+   <literal>eqn:euler</literal>, press <literal>&lt;C-j&gt;</literal>. This
+   will take you outside the curly-braces.  Another time you used a
+   Placeholder!
+  </para>
+  <para>
    In order to understand the next section better, it will be helpful
    to have one more <literal>\label</literal>. Lets use the handy
    <literal>&lt;F5&gt;</literal>
    key to insert another equation. This time something simple like the
    following will do:
-   <programlisting>\begin{eqnarray}
+   <programlisting>\begin{equation}
   \label{eqn:simple}
   1 + 1 = 2
-\end{eqnarray}</programlisting>
+\end{equation}</programlisting>
   </para>
  </section>
  <section id="lsq-folding">
@@ -208,17 +215,17 @@
       7 \usepackage[sumlimits,]{amsmath}
       8 
       9 \begin{document}
-     10 \begin{eqnarray}
+     10 \begin{equation}
      11 	\label{eqn:euler}
-     12 	e^{j\pi} + 1 &amp;=&amp; 0
-     13 \end{eqnarray}
+     12 	e^{j\pi} + 1 = 0
+     13 \end{equation}
      14 This is the famous euler equation. I
      15 will type another equation, just as
      16 true:
-     17 \begin{eqnarray}
+     17 \begin{equation}
      18 	\label{eqn:simple}
-     19 	1 + 1 &amp;=&amp; 2
-     20 \end{eqnarray}
+     19 	1 + 1 = 2
+     20 \end{equation}
      21 This is my contribution to mathematics.
      22 \end{document}
 </programlisting>
@@ -231,11 +238,11 @@
       4 %
       5 +--  4 lines: Preamble:   \documentclass[a4paper]{article} -----
       9 \begin{document}
-     10 +--  4 lines: eqnarray (eqn:euler) \label{eqn:euler} -----------
+     10 +--  4 lines: equation (eqn:euler) \label{eqn:euler} -----------
      14 This is the famous euler equation. I
      15 will type another equation, just as
      16 true:
-     10 +--  4 lines: eqnarray (eqn:simple) \label{eqn:simple} ---------
+     10 +--  4 lines: equation (eqn:simple) \label{eqn:simple} ---------
      21 This is my contribution to mathematics.
      22 \end{document}
 </programlisting>
@@ -258,11 +265,11 @@
    sprout two new windows and it should look like below:
 <programlisting>
       9 \begin{document}
-     10 +--  4 lines: eqnarray (eqn:euler) :  \label{eqn:euler}-----------------------
+     10 +--  4 lines: equation (eqn:euler) :  \label{eqn:euler}-----------------------
      14 This is the famous euler equation. I
      15 will type another equation, just as
      16 true:
-     17 +--  4 lines: eqnarray (eqn:simple) :  \label{eqn:simple}---------------------
+     17 +--  4 lines: equation (eqn:simple) :  \label{eqn:simple}---------------------
      21 This is my contribution to mathematics.
      22 This is a reference to (\ref{}&lt;++&gt;)&lt;++&gt;
      23 \end{document}
@@ -279,10 +286,10 @@ test.tex|18| \label{eqn:simple}
       7 \usepackage[sumlimits,]{amsmath}
       8
       9 \begin{document}
-     10 \begin{eqnarray}
+     10 \begin{equation}
      11     \label{eqn:euler}
-     12     e^{j\pi} + 1 &amp;=&amp; 0
-     13 \end{eqnarray}
+     12     e^{j\pi} + 1 = 0
+     13 \end{equation}
      14 This is the famous euler equation. I
      15 will type another equation, just as
      16 true:
