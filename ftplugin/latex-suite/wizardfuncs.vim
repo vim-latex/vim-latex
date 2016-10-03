@@ -230,7 +230,7 @@ endfunction " }}}
 " Tables of shortcuts
 " ============================================================================== 
 "
-command! -nargs=? Tshortcuts call Tex_shortcuts(<f-args>)<CR>
+command! -nargs=? Tshortcuts call Tex_shortcuts(<f-args>)
 
 " Tex_shortcuts: Show shortcuts in terminal after : command {{{
 function! Tex_shortcuts(...)
