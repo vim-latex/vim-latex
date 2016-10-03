@@ -353,12 +353,17 @@ TexLet g:Tex_Leader2 = ','
 " (See |placeholders| for what these are.)
 " Mnemonic:
 " 1. All environment mappings begin with 'E'
-" 2. The next two capital letters are (for the common environments) the
-"    first 2 letters of the environment name converted into upper case. For
-"    example, for the center environment above, use ECE. There are a few
-"    necessary exceptions such as:
-"        equation   -->  EEQ
-"        eqnarray   -->  EEA
+" 2. If the environment can be broken up into 2 distinct words, such as flushright
+"    (flush + right), then the next 2 letters are the first letters of the 2
+"    words. Example:  >
+"        flushleft  (_f_lush + _l_eft)  ---> EFL
+"        flushright (_f_lush + _r_ight) ---> EFR
+"        minipage   (_m_ini  + _p_age)  ---> EMP
+"    If on the other hand, the environment name cannot be broken up into 2
+"    distinct words, then the next 2 letters are the first 2 letters of the name
+"    of the environment. Example:  >
+"        equation (_eq_uation)          ---> EEQ
+"
 "    Please see texmaps.vim for the complete list.
 " 
 " Along with the insert mode mappings, a set of visual mode mappings is
