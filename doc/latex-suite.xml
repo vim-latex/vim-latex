@@ -168,19 +168,19 @@ set iskeyword+=:
     locations where the next relevant editing has to be done. As an example,
     when you type <literal>EFI</literal> in |insert-mode|, you will get the
     following:
-    <programlisting>\begin{figure}[h]
+    <programlisting>\begin{figure}[&lt;+htpb+&gt;]
     \centering
-    \psfig{figure=&lt;+eps file+&gt;}
+    \includegraphics{&lt;+file+&gt;}
     \caption{&lt;+caption text+&gt;}
     \label{fig:&lt;+label+&gt;}
 \end{figure}&lt;++&gt;</programlisting>
-    The text <literal>&lt;+eps file+&gt;</literal> will be selected and
+    The text <literal>&lt;+htpb+&gt;</literal> will be selected and
     you will be left in |select-mode| so that you can continue typing
-    straight away. After having typed in the file name, you can press
+    straight away. After having typed in the placement specifier, you can press
     <literal>&lt;Ctrl-J&gt;</literal> (while still in insert-mode). This will
-    take you directly to the next "place-holder". i.e, <literal>&lt;+caption
-     text+&gt;</literal> will be visually selected with Vim in select mode
-    again for typing in the caption. This saves on a lot of key presses.
+    take you directly to the next "place-holder". i.e, <literal>&lt;+file+&gt;</literal>
+    will be visually selected with Vim in select mode
+    again for typing in the file name. This saves on a lot of key presses.
    </para>
   </note>
   <note id="overriding-macros">
@@ -1839,7 +1839,7 @@ Enter filter criterion [field&lt;space&gt;value]:
        <entry><literal>'^\.,\.[^t]..$'</literal></entry>
       </row>
       <row>
-       <entry><literal>\includegraphics</literal> <literal>\psfig</literal></entry>
+       <entry><literal>\includegraphics</literal></entry>
        <entry><literal>'^\.,\.tex$,\.bib$,\.bbl$,\.zip$,\.gz$'</literal></entry>
       </row>
       <row>
@@ -2368,7 +2368,7 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'</programlisting>
    along with the name of the environment. In other words, the following
    <programlisting>\begin{figure}[h]
      \centering
-     \psfig{figure=slidercrank.eps,height=6cm}
+     \includegraphics[height=6cm]{slidercrank.pdf}
     \caption{The Slider Crank Mechanism.}
     \label{fig:slidercrank}
 \end{figure}

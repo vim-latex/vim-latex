@@ -210,18 +210,18 @@ NOTE: Place Holders
       place-holders. This consists of using "place-holders" to mark off
       locations where the next relevant editing has to be done. As an example,
       when you type EFI in |insert-mode|, you will get the following:  >
-          \begin{figure}[h]
+          \begin{figure}[<+htpb+>]
               \centering
-              \psfig{figure=<+eps file+>}
+              \includegraphics{<+file+>}
               \caption{<+caption text+>}
               \label{fig:<+label+>}
           \end{figure}<++>
-<     The text <+eps file+> will be selected and you will be left in
-      |select-mode| so that you can continue typing straight away. After having
-      typed in the file name, you can press <Ctrl-J> (while still in
-      insert-mode). This will take you directly to the next "place-holder". i.e,
-      <+caption text+> will be visually selected with Vim in select mode again
-      for typing in the caption. This saves on a lot of key presses.
+<     The text <+htpb+> will be selected and you will be left in |select-mode|
+      so that you can continue typing straight away. After having typed in the
+      placement specifier, you can press <Ctrl-J> (while still in insert-mode).
+      This will take you directly to the next "place-holder". i.e, <+file+> will
+      be visually selected with Vim in select mode again for typing in the file
+      name. This saves on a lot of key presses.
       
       
                                                    *overriding-macros* *ls_a_eM*
@@ -1353,7 +1353,7 @@ equations. You can then open some of the folds to see for example:  >
                    eqn:wingnormal-pos
                      \nhat =  T_z(\theta_2) T_y(\theta_y)T_x(\theta_x)\nhat_0,
                    eqn:T-1
-                     T_1(\theta_2) &=& T_z(\theta_2)
+                     T_1(\theta_2) &= T_z(\theta_2)
         
 The <Tab> key is mapped in this window to toggle folds so that you can quickly
 open/close folds in order to navigate the heirarchy faster. Once you are
@@ -1508,11 +1508,11 @@ As of now, Latex-Suite recognizes the following commands for filename
 completion. Along with the commands, this table also lists the files which
 Latex-Suite will not show for completing each command.
 
-command                    hide pattern~
-\bibliography              '^\.,\.[^b]..$'
-\include \includeonly      '^\.,\.[^t]..$'
-\includegraphics \psfig    '^\.,\.tex$,\.bib$,\.bbl$,\.zip$,\.gz$'
-\input                     ''
+command                  hide pattern~
+\bibliography            '^\.,\.[^b]..$'
+\include \includeonly    '^\.,\.[^t]..$'
+\includegraphics         '^\.,\.tex$,\.bib$,\.bbl$,\.zip$,\.gz$'
+\input                   ''
 
 --------------------------------------------------------------------------------
 Custom command completion                                     *ls_5_5* *ls_a_bX*
@@ -1901,7 +1901,7 @@ fold-text, otherwise the second line of the environment is displayed along with
 the name of the environment. In other words, the following  >
     \begin{figure}[h]
          \centering
-         \psfig{figure=slidercrank.eps,height=6cm}
+         \includegraphics[height=6cm]{slidercrank.pdf}
         \caption{The Slider Crank Mechanism.}
         \label{fig:slidercrank}
     \end{figure}
@@ -2750,10 +2750,10 @@ IMAP_PutTextWithMovement() [|ls_a_ei|] function.
 If the name of the environment contains special characters (for example, the
 align* environment), then use the following form:  >
     let g:Tex_Env_{'align*'} =
-             \ "\\begin{align*}\<CR><++> =& <++>\<CR>\\end{align*}<++>"
+             \ "\\begin{align*}\<CR><++> &= <++>\<CR>\\end{align*}<++>"
 This will make pressing <F5> after align* expand to  >
     \begin{align*}
-         <++> =& <++>
+         <++> &= <++>
      \end{align*}<++>
 
 

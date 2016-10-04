@@ -25,8 +25,7 @@ let s:labelprefix_figure = Tex_GetVarValue("Tex_EnvLabelprefix_{'figure'}")
 let s:labelprefix_table = Tex_GetVarValue("Tex_EnvLabelprefix_{'table'}")
 
 " Define environments for IMAP evaluation " {{{
-let s:figure =     "\\begin{figure}[<+htpb+>]\<cr>\\centering\<cr>\\psfig{figure=<+eps file+>}\<cr>\\caption{<+caption text+>}\<cr>\\label{" . s:labelprefix_figure . "<+label+>}\<cr>\\end{figure}" . s:end_with_cr . "<++>"
-let s:figure_graphicx =    "\\begin{figure}[<+htpb+>]\<cr>\\centering\<cr>\\includegraphics{<+file+>}\<cr>\\caption{<+caption text+>}\<cr>\\label{" . s:labelprefix_figure . "<+label+>}\<cr>\\end{figure}" . s:end_with_cr . "<++>"
+let s:figure =     "\\begin{figure}[<+htpb+>]\<cr>\\centering\<cr>\\includegraphics{<+file+>}\<cr>\\caption{<+caption text+>}\<cr>\\label{" . s:labelprefix_figure . "<+label+>}\<cr>\\end{figure}" . s:end_with_cr . "<++>"
 let s:minipage =   "\\begin{minipage}[<+tb+>]{<+width+>}\<cr><++>\<cr>\\end{minipage}" . s:end_with_cr . "<++>"
 let s:picture =    "\\begin{picture}(<+width+>, <+height+>)(<+xoff+>,<+yoff+>)\<cr>\\put(<+xoff+>,<+yoff+>){\\framebox(<++>,<++>){<++>}}\<cr>\\end{picture}" . s:end_with_cr . "<++>"
 let s:list =       "\\begin{list}{<+label+>}{<+spacing+>}\<cr>\\item <++>\<cr>\\end{list}" . s:end_with_cr . "<++>"
@@ -344,11 +343,7 @@ function! Tex_figure(env)
 		let figure = figure . '\end{'.a:env.'}' . s:end_with_cr
 		return IMAP_PutTextWithMovement(figure)
 	else
-		if g:Tex_package_detected =~ '\<graphicx\>'
-			return IMAP_PutTextWithMovement(s:figure_graphicx)
-		else
-			return IMAP_PutTextWithMovement(s:figure)
-		endif
+		return IMAP_PutTextWithMovement(s:figure)
 	endif
 endfunction
 " }}} 
