@@ -211,7 +211,8 @@ NOTE: Place Holders
       locations where the next relevant editing has to be done. As an example,
       when you type EFI in |insert-mode|, you will get the following:  >
           \begin{figure}[h]
-              \centerline{\psfig{figure=<+eps file+>}}
+              \centering
+              \psfig{figure=<+eps file+>}
               \caption{<+caption text+>}
               \label{fig:<+label+>}
           \end{figure}<++>
@@ -369,7 +370,7 @@ and press ,ce. The rule simply says that the leading E is converted to , and the
 next 2 letters are small case.
 Some of the visual mode mappings are sensitive to whether you choose line-wise
 or character-wise. For example, if you choose a word and press ,ce, then you get
-\centerline{word}, whereas if you press ,ce on a line-wise selection, you get:  >
+{\centering word}, whereas if you press ,ce on a line-wise selection, you get:  >
     \begin{center}
         line
     \end{center}
@@ -1899,7 +1900,8 @@ is found in the folded region, then those are used to make a more meaningful
 fold-text, otherwise the second line of the environment is displayed along with
 the name of the environment. In other words, the following  >
     \begin{figure}[h]
-        \centerline{\psfig{figure=slidercrank.eps,height=6cm}}
+         \centering
+         \psfig{figure=slidercrank.eps,height=6cm}
         \caption{The Slider Crank Mechanism.}
         \label{fig:slidercrank}
     \end{figure}

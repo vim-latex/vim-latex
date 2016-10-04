@@ -40,7 +40,7 @@ let s:tabular_star = "\\begin{tabular*}[<+hbtp+>]{<+format+>}\<cr><++>\<cr>\\end
 " }}}
 " define environments with special behavior in line wise selection. {{{
 if !exists('s:vis_center_left')
-	let s:vis_center_left = '\centerline{'
+	let s:vis_center_left = '{\centering '
 	let s:vis_center_right = '}'
 
 	let s:vis_verbatim_left = '\verb\|'

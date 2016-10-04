@@ -169,7 +169,8 @@ set iskeyword+=:
     when you type <literal>EFI</literal> in |insert-mode|, you will get the
     following:
     <programlisting>\begin{figure}[h]
-    \centerline{\psfig{figure=&lt;+eps file+&gt;}}
+    \centering
+    \psfig{figure=&lt;+eps file+&gt;}
     \caption{&lt;+caption text+&gt;}
     \label{fig:&lt;+label+&gt;}
 \end{figure}&lt;++&gt;</programlisting>
@@ -362,7 +363,7 @@ quotation (_q_uotatio_n_)      ---&gt; EQN</programlisting>
      Some of the visual mode mappings are sensitive to whether you
      choose line-wise or character-wise. For example, if you choose a
      word and press <literal>,ce</literal>, then you get
-     <literal>\centerline{word}</literal>, whereas if you press
+     <literal>{\centering word}</literal>, whereas if you press
      <literal>,ce</literal> on a line-wise selection, you get:
      <programlisting>\begin{center}
     line
@@ -2366,7 +2367,8 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'</programlisting>
    meaningful fold-text, otherwise the second line of the environment is displayed
    along with the name of the environment. In other words, the following
    <programlisting>\begin{figure}[h]
-    \centerline{\psfig{figure=slidercrank.eps,height=6cm}}
+     \centering
+     \psfig{figure=slidercrank.eps,height=6cm}
     \caption{The Slider Crank Mechanism.}
     \label{fig:slidercrank}
 \end{figure}
