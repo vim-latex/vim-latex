@@ -25,7 +25,7 @@ install:
 	install latextags ltags '$(DESTDIR)$(BINDIR)'
 
 	install -d '$(DESTDIR)$(APPDATADIR)'
-	install vim-latex.metainfo.xml '$(DESTDIR)$(APPDATADIR)'
+	install -m 644 vim-latex.metainfo.xml '$(DESTDIR)$(APPDATADIR)'
 
 upload: snapshot
 	scp '$(SNAPSHOTNAME).tar.gz' frs.sourceforge.net:/home/frs/project/v/vi/vim-latex/snapshots
