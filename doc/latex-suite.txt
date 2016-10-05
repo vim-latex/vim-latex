@@ -141,6 +141,12 @@ file:  >
     
 
 
+In the unlikely case that Latex-Suite is installed, but you do not want to use
+it (e.g., if it is installed system-wide and you use some other package to deal
+with tex files), you can suppress the loading of Latex-Suite by using  >
+    let b:suppress_latex_suite = 1
+in your ~/.vim/ftplugin/tex.vim
+
 ================================================================================
 Inserting Templates                                             *ls_2* *ls_a_bd*
                                                          *latex-suite-templates*

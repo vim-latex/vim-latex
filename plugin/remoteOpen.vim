@@ -28,6 +28,10 @@
 " Ofcourse, this requires vim with +clientserver. If not, then RemoteOpen just
 " opens in the present session.
 
+if exists('b:suppress_latex_suite') && b:suppress_latex_suite == 1
+	finish
+endif
+
 " Enclose <args> in single quotes so it can be passed as a function argument.
 com! -nargs=1 RemoteOpen :call RemoteOpen('<args>')
 com! -nargs=? RemoteInsert :call RemoteInsert('<args>')

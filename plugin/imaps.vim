@@ -94,6 +94,10 @@
 "--------------------------------------%<--------------------------------------
 " }}}
 
+if exists('b:suppress_latex_suite') && b:suppress_latex_suite == 1
+	finish
+endif
+
 " line continuation used here.
 let s:save_cpo = &cpo
 set cpo&vim

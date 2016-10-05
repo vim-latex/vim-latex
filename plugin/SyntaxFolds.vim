@@ -88,6 +88,10 @@
 " Nested folds can be created by successive calls to AddSyntaxFoldItem(). See
 " MakeTexFolds() for an idea of how this works for latex files.
 
+if exists('b:suppress_latex_suite') && b:suppress_latex_suite == 1
+	finish
+endif
+
 " Function: AddSyntaxFoldItem (start, end, startoff, endoff [, skipStart, skipEnd]) {{{
 function! AddSyntaxFoldItem(start, end, startoff, endoff, ...)
 	if a:0 > 0

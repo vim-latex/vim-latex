@@ -66,6 +66,10 @@
 "
 " }}}
 
+if exists('b:suppress_latex_suite') && b:suppress_latex_suite == 1
+	finish
+endif
+
 if exists("b:did_indent")
 	finish
 endif

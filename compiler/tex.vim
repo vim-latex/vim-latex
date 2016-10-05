@@ -59,6 +59,10 @@
 "   1. menu items for dynamically selecting a ignore warning level.
 " }}}
 
+if exists('b:suppress_latex_suite') && b:suppress_latex_suite == 1
+	finish
+endif
+
 " avoid reinclusion for the same buffer. keep it buffer local so it can be
 " externally reset in case of emergency re-sourcing.
 if exists('b:doneTexCompiler') && !exists('b:forceRedoTexCompiler')

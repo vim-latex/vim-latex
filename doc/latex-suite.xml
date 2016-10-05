@@ -98,6 +98,14 @@ set sw=2
 set iskeyword+=:
 </programlisting>
   </para>
+  <para>
+    In the unlikely case that &ls; is installed, but you do not want to use it
+    (e.g., if it is installed system-wide and you use some other package to deal
+    with tex files),
+    you can suppress the loading of &ls; by setting
+    <programlisting>let b:suppress_latex_suite = 1</programlisting>
+    in your ~/.vim/ftplugin/tex.vim.
+  </para>
  </section>
  <section id="latex-suite-templates">
   <title>Inserting Templates</title>
