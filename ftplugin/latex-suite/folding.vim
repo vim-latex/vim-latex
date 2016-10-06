@@ -288,7 +288,7 @@ function! MakeTexFolds(force)
 					" terminated on the same line will not start a fold.
 					" However, it will also refuse to fold certain commands
 					" which have not terminated. eg:
-					" 	\commandname{something \bf{text} and 
+					" 	\commandname{something \textbf{text} and
 					" will _not_ start a fold.
 					" In other words, the pattern is safe, but not exact.
 					call AddSyntaxFoldItem('^\s*\\'.s.'{[^{}]*$','^[^}]*}',0,0)
