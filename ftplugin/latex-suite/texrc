@@ -458,7 +458,7 @@ TexLet g:Tex_SectionMenus = 1
 "   <++>
 " \end{env} 
 " is inserted.
-" \[ and $$ are also recognized.
+" \[ is also recognized.
 " NOTE: Setting this variable to the empty string is a way of leaving the 
 "       <F5> key unmapped
 

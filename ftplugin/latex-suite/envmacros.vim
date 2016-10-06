@@ -559,8 +559,6 @@ function! Tex_PutEnvironment(env)
 		let s:isvisual = 'no'
 		if a:env == '\['
 			return VEnclose('', '', '\[', '\]')
-		elseif a:env == '$$'
-			return VEnclose('', '', '$$', '$$')
 		endif
 		return VEnclose('\begin{'.a:env.'}', '\end{'.a:env.'}', '\begin{'.a:env.'}', '\end{'.a:env.'}')
 	else
@@ -583,8 +581,6 @@ function! Tex_PutEnvironment(env)
 			return Tex_tabular(a:env)
 		elseif exists('*Tex_'.a:env)
 			exe 'return Tex_'.a:env.'(a:env)'
-		elseif a:env == '$$'
-			return IMAP_PutTextWithMovement('$$<++>$$')
 		elseif a:env == '\['
 			return IMAP_PutTextWithMovement("\\[\<CR><++>\<CR>\\]" . s:end_with_cr . "<++>")
 		else
@@ -622,8 +618,6 @@ endfunction " }}}
 "
 " Leaving this empty is equivalent to disabling the feature.
 if g:Tex_PromptedEnvironments != ''
-
-	let b:DoubleDollars = 0
 
 	" Provide only <plug>s here. main.vim will create the actual maps.
 	inoremap <silent> <Plug>Tex_FastEnvironmentInsert  <C-r>=Tex_FastEnvironmentInsert("no")<cr>
@@ -777,29 +771,18 @@ if g:Tex_PromptedEnvironments != ''
 		let start_col = virtcol('.')
 
 		if index(['[', '\[', '$$'], a:env) != -1
-			if b:DoubleDollars == 0
-				let first = '\['
-				let second = '\]'
-			else
-				let first = '$$'
-				let second = '$$'
-			endif
+			let first = '\['
+			let second = '\]'
 		else
 			let first = '\begin{' . a:env . '}'
 			let second = '\end{' . a:env . '}'
 		endif
 
-		if b:DoubleDollars == 0
-			let bottom = searchpair('\\\[\|\\begin{','','\\\]\|\\end{','')
-			s/\\\]\|\\end{.\{-}}/\=second/
-			let top = searchpair('\\\[\|\\begin{','','\\\]\|\\end{','b')
-			s/\\\[\|\\begin{.\{-}}/\=first/
-		else
-			let bottom = search('\$\$\|\\end{')
-			s/\$\$\|\\end{.\{-}}/\=second/
-			let top = search('\$\$\|\\begin{','b')
-			s/\$\$\|\\begin{.\{-}}/\=first/
-		end
+		let bottom = searchpair('\\\[\|\\begin{','','\\\]\|\\end{','')
+		s/\\\]\|\\end{.\{-}}/\=second/
+		let top = searchpair('\\\[\|\\begin{','','\\\]\|\\end{','b')
+		s/\\\[\|\\begin{.\{-}}/\=first/
+
 		if a:delete != ''
 			exe 'silent '. top . "," . bottom . 's/' . a:delete . '//e'
 		endif
@@ -1069,8 +1052,6 @@ endfunction " }}}
 "
 " Leaving this empty is equivalent to disabling the feature.
 if g:Tex_PromptedCommands != ''
-
-	let b:DoubleDollars = 0
 
 	inoremap <silent> <Plug>Tex_FastCommandInsert  <C-r>=Tex_DoCommand('no')<cr>
 	nnoremap <silent> <Plug>Tex_FastCommandInsert  i<C-r>=Tex_DoCommand('no')<cr>
