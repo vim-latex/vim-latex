@@ -295,12 +295,12 @@ function! s:LookupCharacter(char)
 	if strlen(lhs) == 0
 		return a:char
 	endif
-	" enough back-spaces to erase the left-hand side; -1 for the last
-	" character typed:
-	let bs = substitute(s:MultiByteStrpart(lhs, 1), ".", "\<bs>", "g")
+
+	" enough back-spaces to erase the left-hand side
+	let bs = repeat("\<bs>", s:MultiByteStrlen(lhs))
 
 	" \<c-g>u inserts an undo point
-	let result = a:char . "\<c-g>u\<bs>" . bs . IMAP_PutTextWithMovement(rhs, phs, phe)
+	let result = a:char . "\<c-g>u" . bs . IMAP_PutTextWithMovement(rhs, phs, phe)
 
 	if a:char !~? '[a-z0-9]'
 		" If 'a:char' is not a letter or number, insert it literally.
