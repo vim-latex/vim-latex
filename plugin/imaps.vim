@@ -176,7 +176,7 @@ function! IMAP(lhs, rhs, ft, ...)
 	let s:phe_{a:ft}_{hash} = phe
 
 	" Add a:lhs to the list of left-hand sides that end with lastLHSChar:
-	let lastLHSChar = s:MultiByteStrpart(a:lhs,s:MultiByteStrlen(a:lhs)-1)
+	let lastLHSChar = s:MultiByteLastCharacter(a:lhs)
 	let hash = s:Hash(lastLHSChar)
 	if !exists("s:LHS_" . a:ft . "_" . hash)
 		let s:LHS_{a:ft}_{hash} = escape(a:lhs, '\')
@@ -207,7 +207,7 @@ endfunction
 "
 " Added mainly for debugging purposes, but maybe worth keeping.
 function! IMAP_list(lhs)
-	let char = s:MultiByteStrpart(a:lhs,s:MultiByteStrlen(a:lhs)-1)
+	let char = s:MultiByteLastCharacter(a:lhs)
 	let charHash = s:Hash(char)
 	if exists("s:LHS_" . &ft ."_". charHash) && a:lhs =~ s:LHS_{&ft}_{charHash}
 		let ft = &ft
@@ -634,7 +634,7 @@ function! ExecMap(prefix, mode)
 		let char = getchar()
 		if char !~ '^\d\+$'
 			if char == "\<BS>"
-				let mapCmd = s:MultiByteStrpart(mapCmd, 0, s:MultiByteStrlen(mapCmd) - 1)
+				let mapCmd = s:MultiByteWOLastCharacter(mapCmd)
 			endif
 		else " It is the ascii code.
 			let char = nr2char(char)
@@ -646,7 +646,7 @@ function! ExecMap(prefix, mode)
 					let foundMap = 1
 					let breakLoop = 1
 				elseif mapcheck(mapCmd, a:mode) == ""
-					let mapCmd = s:MultiByteStrpart(mapCmd, 0, s:MultiByteStrlen(mapCmd) - 1)
+					let mapCmd = s:MultiByteWOLastCharacter(mapCmd)
 				endif
 			endif
 		endif
@@ -826,25 +826,15 @@ endfunction " }}}
 function! s:MultiByteStrlen(str)
 	return strlen(substitute(a:str, ".", "x", "g"))
 endfunction " }}}
-" s:MultiByteStrpart: Same as strpart() but counts multibyte characters {{{
-" instead of bytes.
-function! s:MultiByteStrpart(src,start,...)
-	let lensrc=s:MultiByteStrlen(a:src)
-	let start=a:start
-	let len=lensrc-a:start
-	if a:0 != 0
-		let len=a:1
-	endif
-	if start < 0
-		let len=max([0,len+start])
-		let start=0
-	endif
-	let len=min([len,lensrc-start])
-	let end=lensrc - len - start
-	let src=substitute(a:src,"^.\\{".start."\\}","","")
-	return substitute(src,".\\{".end."\\}$","","")
-endfunction
-" }}}
+" s:MultiByteLastCharacter: Return last multibyte characters {{{
+function! s:MultiByteLastCharacter(str)
+	return matchstr(a:str, ".$")
+endfunction " }}}
+" s:MultiByteWOLastCharacter: Return string without last multibyte character {{{
+function! s:MultiByteWOLastCharacter(str)
+	return substitute(a:str, ".$", "", "")
+endfunction " }}}
+
 
 " ============================================================================== 
 " A bonus function: Snip()
