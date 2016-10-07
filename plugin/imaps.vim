@@ -181,7 +181,10 @@ function! IMAP(lhs, rhs, ft, ...)
 	if !exists("s:LHS_" . a:ft . "_" . hash)
 		let s:LHS_{a:ft}_{hash} = escape(a:lhs, '\')
 	else
-		let s:LHS_{a:ft}_{hash} = escape(a:lhs, '\') .'\|'.  s:LHS_{a:ft}_{hash}
+		" Check whether this lhs is already mapped.
+		if s:LHS_{a:ft}_{hash} !~# "\\V" . escape(a:lhs, '\')
+			let s:LHS_{a:ft}_{hash} = escape(a:lhs, '\') .'\|'.  s:LHS_{a:ft}_{hash}
+		endif
 	endif
 
 	" map only the last character of the left-hand side.
@@ -217,8 +220,39 @@ function! IMAP_list(lhs)
 		return ""
 	endif
 	let hash = s:Hash(a:lhs)
-	return "rhs = " . s:Map_{ft}_{hash} . " place holders = " .
+	return "rhs = " . strtrans( s:Map_{ft}_{hash} ) . " place holders = " .
 				\ s:phs_{ft}_{hash} . " and " . s:phe_{ft}_{hash}
+endfunction
+" }}}
+" IMAP_list_all:  list all the rhs and place holders with lhs ending in a:char {{{
+function! IMAP_list_all(char)
+	let result = ''
+	let charHash = s:Hash(a:char)
+	if &ft == ''
+		let ft_list = ['']
+	else
+		let ft_list = [&ft, '']
+	endif
+
+	" Loop over current file type and global IMAPs
+	for ft in ft_list
+		if ft == ''
+			let ft_display = 'global: '
+		else
+			let ft_display = ft . ': '
+		endif
+		if exists("s:LHS_" . ft ."_". charHash)
+			for lhs in split( s:LHS_{ft}_{charHash}, '\\|' )
+				" Undo the escaping of backslashes in lhs
+				let lhs = substitute(lhs, '\\\\', '\', 'g')
+				let hash = s:Hash(lhs)
+				" echohl WarningMsg
+				let result .= ft_display . lhs . " => " . strtrans( s:Map_{ft}_{hash} ) . "\n"
+				" echohl None
+			endfor
+		endif
+	endfor
+	return result
 endfunction
 " }}}
 " LookupCharacter: inserts mapping corresponding to this character {{{
