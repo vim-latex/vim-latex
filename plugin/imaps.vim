@@ -84,14 +84,6 @@
 "	call IMAP ('date`', "\<c-r>=strftime('%b %d %Y')\<cr>", '')
 "
 " sets up the map for date` to insert the current date.
-"
-"--------------------------------------%<--------------------------------------
-" Bonus: This script also provides a command Snip which puts tearoff strings,
-" '----%<----' above and below the visually selected range of lines. The
-" length of the string is chosen to be equal to the longest line in the range.
-" Recommended Usage:
-"   '<,'>Snip
-"--------------------------------------%<--------------------------------------
 " }}}
 
 if exists('b:suppress_latex_suite') && b:suppress_latex_suite == 1
