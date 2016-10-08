@@ -470,9 +470,9 @@ function! IMAP_Jumpfunc(direction, inclusive)
 	let placeHolderEmpty = !strlen(template)
 
 	" Search for the end placeholder.
-	let [lnum, lcol] = searchpos('\V'.pheUser, 'ne')
+	let end_pos = searchpos('\V'.pheUser, 'ne')
 	" How many characters should be selected?
-	let nmove = lcol - col('.')
+	let nmove = virtcol(end_pos) - virtcol('.')
 
 	" If we are selecting in exclusive mode, then we need to move one step to
 	" the right
