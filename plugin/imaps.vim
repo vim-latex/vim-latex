@@ -278,21 +278,14 @@ function! s:LookupCharacter(char)
 			let lastword = matchstr(getline('.'), '\k\+$', '')
 			call IMAP_Debug('getting lastword = ['.lastword.']', 'imap')
 			if lastword != ''
-				" An extremeley wierd way to get around the fact that vim
-				" doesn't have the equivalent of the :mapcheck() function for
-				" abbreviations.
-				let _a = @a
-				exec "redir @a | silent! iab ".lastword." | redir END"
-				let abbreviationRHS = matchstr(@a."\n", "\n".'i\s\+'.lastword.'\s\+@\?\zs.*\ze'."\n")
+				let abbreviationRHS = maparg( lastword, 'i', 1 )
 
 				call IMAP_Debug('getting abbreviationRHS = ['.abbreviationRHS.']', 'imap')
 
-				if @a =~ "No abbreviation found" || abbreviationRHS == ""
-					call setreg("a", _a, "c")
+				if abbreviationRHS == ''
 					return a:char
 				endif
 
-				call setreg("a", _a, "c")
 				let abbreviationRHS = escape(abbreviationRHS, '\<"')
 				exec 'let abbreviationRHS = "'.abbreviationRHS.'"'
 
