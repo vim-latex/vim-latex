@@ -430,7 +430,7 @@ function! IMAP_PutTextWithMovement(str, ...)
 	let text = initial . "X\<C-\>\<C-N>:call IMAP_Mark('set')\<CR>\"_s"
 	let text = text . template . final
 	let text = text . "\<C-\>\<C-N>:call IMAP_Mark('go')\<CR>"
-	let text = text . "i\<C-r>=IMAP_Jumpfunc('', 1)\<CR>"
+	let text = text . ":call IMAP_Jumpfunc('', 1)\<CR>"
 
 	call IMAP_Debug('IMAP_PutTextWithMovement: text = ['.text.']', 'imap')
 	return text
@@ -458,62 +458,54 @@ function! IMAP_Jumpfunc(direction, inclusive)
 	let phsUser = IMAP_GetPlaceHolderStart()
 	let pheUser = IMAP_GetPlaceHolderEnd()
 
-	let searchString = ''
-	" If this is not an inclusive search or if it is inclusive, but the
-	" current cursor position does not contain a placeholder character, then
-	" search for the placeholder characters.
-	if !a:inclusive || strpart(getline('.'), col('.')-1) !~ '\V\^'.phsUser
-		let searchString = '\V'.phsUser.'\_.\{-}'.pheUser
-	endif
+	" Set up flags for the search() function
+	let flags = a:direction
+	if a:inclusive
+		let flags .= 'c'
+	end
+
+	let searchString = '\V'.phsUser.'\_.\{-}'.pheUser
 
 	" If we didn't find any placeholders return quietly.
-	if searchString != '' && !search(searchString, a:direction)
-		return ''
+	if !search(searchString, flags)
+		return
 	endif
 
 	" Open any closed folds and make this part of the text visible.
 	silent! foldopen!
 
-	" Calculate if we have an empty placeholder or if it contains some
-	" description.
-	let template = 
-		\ matchstr(strpart(getline('.'), col('.')-1),
-		\          '\V\^'.phsUser.'\zs\.\{-}\ze\%('.pheUser.'\|\$\)')
-	let placeHolderEmpty = !strlen(template)
+	" We are at the starting placeholder. Start visual mode.
+	normal! v
 
-	" Search for the end placeholder.
-	let end_pos = searchpos('\V'.pheUser, 'ne')
-	" How many characters should be selected?
-	let nmove = virtcol(end_pos) - virtcol('.')
+	" Calculate if we have an empty placeholder. It is empty if both
+	" placeholders appear one after the other.
+	let placeHolderEmpty = (0 == match(strpart(getline('.'), col('.')-1),'\C\V\^'.phsUser.pheUser))
+
+	" Search for the end placeholder and position the cursor.
+	call search(searchString, 'ce')
 
 	" If we are selecting in exclusive mode, then we need to move one step to
 	" the right
 	if &selection == 'exclusive'
-		let nmove += 1
+		normal! l
 	endif
 
-	" Select till the end placeholder character.
-	let movement = "\<C-o>v".nmove."l"
-
-	" Leave (insert)-visual mode and reselect.
-	let movement .= "\<C-\>\<C-N>gv"
-
-	" Now either goto insert mode or select mode.
+	" Now either goto insert mode, visual mode or select mode.
 	if placeHolderEmpty && g:Imap_DeleteEmptyPlaceHolders
 		" Delete the empty placeholder into the blackhole.
-		return movement . '"_c'
+		" Use 'feedkeys()' here, otherwise the cursor might not be positioned
+		" correctly.
+		" Use the 'n' flag such that the keys are not remapped.
+		call feedkeys('"_c', 'n')
 	else
 		if g:Imap_GoToSelectMode
 			" Go to select mode
-			return movement . "\<C-g>"
+			execute "normal! \<C-g>"
 		else
 			" Do not go to select mode
-			return movement
 		endif
 	endif
-	
 endfunction
-
 " }}}
 " Maps for IMAP_Jumpfunc {{{
 "
@@ -524,20 +516,20 @@ endfunction
 " etc.
 
 " jumping forward and back in insert mode.
-inoremap <silent> <Plug>IMAP_JumpForward    <c-r>=IMAP_Jumpfunc('', 0)<CR>
-inoremap <silent> <Plug>IMAP_JumpBack       <c-r>=IMAP_Jumpfunc('b', 0)<CR>
+inoremap <silent> <Plug>IMAP_JumpForward    <C-\><C-N>:call IMAP_Jumpfunc('', 0)<CR>
+inoremap <silent> <Plug>IMAP_JumpBack       <C-\><C-N>:call IMAP_Jumpfunc('b', 0)<CR>
 
 " jumping in normal mode
-nnoremap <silent> <Plug>IMAP_JumpForward        i<c-r>=IMAP_Jumpfunc('', 0)<CR>
-nnoremap <silent> <Plug>IMAP_JumpBack           i<c-r>=IMAP_Jumpfunc('b', 0)<CR>
+nnoremap <silent> <Plug>IMAP_JumpForward        :call IMAP_Jumpfunc('', 0)<CR>
+nnoremap <silent> <Plug>IMAP_JumpBack           :call IMAP_Jumpfunc('b', 0)<CR>
 
 " deleting the present selection and then jumping forward.
-vnoremap <silent> <Plug>IMAP_DeleteAndJumpForward       "_<Del>i<c-r>=IMAP_Jumpfunc('', 0)<CR>
-vnoremap <silent> <Plug>IMAP_DeleteAndJumpBack          "_<Del>i<c-r>=IMAP_Jumpfunc('b', 0)<CR>
+vnoremap <silent> <Plug>IMAP_DeleteAndJumpForward       "_<Del>:call IMAP_Jumpfunc('', 0)<CR>
+vnoremap <silent> <Plug>IMAP_DeleteAndJumpBack          "_<Del>:call IMAP_Jumpfunc('b', 0)<CR>
 
 " jumping forward without deleting present selection.
-vnoremap <silent> <Plug>IMAP_JumpForward       <C-\><C-N>i<c-r>=IMAP_Jumpfunc('', 0)<CR>
-vnoremap <silent> <Plug>IMAP_JumpBack          <C-\><C-N>`<i<c-r>=IMAP_Jumpfunc('b', 0)<CR>
+vnoremap <silent> <Plug>IMAP_JumpForward       <C-\><C-N>:call IMAP_Jumpfunc('', 0)<CR>
+vnoremap <silent> <Plug>IMAP_JumpBack          <C-\><C-N>`<:call IMAP_Jumpfunc('b', 0)<CR>
 
 " }}}
 " Default maps for IMAP_Jumpfunc {{{
