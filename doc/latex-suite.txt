@@ -143,9 +143,9 @@ file:  >
 
 In the unlikely case that Latex-Suite is installed, but you do not want to use
 it (e.g., if it is installed system-wide and you use some other package to deal
-with tex files), you can suppress the loading of Latex-Suite by using  >
+with tex files), you can suppress the loading of Latex-Suite by setting  >
     let b:suppress_latex_suite = 1
-in your ~/.vim/ftplugin/tex.vim
+in your ~/.vim/ftplugin/tex.vim.
 
 ================================================================================
 Inserting Templates                                             *ls_2* *ls_a_bd*
@@ -720,6 +720,9 @@ Smart Backspace
 Pressing <BS> in insert mode checks to see whether we are just after something
 like \'{a} and if so, deletes all of it. i.e, diacritics are treated as single
 characters for backspacing.
+
+You might want to disable this feature, if you are editing Chinese, Japanese or
+Korean text.
 
 Smart Quotes
 ------------

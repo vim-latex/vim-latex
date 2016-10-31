@@ -494,6 +494,8 @@ TexLet g:Tex_PromptedCommands =
 " Pressing <BS> in insert mode checks to see whether we are just after
 " something like \'{a} and if so, deletes all of it. i.e, diacritics are
 " treated as single characters for backspacing.
+" You might want to disable this feature, if you are editing
+" Chinese, Japanese or Korean text.
 " Setting this to zero will leave the <BS> key unmapped.
 " Default: 1 
 TexLet g:Tex_SmartKeyBS = 1

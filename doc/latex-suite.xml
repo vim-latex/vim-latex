@@ -769,6 +769,9 @@ abstract = {&ph;},</programlisting>
     whether we are just after something like <literal>\'{a}</literal> and
     if so, deletes all of it. i.e, diacritics are treated as single
     characters for backspacing.
+
+    You might want to disable this feature, if you are editing
+    Chinese, Japanese or Korean text.
    </formalpara>
    <formalpara>
     <title>Smart Quotes</title>
