@@ -749,6 +749,13 @@ Latex-Suite utilizes a set of macros originally created by Carl Mueller in
 auctex.vim to make inserting all the \left ... \right stuff very easy and to
 also make some use of the heavily under-utilized <Alt> key.
 
+NOTE: By default, the mappings involving the <Alt> key are turned of for
+      compatibility with inserting non-ASCII characters. It can be enabled by
+      setting  >
+          let g:Tex_AdvancedMath = 1
+<     in your $VIM/ftplugin/tex.vim.
+      
+      
 NOTE: By default, typing Alt-<key> in Vim takes focus to the menu bar if a menu
       with the hotkey <key> exists. If in your case, there are conflicts due to
       this behavior, you will need to set  >

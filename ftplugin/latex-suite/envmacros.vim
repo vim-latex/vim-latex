@@ -945,7 +945,9 @@ inoremap <script> <silent> <Plug>Tex_InsertItemOnThisLine <C-r>=Tex_InsertItem()
 inoremap <script> <silent> <Plug>Tex_InsertItemOnNextLine <ESC>o<C-R>=Tex_InsertItem()<CR>
 
 function! Tex_SetItemMaps()
-	if !hasmapto("<Plug>Tex_InsertItemOnThisLine", "i")
+	" Only include the <M-i> mapping if the user want this. Note that it
+	" conflicts with inserting 'é'.
+	if !hasmapto("<Plug>Tex_InsertItemOnThisLine", "i") && g:Tex_AdvancedMath == 1
 		imap <buffer> <M-i> <Plug>Tex_InsertItemOnThisLine
 	endif
 	if !hasmapto("<Plug>Tex_InsertItemOnNextLine", "i")

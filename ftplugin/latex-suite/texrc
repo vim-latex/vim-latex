@@ -570,8 +570,8 @@ TexLet g:Tex_SmartKeyDot = 1
 "       insert a simple \item, but within a description, it will insert
 "       \item[<+label+>] etc.
 "
-" Default: 1 
-TexLet g:Tex_AdvancedMath = 1
+" Default: 0
+TexLet g:Tex_AdvancedMath = 0
 
 " }}}
 

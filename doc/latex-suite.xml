@@ -805,6 +805,15 @@ abstract = {&ph;},</programlisting>
    </para>
    <note>
     <para>
+     By default, the mappings involving the <literal>&lt;Alt&gt;</literal> key
+     are turned of for compatibility with inserting non-ASCII characters. It
+     can be enabled by setting
+     <programlisting>let g:Tex_AdvancedMath = 1</programlisting>
+     in your <literal>$VIM/ftplugin/tex.vim</literal>.
+    </para>
+   </note>
+   <note>
+    <para>
      By default, typing <literal>Alt-&lt;key&gt;</literal> in &vim; takes
      focus to the menu bar if a menu with the hotkey
      <literal>&lt;key&gt;</literal> exists. If in your case, there are

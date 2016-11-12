@@ -853,10 +853,9 @@ exe 'source '.fnameescape(s:path.'/custommacros.vim')
 exe 'source '.fnameescape(s:path.'/bibtex.vim')
 
 " source advanced math functions
-if g:Tex_AdvancedMath == 1
-	exe 'source '.fnameescape(s:path.'/brackets.vim')
-	exe 'source '.fnameescape(s:path.'/smartspace.vim')
-endif
+exe 'source '.fnameescape(s:path.'/brackets.vim')
+
+exe 'source '.fnameescape(s:path.'/smartspace.vim')
 
 if g:Tex_Diacritics != 0
 	exe 'source '.fnameescape(s:path.'/diacritics.vim')
