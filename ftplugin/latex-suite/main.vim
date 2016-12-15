@@ -127,7 +127,7 @@ if !exists('s:doneMappings')
 	call IMAP(g:Tex_Leader.'U', '\Upsilon', 'tex')
 	call IMAP(g:Tex_Leader.'W', '\Omega', 'tex')
 	" }}}
-	" ProtectLetters: sets up indentity maps for things like ``a {{{
+	" ProtectLetters: sets up identity maps for things like ``a {{{
 	" " Description: If we simply do
 	" 		call IMAP('`a', '\alpha', 'tex')
 	" then we will never be able to type 'a' after a tex-quotation. Since
