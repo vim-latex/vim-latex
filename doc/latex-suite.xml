@@ -806,7 +806,7 @@ abstract = {&ph;},</programlisting>
    <note>
     <para>
      By default, the mappings involving the <literal>&lt;Alt&gt;</literal> key
-     are turned of for compatibility with inserting non-ASCII characters. It
+     are turned off for compatibility with inserting non-ASCII characters. It
      can be enabled by setting
      <programlisting>let g:Tex_AdvancedMath = 1</programlisting>
      in your <literal>$VIM/ftplugin/tex.vim</literal>.
