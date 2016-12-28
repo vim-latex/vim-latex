@@ -174,7 +174,7 @@ function! IMAP(lhs, rhs, ft, ...)
 		let s:LHS_{a:ft}_{hash} = escape(a:lhs, '\')
 	else
 		" Check whether this lhs is already mapped.
-		if s:LHS_{a:ft}_{hash} !~# "\\V" . escape(a:lhs, '\')
+		if a:lhs !~# '\V\^\%(' . s:LHS_{a:ft}_{hash} . '\)\$'
 			let s:LHS_{a:ft}_{hash} = escape(a:lhs, '\') .'\|'.  s:LHS_{a:ft}_{hash}
 		endif
 	endif
@@ -204,9 +204,11 @@ endfunction
 function! IMAP_list(lhs)
 	let char = s:MultiByteLastCharacter(a:lhs)
 	let charHash = s:Hash(char)
-	if exists("s:LHS_" . &ft ."_". charHash) && a:lhs =~ s:LHS_{&ft}_{charHash}
+	if exists("s:LHS_" . &ft ."_". charHash)
+				\ && a:lhs =~# '\V\^\%(' . s:LHS_{&ft}_{charHash} . '\)\$'
 		let ft = &ft
-	elseif exists("s:LHS__" . charHash) && a:lhs =~ s:LHS__{charHash}
+	elseif exists("s:LHS__" . charHash)
+				\ && a:lhs =~# '\V\^\%(' . s:LHS__{charHash} . '\)\$'
 		let ft = ""
 	else
 		return ""
@@ -238,9 +240,7 @@ function! IMAP_list_all(char)
 				" Undo the escaping of backslashes in lhs
 				let lhs = substitute(lhs, '\\\\', '\', 'g')
 				let hash = s:Hash(lhs)
-				" echohl WarningMsg
 				let result .= ft_display . lhs . " => " . strtrans( s:Map_{ft}_{hash} ) . "\n"
-				" echohl None
 			endfor
 		endif
 	endfor
