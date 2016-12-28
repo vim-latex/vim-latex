@@ -899,6 +899,10 @@ globally visible maps, you will need to use the following in either your
     augroup END
 
 
+IMAP mappings can be removed by IUNMAP, e.g.,  >
+    call IUNMAP('FEM','tex')
+
+
 
 
 Why use IMAP()                                             *ls_3_12_1* *ls_a_bH*

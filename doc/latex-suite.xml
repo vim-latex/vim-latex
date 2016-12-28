@@ -1040,6 +1040,11 @@ abstract = {&ph;},</programlisting>
     au VimEnter * call IMAP('Foo', 'foo', '')
 augroup END</programlisting>
    </para>
+   <para>
+    <literal>IMAP</literal> mappings can be removed by
+    <literal>IUNMAP</literal>, e.g.,
+    <programlisting>call IUNMAP('FEM','tex')</programlisting>
+   </para>
    <section id="why-IMAP">
     <title id="why-IMAP.title">Why use <literal>IMAP()</literal></title>
     <para>

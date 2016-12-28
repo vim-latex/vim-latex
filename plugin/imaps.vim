@@ -198,6 +198,44 @@ function! IMAP(lhs, rhs, ft, ...)
 endfunction
 
 " }}}
+" IUNMAP: Removes a "fake" insert mode mapping. {{{
+function! IUNMAP(lhs, ft)
+	let lastLHSChar = s:MultiByteLastCharacter(a:lhs)
+	let charHash = s:Hash(lastLHSChar)
+
+	" Check whether the mapping exists
+	if exists("s:LHS_" . a:ft . "_" . charHash)
+				\ && a:lhs =~# '\V\^\%(' . s:LHS_{a:ft}_{charHash} . '\)\$'
+
+		" Remove lhs from the list of mappings
+		let s:LHS_{a:ft}_{charHash} = substitute(s:LHS_{a:ft}_{charHash},
+					\ '\V\(\^\|\\|\)' . escape(escape(a:lhs, '\'), '\') . '\(\$\|\\|\)',
+					\ '\\|', '')
+
+		" Remove leading/trailing '\|'
+		let s:LHS_{a:ft}_{charHash} = substitute(s:LHS_{a:ft}_{charHash}, '^\\|\|\\|$', '', '')
+
+		let hash = s:Hash(a:lhs)
+		unlet s:Map_{a:ft}_{hash}
+		unlet s:phs_{a:ft}_{hash}
+		unlet s:phe_{a:ft}_{hash}
+
+		if strlen(s:LHS_{a:ft}_{charHash}) == 0
+			" unmap the last character of the left-hand side.
+			if lastLHSChar == ' '
+				for lastLHSChar in ['<space>', '<s-space>', '<c-space>', '<cs-space>']
+					exe 'iunmap <silent>' escape(lastLHSChar, '|')
+				endfor
+			else
+				exe 'iunmap <silent>' escape(lastLHSChar, '|')
+			endif
+		end
+	else
+		" a:lhs is not mapped!
+		" Do nothing.
+	endif
+endfunction
+" }}}
 " IMAP_list:  list the rhs and place holders corresponding to a:lhs {{{
 "
 " Added mainly for debugging purposes, but maybe worth keeping.
