@@ -180,12 +180,27 @@ endif
 " IgnoreWarnings: parses g:Tex_IgnoredWarnings for message customization {{{
 " Description: 
 function! <SID>IgnoreWarnings()
+	let s:Ignored_Overfull = 0
+
 	let i = 1
 	while s:Strntok(g:Tex_IgnoredWarnings, "\n", i) != '' &&
 				\ i <= g:Tex_IgnoreLevel
 		let warningPat = s:Strntok(g:Tex_IgnoredWarnings, "\n", i)
 		let warningPat = escape(substitute(warningPat, '[\,]', '%\\\\&', 'g'), ' ')
-		exe 'setlocal efm+=%-G%.%#'.warningPat.'%.%#'
+
+		if warningPat =~? 'overfull'
+			let s:Ignored_Overfull = 1
+			if ( v:version > 800 || v:version == 800 && has("patch26") )
+				" Overfull warnings are ignored as 'warnings'. Therefore, we can gobble
+				" some of the following lines with %-C (see below)
+				exe 'setlocal efm+=%-W%.%#'.warningPat.'%.%#'
+			else
+				exe 'setlocal efm+=%-G%.%#'.warningPat.'%.%#'
+			endif
+		else
+			exe 'setlocal efm+=%-G%.%#'.warningPat.'%.%#'
+		endif
+
 		let i = i + 1
 	endwhile
 endfunction 
@@ -197,12 +212,8 @@ function! <SID>SetLatexEfm()
 
 	let pm = ( g:Tex_ShowallLines == 1 ? '+' : '-' )
 
-	setlocal efm=
-	" remove default error formats that cause issues with revtex, where they
-	" match version messages
-	" Reference: http://bugs.debian.org/582100
-	setlocal efm-=%f:%l:%m
-	setlocal efm-=%f:%l:%c:%m
+	" Add a dummy entry to overwrite the global setting.
+	setlocal efm=dummy_value
 
 	if !g:Tex_ShowallLines
 		call s:IgnoreWarnings()
@@ -212,9 +223,27 @@ function! <SID>SetLatexEfm()
 	setlocal efm+=%E!\ %m
 	setlocal efm+=%E%f:%l:\ %m
 
+	" If we do not ignore 'overfull \hbox' messages, we care for them to get the
+	" line number.
+	if s:Ignored_Overfull == 0
+		setlocal efm+=%+WOverfull\ %mat\ lines\ %l--%*\\d
+		setlocal efm+=%+WOverfull\ %mat\ line\ %l
+	endif
+
+	" Add some generic warnings
 	setlocal efm+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
 	setlocal efm+=%+W%.%#\ at\ lines\ %l--%*\\d
 	setlocal efm+=%+WLaTeX\ %.%#Warning:\ %m
+	setlocal efm+=%+WPackage\ %.%#Warning:\ %m
+
+	" 'Overfull \hbox' messages are ended by:
+	exec 'setlocal efm+=%'.pm.'Z\ []'
+
+	" Empty line ends multi-line messages
+	setlocal efm+=%-Z
+
+	exec 'setlocal efm+=%'.pm.'C(%.%#)\ %#%m\ on\ input\ line\ %l.'
+	exec 'setlocal efm+=%'.pm.'C(%.%#)\ %#%m'
 
 	exec 'setlocal efm+=%'.pm.'Cl.%l\ %m'
 	exec 'setlocal efm+=%'.pm.'Cl.%l\ '
@@ -231,24 +260,96 @@ function! <SID>SetLatexEfm()
 	exec 'setlocal efm+=%'.pm.'G%.%#\ (C)\ %.%#'
 	exec 'setlocal efm+=%'.pm.'G(see\ the\ transcript%.%#)'
 	exec 'setlocal efm+=%'.pm.'G\\s%#'
-	exec 'setlocal efm+=%'.pm.'O(%*[^()])%r'
+
+	" After a 'overfull \hbox' message, there is some garbage from the input.
+	" We try to match it, such that parenthesis in this garbage does not
+	" confuse the OPQ-patterns below.
+	" Every line continues a multiline pattern (hopefully a 'overfull \hbox'
+	" message).
+	" Due to a bug in old versions of vim, this cannot be used if we ignore the
+	" 'overfull \hbox' messages, see vim/vim#1126.
+	if s:Ignored_Overfull == 0 || ( v:version > 800 || v:version == 800 && has("patch26") )
+		exec 'setlocal efm+=%'.pm.'C%.%#'
+	endif
+
+	" Now, we try to trace the used files.
+	"
+	" In principle, the following combinations could arise in the LaTeX logs:
+	"
+	" )* \((%f)\)* (%f
+	" [Close files, skip some files, open a file]
+	"
+	" (%f))*
+	" [Skip some files, close some files]
+	"
+	" And you will find many more awkward combinations...
+	"
+	" Even something like this is possible:
+	" [18] [19] [20] (./bla.bbl [21])
+	"
+	" After a %[OPQ] is matched, the %r part is passed to the same and
+	" following patterns. Hence, we have to add many $[OPQ]-patterns.
+	"
+	" If you use vim to compile your documents, you might want to use
+	"     :let $max_print_line=1024
+	" such that latex will not wrap the filenames. Otherwise, you could use it
+	" as an environment variable or simply use
+	"     max_print_line=1024 pdflatex ...
+	" in your terminal. If you are using latexmk, you should set
+	"     $ENV{'max_print_line'} = '1024';
+	"     $log_wrap = $ENV{'max_print_line'};
+	" in your ~/.latexmkrc
+
+	" The first pattern is needed to match lines like
+	" '[10] [11] (some_file.txt)',
+	" where the first number correspond to an output page in the document
+	exec 'setlocal efm+=%'.pm.'O[%*\\d]%r'
+
+	" Some close patters
+	exec 'setlocal efm+=%'.pm.'Q\ %#)%r'
+	exec 'setlocal efm+=%'.pm.'Q\ %#[%\\d%*[^()])%r'
+	" The next pattern is needed to match lines like
+	" '   ])',
+	exec 'setlocal efm+=%'.pm.'Q\ %#])%r'
+
+	" Skip pattern
+	exec 'setlocal efm+=%'.pm.'O(%f)%r'
+
+	" Some openings
 	exec 'setlocal efm+=%'.pm.'P(%f%r'
-	exec 'setlocal efm+=%'.pm.'P\ %\\=(%f%r'
 	exec 'setlocal efm+=%'.pm.'P%*[^()](%f%r'
 	exec 'setlocal efm+=%'.pm.'P(%f%*[^()]'
 	exec 'setlocal efm+=%'.pm.'P[%\\d%[^()]%#(%f%r'
+
+
+	" Now, the sledgehammer to cope with awkward endless combinations (did you
+	" ever tried tikz/pgf?)
+	" We have to build up the string first, otherwise we cannot append it with
+	" '+='.
+	let PQO = '%'.pm.'P(%f%r,%'.pm.'Q)%r,%'.pm.'O(%f)%r,%'.pm.'O[%*\\d]%r'
+	let PQOs = PQO
+	for xxx in range(3)
+		let PQOs .= ',' . PQO
+	endfor
+	exec 'setlocal efm+=' . PQOs
+
+	" Finally, there are some lonely page numbers after all the patterns.
+	exec 'setlocal efm+=%'.pm.'O[%*\\d'
+
+	" This gobbles some entries consisting only of whitespace, in fact, it
+	" matches the empty line.
+	" See https://github.com/vim/vim/issues/807
+	exec 'setlocal efm+=%'.pm.'O'
+
 	if g:Tex_IgnoreUnmatched && !g:Tex_ShowallLines
-		setlocal efm+=%-P%*[^()]
-	endif
-	exec 'setlocal efm+=%'.pm.'Q)%r'
-	exec 'setlocal efm+=%'.pm.'Q%*[^()])%r'
-	exec 'setlocal efm+=%'.pm.'Q[%\\d%*[^()])%r'
-	if g:Tex_IgnoreUnmatched && !g:Tex_ShowallLines
-		setlocal efm+=%-Q%*[^()]
-	endif
-	if g:Tex_IgnoreUnmatched && !g:Tex_ShowallLines
+		" Ignore all lines which are unmatched so far.
 		setlocal efm+=%-G%.%#
+		" Sometimes, there is some garbage after a ')'
+		setlocal efm+=%-O%.%#
 	endif
+
+	" Finally, remove the dummy entry.
+	setlocal efm-=dummy_value
 
 endfunction 
 
@@ -291,6 +392,12 @@ com! -nargs=? TCLevel :call <SID>SetTexCompilerLevel(<f-args>)
 " ==============================================================================
 
 call s:SetLatexEfm()
+
+" Set the errorfile if not already set by somebody else
+if &errorfile ==# ''  ||  &errorfile ==# 'errors.err'
+	execute 'set errorfile=' . fnameescape(Tex_GetMainFileName(':p:r') . '.log')
+endif
+
 
 if !exists('*Tex_Debug')
 	function! Tex_Debug(...)
