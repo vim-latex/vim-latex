@@ -75,7 +75,7 @@ function! <SID>NewMacro(...)
 			return
 		endif
 	endif
-	exec 'split '.Tex_EscapeSpaces(s:macrodirpath.newmacroname)
+	exec 'split '.fnameescape(s:macrodirpath.newmacroname)
 	setlocal filetype=tex
 endfunction
 
@@ -132,7 +132,7 @@ function! <SID>EditMacro(...)
 
 	if filereadable(s:macrodirpath.filename)
 		" If file exists in local directory open it. 
-		exec 'split '.Tex_EscapeSpaces(s:macrodirpath.filename)
+		exec 'split '.fnameescape(s:macrodirpath.filename)
 	else
 		" But if file doesn't exist in local dir it probably is in user
 		" restricted area. Instead opening try to copy it to local dir.
@@ -150,7 +150,7 @@ function! <SID>EditMacro(...)
 					\ 'Do you want to open it or overwrite with original version?',
 					\ "&Open\nOver&write\n&Cancel", 1)
 				if ch == 1
-					exec 'split '.Tex_EscapeSpaces(s:macrodirpath.filename.'-local')
+					exec 'split '.fnameescape(s:macrodirpath.filename.'-local')
 				elseif ch == 2
 					new
 					exe '0read '.Tex_FindInRtp(filename, 'macros')

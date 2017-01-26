@@ -612,12 +612,7 @@ endfunction " }}}
 " Tex_CD: cds to given directory escaping spaces if necessary {{{
 " " Description: 
 function! Tex_CD(dirname)
-	exec 'cd '.Tex_EscapeSpaces(a:dirname)
-endfunction " }}}
-" Tex_EscapeSpaces: escapes unescaped spaces from a path name {{{
-" Description:
-function! Tex_EscapeSpaces(path)
-	return substitute(a:path, '[^\\]\(\\\\\)*\zs ', '\\ ', 'g')
+	exec 'cd '.fnameescape(a:dirname)
 endfunction " }}}
 " Tex_FindFile: finds a file in the vim's 'path' {{{
 " Description: finds a file in vim's 'path'

@@ -582,13 +582,13 @@ function! Tex_ScanFileForCite(prefix)
 			let fname = Tex_FindFile(bibname, '.,'.g:Tex_BIBINPUTS, '.bib')
 			if fname != ''
 				call Tex_Debug('finding .bib file ['.bufname('%').']', 'view')
-				exec 'split '.Tex_EscapeSpaces(fname)
+				exec 'split '.fnameescape(fname)
 				call Tex_Grepadd('@.*{'.a:prefix, "%")
 				q
 			else
 				let fname = Tex_FindFile(bibname, '.,'.g:Tex_BIBINPUTS, '.bbl')
 				if fname != ''
-					exec 'split '.Tex_EscapeSpaces(fname)
+					exec 'split '.fnameescape(fname)
 					call Tex_Debug('finding .bbl file ['.bufname('.').']', 'view')
 					call Tex_Grepadd('\\bibitem{'.a:prefix, "%")
 					q
@@ -596,7 +596,7 @@ function! Tex_ScanFileForCite(prefix)
 					" Assume that file is a full path - can also be a remote
 					" file or url, such as http://..., which is useful for
 					" use with zotero.
-					exec 'split "'.Tex_EscapeSpaces(bibname).'"'
+					exec 'split "'.fnameescape(bibname).'"'
 					call Tex_Debug('opening bibliography file', 'view')
 					call Tex_Grepadd('@.*{'.a:prefix, "%")
 					q
@@ -641,7 +641,7 @@ function! Tex_ScanFileForCite(prefix)
 
 		let foundfile = Tex_FindFile(filename, '.,'.g:Tex_TEXINPUTS, '.tex')
 		if foundfile != ''
-			exec 'split '.Tex_EscapeSpaces(foundfile)
+			exec 'split '.fnameescape(foundfile)
 			call Tex_Debug('scanning recursively in ['.foundfile.']', 'view')
 			let foundCiteFile = Tex_ScanFileForCite(a:prefix)
 			q
@@ -675,7 +675,7 @@ function! Tex_ScanFileForLabels(prefix)
 		let filename = matchstr(getline('.'), '\\\(input\|include\){\zs.\{-}\ze}')
 		let foundfile = Tex_FindFile(filename, '.,'.Tex_TEXINPUTS, '.tex')
 		if foundfile != ''
-			exec 'split '.Tex_EscapeSpaces(foundfile)
+			exec 'split '.fnameescape(foundfile)
 			call Tex_Debug('Tex_ScanFileForLabels: scanning recursively in ['.foundfile.']', 'view')
 			call Tex_ScanFileForLabels(a:prefix)
 			q
