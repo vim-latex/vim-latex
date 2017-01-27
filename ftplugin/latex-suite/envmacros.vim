@@ -579,6 +579,9 @@ function! Tex_PutEnvironment(env)
 			return Tex_table(a:env)
 		elseif a:env =~ "tabular\\|tabular*\\|array\\|array*"
 			return Tex_tabular(a:env)
+		elseif a:env =~# "description\\|figure\\|list\\|document\\|minipage\\|thebibliography"
+			" Call spezialized functions
+			exe 'return Tex_'.a:env.'(a:env)'
 		elseif a:env == '\['
 			return IMAP_PutTextWithMovement("\\[\<CR><++>\<CR>\\]" . s:end_with_cr . "<++>")
 		else
