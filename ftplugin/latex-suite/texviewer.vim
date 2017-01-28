@@ -531,7 +531,7 @@ function! Tex_GrepHelper(prefix, what)
 endfunction " }}}
 " Tex_ScanFileForCite: search for \bibitem's in .bib or .bbl or tex files {{{
 " Description: 
-" Search for bibliographic entries in the presently edited file in the
+" Search for bibliographic entries in the
 " following manner:
 " 1. First see if the file has a \bibliography command.
 "    If YES:
@@ -547,30 +547,13 @@ endfunction " }}}
 " steps 1 and 2 for every file \input'ed into this file. Abort any searching
 " as soon as the first \bibliography or \begin{thebibliography} is found.
 function! Tex_ScanFileForCite(prefix)
-	call Tex_Debug('+Tex_ScanFileForCite: searching for bibkeys in '.bufname('%').' (buffer #'.bufnr('%').')', 'view')
-	let presBufNum = bufnr('%')
+	call Tex_Debug('+Tex_ScanFileForCite: searching for bibkeys.', 'view')
+	let bibfiles = Tex_FindBibFiles()
 
-	let foundCiteFile = 0
-	" First find out if this file has a \(no)bibliography or a \addbibresource
-	" (biblatex) command in it. If so, assume that this is the only file
-	" in the project which defines a bibliography.
-	if search('\(%.*\)\@<!\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){', 'w')
-		call Tex_Debug('Tex_ScanFileForCite: found bibliography command in '.bufname('%'), 'view')
-		" convey that we have found a bibliography command. we do not need to
-		" proceed any further.
-		let foundCiteFile = 1
-
-		" extract the bibliography filenames from the command.
-		let bibnames = matchstr(getline('.'), '\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){\zs.\{-}\ze}')
-		let bibnames = substitute(bibnames, '\s', '', 'g')
-
-		call Tex_Debug('trying to search through ['.bibnames.']', 'view')
-
-		let &path = '.,'.g:Tex_BIBINPUTS
-
+	if bibfiles =~ '\S'
 		let i = 1
 		while 1
-			let bibname = Tex_Strntok(bibnames, ',', i)
+			let bibname = Tex_Strntok(bibfiles, "\n", i)
 			if bibname == ''
 				break
 			endif
@@ -606,9 +589,7 @@ function! Tex_ScanFileForCite(prefix)
 			let i = i + 1
 		endwhile
 
-		if foundCiteFile
-			return 1
-		endif
+		return 1
 	endif
 
 	" If we have a thebibliography environment, then again assume that this is
@@ -839,12 +820,27 @@ function! Tex_FindBibFiles()
 	split
 	exec 'silent! e '.fnameescape(mainfname)
 
-	if search('\(%.*\)\@<!\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){', 'w')
+	let line_start = search('\%(\\\@<!\%(\\\\\)*%.*\)\@<!\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){', 'w')
+	if line_start > 0
 
 		call Tex_Debug('Tex_FindBibFiles: found bibliography command in '.bufname('%'), 'view')
 
 		" extract the bibliography filenames from the command.
-		let bibnames = matchstr(getline('.'), '\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){\zs.\{-}\ze}')
+		" First, look for the closing brace
+		let line_end = search('\%(\\\@<!\%(\\\\\)*%.*\)\@<!}', 'Wc')
+
+		call Tex_Debug(":Tex_FindBibFiles: bib command from line " . line_start . " to line " . line_end, "view")
+
+		" Now, extract all these lines
+		let lines = ''
+		for line_nr in range(line_start, line_end)
+			" Strip comments and concatenate
+			let lines .= substitute(getline(line_nr), '\\\@<!\%(\\\\\)*\zs%.*$','','')
+		endfor
+		call Tex_Debug(":Tex_FindBibFiles: concatenated bib command: \"" . lines . "\"", "view")
+
+		" Finally, extract the file names
+		let bibnames = matchstr(lines, '\\\(\(no\)\?bibliography\|addbibresource\(\[.*\]\)\?\){\zs.\{-}\ze}')
 		let bibnames = substitute(bibnames, '\s', '', 'g')
 
 		call Tex_Debug(':Tex_FindBibFiles: trying to search through ['.bibnames.']', 'view')
