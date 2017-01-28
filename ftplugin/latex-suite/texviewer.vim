@@ -82,13 +82,13 @@ function! Tex_Complete(what, where)
 			elseif Tex_GetVarValue('Tex_UseSimpleLabelSearch') == 1
 				call Tex_Debug("Tex_Complete: searching for \\labels in all .tex files in the present directory", "view")
 				call Tex_Debug("Tex_Complete: silent! grep! ".Tex_EscapeForGrep('\\label{'.s:prefix)." *.tex", 'view')
-				call Tex_Grep('\\label{'.s:prefix, '*.tex')
+				call Tex_Grep('\\\%(nl\)\?label{'.s:prefix, '*.tex')
 				call <SID>Tex_SetupCWindow()
 
 			elseif Tex_GetVarValue('Tex_ProjectSourceFiles') != ''
 				call Tex_Debug('Tex_Complete: searching for \\labels in all Tex_ProjectSourceFiles', 'view')
 				exec 'cd '.fnameescape(Tex_GetMainFileName(':p:h'))
-				call Tex_Grep('\\label{'.s:prefix, Tex_GetVarValue('Tex_ProjectSourceFiles'))
+				call Tex_Grep('\\\%(nl\)\?label{'.s:prefix, Tex_GetVarValue('Tex_ProjectSourceFiles'))
 				call <SID>Tex_SetupCWindow()
 
 			else
@@ -389,7 +389,7 @@ function! s:Tex_CompleteRefCiteCustom(type)
 		let completeword = bibkey
 
 	elseif a:type =~ 'ref'
-		let label = matchstr(getline('.'), '\\label{\zs.\{-}\ze}')
+		let label = matchstr(getline('.'), '\\\%(nl\)\?label{\zs.\{-}\ze}')
 		let completeword = label
 
 	elseif a:type =~ '^plugin_'
@@ -645,7 +645,7 @@ function! Tex_ScanFileForLabels(prefix)
 	call Tex_Debug("+Tex_ScanFileForLabels: grepping in file [".bufname('%')."]", "view")
 
 	exec 'lcd'.fnameescape(expand('%:p:h'))
-	call Tex_Grepadd('\\label{'.a:prefix, "%")
+	call Tex_Grepadd('\\\%(nl\)?label{'.a:prefix, "%")
 
 	" Then recursively grep for all \include'd or \input'ed files.
 	exec 0
