@@ -80,8 +80,7 @@ function! Tex_Complete(what, where)
 				call Tex_StartOutlineCompletion()
 
 			elseif Tex_GetVarValue('Tex_UseSimpleLabelSearch') == 1
-				call Tex_Debug("Tex_Complete: searching for \\labels in all .tex files in the present directory", "view")
-				call Tex_Debug("Tex_Complete: silent! grep! ".Tex_EscapeForGrep('\\label{'.s:prefix)." *.tex", 'view')
+				call Tex_Debug("Tex_Complete: searching for \\labels with prefix '" . s:prefix . '"in all .tex files in the present directory', "view")
 				call Tex_Grep('\\\%(nl\)\?label{'.s:prefix, '*.tex')
 				call <SID>Tex_SetupCWindow()
 
@@ -183,7 +182,7 @@ function! Tex_Complete(what, where)
 				call Tex_SwitchToInsertMode()
 				return
 			endif
-			call Tex_Debug("silent! grep! ".Tex_EscapeForGrep('\<'.s:word.'\>')." *.tex", 'view')
+			call Tex_Debug("Tex_Grep('\<'".s:word."'\>', '*.tex')", 'view')
 			call Tex_Grep('\<'.s:word.'\>', '*.tex')
 
 			call <SID>Tex_SetupCWindow()
@@ -602,7 +601,7 @@ function! Tex_ScanFileForCite(prefix)
 
 		split
 		exec 'lcd'.fnameescape(expand('%:p:h'))
-		call Tex_Debug("silent! grepadd! ".Tex_EscapeForGrep('\\bibitem{'.a:prefix)." %", 'view')
+		call Tex_Debug("Tex_Grepadd('\\bibitem\s*[\[|{]'".a:prefix.", \"%\")", 'view')
 		call Tex_Grepadd('\\bibitem\s*[\[|{]'.a:prefix, "%")
 		q
 		

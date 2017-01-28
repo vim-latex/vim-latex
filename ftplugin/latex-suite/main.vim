@@ -254,61 +254,19 @@ endfunction
 " ==============================================================================
 " Helper functions for grepping
 " ============================================================================== 
-" Tex_Grep: shorthand for :grep or :vimgrep {{{
+" Tex_Grep: shorthand for :vimgrep {{{
 function! Tex_Grep(string, where)
-	if v:version >= 700
-		exec 'silent! vimgrep! /'.a:string.'/ '.a:where
-	else
-		exec 'silent! grep! '.Tex_EscapeForGrep(a:string).' '.a:where
-	endif
+	exec 'silent! vimgrep! /'.a:string.'/ '.a:where
 endfunction
 
 " }}}
-" Tex_Grepadd: shorthand for :grepadd or :vimgrepadd {{{
+" Tex_Grepadd: shorthand for :vimgrepadd {{{
 function! Tex_Grepadd(string, where)
-	if v:version >= 700
-		exec 'silent! vimgrepadd! /'.a:string.'/ '.a:where
-	else
-		exec "silent! grepadd! ".Tex_EscapeForGrep(a:string).' '.a:where
-	endif
+	exec 'silent! vimgrepadd! /'.a:string.'/ '.a:where
 endfunction
 
 " }}}
-" Tex_EscapeForGrep: escapes back-slashes and doublequotes the correct number of times {{{
-" Description: This command escapes the backslash and double quotes in a
-" 	search pattern the correct number of times so it can be used in the ``:grep``
-" 	command. This command is meant to be used as::
-"
-" 		exec "silent! grep ".Tex_EscapeForGrep(pattern)." file"
-"
-" 	The input argument to this function should be the string which you want
-" 	the external command to finally see. For example, to search for a string
-" 	``'\bibitem'``, the grep command needs to be passed a string like
-" 	``'\\bibitem'``.  Examples::
-"
-" 		Tex_EscapeForGrep('\\bibitem')        	" correct
-" 		Tex_EscapeForGrep('\bibitem')			" wrong
-" 		Tex_EscapeForGrep("\\bibitem")			" wrong
-" 		Tex_EscapeForGrep('\<word\>')			" correct
-"
-function! Tex_EscapeForGrep(string)
-	let retVal = a:string
 
-	" The shell halves the backslashes.
-	if &shell =~ 'sh'
-		let retVal = escape(retVal, "\\")
-
-		" If shellxquote is set, then the backslashes are halved yet again.
-		if &shellxquote == '"'
-			let retVal = escape(retVal, "\"\\")
-		endif
-
-	endif
-	" escape special characters which bash/cmd.exe might interpret
-	let retVal = escape(retVal, "<>")
-
-	return retVal
-endfunction " }}}
 
 " ==============================================================================
 " Uncategorized helper functions
