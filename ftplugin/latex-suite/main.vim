@@ -598,7 +598,8 @@ function! Tex_FindFile(fname, path, suffixesadd)
 		let &suffixesadd = _suffixesadd
 		let &path = _path
 	endif
-	return retval
+	" Convert to full path and return
+	return fnamemodify(retval, ':p')
 endfunction " }}}
 " Tex_GetPos: gets position of cursor {{{
 function! Tex_GetPos()
