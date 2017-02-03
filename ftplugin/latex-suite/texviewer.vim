@@ -380,11 +380,13 @@ function! s:Tex_CompleteRefCiteCustom(type)
 
 	let prefixlength=strlen(s:prefix)
 	if a:type =~ 'cite'
-		if getline('.') =~ '\\bibitem\s*{'
-			let bibkey = matchstr(getline('.'), '\\bibitem\s*{\zs.\{-}\ze}')
-		else
-			let bibkey = matchstr(getline('.'), '\\bibitem\s*\[.\{-}\]\s*{\zs.\{-}\ze}')
+		" Look for a '\bibitem'
+		let bibkey = matchstr(getline('.'), '\\bibitem\s*\%(\[.\{-}\]\)\?\s*{\zs.\{-}\ze}')
+		if bibkey == ""
+			" Look for a '@article{bibkey,'
+			let bibkey = matchstr(getline('.'), '@\w*{\zs\w*\ze,')
 		endif
+
 		let completeword = bibkey
 
 	elseif a:type =~ 'ref'
