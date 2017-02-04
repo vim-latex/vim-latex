@@ -193,9 +193,16 @@ function! Tex_pack_updateall(force)
 		" modified etc.
 		split
 
-		call Tex_Debug(':Tex_pack_updateall: silent! find '.fnameescape(packname).'.sty', 'pack')
 		let thisbufnum = bufnr('%')
-		exec 'silent! find '.fnameescape(packname).'.sty'
+		call Tex_Debug(':Tex_pack_updateall: findfile("'.fnameescape(packname).'.sty")', 'pack')
+		let package_file = findfile( fnameescape(packname) .'.sty' )
+
+		if package_file != ""
+			call Tex_Debug(':Tex_pack_updateall: found "'. package_file .'"', 'pack')
+			exec 'view ' . package_file
+		else
+			call Tex_Debug(':Tex_pack_updateall: did not find "'. fnameescape(packname) .'.sty' .'" in "' . &path . '"', 'pack')
+		end
 		call Tex_Debug(':Tex_pack_updateall: present file = '.bufname('%'), 'pack')
 
 		" If this file was not found, assume that it means its not a
