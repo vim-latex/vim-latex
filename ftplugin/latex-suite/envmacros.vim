@@ -229,10 +229,13 @@ call s:Tex_SpecialMacros('', '&Tables.', 'tabular*', s:tabular_star)
 " Math {{{
 call s:Tex_EnvMacros('EAL', '&Math.', 'align')
 call s:Tex_EnvMacros('EAS', '&Math.', 'align*')
+call s:Tex_EnvMacros('EAD', '&Math.', 'aligned')
 call s:Tex_EnvMacros('EAR', '&Math.', 'array')
 call s:Tex_EnvMacros('EDM', '&Math.', 'displaymath')
 call s:Tex_EnvMacros('EEQ', '&Math.', 'equation')
+call s:Tex_EnvMacros('EES', '&Math.', 'equation*')
 call s:Tex_EnvMacros('EMA', '&Math.', 'math')
+call s:Tex_EnvMacros('ESE', '&Math.', 'subequations')
 " }}}
 " Structure {{{
 call s:Tex_SpecialMacros('EAR', 'Math.', 'array', s:array)
