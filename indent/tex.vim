@@ -248,10 +248,16 @@ function! s:AssemblePatterns()
 
 	if g:tex_indent_ifelsefi
 		" Do match '\if..' only if it is not followed by '{'
-		" Require \fi, and \if... only at beginning of line
+		" Require \fi, and \if... only at beginning of line,
+		" otherwise,
+		"     \newif\ifbarfoo
+		" would be indented.
+		" Expection: If a line starts with '\if...' and
+		" contains an '\fi', it is not indented, e.g.:
+		"     \ifbarfoo\foobaz\fi
 		" Exception: '\expandafter\ifx\csname barfoo \endcsname'
-		"            is quite common and indented.
-		let open .= '\|^\s*\%(\\expandafter\)\?\\if\a*\>{\@!'
+		" is quite common and indented.
+		let open .= '\|^\s*\%(\\expandafter\)\?\\if\a*\>{\@!\%(.*\\fi\)\@!'
 		let close .= '\|^\s*\\fi\>'
 		let elseor = '\\else\>\|\\or\>'
 		if hanging != ''
