@@ -2,8 +2,6 @@
 "     Authors: Srinath Avadhanula <srinath AT fastmail.fm>
 "              Benji Fisher <benji AT member.AMS.org>
 "              
-"         WWW: http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/vim-latex/vimfiles/plugin/imaps.vim?only_with_tag=MAIN
-"
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
 "
@@ -44,8 +42,7 @@
 " preserved, because the rhs is expanded as if the rhs is typed in literally
 " by the user.
 "  
-" The script already provides some default mappings. each "mapping" is of the
-" form:
+" Each "mapping" is of the form:
 "
 " call IMAP (lhs, rhs, ft)
 " 
@@ -111,8 +108,15 @@ endif
 " Variables {{{
 " s:LHS_{ft}_{char} will be generated automatically.  It will look like
 " s:LHS_tex_o = 'fo\|foo\|boo' and contain all mapped sequences ending in "o".
+"
 " s:Map_{ft}_{lhs} will be generated automatically.  It will look like
 " s:Map_c_foo = 'for(<++>; <++>; <++>)', the mapping for "foo".
+"
+" s:LHS_{ft} will be generated automatically. It contains all chars for which
+" s:LHS_{ft}_{char} is not empty.
+"
+" b:IMAP_imaps will be generated automatically. It contains all chars which
+" were mapped in the current buffer.
 "
 " }}}
 
@@ -124,7 +128,7 @@ endif
 "           IMAP('abc', 'def' ft) 
 "       will mean that if the letters abc are pressed in insert mode, then
 "       they will be replaced by def. If ft != '', then the "mapping" will be
-"       specific to the files of type ft. 
+"       buffer local. You have to call IMAP_infect() on new buffers of type ft.
 "
 "       Using IMAP has a few advantages over simply doing:
 "           imap abc def
@@ -179,22 +183,31 @@ function! IMAP(lhs, rhs, ft, ...)
 		endif
 	endif
 
-	" map only the last character of the left-hand side.
-	if lastLHSChar == ' '
-		for lastLHSChar in ['<space>', '<s-space>', '<c-space>', '<cs-space>']
-			exe 'inoremap <silent>'
-						\ escape(lastLHSChar, '|')
-						\ '<C-r>=<SID>LookupCharacter("' .
-						\ escape(lastLHSChar, '\|"') .
-						\ '")<CR>'
-		endfor
-	else
-		exe 'inoremap <silent>'
-					\ escape(lastLHSChar, '|')
-					\ '<C-r>=<SID>LookupCharacter("' .
-					\ escape(lastLHSChar, '\|"') .
-					\ '")<CR>'
+	" Add lastLHSChar to s:LHS_{ft}
+	if a:ft != ''
+		if !exists('s:LHS_'.a:ft)
+			let s:LHS_{a:ft} = []
+		endif
+		if index(s:LHS_{a:ft}, lastLHSChar) < 0
+			call add(s:LHS_{a:ft}, lastLHSChar )
+		endif
 	endif
+
+	" Only add a imap if it is a global IMAP or we are in the correct filetype
+	" (then, we add a <buffer>-local imap, other buffers have to be infected
+	" with IMAP_infect).
+	if a:ft != ''
+		if &ft == a:ft
+			let buffer = '<buffer>'
+		else
+			return
+		endif
+	else
+		let buffer = ''
+	endif
+
+	" map only the last character of the left-hand side.
+	call s:IMAP_add_imap( lastLHSChar, buffer )
 endfunction
 
 " }}}
@@ -221,18 +234,45 @@ function! IUNMAP(lhs, ft)
 		unlet s:phe_{a:ft}_{hash}
 
 		if strlen(s:LHS_{a:ft}_{charHash}) == 0
-			" unmap the last character of the left-hand side.
-			if lastLHSChar == ' '
-				for lastLHSChar in ['<space>', '<s-space>', '<c-space>', '<cs-space>']
-					exe 'iunmap <silent>' escape(lastLHSChar, '|')
-				endfor
-			else
-				exe 'iunmap <silent>' escape(lastLHSChar, '|')
+			" No more mappings left for this lastLHSChar.
+			let idx = index(s:LHS_{a:ft}, lastLHSChar)
+			if idx >= 0
+				call remove(s:LHS_{a:ft}, idx )
 			endif
-		end
+
+			" Check for ft and unmap the last character of the left-hand side.
+			" (if ft is set, other buffers with the same ft have to be updated with
+			" IMAP_desinfect() and IMAP_infect()).
+			if a:ft != ''
+				if &ft == a:ft
+					call s:IMAP_rm_imap( lastLHSChar, '<buffer>' )
+				endif
+			else
+				call s:IMAP_rm_imap( lastLHSChar, '' )
+			endif
+		endif
+
 	else
 		" a:lhs is not mapped!
 		" Do nothing.
+	endif
+endfunction
+" }}}
+" IMAP_infect: Infect the current buffer with ft IMAPS. {{{
+function! IMAP_infect()
+	if &ft != '' && exists('s:LHS_'.&ft)
+		for lastLHSChar in s:LHS_{&ft}
+			call s:IMAP_add_imap( lastLHSChar, '<buffer>' )
+		endfor
+	endif
+endfunction
+" }}}
+" IMAP_desinfect: Desinfect the current buffer with ft IMAPS. {{{
+function! IMAP_desinfect()
+	if exists('b:IMAP_imaps')
+		for lastLHSChar in copy(b:IMAP_imaps)
+			call s:IMAP_rm_imap( lastLHSChar, '<buffer>' )
+		endfor
 	endif
 endfunction
 " }}}
@@ -709,6 +749,46 @@ fun! s:Hash(text)
 				\ '\="_".char2nr(submatch(1))."_"', 'g')
 endfun
 "" }}}
+" s:IMAP_add_imap() Adds the imap for IMAP {{{
+function s:IMAP_add_imap( lastLHSChar, buffer )
+	if a:lastLHSChar == ' '
+		for lastLHSChar in ['<space>', '<s-space>', '<c-space>', '<cs-space>']
+			call s:IMAP_add_imap( lastLHSChar, a:buffer )
+		endfor
+	else
+		if a:buffer =~# '<buffer>'
+			if !exists('b:IMAP_imaps')
+				let b:IMAP_imaps = []
+			endif
+			if index(b:IMAP_imaps, a:lastLHSChar) < 0
+				call add(b:IMAP_imaps, a:lastLHSChar )
+			endif
+		endif
+		exe 'inoremap <silent>' . a:buffer
+					\ escape(a:lastLHSChar, '|')
+					\ '<C-r>=<SID>LookupCharacter("' .
+					\ escape(a:lastLHSChar, '\|"') .
+					\ '")<CR>'
+	endif
+endfunction
+" }}}
+" s:IMAP_rm_imap() Removes the imap for IMAP {{{
+function s:IMAP_rm_imap( lastLHSChar, buffer )
+	if a:lastLHSChar == ' '
+		for lastLHSChar in ['<space>', '<s-space>', '<c-space>', '<cs-space>']
+			call s:IMAP_rm_imap( lastLHSChar, a:buffer )
+		endfor
+	else
+		if a:buffer =~# '<buffer>' && exists('b:IMAP_imaps')
+			let idx = index(b:IMAP_imaps, a:lastLHSChar)
+			if idx >= 0
+				call remove(b:IMAP_imaps, idx)
+			endif
+		endif
+		exe 'iunmap <silent>' . a:buffer escape(a:lastLHSChar, '|')
+	endif
+endfunction
+" }}}
 " IMAP_GetPlaceHolderStart and IMAP_GetPlaceHolderEnd:  "{{{
 " return the buffer local placeholder variables, or the global one, or the default.
 function! IMAP_GetPlaceHolderStart()

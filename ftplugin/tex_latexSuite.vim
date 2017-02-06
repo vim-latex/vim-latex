@@ -15,3 +15,6 @@ if !exists('s:initLatexSuite')
 endif
 
 silent! do LatexSuite User LatexSuiteFileType
+
+" Infect the current buffer with <buffer>-local imaps for the IMAPs
+call IMAP_infect()
