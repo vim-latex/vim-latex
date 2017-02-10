@@ -617,6 +617,148 @@ function! Tex_SetPos(pos)
 		exec a:pos
 	endif
 endfunction " }}}
+" s:RemoveLastHistoryItem: removes last search item from search history {{{
+" Description: Execute this string to clean up the search history.
+let s:RemoveLastHistoryItem = ':call histdel("/", -1)|let @/=g:Tex_LastSearchPattern'
+
+" }}}
+" VEnclose: encloses the visually selected region with given arguments {{{
+" Description: allows for differing action based on visual line wise
+"              selection or visual characterwise selection. preserves the
+"              marks and search history.
+function! VEnclose(vstart, vend, VStart, VEnd)
+	" it is characterwise if
+	" 1. characterwise selection and valid values for vstart and vend.
+	" OR
+	" 2. linewise selection and invalid values for VStart and VEnd
+	if (visualmode() ==# 'v' && (a:vstart != '' || a:vend != '')) || (a:VStart == '' && a:VEnd == '')
+
+		let newline = ""
+		let _r = @r
+
+		let normcmd = "normal! \<C-\>\<C-n>`<v`>\"_s"
+
+		exe "normal! \<C-\>\<C-n>`<v`>\"ry"
+		if @r =~ "\n$"
+			let newline = "\n"
+			let @r = substitute(@r, "\n$", '', '')
+		endif
+
+		" In exclusive selection, we need to select an extra character.
+		if &selection == 'exclusive'
+			let movement = 8
+		else
+			let movement = 7
+		endif
+		let normcmd = normcmd.
+			\ a:vstart."!!mark!!".a:vend.newline.
+			\ "\<C-\>\<C-N>?!!mark!!\<CR>v".movement."l\"_s\<C-r>r\<C-\>\<C-n>"
+
+		" this little if statement is because till very recently, vim used to
+		" report col("'>") > length of selected line when `> is $. on some
+		" systems it reports a -ve number.
+		if col("'>") < 0 || col("'>") > strlen(getline("'>"))
+			let lastcol = strlen(getline("'>"))
+		else
+			let lastcol = col("'>")
+		endif
+		if lastcol - col("'<") != 0
+			let len = lastcol - col("'<")
+		else
+			let len = ''
+		endif
+
+		" the next normal! is for restoring the marks.
+		let normcmd = normcmd."`<v".len."l\<C-\>\<C-N>"
+
+		" First remember what the search pattern was. s:RemoveLastHistoryItem
+		" will reset @/ to this pattern so we do not create new highlighting.
+		let g:Tex_LastSearchPattern = @/
+
+		silent! exe normcmd
+		" this is to restore the r register.
+		call setreg("r", _r, "c")
+		" and finally, this is to restore the search history.
+		execute s:RemoveLastHistoryItem
+
+	else
+
+		exec 'normal! `<O'.a:VStart."\<C-\>\<C-n>"
+		exec 'normal! `>o'.a:VEnd."\<C-\>\<C-n>"
+		if &indentexpr != ''
+			silent! normal! `<kV`>j=
+		endif
+		silent! normal! `>
+	endif
+endfunction
+
+" }}}
+" ExecMap: adds the ability to correct an normal/visual mode mapping.  {{{
+" Author: Hari Krishna Dara <hari_vim@yahoo.com>
+" Reads a normal mode mapping at the command line and executes it with the
+" given prefix. Press <BS> to correct and <Esc> to cancel.
+nnoremap <silent> <script> <plug><+SelectRegion+> `<v`>
+
+function! ExecMap(prefix, mode)
+	" Temporarily remove the mapping, otherwise it will interfere with the
+	" mapcheck call below:
+	let myMap = maparg(a:prefix, a:mode)
+	exec a:mode."unmap ".a:prefix
+
+	" Generate a line with spaces to clear the previous message.
+	let i = 1
+	let clearLine = "\r"
+	while i < &columns
+		let clearLine = clearLine . ' '
+		let i = i + 1
+	endwhile
+
+	let mapCmd = a:prefix
+	let foundMap = 0
+	let breakLoop = 0
+	echon "\rEnter Map: " . mapCmd
+	while !breakLoop
+		let char = getchar()
+		if char !~ '^\d\+$'
+			if char == "\<BS>"
+				let mapCmd = s:MultiByteWOLastCharacter(mapCmd)
+			endif
+		else " It is the ascii code.
+			let char = nr2char(char)
+			if char == "\<Esc>"
+				let breakLoop = 1
+			else
+				let mapCmd = mapCmd . char
+				if maparg(mapCmd, a:mode) != ""
+					let foundMap = 1
+					let breakLoop = 1
+				elseif mapcheck(mapCmd, a:mode) == ""
+					let mapCmd = s:MultiByteWOLastCharacter(mapCmd)
+				endif
+			endif
+		endif
+		echon clearLine
+		echon "\rEnter Map: " . mapCmd
+	endwhile
+	if foundMap
+		if a:mode == 'v'
+			" use a plug to select the region instead of using something like
+			" `<v`> to avoid problems caused by some of the characters in
+			" '`<v`>' being mapped.
+			let gotoc = "\<plug><+SelectRegion+>"
+		else
+			let gotoc = ''
+		endif
+		exec "normal ".gotoc.mapCmd
+	endif
+	exec a:mode.'noremap '.a:prefix.' '.myMap
+endfunction
+
+" }}}
+" s:MultiByteWOLastCharacter: Return string without last multibyte character {{{
+function! s:MultiByteWOLastCharacter(str)
+	return substitute(a:str, ".$", "", "")
+endfunction " }}}
 
 
 " ==============================================================================
