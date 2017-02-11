@@ -519,7 +519,11 @@ function! IMAP_Jumpfunc(direction, inclusive)
 
 	" Calculate if we have an empty placeholder. It is empty if both
 	" placeholders appear one after the other.
-	let placeHolderEmpty = (0 == match(strpart(getline('.'), col('.')-1),'\C\V\^'.phsUser.pheUser))
+	" Check also whether the empty placeholder ends at the end of the line.
+	let curline = strpart(getline('.'), col('.')-1)
+	let phUser = phsUser.pheUser
+	let placeHolderEmpty = (strpart(curline,0,strlen(phUser)) ==# phUser)
+	let placeHolderEOL = (curline ==# phUser)
 
 	" Search for the end placeholder and position the cursor.
 	call search(searchString, 'ce')
@@ -533,10 +537,14 @@ function! IMAP_Jumpfunc(direction, inclusive)
 	" Now either goto insert mode, visual mode or select mode.
 	if placeHolderEmpty && g:Imap_DeleteEmptyPlaceHolders
 		" Delete the empty placeholder into the blackhole.
-		" Use 'feedkeys()' here, otherwise the cursor might not be positioned
-		" correctly.
-		" Use the 'n' flag such that the keys are not remapped.
-		call feedkeys('"_c', 'n')
+		normal! "_d
+		" Start insert mode. If the placeholder was at the end of the line, use
+		" startinsert! (equivalent to 'A'), otherwise startinsert (equiv. 'i')
+		if placeHolderEOL
+			startinsert!
+		else
+			startinsert
+		endif
 	else
 		if g:Imap_GoToSelectMode
 			" Go to select mode
