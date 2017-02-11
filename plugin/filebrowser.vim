@@ -57,7 +57,14 @@ function! FB_DisplayFiles(dir)
 	let rejectRegexp = s:FB_GetVar('FB_RejectRegexp', '')
 
 	" change to the directory to make processing simpler.
-	execute "lcd ".a:dir
+	try
+		execute "lcd ".fnameescape(a:dir)
+	catch
+		echohl ErrorMsg
+		unsilent echomsg 'Cannot enter directory "' . fnamemodify(a:dir, ':p') . '"'
+		echohl None
+		return
+	endtry
 	" delete everything in the buffer.
 	" IMPORTANT: we need to be in a scratch buffer
 	0,$ d_
@@ -66,14 +73,8 @@ function! FB_DisplayFiles(dir)
 	let dispFiles = ""
 	let subDirs = "../\n"
 
-    let allFilenames = allFilenames."\n"
     let start = 0
-    while 1
-        let next = stridx(allFilenames, "\n", start)
-        let filename = strpart(allFilenames, start, next-start)
-        if filename == ""
-            break
-        endif
+    for filename in split(allFilenames, "\n")
 
         if isdirectory(filename)
             let subDirs = subDirs.filename."/\n"
@@ -84,9 +85,7 @@ function! FB_DisplayFiles(dir)
                 let dispFiles = dispFiles.filename."\n"
             endif
         endif
-
-        let start = next + 1
-    endwhile
+    endfor
 
 	0put!=dispFiles
 	0put!=subDirs
@@ -126,19 +125,11 @@ function! <SID>FB_SetHighlighting()
 		syn match browseDirectory   "[^\"].*/ "
 		syn match browseDirectory   "[^\"].*/$"
 		syn match browseCurDir      "^\"= .*$"
-		syn match browseSortBy      "^\" Sorted by .*$"  contains=browseSuffixInfo
-		syn match browseSuffixInfo  "(.*)$"  contained
-		syn match browseFilter      "^\" Not Showing:.*$"
-		syn match browseFiletime    "«\d\+$"
 
 		"hi def link browseSynopsis    PreProc
 		hi def link browseSynopsis    Special
 		hi def link browseDirectory   Directory
 		hi def link browseCurDir      Statement
-		hi def link browseSortBy      String
-		hi def link browseSuffixInfo  Type
-		hi def link browseFilter      String
-		hi def link browseFiletime    Ignore
 		hi def link browseSuffixes    Type
 	endif
 endfunction " }}}
@@ -146,10 +137,12 @@ endfunction " }}}
 " Description: 
 function! <SID>FB_SetMaps()
 	nnoremap <buffer> <silent> q :bdelete<cr>
-	nnoremap <buffer> <silent> C :call FB_DisplayFiles(getcwd())<CR>
 	nnoremap <buffer> <silent> <esc> :bdelete<cr>
 	nnoremap <buffer> <silent> <CR> :call <SID>FB_EditEntry()<CR>
 	nnoremap <buffer> <silent> ? :call <SID>FB_ToggleHelp()<CR>
+	nnoremap <buffer>          C :CD<space>
+
+	command! -nargs=1 -buffer -complete=dir CD :silent call FB_DisplayFiles('<args>')
 
 	" lock the user in this window
 	nnoremap <buffer> <C-w> <nop>
@@ -195,11 +188,11 @@ function! <SID>FB_DisplayHelp()
 	let verboseHelp = s:FB_GetVar('FB_VerboseHelp', 0)
 	if verboseHelp
 		let txt = 
-			\  "\" <cr>: on file, choose the file and quit\n"
-			\ ."\"       on dir, enter directory\n"
-			\ ."\" q/<esc>: quit without choosing\n"
-			\ ."\" C: change directory to getcwd()\n"
-			\ ."\" ?: toggle help verbosity\n"
+			\  "\" <cr> on file: choose the file and quit\n"
+			\ ."\" <cr> on dir : enter directory\n"
+			\ ."\" q/<esc>     : quit without choosing\n"
+			\ ."\" C/:CD       : change directory\n"
+			\ ."\" ?           : toggle help verbosity\n"
 			\ ."\"= ".getcwd()
 	else
 		let txt = "\" ?: toggle help verbosity\n"
@@ -227,8 +220,10 @@ function! <SID>FB_EditEntry()
 		if arguments != ''
 			let arguments = ','.arguments
 		endif
-		call Tex_Debug('arguments = '.arguments, 'fb')
-		call Tex_Debug("call ".cbf."('".fname."'".arguments.')', 'fb')
+		if exists('*Tex_Debug')
+			call Tex_Debug('arguments = '.arguments, 'fb')
+			call Tex_Debug("call ".cbf."('".fname."'".arguments.')', 'fb')
+		endif
 		exec "call ".cbf."('".fname."'".arguments.')'
 	endif
 endfunction " }}}
