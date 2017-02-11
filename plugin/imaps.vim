@@ -607,7 +607,7 @@ fun! s:Hash(text)
 endfun
 "" }}}
 " s:IMAP_add_imap() Adds the imap for IMAP {{{
-function s:IMAP_add_imap( lastLHSChar, buffer )
+function! s:IMAP_add_imap( lastLHSChar, buffer )
 	if a:lastLHSChar == ' '
 		for lastLHSChar in ['<space>', '<s-space>', '<c-space>', '<cs-space>']
 			call s:IMAP_add_imap( lastLHSChar, a:buffer )
@@ -630,7 +630,7 @@ function s:IMAP_add_imap( lastLHSChar, buffer )
 endfunction
 " }}}
 " s:IMAP_rm_imap() Removes the imap for IMAP {{{
-function s:IMAP_rm_imap( lastLHSChar, buffer )
+function! s:IMAP_rm_imap( lastLHSChar, buffer )
 	if a:lastLHSChar == ' '
 		for lastLHSChar in ['<space>', '<s-space>', '<c-space>', '<cs-space>']
 			call s:IMAP_rm_imap( lastLHSChar, a:buffer )
