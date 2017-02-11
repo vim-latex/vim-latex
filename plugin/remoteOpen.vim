@@ -54,12 +54,16 @@ function! RemoteOpen(arglist)
 		let filename = matchstr(a:arglist, '^\s*\zs.*\ze')
 	endif
 	let filename = escape(filename, ' ')
-	call Tex_Debug("linenum = ".linenum.', filename = '.filename, "ropen")
+	if exists('*Tex_Debug')
+		call Tex_Debug("linenum = ".linenum.', filename = '.filename, "RemoteOpen")
+	endif
 
 	" If there is no clientserver functionality, then just open in the present
 	" session and return
 	if !has('clientserver')
-		call Tex_Debug("-clientserver, opening locally and returning", "ropen")
+		if exists('*Tex_Debug')
+			call Tex_Debug("-clientserver, opening locally and returning", "RemoteOpen")
+		endif
 		exec "e ".filename
 		exec linenum
 		normal! zv
@@ -67,22 +71,10 @@ function! RemoteOpen(arglist)
 	endif
 
 	" Otherwise, loop through all available servers
-	let servers = serverlist()
-	" If there are no servers, open file locally.
-	if servers == ''
-		call Tex_Debug("no open servers, opening locally", "ropen")
-		exec "e ".filename
-		exec linenum
-		let g:Remote_Server = 1
-		normal! zv
-		return
-	endif
+	let servers = split(serverlist(), '\n')
+	let targetServer = ''
 
-	let i = 1
-	let server = s:Strntok(servers, "\n", i) 
-	let targetServer = v:servername
-
-	while server != ''
+	for server in servers
 		" Find out if there was any server which was used by remoteOpen before
 		" this. If a new gvim session was ever started via remoteOpen, then
 		" g:Remote_Server will be set.
@@ -100,10 +92,19 @@ function! RemoteOpen(arglist)
 			let targetServer = server
 			break
 		end
-		
-		let i = i + 1
-		let server = s:Strntok(servers, "\n", i) 
-	endwhile
+	endfor
+
+	" If there are no servers, open file locally.
+	if targetServer == ''
+		if exists('*Tex_Debug')
+			call Tex_Debug("no open servers, opening locally", "RemoteOpen")
+		endif
+		exec "e ".filename
+		exec linenum
+		let g:Remote_Server = 1
+		normal! zv
+		return
+	endif
 
 	" If none of the servers have the file open, then open this file in the
 	" first server. This has the advantage if yap tries to make vim open
@@ -131,13 +132,10 @@ function! RemoteInsert(...)
 	endif
 
 	" Otherwise, loop through all available servers
-	let servers = serverlist()
-
-	let i = 1
-	let server = s:Strntok(servers, "\n", i) 
+	let servers = split(serverlist(), '\n')
 	let targetServer = v:servername
 
-	while server != ''
+	for server in servers
 		if remote_expr(server, 'exists("g:Remote_WaitingForCite")')
 			call remote_send(server, citation . "\<CR>")
 			call remote_foreground(server)
@@ -147,20 +145,10 @@ function! RemoteInsert(...)
 				return
 			endif
 		endif
-
-		let i = i + 1
-		let server = s:Strntok(servers, "\n", i) 
-	endwhile
+	endfor
 
 	q
 
 endfunction " }}}
-" Strntok: extract the n^th token from a list {{{
-" example: Strntok('1,23,3', ',', 2) = 23
-fun! <SID>Strntok(s, tok, n)
-	return matchstr( a:s.a:tok[0], '\v(\zs([^'.a:tok.']*)\ze['.a:tok.']){'.a:n.'}')
-endfun
-
-" }}}
 
 " vim:ft=vim:ts=4:sw=4:noet:fdm=marker:commentstring=\"\ %s:nowrap
