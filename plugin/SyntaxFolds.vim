@@ -118,70 +118,54 @@ endfunction
 " Description: This function calls FoldRegionsWith[No]Skip() several times with the
 "     parameters specifying various regions resulting in a nested fold
 "     structure for the file.
-function! MakeSyntaxFolds(force, ...)
+function! MakeSyntaxFolds(force)
 	if exists('b:doneFolding') && a:force == 0
 		return
 	end
 	let start = reltime()
 
-	let skipEndPattern = ''
-	if a:0 > 0
-		let line1 = a:1
-		let skipEndPattern = '\|'.a:2
+	" Save cursor position
+	if exists('*getcurpos')
+		let curpos = getcurpos()
 	else
-		let line1 = 1
-		let r = line('.')
-		let c = virtcol('.')
-		
-		setlocal fdm=manual
-		normal! zE
-	end
+		let curpos = getpos('.')
+	endif
+	
+	setlocal fdm=manual
+	normal! zE
+
 	if !exists('b:numFoldItems')
-		b:numFoldItems = 1000000
+		echohl ErrorMsg
+		echomsg 'Error in MakeSyntaxFolds: You have to call AddSyntaxFoldItem() first!'
+		echohl None
+		return
 	end
 	
-	let i = 1
-
-	let maxline = line('.')
-
-	while exists('b:startPat_'.i) && i <= b:numFoldItems
+	for i in range(1, b:numFoldItems)
 		exe 'let startPat = b:startPat_'.i
 		exe 'let endPat = b:endPat_'.i
 		exe 'let startOff = b:startOff_'.i
 		exe 'let endOff = b:endOff_'.i
-		
-		let skipStart = ''
-		let skipEnd = ''
-		if exists('b:skipStartPat_'.i)
-			exe 'let skipStart = b:skipStartPat_'.i
-			exe 'let skipEnd = b:skipEndPat_'.i
-		end
-		exe line1
-		let lastLoc = line1
+		exe 'let skipStart = b:skipStartPat_'.i
+		exe 'let skipEnd = b:skipEndPat_'.i
 
 		if skipStart != ''
-			call FoldRegionsWithSkip(startPat, endPat, startOff, endOff, skipStart, skipEnd, 1, line('$'))
-			call s:Debug('done folding ['.startPat.']')
+			call s:FoldRegionsWithSkip(startPat, endPat, startOff, endOff, skipStart, skipEnd, 1, line('$'))
 		else
-			call FoldRegionsWithNoSkip(startPat, endPat, startOff, endOff, 1, line('$'), [])
+			call s:FoldRegionsWithNoSkip(startPat, endPat, startOff, endOff, 1, line('$'), [])
 		end
+		call s:Debug('done folding ['.startPat.']')
 
-		let i = i + 1
-	endwhile
+	endfor
 
 	" Close all folds.
-	normal zM
+	normal! zM
 
-	exe maxline
-	
-	if a:0 == 0
-		exe r
-		exe "normal! ".c."|"
-		if foldlevel(r) > 1
-			exe "normal! ".(foldlevel(r) - 1)."zo"
-		end
-		let b:doneFolding = 0
+	call setpos('.', curpos)
+	if foldlevel(curpos[1]) > 1
+		exe "normal! ".(foldlevel(curpos[1]) - 1)."zo"
 	end
+	let b:doneFolding = 0
 
 	" Report a folding performance.
 	if exists('*Tex_Debug')
@@ -189,9 +173,13 @@ function! MakeSyntaxFolds(force, ...)
 	end
 endfunction
 " }}}
-" Function: FoldRegionsWithSkip: folding things such as \item's which can be nested. {{{
-function! FoldRegionsWithSkip(startpat, endpat, startoff, endoff, startskip, endskip, line1, line2)
-	exe a:line1
+
+" Local Helper Functions
+" Function: s:FoldRegionsWithSkip: folding things such as \item's which can be nested. {{{
+function! s:FoldRegionsWithSkip(startpat, endpat, startoff, endoff, startskip, endskip, line1, line2)
+	" Move cursor to (begin of) line1
+	call setpos('.', [0, a:line1, 1, 0])
+
 	" count the regions which have been skipped as we go along. do not want to
 	" create a fold which with a beginning or end line in one of the skipped
 	" regions.
@@ -200,23 +188,21 @@ function! FoldRegionsWithSkip(startpat, endpat, startoff, endoff, startskip, end
 	let BeginSkipArray = []
 
 	" start searching for either the starting pattern or the end pattern.
-	while search(a:startskip.'\|'.a:endskip, 'W')
+	while search(a:startskip.'\|'.a:endskip, 'Wc')
 	
 		if getline('.') =~ a:endskip
 
 			if len(BeginSkipArray) > 0
-				" Get last element:
-				let lastBegin = BeginSkipArray[-1]
-				" Remove last element:
-				let BeginSkipArray = BeginSkipArray[:-2]
-				call s:Debug('popping '.lastBegin.' from stack and folding till '.line('.'))
-				call FoldRegionsWithNoSkip(a:startpat, a:endpat, a:startoff, a:endoff, lastBegin, line('.'), skippedRegions[-1])
-				" Remove last element:
-				let skippedRegions = skippedRegions[:-2]
+				" Pop last elements:
+				let lastBegin = remove(BeginSkipArray, -1)
+				let lastRegions = remove(skippedRegions, -1)
+				call s:Debug('popping '.lastBegin.' from stack and folding until '.line('.'))
+
+				call s:FoldRegionsWithNoSkip(a:startpat, a:endpat, a:startoff, a:endoff, lastBegin, line('.'), lastRegions)
 
 				" The found region should be skipped on higher levels:
 				if len(skippedRegions) > 0
-					let skippedRegions[-1] = skippedRegions[-1] + [[lastBegin, line('.')]]
+					call add(skippedRegions[-1], [lastBegin, line('.')])
 				end
 			else
 				call s:Debug('Found [' . a:endskip . '] on line ' . line('.') . ', but nothing is in BeginSkipArray. Something is wrong here.')
@@ -226,10 +212,16 @@ function! FoldRegionsWithSkip(startpat, endpat, startoff, endoff, startskip, end
 			" if this is the beginning of a skip region, then, push this line as
 			" the beginning of a skipped region.
 			call s:Debug('pushing '.line('.').' ['.getline('.').'] into stack')
-			let BeginSkipArray = BeginSkipArray + [line('.')]
-			let skippedRegions = skippedRegions + [[]]
+			call add(BeginSkipArray, line('.'))
+			call add(skippedRegions, [])
 
 		end
+
+		if line('.') == line('$')
+			break
+		endif
+		" Move one line down
+		normal! j0
 	endwhile
 
 	if len(BeginSkipArray) > 0
@@ -242,20 +234,19 @@ function! FoldRegionsWithSkip(startpat, endpat, startoff, endoff, startskip, end
 	call s:Debug('FoldRegionsWithSkip finished')
 endfunction
 " }}}
-" Function: FoldRegionsWithNoSkip: folding things such as \sections which do not nest. {{{
-function! FoldRegionsWithNoSkip(startpat, endpat, startoff, endoff, line1, line2, skippedRegions)
+" Function: s:FoldRegionsWithNoSkip: folding things such as \sections which do not nest. {{{
+function! s:FoldRegionsWithNoSkip(startpat, endpat, startoff, endoff, line1, line2, skippedRegions)
 	call s:Debug('line1 = '.a:line1.', line2 = ' . a:line2 . ', skippedRegions = ' . string(a:skippedRegions))
 
 	" Move cursor to (begin of) line1
-	exe a:line1
-	normal 0
+	call setpos('.', [0, a:line1, 1, 0])
 
 	call s:Debug('searching for ['.a:startpat.']')
 	let lineBegin = s:MySearch(a:startpat, 'in')
 	call s:Debug('... and finding it at '.lineBegin)
 
 	while lineBegin <= a:line2
-		if IsInSkippedRegion(lineBegin, a:skippedRegions)
+		if s:IsInSkippedRegion(lineBegin, a:skippedRegions)
 			let lineBegin = s:MySearch(a:startpat, 'out')
 			call s:Debug(lineBegin.' is being skipped')
 			continue
@@ -266,19 +257,19 @@ function! FoldRegionsWithNoSkip(startpat, endpat, startoff, endoff, line1, line2
 		call search(a:startpat, 'cWe')
 
 		let lineEnd = s:MySearch(a:endpat, 'out')
-		while IsInSkippedRegion(lineEnd, a:skippedRegions) && lineEnd <= a:line2
+		while s:IsInSkippedRegion(lineEnd, a:skippedRegions) && lineEnd <= a:line2
 			let lineEnd = s:MySearch(a:endpat, 'out')
 		endwhile
 		if lineEnd > a:line2
 			exe (lineBegin + a:startoff).','.a:line2.' fold'
 			" Open all folds:
-			normal zR
+			normal! zR
 			break
 		else
 			call s:Debug ('for ['.a:startpat.'] '.(lineBegin + a:startoff).','.(lineEnd + a:endoff).' fold')
 			exe (lineBegin + a:startoff).','.(lineEnd + a:endoff).' fold'
 			" Open all folds:
-			normal zR
+			normal! zR
 		end
 
 		call s:Debug('line1 = '.a:line1.', searching from '.line('.').'... for ['.a:startpat.']')
@@ -288,12 +279,12 @@ function! FoldRegionsWithNoSkip(startpat, endpat, startoff, endoff, line1, line2
 
 	" Move cursor to (end of) line2
 	exe a:line2
-	normal $
+	normal! $
 	return
 endfunction
 " }}}
-" Function: MySearch: just like search(), but returns large number on failure {{{
-function! <SID>MySearch(pat, opt)
+" Function: s:MySearch: just like search(), but returns large number on failure {{{
+function! s:MySearch(pat, opt)
 	if a:opt == 'in'
 		normal! 0
 		let ret = search(a:pat, 'cW')
@@ -308,10 +299,10 @@ function! <SID>MySearch(pat, opt)
 	return ret
 endfunction
 " }}}
-" Function: IsInSkippedRegion (lnum, regions) {{{
+" Function: s:IsInSkippedRegion (lnum, regions) {{{
 " Description: finds whether a given line number is within one of the regions
 "              skipped.
-function! IsInSkippedRegion(lnum, regions)
+function! s:IsInSkippedRegion(lnum, regions)
 	for region in a:regions
 		if a:lnum >= region[0] && a:lnum <= region[1]
 			return 1
@@ -320,8 +311,8 @@ function! IsInSkippedRegion(lnum, regions)
 	return 0
 endfunction
 " }}}
-" Function: Debug: A wrapper for Tex_Debug, if it exists and if g:SyntaxFolds_Debug == 1 {{{
-function! <SID>Debug(string)
+" Function: s:Debug: A wrapper for Tex_Debug, if it exists and if g:SyntaxFolds_Debug == 1 {{{
+function! s:Debug(string)
 	if exists('g:SyntaxFolds_Debug') && g:SyntaxFolds_Debug == 1 && exists('*Tex_Debug')
 		call Tex_Debug(a:string,'SyntaxFolds')
 	end
