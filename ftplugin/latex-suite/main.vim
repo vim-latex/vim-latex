@@ -69,7 +69,9 @@ if !exists('s:doneMappings')
 	call IMAP (g:Tex_Leader.'0', '^\circ', "tex")
 	call IMAP (g:Tex_Leader.'=', '\equiv', "tex")
 	call IMAP (g:Tex_Leader."\\",'\setminus', "tex")
-	call IMAP (g:Tex_Leader.'.', '\cdot', "tex")
+	if !g:Tex_SmartKeyDot
+		call IMAP (g:Tex_Leader.'.', '\cdot', "tex")
+	end
 	call IMAP (g:Tex_Leader.'*', '\times', "tex")
 	call IMAP (g:Tex_Leader.'&', '\wedge', "tex")
 	call IMAP (g:Tex_Leader.'-', '\bigcap', "tex")
@@ -143,6 +145,10 @@ if !exists('s:doneMappings')
 		let i = a:first
 		while i <= a:last
 			if nr2char(i) =~ '[[:print:]]'
+				if ( g:Tex_SmartKeyDot && nr2char(i) == '.' )
+							\ || ( g:Tex_SmartKeyQuote && nr2char(i) == '"' )
+					break
+				endif
 				call IMAP('``'.nr2char(i), '``'.nr2char(i), 'tex')
 				call IMAP('\`'.nr2char(i), '\`'.nr2char(i), 'tex')
 				call IMAP('"`'.nr2char(i), '"`'.nr2char(i), 'tex')
