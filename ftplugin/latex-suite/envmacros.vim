@@ -9,6 +9,10 @@ if !g:Tex_EnvironmentMaps && !g:Tex_EnvironmentMenus
 	finish
 endif
 
+" line continuation used here.
+let s:save_cpo = &cpo
+set cpo&vim
+
 exe 'so '.fnameescape(expand('<sfile>:p:h').'/wizardfuncs.vim')
 
 nmap <silent> <script> <plug> i
@@ -58,11 +62,6 @@ endif
 " Tex_EnvMacros: sets up maps and menus for environments {{{
 " Description: 
 function! <SID>Tex_EnvMacros(lhs, submenu, name)
-
-	let extra = ''
-	if a:submenu =~ 'Lists'
-		let extra = '\item '
-	endif
 
 	let vright = ''
 	let vleft = ''
@@ -574,7 +573,6 @@ function! Tex_PutEnvironment(env)
 		elseif exists("g:Tex_Env_{'".a:env."'}")
 			return IMAP_PutTextWithMovement(g:Tex_Env_{a:env})
 		elseif a:env =~ 'theorem\|definition\|lemma\|proposition\|corollary\|assumption\|remark\|equation\|align\*\|align\>\|multline'
-			let g:aa = a:env
 			return Tex_standard_env(a:env)
 		elseif a:env =~ "enumerate\\|itemize\\|theindex\\|trivlist"
 			return Tex_itemize(a:env)
@@ -1163,6 +1161,8 @@ augroup LatexSuite
 		\ call s:SetEnvMacrosOptions()
 augroup END
 " }}}
+
+let &cpo = s:save_cpo
 
 " this statement has to be at the end.
 let s:doneOnce = 1
