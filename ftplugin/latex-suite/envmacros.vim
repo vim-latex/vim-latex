@@ -24,6 +24,12 @@ else
 	let s:end_with_cr = ""
 end
 
+if Tex_GetVarValue('Tex_ItemsWithCR')
+	let s:items_with_cr = "\<CR>"
+else
+	let s:items_with_cr = " "
+end
+
 " The prefix of labels of figures
 let s:labelprefix_figure = Tex_GetVarValue("Tex_EnvLabelprefix_{'figure'}")
 let s:labelprefix_table = Tex_GetVarValue("Tex_EnvLabelprefix_{'table'}")
@@ -32,10 +38,10 @@ let s:labelprefix_table = Tex_GetVarValue("Tex_EnvLabelprefix_{'table'}")
 let s:figure =     "\\begin{figure}[<+htpb+>]\<cr>\\centering\<cr>\\includegraphics{<+file+>}\<cr>\\caption{<+caption text+>}\<cr>\\label{" . s:labelprefix_figure . "<+label+>}\<cr>\\end{figure}" . s:end_with_cr . "<++>"
 let s:minipage =   "\\begin{minipage}[<+tb+>]{<+width+>}\<cr><++>\<cr>\\end{minipage}" . s:end_with_cr . "<++>"
 let s:picture =    "\\begin{picture}(<+width+>, <+height+>)(<+xoff+>,<+yoff+>)\<cr>\\put(<+xoff+>,<+yoff+>){\\framebox(<++>,<++>){<++>}}\<cr>\\end{picture}" . s:end_with_cr . "<++>"
-let s:list =       "\\begin{list}{<+label+>}{<+spacing+>}\<cr>\\item <++>\<cr>\\end{list}" . s:end_with_cr . "<++>"
+let s:list =       "\\begin{list}{<+label+>}{<+spacing+>}\<cr>\\item".s:items_with_cr."<++>\<cr>\\end{list}" . s:end_with_cr . "<++>"
 let s:table =      "\\begin{table}\<cr>\\centering\<cr>\\begin{tabular}{<+dimensions+>}\<cr><++>\<cr>\\end{tabular}\<cr>\\caption{<+Caption text+>}\<cr>\\label{" . s:labelprefix_table . "<+label+>}\<cr>\\end{table}" . s:end_with_cr . "<++>"
 let s:array =      "\\left<++>\<cr>\\begin{array}{<+dimension+>}\<cr><+elements+>\<cr>\\end{array}\<cr>\\right<++>"
-let s:description ="\\begin{description}\<cr>\\item[<+label+>]<++>\<cr>\\end{description}" . s:end_with_cr . "<++>"
+let s:description ="\\begin{description}\<cr>\\item[<+label+>]".s:items_with_cr."<++>\<cr>\\end{description}" . s:end_with_cr . "<++>"
 let s:document =   "\\documentclass[<+options+>]{<+class+>}\<cr>\<cr>\\begin{document}\<cr><++>\<cr>\\end{document}"
 let s:tabular = "\\begin{tabular}[<+hbtp+>]{<+format+>}\<cr><++>\<cr>\\end{tabular}"
 let s:tabular_star = "\\begin{tabular*}[<+hbtp+>]{<+format+>}\<cr><++>\<cr>\\end{tabular*}"
@@ -294,7 +300,9 @@ endif
 " ============================================================================== 
 " Tex_itemize: {{{
 function! Tex_itemize(env)
-	return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr>\\item <++>\<cr>\\end{".a:env."}" . s:end_with_cr . "<++>")
+	return IMAP_PutTextWithMovement('\begin{'.a:env."}\<cr>"
+				\ . "\\item" . s:items_with_cr . "<++>\<cr>"
+				\ . "\\end{".a:env."}" . s:end_with_cr . "<++>")
 endfunction
 " }}} 
 " Tex_description: {{{
@@ -304,7 +312,7 @@ function! Tex_description(env)
 		if itlabel != ''
 			let itlabel = '['.itlabel.']'
 		endif
-		return IMAP_PutTextWithMovement("\\begin{description}\<cr>\\item".itlabel." <++>\<cr>\\end{description}" . s:end_with_cr . "<++>")
+		return IMAP_PutTextWithMovement("\\begin{description}\<cr>\\item".itlabel.s:items_with_cr."<++>\<cr>\\end{description}" . s:end_with_cr . "<++>")
 	else
 		return IMAP_PutTextWithMovement(s:description)
 	endif
@@ -449,7 +457,7 @@ function! Tex_list(env)
 		else
 			let label = ''
 		endif
-		return IMAP_PutTextWithMovement('\begin{list}'.label."\<cr>\\item \<cr>\\end{list}" . s:end_with_cr . "<++>")
+		return IMAP_PutTextWithMovement('\begin{list}'.label."\<cr>\\item".s:items_with_cr."\<cr>\\end{list}" . s:end_with_cr . "<++>")
 	else
 		return IMAP_PutTextWithMovement(s:list)
 	endif
@@ -506,7 +514,8 @@ function! Tex_thebibliography(env)
 	else
 		return IMAP_PutTextWithMovement(
 			\ "\\begin{thebibliography}\<CR>".
-			\ "\\bibitem[<+biblabel+>]{<+bibkey+>} <++>\<CR>".
+			\ "\\bibitem[<+biblabel+>]{<+bibkey+>}".
+			\ s:items_with_cr .
 			\ "<++>\<CR>".
 			\ "\\end{thebibliography}" . s:end_with_cr . "<++>")
 	endif
@@ -915,20 +924,15 @@ endfunction
 "    			  Env names are stored in g: variables it can be used by
 "    			  package files. 
 
-TexLet g:Tex_ItemStyle_itemize = '\item '
-TexLet g:Tex_ItemStyle_enumerate = '\item '
-TexLet g:Tex_ItemStyle_theindex = '\item '
+for env in ['itemize', 'enumerate', 'theindex',
+			\ 'asparaenum',  'asparaitem',
+			\ 'compactenum', 'compactitem',
+			\ 'inparaenum',  'inparaitem']
+	exe "TexLet g:Tex_ItemStyle_" . env . " = '\\item" . s:items_with_cr . "'"
+endfor
 
-" paralist package
-TexLet g:Tex_ItemStyle_asparaenum = '\item '
-TexLet g:Tex_ItemStyle_asparaitem = '\item '
-TexLet g:Tex_ItemStyle_compactenum = '\item '
-TexLet g:Tex_ItemStyle_compactitem = '\item '
-TexLet g:Tex_ItemStyle_inparaenum = '\item '
-TexLet g:Tex_ItemStyle_inparaitem = '\item '
-
-TexLet g:Tex_ItemStyle_thebibliography = '\bibitem[<+biblabel+>]{<+bibkey+>} <++>'
-TexLet g:Tex_ItemStyle_description = '\item[<+label+>] <++>'
+exe "TexLet g:Tex_ItemStyle_thebibliography = '\\bibitem[<+biblabel+>]{<+bibkey+>}" . s:items_with_cr . "<++>'"
+exe "TexLet g:Tex_ItemStyle_description = '\\item[<+label+>]" . s:items_with_cr . "<++>'"
 
 function! Tex_InsertItem()
     " Get current enclosing environment

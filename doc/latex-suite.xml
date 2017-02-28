@@ -3616,6 +3616,29 @@ let g:Tex_EnvLabelprefix_equation = "eq:"</programlisting>
 &ph;</programlisting>
       </para>
     </section>
+    <section id="Tex_ItemsWithCR">
+     <title>Tex_ItemsWithCR</title>
+     <informaltable frame="all">
+      <tgroup cols="2">
+       <tbody>
+        <row><entry>Type</entry><entry>Boolean</entry></row>
+        <row><entry>Default Value</entry>
+         <entry><literal>0</literal></entry></row>
+       </tbody>
+      </tgroup>
+     </informaltable>
+      <para>
+       If <literal>Tex_ItemsWithCR</literal> is set to <literal>1</literal>, a carriage return (i.e., line break)
+       is inserted after <literal>\item</literal> and the placeholder, e.g., <literal>itemize&lt;F5&gt;</literal>
+       is expanded to
+       <programlisting>
+\begin{itemize}
+      \item
+            &ph;
+\end{itemize}
+</programlisting>
+      </para>
+    </section>
     <section id="Tex_LabelAfterContent">
      <title>Tex_LabelAfterContent</title>
      <informaltable frame="all">

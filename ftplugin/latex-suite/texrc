@@ -390,6 +390,8 @@ TexLet g:Tex_EnvironmentMenus = 1
 TexLet g:Tex_EnvEndWithCR = 0
 " Should the label placed before or after the content?
 TexLet g:Tex_LabelAfterContent = 1
+" Should an \item be followed by a carriage return?
+TexLet g:Tex_ItemsWithCR = 0
 
 " Set up standard prefixes for labels.
 TexLet g:Tex_EnvLabelprefix_table = "tab:"
