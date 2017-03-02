@@ -142,19 +142,17 @@ if !exists('s:doneMappings')
 	" It does this for all printable lower ascii characters just to make sure
 	" we dont let anything slip by.
 	function! s:ProtectLetters(first, last)
-		let i = a:first
-		while i <= a:last
+		for i in range(a:first, a:last)
 			if nr2char(i) =~ '[[:print:]]'
 				if ( g:Tex_SmartKeyDot && nr2char(i) == '.' )
 							\ || ( g:Tex_SmartKeyQuote && nr2char(i) == '"' )
-					break
+					continue
 				endif
 				call IMAP('``'.nr2char(i), '``'.nr2char(i), 'tex')
 				call IMAP('\`'.nr2char(i), '\`'.nr2char(i), 'tex')
 				call IMAP('"`'.nr2char(i), '"`'.nr2char(i), 'tex')
 			endif
-			let i = i + 1
-		endwhile
+		endfor
 	endfunction 
 	call s:ProtectLetters(32, 127)
 	" }}}
