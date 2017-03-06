@@ -607,7 +607,9 @@ function! Tex_FindFile(fname, path, suffixesadd)
 endfunction " }}}
 " Tex_GetPos: gets position of cursor {{{
 function! Tex_GetPos()
-	if exists('*getpos')
+	if exists('*getcurpos')
+		return getcurpos()
+	elseif exists('*getpos')
 		return getpos('.')
 	else
 		return line('.').' | normal! '.virtcol('.').'|'
