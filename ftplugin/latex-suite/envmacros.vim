@@ -651,44 +651,52 @@ if g:Tex_PromptedEnvironments != ''
 		let pos = Tex_GetPos()
 		let s:isvisual = a:isvisual
 
-		" decide if we are in the preamble of the document. If we are then
-		" insert a package, otherwise insert an environment.
-		"
-		if search('\C\\documentclass', 'bW') && search('\C\\begin{document}', 'W')
+		" Position the cursor at the start of the file
+		call setpos('.', [0,1,1,0])
 
-			" If there is a \documentclass line and a \begin{document} line in
-			" the file, then a part of the file is the preamble.
-
-			" search for where the document begins.
-			let begin_line = search('\C\\begin{document}', 'cW')
-			" if the document begins after where we are presently, then we are
-			" in the preamble.
-			if start_line < begin_line
-				" return to our original location and insert a package
-				" statement.
-				call Tex_SetPos(pos)
-				return Tex_package_from_line()
-			else
-				" we are after the preamble. insert an environment.
-				call Tex_SetPos(pos)
-				return Tex_DoEnvironment()
+		" Search for the first \documentclass, which is not inside a comment
+		while 1
+			let classline = search('\C\\documentclass', 'cW')
+			if classline == 0
+				break
 			endif
+			if getline('.') =~# '\%(\\\@<!\%(\\\\\)*%.*\)\@<!\\documentclass'
+				" No comment here, we have found it
+				break
+			endif
+			" Move to end of line and search again.
+			normal! $
+		endwhile
 
-		elseif search('\C\\documentclass', 'bW')
-			" if there is only a \documentclass but no \begin{document}, then
-			" the entire file is a preamble. Put a package.
+		" Search for the first \begin{document}, which is not inside a comment
+		while 1
+			let documentline = search('\C\\begin{document}', 'cW')
+			if documentline == 0
+				break
+			endif
+			if getline('.') =~# '\%(\\\@<!\%(\\\\\)*%.*\)\@<!\\begin{document}'
+				" No comment here, we have found it
+				break
+			endif
+			" Move to end of line and search again.
+			normal! $
+		endwhile
 
-			call Tex_SetPos(pos)
-			return Tex_package_from_line()
-
-		else
-			" no \documentclass, put an environment.
-
+		if documentline != 0 && start_line >= documentline
+			" We are after the '\begin{document}'.
+			" Put an environment.
 			call Tex_SetPos(pos)
 			return Tex_DoEnvironment()
-
+		elseif classline != 0 && start_line >= classline
+			" We are after the '\documentclass'.
+			" Insert a package.
+			call Tex_SetPos(pos)
+			return Tex_package_from_line()
+		else
+			" Otherwise, insert an environment.
+			call Tex_SetPos(pos)
+			return Tex_DoEnvironment()
 		endif
-
 	endfunction 
 
 	" }}}
