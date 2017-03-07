@@ -584,6 +584,10 @@ function! Tex_FindFile(fname, path, suffixesadd)
 		let &suffixesadd = a:suffixesadd
 		let retval = findfile(a:fname, a:path)
 		let &suffixesadd = _suffixesadd
+		if retval != ''
+			" Convert to full path and return
+			return fnamemodify(retval, ':p')
+		endif
 	else
 		" split a new window so we do not screw with the current buffer. We
 		" want to use the same filename each time so that multiple scratch
@@ -602,8 +606,7 @@ function! Tex_FindFile(fname, path, suffixesadd)
 		let &suffixesadd = _suffixesadd
 		let &path = _path
 	endif
-	" Convert to full path and return
-	return fnamemodify(retval, ':p')
+	return retval
 endfunction " }}}
 " Tex_GetPos: gets position of cursor {{{
 function! Tex_GetPos()
