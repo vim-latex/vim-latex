@@ -52,7 +52,7 @@ class Bibliography(dict):
         for k, v in items(macros):
             txt = txt.replace(k, '{' + v + '}')
 
-        m = re.match(r'\s*@(\w+){\s*((\S+),)?(.*)}\s*', txt,
+        m = re.match(r'\s*@(\w+)\s*{\s*((\S+),)?(.*)}\s*', txt,
                      re.MULTILINE | re.DOTALL)
         if not m:
             return None
