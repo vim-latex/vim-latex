@@ -348,10 +348,10 @@ function! Tex_ForwardSearchLaTeX()
 	let l:origdir = fnameescape(getcwd())
 
 	let mainfnameRoot = fnameescape(fnamemodify(Tex_GetMainFileName(), ':t:r'))
-	let mainfnameFull = fnameescape(Tex_GetMainFileName(':p:r'))
+	let mainfnameFull = Tex_GetMainFileName(':p:r')
 	let target_file = mainfnameFull . "." . s:target
 	let sourcefile = fnameescape(expand('%'))
-	let sourcefileFull = fnameescape(expand('%:p'))
+	let sourcefileFull = expand('%:p')
 	let linenr = line('.')
 	" cd to the location of the file to avoid problems with directory name
 	" containing spaces.
