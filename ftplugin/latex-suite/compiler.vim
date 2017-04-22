@@ -347,11 +347,11 @@ function! Tex_ForwardSearchLaTeX()
 
 	let l:origdir = fnameescape(getcwd())
 
-	let mainfnameRoot = fnameescape(fnamemodify(Tex_GetMainFileName(), ':t:r'))
-	let mainfnameFull = fnameescape(Tex_GetMainFileName(':p:r'))
-	let target_file = mainfnameFull . "." . s:target
-	let sourcefile = fnameescape(expand('%'))
-	let sourcefileFull = fnameescape(expand('%:p'))
+	let mainfnameRoot = shellescape(fnamemodify(Tex_GetMainFileName(), ':t:r'))
+	let mainfnameFull = Tex_GetMainFileName(':p:r')
+	let target_file = shellescape(mainfnameFull . "." . s:target)
+	let sourcefile = shellescape(expand('%'))
+	let sourcefileFull = shellescape(expand('%:p'))
 	let linenr = line('.')
 	" cd to the location of the file to avoid problems with directory name
 	" containing spaces.
@@ -368,7 +368,7 @@ function! Tex_ForwardSearchLaTeX()
 		elseif (viewer =~? "^sumatrapdf")
 			" Forward search in sumatra has these arguments (-reuse-instance is optional):
 			" SumatraPDF -reuse-instance "pdfPath" -forward-search "texPath" lineNumber
-			let execString .= Tex_Stringformat('start %s "%s" -forward-search "%s" %s', viewer, target_file, sourcefileFull, linenr)
+			let execString .= Tex_Stringformat('start %s %s -forward-search %s %s', viewer, target_file, sourcefileFull, linenr)
 		endif	
 
 	elseif (has('macunix') && (viewer =~ '\(Skim\|PDFView\|TeXniscope\)'))
@@ -406,7 +406,7 @@ function! Tex_ForwardSearchLaTeX()
 						\ exists('v:servername') &&
 						\ viewer =~ '^ *xdvik\?\( \|$\)'
 
-				let execString .= Tex_Stringformat('-name xdvi -sourceposition "%s %s" -editor "gvim --servername %s --remote-silent +\%l \%f" %s', linenr, sourcefile, v:servername, target_file)
+				let execString .= Tex_Stringformat('-name xdvi -sourceposition "%s %s" -editor "gvim --servername %s --remote-silent +\%l \%f" %s', linenr, expand('%'), v:servername, target_file)
 
 			elseif viewer =~ '^ *kdvi'
 
@@ -414,7 +414,7 @@ function! Tex_ForwardSearchLaTeX()
 
 			elseif viewer =~ '^ *xdvik\?\( \|$\)'
 
-				let execString .= Tex_Stringformat('-name xdvi -sourceposition "%s %s" %s', linenr, sourcefile, target_file)
+				let execString .= Tex_Stringformat('-name xdvi -sourceposition "%s %s" %s', linenr, expand('%'), target_file)
 
 			elseif viewer =~ '^ *okular'
 
