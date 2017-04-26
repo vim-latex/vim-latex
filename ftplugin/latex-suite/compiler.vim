@@ -347,11 +347,11 @@ function! Tex_ForwardSearchLaTeX()
 
 	let l:origdir = fnameescape(getcwd())
 
-	let mainfnameRoot = shellescape(fnamemodify(Tex_GetMainFileName(), ':t:r'))
+	let mainfnameRoot = shellescape(fnamemodify(Tex_GetMainFileName(), ':t:r'), 1)
 	let mainfnameFull = Tex_GetMainFileName(':p:r')
-	let target_file = shellescape(mainfnameFull . "." . s:target)
-	let sourcefile = shellescape(expand('%'))
-	let sourcefileFull = shellescape(expand('%:p'))
+	let target_file = shellescape(mainfnameFull . "." . s:target, 1)
+	let sourcefile = shellescape(expand('%'), 1)
+	let sourcefileFull = shellescape(expand('%:p'), 1)
 	let linenr = line('.')
 	" cd to the location of the file to avoid problems with directory name
 	" containing spaces.
