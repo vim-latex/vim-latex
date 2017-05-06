@@ -292,6 +292,14 @@ function! Tex_ViewLaTeX()
 		endif
 
 		if( Tex_GetVarValue('Tex_ExecuteUNIXViewerInForeground') != 1 )
+			" Redirect output to /dev/null
+			if( stridx( &shellredir, "%s" ) != -1 )
+				let execString .= " " . substitute( &shellredir, "%s", "/dev/null", '' )
+			else
+				let execString .= " " . &shellredir . "/dev/null"
+			endif
+
+			" And execute in background
 			let execString = execString.' &'
 		endif
 
