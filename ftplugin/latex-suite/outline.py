@@ -34,7 +34,7 @@ def getFileContents(fname):
         return ''
 
     # TODO what are all the ways in which a tex file can include another?
-    pat = re.compile(r'^\\(@?)(include|input){(.*?)}', re.M)
+    pat = re.compile(r'^\s*\\(@?)(include|input){(.*?)}', re.M)
     contents = re.sub(pat, getFileContents, contents)
 
     return ('%%==== FILENAME: %s' % fname) + '\n' + contents
