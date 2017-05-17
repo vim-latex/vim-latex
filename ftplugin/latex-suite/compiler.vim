@@ -510,7 +510,11 @@ function! Tex_PartCompile() range
 	exe a:firstline.','.a:lastline."w! >> ".tmpfile
 
 	" edit the temporary file
-	exec 'drop '.tmpfile
+	if exists('drop')
+		exec 'drop '.tmpfile
+	else
+		exec 'tabe '.tmpfile
+	endif
 
 	" append the \end{document} line.
 	$ put ='\end{document}'
