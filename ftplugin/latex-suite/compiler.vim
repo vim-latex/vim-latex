@@ -653,7 +653,11 @@ function! Tex_CompileMultipleTimes()
 	" After all compiler calls are done, reparse the .log file for
 	" errors/warnings to handle the situation where the clist might have been
 	" emptied because of bibtex/makeindex being run as the last step.
-	exec 'silent! cfile '.mainFileName_root.'.log'
+	if Tex_GetVarValue('Tex_GotoError') == 1
+		exec 'silent! cfile '.mainFileName_root.'.log'
+	else
+		exec 'silent! cgetfile '.mainFileName_root.'.log'
+	end
 
 	exe 'cd '.l:origdir
 endfunction " }}}
