@@ -581,15 +581,15 @@ function! Tex_PutEnvironment(env)
 			return IMAP_PutTextWithMovement(b:Tex_Env_{a:env})
 		elseif exists("g:Tex_Env_{'".a:env."'}")
 			return IMAP_PutTextWithMovement(g:Tex_Env_{a:env})
-		elseif a:env =~ 'theorem\|definition\|lemma\|proposition\|corollary\|assumption\|remark\|equation\|align\*\|align\>\|multline'
+		elseif a:env =~ '^\%(theorem\|definition\|lemma\|proposition\|corollary\|assumption\|remark\|equation\|align\*\|align\>\|multline\)$'
 			return Tex_standard_env(a:env)
-		elseif a:env =~ "enumerate\\|itemize\\|theindex\\|trivlist"
+		elseif a:env =~ '^\%(enumerate\\|itemize\\|theindex\\|trivlist\)$'
 			return Tex_itemize(a:env)
-		elseif a:env =~ "table\\|table*"
+		elseif a:env =~ '^\%(table\\|table*\)$'
 			return Tex_table(a:env)
-		elseif a:env =~ "tabular\\|tabular*\\|array\\|array*"
+		elseif a:env =~ '^\%(tabular\\|tabular*\\|array\\|array*\)$'
 			return Tex_tabular(a:env)
-		elseif a:env =~# "description\\|figure\\|list\\|document\\|minipage\\|thebibliography"
+		elseif a:env =~# '^\%(description\\|figure\\|list\\|document\\|minipage\\|thebibliography\)$'
 			" Call spezialized functions
 			exe 'return Tex_'.a:env.'(a:env)'
 		elseif a:env == '\['
