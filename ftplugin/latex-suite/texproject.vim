@@ -43,6 +43,7 @@ function! Tex_ProjectLoad()
 	endif
 	
 	exe 'cd '.l:origdir
+	exe 'cd '.l:origdir
 endfunction " }}}
 
 augroup LatexSuite
