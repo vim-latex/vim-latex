@@ -713,7 +713,7 @@ endfunction " }}}
 " get the place where this plugin resides for setting cpt and dict options.
 " these lines need to be outside the function.
 let s:path = expand('<sfile>:p:h')
-if g:Tex_HasPython
+if Tex_UsePython()
 	exec g:Tex_PythonCmd . " import sys, re"
 	exec g:Tex_PythonCmd . " sys.path += [r'". s:path . "']"
 	exec g:Tex_PythonCmd . " import outline"
@@ -892,7 +892,7 @@ endfunction " }}}
 
 " get the place where this plugin resides for setting cpt and dict options.
 " these lines need to be outside the function.
-if g:Tex_HasPython
+if Tex_UsePython()
 	exec g:Tex_PythonCmd . " import sys, re"
 	exec g:Tex_PythonCmd . " sys.path += [r'". s:path . "']"
 	exec g:Tex_PythonCmd . " import bibtools"
