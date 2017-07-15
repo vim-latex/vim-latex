@@ -8,8 +8,11 @@ and a [beginner's tutorial](http://vim-latex.sourceforge.net/index.php?subject=m
 
 
 ## Installation
-We recommend the installation via a plugin manager such as pathogen or Vundle.
-More details can be found in [Section 1](http://vim-latex.sourceforge.net/documentation/latex-suite.html#recommended-settings) of the manual.
+We recommend the installation via a plugin manager such as [pathogen](https://github.com/tpope/vim-pathogen) or [Vundle](https://github.com/gmarik/vundle).
+
+Instructions for manual installation is documented at the [website](http://vim-latex.sourceforge.net/index.php?subject=download).
+
+Recommended settings after installation can be found in [Section 1](http://vim-latex.sourceforge.net/documentation/latex-suite.html#recommended-settings) of the manual.
 
 ## Documentation
 As already mentioned, the manual can be found [here](http://vim-latex.sourceforge.net/index.php?subject=manual&title=Manual#user-manual).
