@@ -7,7 +7,7 @@
 "  Description: functions to interact with Syntaxfolds.vim
 "=============================================================================
 
-nnoremap <unique> <Plug>Tex_RefreshFolds :call MakeTexFolds(1)<cr>
+nnoremap <unique> <Plug>Tex_RefreshFolds :call MakeTexFolds(1, 1)<cr>
 
 augroup LatexSuite
 	au LatexSuite User LatexSuiteFileType 
@@ -26,15 +26,19 @@ function! Tex_SetFoldOptions()
 	setlocal foldtext=TexFoldTextFunction()
 
 	if g:Tex_Folding
-		call MakeTexFolds(0)
-		if !g:Tex_AutoFolding
-			normal! zR
-		endif
+		call MakeTexFolds(0, 0)
 	endif
 
 	let s:ml = '<Leader>'
 
 	call Tex_MakeMap(s:ml."rf", "<Plug>Tex_RefreshFolds", 'n', '<silent> <buffer>')
+
+	" Setup a local autocommand, if FileChangedShellPost is available
+	if exists('##FileChangedShellPost')
+		augroup LatexSuite
+			autocmd FileChangedShellPost <buffer> call MakeTexFolds(1, 0)
+		augroup END
+	endif
 
 endfunction " }}}
 " Tex_FoldSections: creates section folds {{{
@@ -77,7 +81,7 @@ endfunction
 "
 " used in conjunction with MakeSyntaxFolds().
 " see ../plugin/syntaxFolds.vim for documentation
-function! MakeTexFolds(force)
+function! MakeTexFolds(force, manual)
 	if exists('g:Tex_Folding') && !g:Tex_Folding
 		return
 	endif
@@ -350,6 +354,12 @@ function! MakeTexFolds(force)
 	" }}}
 	
 	call MakeSyntaxFolds(a:force)
+
+	" Open all folds if this function was triggered automatically
+	" and g:Tex_AutoFolding is disabled
+	if a:manual && !g:Tex_AutoFolding
+		normal! zR
+	endif
 endfunction
 
 " }}}
