@@ -581,7 +581,7 @@ function! Tex_PutEnvironment(env)
 			return IMAP_PutTextWithMovement(b:Tex_Env_{a:env})
 		elseif exists("g:Tex_Env_{'".a:env."'}")
 			return IMAP_PutTextWithMovement(g:Tex_Env_{a:env})
-		elseif a:env =~ '^\%(theorem\|definition\|lemma\|proposition\|corollary\|assumption\|remark\|equation\|align\*\|align\>\|multline\)$'
+		elseif a:env =~ '^\%(theorem\|definition\|lemma\|proposition\|corollary\|assumption\|remark\|equation\|align\*\|align\>\|multline\|subequations\)$'
 			return Tex_standard_env(a:env)
 		elseif a:env =~ '^\%(enumerate\|itemize\|theindex\|trivlist\)$'
 			return Tex_itemize(a:env)
