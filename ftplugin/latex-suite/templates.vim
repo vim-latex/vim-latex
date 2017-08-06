@@ -42,6 +42,7 @@ function! <SID>ReadTemplate(...)
 	endif
 
 	let fname = <SID>FindInTemplateDir(filename.'.tex', ':p')
+	let fname = fnameescape(fname)
 	call Tex_Debug("0read ".fname, 'templates')
 
 	silent! exe "0read ".fname
