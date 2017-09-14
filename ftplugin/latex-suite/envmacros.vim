@@ -85,7 +85,7 @@ function! <SID>Tex_EnvMacros(lhs, submenu, name)
 
 		if g:Tex_EnvironmentMaps && !exists('s:doneOnce')
 			call IMAP(a:lhs, "\<C-r>=Tex_PutEnvironment('".a:name."')\<CR>", 'tex')
-			exec 'vnoremap <silent> '.vlhs.' '.vrhs
+			exec 'xnoremap <silent> '.vlhs.' '.vrhs
 		endif
 
 	endif
@@ -124,7 +124,7 @@ function! <SID>Tex_SpecialMacros(lhs, submenu, name, irhs, ...)
 
 		if g:Tex_EnvironmentMaps && !exists('s:doneOnce')
 			call IMAP(a:lhs, a:irhs, 'tex')
-			exec 'vnoremap '.vlhs.' '.vrhs
+			exec 'xnoremap '.vlhs.' '.vrhs
 		endif
 
 	endif
@@ -147,7 +147,7 @@ function! <SID>Tex_SectionMacros(lhs, name)
 	let vrhs = "\<C-\\>\<C-N>:call VEnclose('\\".a:name."{', '}', '', '')<CR>"
 
 	if g:Tex_SectionMaps && !exists('s:doneOnce')
-		exe 'vnoremap '.vlhs.' '.vrhs
+		exe 'xnoremap '.vlhs.' '.vrhs
 		call IMAP (a:lhs, "\\".a:name.'{<++>}' . s:end_with_cr . '<++>', 'tex')
 	endif
 
@@ -285,7 +285,7 @@ call s:Tex_SpecialMacros('EPI', '', 'picture', s:picture)
 " }}}
 
 if g:Tex_CatchVisMapErrors
-	exe 'vnoremap '.g:Tex_Leader2."   :\<C-u>call ExecMap('".g:Tex_Leader2."', 'v')\<CR>"
+	exe 'xnoremap '.g:Tex_Leader2."   :\<C-u>call ExecMap('".g:Tex_Leader2."', 'v')\<CR>"
 endif
 
 " ==============================================================================

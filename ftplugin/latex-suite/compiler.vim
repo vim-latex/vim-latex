@@ -900,7 +900,7 @@ function! <SID>Tex_SetCompilerMaps()
 	let s:ml = '<Leader>'
 
 	nnoremap <buffer> <Plug>Tex_Compile :call Tex_RunLaTeX()<cr>
-	vnoremap <buffer> <Plug>Tex_Compile :call Tex_PartCompile()<cr>
+	xnoremap <buffer> <Plug>Tex_Compile :call Tex_PartCompile()<cr>
 	nnoremap <buffer> <Plug>Tex_View :call Tex_ViewLaTeX()<cr>
 	nnoremap <buffer> <Plug>Tex_ForwardSearch :call Tex_ForwardSearchLaTeX()<cr>
 

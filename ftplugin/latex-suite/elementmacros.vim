@@ -47,7 +47,7 @@ if !exists('s:definedFuncs') " {{{
 
 		" avoid redoing imaps and vmaps for every reconfiguration of menus.
 		if !exists('s:doneOnce') && g:Tex_FontMaps
-			exe "vnoremap <silent> ".g:Tex_Leader.vislhs.
+			exe "xnoremap <silent> ".g:Tex_Leader.vislhs.
 				\" \<C-\\>\<C-N>:call VEnclose('\\text".vislhs."{', '}', '{\\".vislhs.a:fam." ', '}')<CR>"
 			exe 'call IMAP ("'.a:font.'", "\\text'.vislhs.'{<++>}<++>", "tex")'
 		endif
@@ -121,7 +121,7 @@ call <SID>Tex_FontFamily("FSC","shape")
 call <SID>Tex_FontFamily("FIT","shape")
 
 " the \emph is special.
-if g:Tex_FontMaps | exe "vnoremap <silent> ".g:Tex_Leader."em \<C-\\>\<C-N>:call VEnclose('\\emph{', '}', '{\\em', '\\/}')<CR>" | endif
+if g:Tex_FontMaps | exe "xnoremap <silent> ".g:Tex_Leader."em \<C-\\>\<C-N>:call VEnclose('\\emph{', '}', '{\\em', '\\/}')<CR>" | endif
 if g:Tex_FontMaps | exe 'call IMAP ("FEM", "\\emph{<++>}<++>", "tex")' | endif
 
 " }}}
@@ -322,7 +322,7 @@ if g:Tex_Menus
 endif
 
 if g:Tex_CatchVisMapErrors
-	exe "vnoremap ".g:Tex_Leader."   :\<C-u>call ExecMap('".g:Tex_Leader."', 'v')\<CR>"
+	exe "xnoremap ".g:Tex_Leader."   :\<C-u>call ExecMap('".g:Tex_Leader."', 'v')\<CR>"
 endif
 " this is for avoiding reinclusion of imaps from next time on.
 let s:doneOnce = 1
