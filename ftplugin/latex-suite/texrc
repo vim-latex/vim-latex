@@ -83,7 +83,7 @@ TexLet g:Tex_DebugLog = ''
 " generating a .dvi file. Change this line if you want to set another default.
 " NOTE: Make sure that a target for this format exists in the 'Compiler rules'
 "       section below and is set up properly for your system.
-if has('macunix')
+if has('osx')
 	TexLet g:Tex_DefaultTargetFormat = 'pdf'
 else
 	TexLet g:Tex_DefaultTargetFormat = 'dvi'
@@ -140,7 +140,7 @@ if has('win32')
 	TexLet g:Tex_ViewRule_ps = 'gsview32'
 	TexLet g:Tex_ViewRule_pdf = 'AcroRd32'
 	TexLet g:Tex_ViewRule_dvi = 'yap -1'
-elseif has('macunix')
+elseif has('osx')
 	" Let the system pick.  If you want, you can override the choice here.
 	TexLet g:Tex_ViewRule_ps = ''
 	TexLet g:Tex_ViewRule_pdf = ''
