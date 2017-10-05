@@ -6,6 +6,10 @@
 "  Description: functions for compiling/viewing/searching latex documents
 "=============================================================================
 
+" line continuation used here.
+let s:save_cpo = &cpo
+set cpo&vim
+
 " Tex_SetTeXCompilerTarget: sets the 'target' for the next call to Tex_RunLaTeX() {{{
 function! Tex_SetTeXCompilerTarget(type, target)
 	call Tex_Debug("+Tex_SetTeXCompilerTarget: setting target to [".a:target."] for ".a:type."r", "comp")
@@ -922,5 +926,7 @@ command! -nargs=0 -range=% TPartCompile :<line1>, <line2> silent! call Tex_PartC
 " the _main_ file irrespective of the presence of a .latexmain file.
 command! -nargs=0 TCompileThis let b:fragmentFile = 1
 command! -nargs=0 TCompileMainFile let b:fragmentFile = 0
+
+let &cpo = s:save_cpo
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4
