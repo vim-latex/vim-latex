@@ -1018,12 +1018,16 @@ function! Tex_HandleBibShortcuts(command)
 			echo fieldprompt
 		endif
 
-		let inp = input('Enter '.a:command.' criterion [field<space>value]: ')
-		if inp !~ '\v^\S+\s+\S.*'
-			echohl WarningMsg
-			echomsg 'Invalid filter specification. Use "field<space>value"'
-			echohl None
-			return
+		if a:command == 'filter'
+			let inp = input('Enter '.a:command.' criterion [field<space>value]: ')
+			if inp !~ '\v^\S+\s+\S.*'
+				echohl WarningMsg
+				echomsg 'Invalid filter specification. Use "field<space>value"'
+				echohl None
+				return
+			endif
+		else
+			let inp = input('Enter '.a:command.' criterion [field]: ')
 		endif
 
 		if inp != ''
