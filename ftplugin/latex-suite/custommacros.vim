@@ -11,7 +11,7 @@
 let s:path = expand('<sfile>:p:h')
 
 " Set path to macros dir dependent on OS {{{
-if has("unix") || has("osx")
+if has("unix") || has("osx") || has("macunix")
 	let s:macrodirpath = $HOME."/.vim/ftplugin/latex-suite/macros/"
 elseif has("win32")
 	if exists("$HOME")

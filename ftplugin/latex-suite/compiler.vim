@@ -37,7 +37,7 @@ function! Tex_SetTeXCompilerTarget(type, target)
 	elseif Tex_GetVarValue('Tex_'.a:type.'RuleComplete_'.target) != ''
 		let s:target = target
 
-	elseif a:type == 'View' && has('osx')
+	elseif a:type == 'View' && (has('osx') || has('macunix'))
 		" On the mac, we can have empty view rules, so do not complain when
 		" both Tex_ViewRule_target and Tex_ViewRuleComplete_target are
 		" empty. On other platforms, we will complain... see below.
@@ -254,7 +254,8 @@ function! Tex_ViewLaTeX()
 		" that this particular vim and yap are connected.
 		let execString = 'start '.s:viewer.' "$*.'.s:target.'"'
 
-	elseif (has('osx') && Tex_GetVarValue('Tex_TreatMacViewerAsUNIX') != 1)
+	elseif ((has('osx') || has('macunix'))
+				\ && Tex_GetVarValue('Tex_TreatMacViewerAsUNIX') != 1)
 
 		if strlen(s:viewer)
 			let appOpt = '-a '
@@ -383,7 +384,8 @@ function! Tex_ForwardSearchLaTeX()
 			let execString .= Tex_Stringformat('start %s %s -forward-search %s %s', viewer, target_file, sourcefileFull, linenr)
 		endif	
 
-	elseif (has('osx') && (viewer =~ '\(Skim\|PDFView\|TeXniscope\)'))
+	elseif ((has('osx') || has('macunix'))
+				\ && (viewer =~ '\(Skim\|PDFView\|TeXniscope\)'))
 		" We're on a Mac using a traditional Mac viewer
 
 		if viewer =~ 'Skim'
