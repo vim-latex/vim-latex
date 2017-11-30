@@ -901,10 +901,8 @@ endif
 function! Tex_StartCiteCompletion()
 	let bibfiles = Tex_FindBibFiles( 0 )
 	if bibfiles !~ '\S'
+		call Tex_Debug(':Tex_StartCiteCompletion: No bibfiles found.', 'view')
 		call Tex_SwitchToInsertMode()
-		echohl WarningMsg
-		echomsg 'No bibfiles found! Sorry'
-		echohl None
 		return
 	endif
 
