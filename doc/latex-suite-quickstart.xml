@@ -46,8 +46,7 @@
    Assuming you have Vim 6.1+ already up and running, follow the
    instructions <ulink
     url="http://vim-latex.sourceforge.net/index.php?subject=download&amp;title=Download">here</ulink>
-   to set up Latex-Suite. Remember to make sure your
-   <literal>'grepprg'</literal> setting of &vim; works.
+   to set up Latex-Suite.
   </para>
   <para>
    Good, now you are all set to start the tutorial. Since this tutorial
@@ -262,59 +261,15 @@
    <programlisting>This is a reference to (\ref{}).</programlisting>
    With the cursor between the <literal>{}</literal> press
    <literal>&lt;F9&gt;</literal> in insert mode. Your vim session will
-   sprout two new windows and it should look like below:
-<programlisting>
-      9 \begin{document}
-     10 +--  4 lines: equation (eqn:euler) :  \label{eqn:euler}-----------------------
-     14 This is the famous euler equation. I
-     15 will type another equation, just as
-     16 true:
-     17 +--  4 lines: equation (eqn:simple) :  \label{eqn:simple}---------------------
-     21 This is my contribution to mathematics.
-     22 This is a reference to (\ref{}&lt;++&gt;)&lt;++&gt;
-     23 \end{document}
-~
-~
-~
-test.tex [+]                                                        22,29          Bot
-test.tex|11| \label{eqn:euler}
-test.tex|18| \label{eqn:simple}
-~
-~
-~
-[Error List]                                                        1,1            All
-      7 \usepackage[sumlimits,]{amsmath}
-      8
-      9 \begin{document}
-     10 \begin{equation}
-     11     \label{eqn:euler}
-     12     e^{j\pi} + 1 = 0
-     13 \end{equation}
-     14 This is the famous euler equation. I
-     15 will type another equation, just as
-     16 true:
-test.tex [Preview][+]                                               11,2-5         46%
-</programlisting>
-  </para>
-  <imageobject>
-   <imagedata fileref="" format=""></imagedata>
-  </imageobject>
-  <para>
-   The cursor will relocate to the middle window which shows all
-   <literal>\label</literal>s found in all the <literal>.tex</literal> file
-   in the current directory. 
-   You can scroll up and down in the middle window till you reach the
-   reference you want to insert. Notice how when you scroll in the
-   middle window, the bottom "Preview" window scrolls automatically to
-   show you the location of the current selection. This helps you
-   identify the reference with greater ease because often times,
-   <literal>\labels</literal> are not descriptive enough or there might be too
-   many of them. To insert the reference, just position the cursor on
-   the relevant line in the middle window and press
+   sprout a new windows showing all the
+   <literal>\label</literal>s found in all the <literal>.tex</literal> files
+   of your current project.
+   To insert the reference, just position the cursor on
+   the relevant line and press
    <literal>&lt;enter&gt;</literal>. The line which you were editing will change
    to:
    <programlisting>This is a reference to (\ref{eqn:euler})</programlisting>
-   and the bottom windows close automatically.
+   and the bottom window closes automatically.
   </para>
   <para>
    The <literal>&lt;F9&gt;</literal> key also works for inserting

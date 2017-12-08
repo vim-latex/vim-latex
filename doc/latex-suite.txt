@@ -2996,8 +2996,8 @@ Type             Boolean
 Default Value    0
 
 When this variable is non-zero, then Latex-Suite will try to remember results
-from the \cite completion. This is only used, if Tex_UseCiteCompletionVer2 is
-set to 0.
+from the \cite completion. This is only used if Tex_UseCiteCompletionVer2 is set
+to 0.
 
 --------------------------------------------------------------------------------
 Compiler Customization                                       *ls_11_6* *ls_a_dC*

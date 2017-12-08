@@ -51,8 +51,7 @@ You will see the version in the first line of the output. Get the latest vim
 version from http://vim.sf.net |lq_u_1|.
 
 Assuming you have Vim 6.1+ already up and running, follow the instructions here
-|lq_u_2| to set up Latex-Suite. Remember to make sure your 'grepprg' setting of
-Vim works.
+|lq_u_2| to set up Latex-Suite.
 
 Good, now you are all set to start the tutorial. Since this tutorial aims to
 explain the newbie-friendly version of Latex-Suite, it needs some GUI
@@ -239,52 +238,11 @@ Latex-Suite provides an easy way to do this. Somewhere in the body of the
 document, type in the following sentence  >
     This is a reference to (\ref{}).
 With the cursor between the {} press <F9> in insert mode. Your vim session will
-sprout two new windows and it should look like below:  >
-    
-          9 \begin{document}
-         10 +--  4 lines: equation (eqn:euler) :  \label{eqn:euler}-----------------------
-         14 This is the famous euler equation. I
-         15 will type another equation, just as
-         16 true:
-         17 +--  4 lines: equation (eqn:simple) :  \label{eqn:simple}---------------------
-         21 This is my contribution to mathematics.
-         22 This is a reference to (\ref{}<++>)<++>
-         23 \end{document}
-    ~
-    ~
-    ~
-    test.tex [+]                                                        22,29          Bot
-    test.tex|11| \label{eqn:euler}
-    test.tex|18| \label{eqn:simple}
-    ~
-    ~
-    ~
-    [Error List]                                                        1,1            All
-          7 \usepackage[sumlimits,]{amsmath}
-          8
-          9 \begin{document}
-         10 \begin{equation}
-         11     \label{eqn:euler}
-         12     e^{j\pi} + 1 = 0
-         13 \end{equation}
-         14 This is the famous euler equation. I
-         15 will type another equation, just as
-         16 true:
-    test.tex [Preview][+]                                               11,2-5         46%
-    
-
-
-The cursor will relocate to the middle window which shows all \labels found in
-all the .tex file in the current directory. You can scroll up and down in the
-middle window till you reach the reference you want to insert. Notice how when
-you scroll in the middle window, the bottom "Preview" window scrolls
-automatically to show you the location of the current selection. This helps you
-identify the reference with greater ease because often times, \labels are not
-descriptive enough or there might be too many of them. To insert the reference,
-just position the cursor on the relevant line in the middle window and press
-<enter>. The line which you were editing will change to:  >
+sprout a new windows showing all the \labels found in all the .tex files of your
+current project. To insert the reference, just position the cursor on the
+relevant line and press <enter>. The line which you were editing will change to:  >
     This is a reference to (\ref{eqn:euler})
-<and the bottom windows close automatically.
+and the bottom window closes automatically.
 
 The <F9> key also works for inserting \cite commands to reference bibliographic
 entries, inserting file names for the \inputgraphics command and just plain
