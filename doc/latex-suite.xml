@@ -209,6 +209,9 @@ set iskeyword+=:
     <literal>\wedge</literal>, place the following line in (say)
     <literal>~/.vim/after/ftplugin/tex_macros.vim</literal>:
     <programlisting>call IMAP('`w', '\omega', 'tex')</programlisting>
+    To delete a mapping, you can use
+    <programlisting>call IUNMAP('FEM', 'tex')</programlisting>
+    in <literal>~/.vim/after/ftplugin/tex_macros.vim</literal>.
    </para>
    <note>
     <para>
@@ -1490,114 +1493,18 @@ Command can be also given without prefix:. The result is
   <note id="ls-set-grepprg">
    <title>Before you start with &ls;'s completion function...</title>
    <para>
-    All of &ls;'s completion capabilities depend on a external program
-    being available on your system which can search through a number of
-    files for a reg-exp pattern. On *nix systems, the pre-installed
-    <literal>grep</literal> utility is more than adequate.  Most windows
-    systems come with a utility <literal>findstr</literal>, but that has
-    proven to be very inadequate (for one, it does not have an option to
-    force the file name to be displayed when searching through a single
-    file). Your best bet is to install <ulink
-     url="http://www.cygwin.com">cygwin</ulink>, but if you think that's
-    overkill, you can <ulink
-     url="http://www.google.com/search?q=windows%20gnu%20grep">search
-     for</ulink> a windows implementation of GNU grep. (&ls; testing on
-    windows has been done with cygwin's port of GNU grep).
-   </para>
-   <para>
-    Once you have a <literal>grep</literal> program installed, you need to
-    set the <literal>'grepprg'</literal> option for vim. Make sure you use a
-    setting which forces the program to display file names even when you are
-    searching through a single file. For GNU grep, the syntax is
-    <programlisting>set grepprg=grep\ -nH\ $*</programlisting>
+    Most of &ls;'s completion capabilities depend on the
+    python interface of vim.
+    Both python2 and python3 are supported.
+    Hence,
+    <programlisting>python print "Hello."</programlisting>
+    or
+    <programlisting>python3 print("Hello.")</programlisting>
+    should work.
    </para>
   </note>
-  <section id="ls-completion-usage">
-   <title id="ls-completion-usage.title">&ls; completion example</title>
-   <para>
-    Consider the situation where you are editing a file with two equations
-    labelled <literal>eqn:euler</literal> and <literal>eqn:einstein</literal>.
-    Now you want to insert a reference to one of these equations. To do this,
-    you type the <literal>\ref{eqn:}</literal> command and with the cursor
-    placed after <literal>eqn:</literal>, press <literal>&lt;F9&gt;</literal>.
-    This will bring up two new windows beneath the main window you were working
-    in as shown in the figure below. 
-    <programlisting>
-      8 These are a couple of equations:
-      9 +--  4 lines: equation (eqn:euler) :   e^{j\pi} + 1 = 0-----------------
-     13 +--  4 lines: equation (eqn:einstein) :   E = m c^2---------------------
-     17
-     18 These are a couple of figures:
-     19 +--  7 lines: figure (fig:monkeys) : Monkeys can Type-------------------
-     26 +--  7 lines: figure (fig:shakespeare) : Shakespeare could not type-----
-     33
-     34 This is a reference to \ref{eqn:}&ph;
-     35
-     36
-     37 \end{document}
-     38
-~
-~
-~
-newfile.tex                                                   34,32          Bot
-newfile.tex|11| \label{eqn:euler}
-newfile.tex|15| \label{eqn:einstein}
-~
-[Error List]                                                  1,1            All
-      7
-      8 These are a couple of equations:
-      9 \begin{equation}
-     10   e^{j\pi} + 1 = 0
-     11   \label{eqn:euler}
-     12 \end{equation}
-     13 \begin{equation}
-     14   E = m c^2
-     15   \label{eqn:einstein}
-     16 \end{equation}
-newfile.tex [Preview]                                         11,3           21%
-  </programlisting>
-   </para>
-   <para>
-    The first window (shown as <literal>[Error&nbsp;List]</literal> above) is a
-    <literal>|cwindow|</literal> containing a list of possible matches for the
-    reference. The cursor will be located in the first line of this window. The
-    bottom window is a <literal>preview-window</literal> showing the context of
-    the <literal>\label</literal>. Moving around in the
-    <literal>[Error&nbsp;List]</literal> window automatically scrolls the
-    preview window so as to always keep showing the context of the
-    <literal>\label</literal> being viewed in the
-    <literal>[Error&nbsp;List]</literal> window. You can also press
-    <literal>J</literal> and <literal>K</literal> in the
-    <literal>[ErrorList]</literal> window to scroll the preview window up and
-    down.
-   </para>
-   <para>
-    To insert one of the labels, simply position the cursor in the correct line
-    in the <literal>[Error&nbsp;List]</literal> window and press
-    <literal>&lt;enter&gt;</literal>. This will immediately close the two newly
-    opened windows, get back to the correct location in the original file being
-    edited and insert the label into the <literal>\ref</literal> command. 
-   </para>
-   <para>
-    If you notice carefully in the example above, the
-    <literal>[Error&nbsp;List]</literal> window only showed the matches for the
-    equations and did not list any of the figure labels. This is because we
-    pressed <literal>&lt;F9&gt;</literal> after <literal>\ref{eqn:</literal>
-    instead of simply after <literal>\ref{</literal>. This caused &ls; to
-    search only for those labels which started with the string
-    <literal>eqn:</literal>. If you had pressed
-    <literal>&lt;F9&gt;</literal> after a <literal>\ref{</literal>, you would
-    have been shown matches from <emphasis>all</emphasis> labels, not just
-    those starting with <literal>eqn:</literal>.
-   </para>
-   <para>
-    Thus prefixing all your labels with <literal>eqn:</literal>,
-    <literal>fig:</literal>, <literal>tab:</literal> etc. depending on what you
-    are labelling will lead to an easier time completing references.
-   </para>
-  </section>
   <section id="ls-completion-ref">
-   <title>&ls; \ref completion</title>
+   <title>&ls; <literal>\ref</literal> completion</title>
    <para>
     Pressing <literal>&lt;F9&gt;</literal> when you are within a partially
     completed <literal>\ref</literal> command will split open a window
@@ -1757,7 +1664,8 @@ Enter filter criterion [field&lt;space&gt;value]:
     <listitem>
      <para>
       First, the file is scanned for a <literal>\bibliography</literal>
-      command. To explain better, assume that a command
+      command or a <literal>\addbibresource</literal> command.
+      To explain better, assume that a command
       <programlisting>\bibliography{file1,file2}</programlisting> is found
       in the present file. For each bibliography file, say
       <literal>file1</literal>, &ls; first tries to see if a
@@ -1786,36 +1694,7 @@ Enter filter criterion [field&lt;space&gt;value]:
       <literal>\bibitem</literal>.
      </para>
     </listitem>
-    <listitem>
-     <para>
-      Finally, it will try to see if this file includes other files
-      via the <literal>\input</literal> command. For each such file found,
-      &ls; will repeat the previous two steps stopping at the first file
-      which has either a <literal>\bibliography</literal> command or a
-      <literal>thebibliography</literal> environment.
-     </para>
-    </listitem>
    </orderedlist>
-   <section id="cite-search-caching">
-    <title>Caching the <literal>\cite</literal> completion results</title>
-    <anchor id="TClearCiteHist"></anchor>
-    <para>
-     Often times, the editing cycle proceeds by first laying out a
-     comprehensive bibliography and then completing all the
-     <literal>\cite</literal> commands in one session. In such situations,
-     it is inefficient to scan the whole list of bibliography files for
-     bib-keys each time. &ls; provides a way to cache the results of the
-     cite completion search using the <link
-      linkend="Tex_RememberCiteSearch"><literal>Tex_RememberCiteSearch</literal></link>
-     variable. If set, &ls; will perform the search only the first time
-     <literal>&lt;F9&gt;</literal> is used. Next time on, it will reuse the
-     search results. If you wish to redo the search results, issue the
-     command
-     <programlisting>TClearCiteHist</programlisting>
-     This will redo the completion list next time you use
-     <literal>&lt;F9&gt;</literal>.
-    </para>
-   </section>
   </section>
   <section id="ls-filename-completion">
    <title>&ls; filename completion</title>
@@ -2172,6 +2051,26 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'</programlisting>
     which the fragment is being created. This ensures that any relative
     path-names defined in the fragment will still work. &ls; will
     attempt to clean the temporary file(s) created when Vim exits.
+   </para>
+  </section>
+  <section id="external-compiling">
+   <title>Load log file after external compilation</title>
+   <para>
+    If you do not use &ls;, but an external program or script to compile
+    your tex documents, you can use
+    <programlisting>:cg | copen</programlisting>
+    to load (and parse) the <literal>.log</literal> file.
+   </para>
+   <para>
+    If you use vim to compile your documents, you might want to use
+    <programlisting>:let $max_print_line=1024</programlisting>
+    such that latex will not wrap the filenames. Otherwise, you could use it
+    as an environment variable or simply use
+    <programlisting>max_print_line=1024 pdflatex ...</programlisting>
+    in your terminal. If you are using latexmk, you should set
+    <programlisting>$ENV{'max_print_line'} = '1024';
+        $log_wrap = $ENV{'max_print_line'};</programlisting>
+       in your <literal>~/.latexmkrc</literal>.
    </para>
   </section>
  </section>
@@ -2637,152 +2536,6 @@ and some more text
      default setting.
     </para>
    </section>
-  </section>
-  <section id="editing-folding">
-   <title>Editing the folding.vim file directly</title>
-   <para>
-    If you are using version 1.5 of &ls; or older, you will need to
-    directly edit the
-    <literal>$VIM/ftplugin/latex-suite/folding.vim</literal> file if you
-    wish to modify the folding scheme.  You will need to modify the
-    function <literal>MakeTexFolds()</literal> defined in that file to
-    modify the fold syntax.  <literal>MakeTexFolds</literal> makes a number
-    of calls to <literal>AddSyntaxFoldItem</literal>. Each such call
-    defines a new "fold item". The order in which these calls are made
-    defines how the folds are nested. For example, if you desire an
-    <literal>figure</literal> environment to be nested within a
-    <literal>section</literal>, then you should define the fold for the
-    <literal>figure</literal> first. The syntax of
-    <literal>AddSyntaxFoldItem</literal> is as follows:
-    <programlisting>AddSyntaxFoldItem(startpat, endpat, startoff, endoff [, startskip, endskip])</programlisting>
-    If the last two arguments are omitted, then they are assumed to default
-    to the empty strings <literal>''</literal>.
-    The explanation for each argument is as follows:
-   </para>
-   <informaltable frame="all">
-    <tgroup cols="2">
-     <thead>
-      <row>
-       <entry>Argument</entry>
-       <entry>Explanation</entry>
-      </row>
-     </thead>
-     <tbody>
-      <row>
-       <entry><literal>startpat</literal></entry>
-       <entry>a line matching this pattern defines
-        the beginning of a fold.
-       </entry>
-      </row>
-      <row>
-       <entry>
-        <literal>endpat</literal>
-       </entry>
-       <entry>
-        a line matching this pattern defines the end of a fold.
-       </entry>
-      </row>
-      <row>
-       <entry><literal>startoff</literal></entry>
-       <entry>
-        this is the offset from the starting line at which folding will
-        actually start
-       </entry>
-      </row>
-      <row>
-       <entry><literal>endoff</literal></entry>
-       <entry>
-        like <literal>startoff</literal>, but gives the offset of the
-        actual fold end from the line satisfying <literal>endpat</literal>.
-        <literal>startoff</literal> and <literal>endoff</literal> are
-        necessary when the folding region does not have a specific end
-        pattern corresponding to a start pattern. for example in &latex;,
-        <literal>\section{Section Name}</literal> defines the beginning of
-        a section, but there is no command which specifically ends a
-        section. Thus a <literal>\section</literal>  is assumed to end 1
-        line <emphasis>before</emphasis> another section starts.
-       </entry>
-      </row>
-      <row>
-       <entry>
-        <literal>startskip</literal>  
-       </entry>
-       <entry>
-        A Pattern Which Defines The Beginning Of A "Skipped" Region.
-
-        For example, suppose we define a \itemize fold as follows:
-        <programlisting><literal>startpat</literal> =  '^\s*\\item',
-<literal>endpat</literal> = '^\s*\\item\|^\s*\\end{\(enumerate\|itemize\|description\)}',
-<literal>startoff</literal> = 0,
-<literal>endoff</literal> = -1</programlisting>
-
-        This defines a fold which starts with a line beginning with an
-        <literal>\item</literal> and ending one line before a line beginning with an
-        <literal>\item</literal> or <literal>\end{enumerate}</literal> etc.
-
-        Then, as long as <literal>\item</literal>'s are not nested things are fine.
-        However, once items begin to nest, the fold started by one
-        <literal>\item</literal> can end because of an
-        <literal>\item</literal> in an <literal>\itemize</literal>
-        environment within this <literal>\item</literal>. i.e, the following can happen:
-
-        <programlisting>\begin{itemize}
-\item Some text                         &lt;------- fold will start here
-This item will contain a nested item
-\begin{itemize}                         &lt;----- fold will end here because next line contains \item...
-\item Hello  
-\end{itemize}                           &lt;----- ... instead of here.
-\item Next item of the parent itemize  
-\end{itemize}</programlisting>
-
-        Therefore, in order to completely define a folding item which
-        allows nesting, we need to also define a "skip" pattern.
-        <literal>startskip</literal> and end skip do that.
-        Leave '' when there is no nesting.
-       </entry>
-      </row>
-      <row>
-       <entry>
-        <literal>endskip</literal>  
-       </entry>
-       <entry>
-        the pattern which defines the end of the "skip" pattern for
-        nested folds.
-       </entry>
-      </row>
-     </tbody>
-    </tgroup>
-   </informaltable>
-   <note>
-    <title>Example 1</title>
-    <para>
-     A syntax fold region for the latex section is defined with the
-     following arguments to <literal>AddSyntaxFoldItem</literal>:
-     <programlisting>startpat = "\\section{"
-endpat   = "\\section{"
-startoff = 0
-endoff   = -1
-startskip = ''
-endskip = ''</programlisting>
-     Note that the start and end patterns are thus the same and
-     <literal>endoff</literal> has a negative value to capture the effect
-     of a section ending one line before the next starts.
-    </para>
-   </note>
-   <note>
-    <title>Example 2</title>
-    <para>
-     A syntax fold region for the \itemize environment is:
-     <programlisting>startpat = '^\s*\\item',
-endpat = '^\s*\\item\|^\s*\\end{\(enumerate\|itemize\|description\)}',
-startoff = 0,
-endoff = -1,
-startskip = '^\s*\\begin{\(enumerate\|itemize\|description\)}',
-endskip = '^\s*\\end{\(enumerate\|itemize\|description\)}'</programlisting>
-     Note the use of <literal>startskip</literal> and
-     <literal>endskip</literal> to allow nesting.
-    </para>
-   </note>
   </section>
  </section>
  <section id="latex-project">
@@ -4085,10 +3838,23 @@ let g:Tex_EnvLabelprefix_equation = "eq:"</programlisting>
      prepended to this variable.
     </para>
    </section>
+   <section id="Tex_UseOutlineCompletion">
+    <title>Tex_UseOutlineCompletion</title>
+    <para>
+     When set to 1 (default),
+     &ls; searches for <literal>\label</literal>s in all
+     <literal>.tex</literal> files of your project,
+     starting with the
+     <link linkend="latex-master-file">main file</link>
+     when &lt;F9&gt; is pressed. See <link
+      linkend="ls-completion-ref">\ref completion</link> for details.
+    </para>
+   </section>
    <section id="Tex_UseSimpleLabelSearch">
     <title>Tex_UseSimpleLabelSearch</title>
     <para>
-     When set to 1, &ls; searches for <literal>\label</literal>s in all
+     When set to 1 and if <literal>Tex_UseOutlineCompletion</literal> is 0,
+     &ls; searches for <literal>\label</literal>s in all
      <literal>.tex</literal> files in the directory containing the file
      being edited when &lt;F9&gt; is pressed. See <link
       linkend="ls-completion-ref">\ref completion</link> for details.
@@ -4123,6 +3889,15 @@ let g:Tex_EnvLabelprefix_equation = "eq:"</programlisting>
      relative to the location of the main file.
     </para>
    </section>
+   <section id="Tex_UseCiteCompletionVer2">
+    <title>Tex_UseCiteCompletionVer2</title>
+    <para>
+     When set to 1 (default),
+     &ls; uses python to parse your bib-file.
+     See <link
+      linkend="latex-completion-cite">\cite completion</link> for details.
+    </para>
+   </section>
    <section id="Tex_RememberCiteSearch">
     <title>g:Tex_RememberCiteSearch</title>
     <informaltable frame="all">
@@ -4136,8 +3911,9 @@ let g:Tex_EnvLabelprefix_equation = "eq:"</programlisting>
     </informaltable>
     <para>
      When this variable is non-zero, then &ls; will try to remember results
-     from the <literal>\cite</literal> completion as described in <link
-      linkend="cite-search-caching">this section</link>.
+     from the <literal>\cite</literal> completion.
+     This is only used if <literal>Tex_UseCiteCompletionVer2</literal>
+     is set to 0.
     </para>
    </section>
   </section>
