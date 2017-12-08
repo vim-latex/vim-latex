@@ -602,7 +602,7 @@ TexLet g:Tex_ViewerPreviewHeight = 10
 TexLet g:Tex_ExplorerHeight = 10
 
 " Directory for images. Read |latex-completion-explorer| before changing
-TexLet g:Tex_ImageDir = ''
+TexLet g:Tex_ImageDir = '.'
 
 " }}}
 " Options for completing a \ref {{{
