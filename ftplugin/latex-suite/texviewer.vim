@@ -92,7 +92,8 @@ function! Tex_Complete(what, where)
 
 			else
 				call Tex_Debug("Tex_Complete: calling Tex_GrepHelper", "view")
-				silent! grep! ____HIGHLY_IMPROBABLE___ %
+				" Clear the quickfix list
+				cexpr []
 				call Tex_GrepHelper(s:prefix, 'label')
 				call <SID>Tex_SetupCWindow()
 			endif
@@ -120,12 +121,8 @@ function! Tex_Complete(what, where)
 				call Tex_CompleteWord(citation, strlen(s:prefix))
 			
 			else
-				" grep! nothing % 
-				" does _not_ clear the search history contrary to what the
-				" help-docs say. This was expected. So use something improbable.
-				" TODO: Is there a way to clear the search-history w/o making a
-				"       useless, inefficient search?
-				silent! grep! ____HIGHLY_IMPROBABLE___ %
+				" Clear the quickfix list
+				cexpr []
 				if g:Tex_RememberCiteSearch && exists('s:citeSearchHistory')
 					call <SID>Tex_SetupCWindow(s:citeSearchHistory)
 				else
@@ -621,7 +618,7 @@ function! Tex_ScanFileForCite(prefix)
 
 		let filename = matchstr(getline('.'), '\\\(input\|include\){\zs.\{-}\ze}')
 
-		let foundfile = Tex_FindFile(filename, '.,'.g:Tex_TEXINPUTS, '.tex')
+		let foundfile = Tex_FindFile(filename, '.,'.Tex_GetVarValue('Tex_TEXINPUTS'), '.tex')
 		if foundfile != ''
 			exec 'split '.fnameescape(foundfile)
 			call Tex_Debug('scanning recursively in ['.foundfile.']', 'view')
@@ -646,7 +643,7 @@ function! Tex_ScanFileForLabels(prefix)
 	call Tex_Debug("+Tex_ScanFileForLabels: grepping in file [".bufname('%')."]", "view")
 
 	exec 'lcd'.fnameescape(expand('%:p:h'))
-	call Tex_Grepadd('\\\%(nl\)?label{'.a:prefix, "%")
+	call Tex_Grepadd('\\\%(nl\)\?label{'.a:prefix, "%")
 
 	" Then recursively grep for all \include'd or \input'ed files.
 	exec 0
@@ -655,7 +652,7 @@ function! Tex_ScanFileForLabels(prefix)
 		let wrap = 'W'
 
 		let filename = matchstr(getline('.'), '\\\(input\|include\){\zs.\{-}\ze}')
-		let foundfile = Tex_FindFile(filename, '.,'.Tex_TEXINPUTS, '.tex')
+		let foundfile = Tex_FindFile(filename, '.,'.Tex_GetVarValue('Tex_TEXINPUTS'), '.tex')
 		if foundfile != ''
 			exec 'split '.fnameescape(foundfile)
 			call Tex_Debug('Tex_ScanFileForLabels: scanning recursively in ['.foundfile.']', 'view')
