@@ -1652,6 +1652,7 @@ Enter filter criterion [field&lt;space&gt;value]:
     The following logic is applied to find out which bibliographic entries
     are included in the completion.
    </para>
+   <para>
    <orderedlist>
     <listitem>
      <para>
@@ -1663,38 +1664,38 @@ Enter filter criterion [field&lt;space&gt;value]:
     </listitem>
     <listitem>
      <para>
-      First, the file is scanned for a <literal>\bibliography</literal>
+      The file is scanned for a <literal>\bibliography</literal>
       command or a <literal>\addbibresource</literal> command.
-      To explain better, assume that a command
-      <programlisting>\bibliography{file1,file2}</programlisting> is found
-      in the present file. For each bibliography file, say
-      <literal>file1</literal>, &ls; first tries to see if a
-      <literal>.bib</literal> file, <literal>file1.bib</literal> can be
+      For each bibliography file, &ls; tries to see if a
+      <literal>.bib</literal> file can be
       found. If so, it will scan it for bib-keys of the form
       <literal>@BOOK{</literal> etc., and add these searches to the
-      completion list. If a <literal>.bib</literal> file cannot be found,
-      then it will try to see if <literal>file1.bbl</literal> can be found.
-      If so, &ls; will search it for bib-keys of the form
-      <literal>\bibitem</literal> and add these to the completion list.
+      completion list.
      </para>
      <para>
       You can set the location where &ls; will search for
-      <literal>.bib</literal> and <literal>.bbl</literal> files using the
+      <literal>.bib</literal> files using the
       <link
        linkend="Tex_BIBINPUTS"><literal>|Tex_BIBINPUTS|</literal></link>
       variable.
      </para>
     </listitem>
-    <listitem>
-     <para>
-      If a <literal>\bibliography</literal> command is not found, then &ls;
-      tries to scan the present file for a
-      <literal>\begin{thebibliography}</literal> environment. If found,
-      &ls; searches the present file for bib-keys of the form
-      <literal>\bibitem</literal>.
-     </para>
-    </listitem>
    </orderedlist>
+   </para>
+   <note>
+    <para>
+     By disabling the setting 
+     <link linkend="Tex_UseCiteCompletionVer2">
+      <literal>Tex_UseCiteCompletionVer2</literal>
+     </link>,
+     &ls; will also look for <literal>.bbl</literal> files
+     (if no <literal>.bib</literal> file is found)
+     or a <literal>\begin{thebibliography}</literal>
+     environment.
+     However, a filtering of the results (as described above)
+     will not be available.
+   </para>
+   </note>
   </section>
   <section id="ls-filename-completion">
    <title>&ls; filename completion</title>

@@ -1382,27 +1382,24 @@ NOTE: <F9> will also work in a similar way after any command which contains the
 The following logic is applied to find out which bibliographic entries are
 included in the completion.
 
-
 1. Firstly, if the present file has a master-file [|ls_a_cr|] defined for it,
    then Latex-Suite will perform the following steps on that file instead of on
    the current file.
 
-2. First, the file is scanned for a \bibliography command or a \addbibresource
-   command. To explain better, assume that a command  >
-       \bibliography{file1,file2}
-<  is found in the present file. For each bibliography file, say file1,
-   Latex-Suite first tries to see if a .bib file, file1.bib can be found. If so,
-   it will scan it for bib-keys of the form @BOOK{ etc., and add these searches
-   to the completion list. If a .bib file cannot be found, then it will try to
-   see if file1.bbl can be found. If so, Latex-Suite will search it for bib-keys
-   of the form \bibitem and add these to the completion list.
+2. The file is scanned for a \bibliography command or a \addbibresource command.
+   For each bibliography file, Latex-Suite tries to see if a .bib file can be
+   found. If so, it will scan it for bib-keys of the form @BOOK{ etc., and add
+   these searches to the completion list.
    
-   You can set the location where Latex-Suite will search for .bib and .bbl
-   files using the |Tex_BIBINPUTS| [|ls_a_dw|] variable.
+   You can set the location where Latex-Suite will search for .bib files using
+   the |Tex_BIBINPUTS| [|ls_a_dw|] variable.
 
-3. If a \bibliography command is not found, then Latex-Suite tries to scan the
-   present file for a \begin{thebibliography} environment. If found, Latex-Suite
-   searches the present file for bib-keys of the form \bibitem.
+NOTE: By disabling the setting Tex_UseCiteCompletionVer2 [|ls_a_dA|],
+      Latex-Suite will also look for .bbl files (if no .bib file is found) or a
+      \begin{thebibliography} environment. However, a filtering of the results
+      (as described above) will not be available.
+      
+      
 
 --------------------------------------------------------------------------------
 Latex-Suite filename completion                               *ls_5_3* *ls_a_bU*
