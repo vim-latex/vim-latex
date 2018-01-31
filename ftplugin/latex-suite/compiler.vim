@@ -38,10 +38,12 @@ function! Tex_SetTeXCompilerTarget(type, target)
 		let s:target = target
 
 	elseif a:type == 'View' && (has('osx') || has('macunix'))
+				\ && Tex_GetVarValue('Tex_TreatMacViewerAsUNIX') != 1
 		" On the mac, we can have empty view rules, so do not complain when
 		" both Tex_ViewRule_target and Tex_ViewRuleComplete_target are
 		" empty. On other platforms, we will complain... see below.
 		let s:target = target
+		let s:viewer = ''
 
 	else
 		let l:origdir = fnameescape(getcwd())
@@ -257,12 +259,12 @@ function! Tex_ViewLaTeX()
 	elseif ((has('osx') || has('macunix'))
 				\ && Tex_GetVarValue('Tex_TreatMacViewerAsUNIX') != 1)
 
-		if strlen(s:viewer)
-			let appOpt = '-a '
+		if strlen(s:viewer) > 0
+			let appOpt = '-a ' . s:viewer
 		else
 			let appOpt = ''
 		endif
-		let execString = 'open '.appOpt.s:viewer.' $*.'.s:target
+		let execString = 'open '.appOpt.' $*.'.s:target
 
 	else
 		" taken from Dimitri Antoniou's tip on vim.sf.net (tip #225).
