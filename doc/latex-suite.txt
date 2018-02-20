@@ -228,8 +228,8 @@ NOTE: Place Holders
 NOTE: Over-riding Latex-Suite Macros
       ------------------------------
       If you wish to change these macros from their default values, for example,
-      if you wish to change `w to expand to \omega instead of its default
-      expansion to \wedge, you should use the IMAP function as described in the
+      if you wish to change `w to expand to \wedge instead of its default
+      expansion to \omega, you should use the IMAP function as described in the
       Using IMAP() [|ls_a_bG|] section.
       
       An important thing to note is that if you wish to over-ride macros created
@@ -237,9 +237,9 @@ NOTE: Over-riding Latex-Suite Macros
       IMAP() calls in a script which gets sourced after the files in
       Latex-Suite. A good place typically is as a file-type plugin file in the
       ~/.vim/after/ftplugin/ directory. (Use ~/vimfiles if you are using
-      WINDOWS). For example to over-ride `w to \omega instead of \wedge, place
+      WINDOWS). For example to over-ride `w to \wedge instead of \omega, place
       the following line in (say) ~/.vim/after/ftplugin/tex_macros.vim:  >
-          call IMAP('`w', '\omega', 'tex')
+          call IMAP('`w', '\wedge', 'tex')
 <     To delete a mapping, you can use  >
           call IUNMAP('FEM', 'tex')
 <     in ~/.vim/after/ftplugin/tex_macros.vim.
@@ -502,7 +502,16 @@ Greek Letter Mappings                                         *ls_3_5* *ls_a_bu*
 
 Lower case
 
-`a through `z expand to \alpha through \zeta.Upper case:
+`a through `z expand to \alpha through \zeta.
+NOTE: In the LaTex list of lowercase letters there is no omicron because it
+      would be identical in appearance to Latin 'o'. So inserting \omicron
+      in default LaTex would result an error. But we still expand `o to \omicron
+      to make the plugin behave consistently. And for those who really need to
+      distinguish between Latin 'o' and \omicron, you may enable the command by
+      including package unicode-math or simply setting \newcommand\omicron{o} in
+      your document.
+
+Upper case:
 
   >
     `D = \Delta

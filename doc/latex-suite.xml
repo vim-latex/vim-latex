@@ -191,8 +191,8 @@ set iskeyword+=:
    <para>
     If you wish to change these macros from their default values, for
     example, if you wish to change <literal>`w</literal> to expand to
-    <literal>\omega</literal> instead of its default expansion to
-    <literal>\wedge</literal>, you should use the <literal>IMAP</literal>
+    <literal>\wedge</literal> instead of its default expansion to
+    <literal>\omega</literal>, you should use the <literal>IMAP</literal>
     function as described in the <link linkend="ls-new-macros">Using 
      IMAP()</link> section.
    </para>
@@ -205,10 +205,10 @@ set iskeyword+=:
     <literal>~/.vim/after/ftplugin/</literal> directory. (Use
     <literal>~/vimfiles</literal> if you are using
     <literal>WINDOWS</literal>). For example to over-ride
-    <literal>`w</literal> to <literal>\omega</literal> instead of
-    <literal>\wedge</literal>, place the following line in (say)
+    <literal>`w</literal> to <literal>\wedge</literal> instead of
+    <literal>\omega</literal>, place the following line in (say)
     <literal>~/.vim/after/ftplugin/tex_macros.vim</literal>:
-    <programlisting>call IMAP('`w', '\omega', 'tex')</programlisting>
+    <programlisting>call IMAP('`w', '\wedge', 'tex')</programlisting>
     To delete a mapping, you can use
     <programlisting>call IUNMAP('FEM', 'tex')</programlisting>
     in <literal>~/.vim/after/ftplugin/tex_macros.vim</literal>.
@@ -532,6 +532,18 @@ SSP for subparagraph</programlisting>
    </para>
    <literal>`a</literal>   through <literal>`z</literal> expand to
    <literal>\alpha</literal> through <literal>\zeta</literal>.
+   <note><para>
+     In the LaTex list of lowercase letters there is no
+     <literal>\omicron</literal> because it
+     would be identical in appearance to Latin <literal>o</literal>.
+     So inserting <literal>\omicron</literal> in default LaTex would result an
+     error. But we still expand <literal>`o</literal> to
+     <literal>\omicron</literal> to make the plugin behave consistently.
+     And  for those who really need to  distinguish between Latin
+     <literal>o</literal> and <literal>\omicron</literal>, you may enable the
+     command by including package <literal>unicode-math</literal> or simply
+     setting <literal>\newcommand\omicron{o}</literal> in your document.
+   </para></note>
    <para>
     Upper case:
    </para>
