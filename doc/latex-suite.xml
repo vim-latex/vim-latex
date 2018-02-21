@@ -546,8 +546,19 @@ SSP for subparagraph</programlisting>
    </para></note>
    <para>
     Upper case:
+    <literal>`A</literal> through <literal>`Z</literal> expand to
+    <literal>\Alpha</literal> through <literal>\Zeta</literal>.
    </para>
-   <programlisting>`D = \Delta
+   <note><para>
+     NOTE: Same as what happens to the Lower case, LaTeX does not support upper
+     case for all greek alphabets. And only the following expansions are valid
+     in default. In order to use the rest of expansions, you may want to
+     manually configure them by either including packages or defining
+     corresponding commands.
+   </para></note>
+    <para>Valid Upper case Greek Letters in default:</para>
+    <programlisting>
+`D = \Delta
 `F = \Phi
 `G = \Gamma
 `Q = \Theta
@@ -556,8 +567,8 @@ SSP for subparagraph</programlisting>
 `Y = \Psi
 `S = \Sigma
 `U = \Upsilon
-`W = \Omega</programlisting>
-   <note><para>LaTeX does not support upper case for all greek alphabets.</para></note>
+`W = \Omega
+    </programlisting>
    <para>Just like other &ls; mappings, these mappings are not created using
     the standard <literal>imap</literal> command. Thus you can type slowly,
     correct using <literal>&lt;BS&gt;</literal> etc.</para>

@@ -513,7 +513,14 @@ NOTE: In the LaTex list of lowercase letters there is no omicron because it
 
 Upper case:
 
-  >
+`A through `Z expand to \Alpha through \Zeta.
+NOTE: Same as what happens to the Lower case, LaTeX does not support upper case
+for all greek alphabets. And only the following expansions are valid in
+default. In order to use the rest of expansions, you may want to manually
+configure them by either including packages or defining corresponding
+commands.
+
+Valid Upper case Greek Letters in default:
     `D = \Delta
     `F = \Phi
     `G = \Gamma
@@ -524,7 +531,6 @@ Upper case:
     `S = \Sigma
     `U = \Upsilon
     `W = \Omega
-NOTE: LaTeX does not support upper case for all greek alphabets.
       
       
 Just like other Latex-Suite mappings, these mappings are not created using the
