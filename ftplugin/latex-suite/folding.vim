@@ -357,7 +357,7 @@ function! MakeTexFolds(force, manual)
 
 	" Open all folds if this function was triggered automatically
 	" and g:Tex_AutoFolding is disabled
-	if a:manual && !g:Tex_AutoFolding
+	if !a:manual && !g:Tex_AutoFolding
 		normal! zR
 	endif
 endfunction
