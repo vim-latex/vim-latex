@@ -457,9 +457,8 @@ function! TexFoldTextFunction()
 	if getline(v:foldstart) =~ '^\s*' . section_pattern
 		" This is a section. Search for the content of the mandatory argument {...}
 		let type = matchstr(getline(v:foldstart), '^\s*\zs' . section_pattern)
-		let idx = match(getline(v:foldstart), '^\s*' . section_pattern . '\zs')
 
-		return myfoldtext . type . ParseSectionTitle(v:foldstart, idx)
+		return myfoldtext . type . ParseSectionTitle(v:foldstart)
 	else
 		" This is something.
 		return myfoldtext . getline(v:foldstart)
@@ -469,12 +468,12 @@ endfunction
 " s:ParseSectionTitle: create fold text for sections {{{
 " Search for the mandatory argument of the \section command and ignore the
 " optional argument.
-function! ParseSectionTitle(foldstart, idx)
+function! ParseSectionTitle(foldstart)
 	let currlinenr = a:foldstart
 	let currline = s:StripLine(getline(currlinenr))
 	let currlinelen = strlen(currline)
 
-	let index = a:idx
+	let index = 0
 
 	let maxlines = 10
 
@@ -491,7 +490,7 @@ function! ParseSectionTitle(foldstart, idx)
 			" Read a new line.
 			let maxlines = maxlines - 1
 			if maxlines < 0
-				return string . ' Scanned to many lines'
+				return string . ' Scanned too many lines'
 			endif
 			let currlinenr = currlinenr + 1
 			let currline = s:StripLine(getline(currlinenr))
