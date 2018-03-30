@@ -504,7 +504,7 @@ function! s:ParseSectionTitle(foldstart, section_pattern)
 			continue
 		endif
 
-		" Look for [] and {}
+		" Look for [] and {} at current position
 		if currline[index] =~ '[[{]'
 			if(currdepth == 0) && (currline[index] =~ '{')
 				let found_mandatory = 1
@@ -514,11 +514,17 @@ function! s:ParseSectionTitle(foldstart, section_pattern)
 			let currdepth -= 1
 		endif
 
-		if found_mandatory
-			let string .= currline[index]
+		" Look for the next interesting character
+		let next_index = match( currline, '[{}[\]]', index + 1 )
+		if next_index == -1
+			let next_index = currlinelen + 1
 		endif
 
-		let index = index + 1
+		" Update the string
+		if found_mandatory
+			let string .= currline[index:next_index-1]
+		endif
+		let index = next_index
 	endwhile
 
 	return string
