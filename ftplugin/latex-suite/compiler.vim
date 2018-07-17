@@ -348,6 +348,13 @@ endfunction
 "      For inverse search, if you are reading this, then just pressing \ls
 "      will work.
 function! Tex_ForwardSearchLaTeX()
+	let l:ssl=&ssl
+	" sumatrapdf (windows) does not handle backward slashes in paths very well
+	" so if the user is using "shellslash", better turn it off before expanding 
+	" all these filename variables.
+	if l:ssl
+		set nossl
+	endif
 	if &ft != 'tex'
 		echo "calling Tex_ForwardSeachLaTeX from a non-tex file"
 		return
@@ -366,6 +373,9 @@ function! Tex_ForwardSearchLaTeX()
 	let sourcefile = shellescape(expand('%'), 1)
 	let sourcefileFull = shellescape(expand('%:p'), 1)
 	let linenr = line('.')
+	if l:ssl
+		set ssl
+	endif
 	" cd to the location of the file to avoid problems with directory name
 	" containing spaces.
 	call Tex_CD(Tex_GetMainFileName(':p:h'))
@@ -373,7 +383,7 @@ function! Tex_ForwardSearchLaTeX()
 	" inverse search tips taken from Dimitri Antoniou's tip and Benji Fisher's
 	" tips on vim.sf.net (vim.sf.net tip #225)
 	let execString = 'silent! !'
-	if (has('win32'))
+	if has("win32") || has("win32unix") 
 		if (viewer =~? '^ *yap\( \|$\)')
 			let execString .= Tex_Stringformat('start %s -s %s%s %s', viewer, linenr, sourcefile, mainfnameRoot)
 
