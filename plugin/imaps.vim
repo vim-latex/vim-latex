@@ -338,7 +338,8 @@ function! s:LookupCharacter(char)
 	let charHash = s:Hash(a:char)
 
 	" The line so far, including the character that triggered this function:
-	let text = strpart(getline("."), 0, col(".")-1) . a:char
+	let linestart = strpart(getline("."), 0, col(".")-1)
+	let text = linestart . a:char
 	" Prefer a local map to a global one, even if the local map is shorter.
 	" Is this what we want?  Do we care?
 	" Use '\V' (very no-magic) so that only '\' is special, and it was already
@@ -353,7 +354,7 @@ function! s:LookupCharacter(char)
 		" If this is a character which could have been used to trigger an
 		" abbreviation, check if an abbreviation exists.
 		if a:char !~ '\k'
-			let lastword = matchstr(getline('.'), '\k\+$', '')
+			let lastword = matchstr(linestart, '\k\+$', '')
 			call IMAP_Debug('getting lastword = ['.lastword.']', 'imap')
 			if lastword != ''
 				let abbreviationRHS = maparg( lastword, 'i', 1 )
