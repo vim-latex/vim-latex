@@ -991,7 +991,7 @@ exe 'source '.fnameescape(s:path.'/version.vim')
 " SetTeXOptions: sets options/mappings for this file. {{{
 function! <SID>SetTeXOptions()
 	" Avoid reinclusion.
-	if exists('b:doneSetTeXOptions')
+	if exists('b:doneSetTeXOptions') || &ft ==# "bib"
 		return
 	endif
 	let b:doneSetTeXOptions = 1
