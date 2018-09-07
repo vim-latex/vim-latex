@@ -1127,7 +1127,7 @@ if exists('*readfile')
 elseif Tex_UsePython()
 	function! Tex_CatFile(filename)
 		" catFile assigns a value to retval
-		exec g:Tex_PythonCmd . ' catFile("'.a:filename.'")'
+		exec g:Tex_PythonCmd . ' catFile(r"'.a:filename.'")'
 
 		return retval
 	endfunction

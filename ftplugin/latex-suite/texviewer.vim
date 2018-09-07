@@ -739,7 +739,7 @@ function! Tex_StartOutlineCompletion()
     setlocal foldmarker=<<<,>>>
 
 	if Tex_UsePython()
-		exec g:Tex_PythonCmd . ' retval = outline.main("""' . mainfname . '""", """' . s:prefix . '""")'
+		exec g:Tex_PythonCmd . ' retval = outline.main(r"""' . mainfname . '""", """' . s:prefix . '""")'
 		exec g:Tex_PythonCmd . ' vim.current.buffer[:] = retval.splitlines()'
 	else
 		" delete everything in it to the blackhole
@@ -906,8 +906,8 @@ function! Tex_StartCiteCompletion()
     bot split __OUTLINE__
 	exec Tex_GetVarValue('Tex_OutlineWindowHeight', 15).' wincmd _'
 
-	exec g:Tex_PythonCmd . ' Tex_BibFile = bibtools.BibFile("""'.bibfiles.'""")'
-	exec g:Tex_PythonCmd . ' Tex_BibFile.addfilter("key ^'.s:prefix.'")'
+	exec g:Tex_PythonCmd . ' Tex_BibFile = bibtools.BibFile(r"""'.bibfiles.'""")'
+	exec g:Tex_PythonCmd . ' Tex_BibFile.addfilter(r"key ^'.s:prefix.'")'
 	
 	call Tex_DisplayBibList()
 	"call Tex_EchoBibShortcuts()
@@ -1038,9 +1038,9 @@ function! Tex_HandleBibShortcuts(command)
 			endif
 			call Tex_Debug(":Tex_HandleBibShortcuts: using inp = [".inp."]", "view")
 			if a:command == 'filter'
-				exec g:Tex_PythonCmd . ' Tex_BibFile.addfilter("'.inp.'")'
+				exec g:Tex_PythonCmd . ' Tex_BibFile.addfilter(r"'.inp.'")'
 			elseif a:command == 'sort'
-				exec g:Tex_PythonCmd . " Tex_BibFile.addsortfield(\"".inp."\")"
+				exec g:Tex_PythonCmd . " Tex_BibFile.addsortfield(r\"".inp."\")"
 				exec g:Tex_PythonCmd . ' Tex_BibFile.sort()'
 			endif
 			silent! call Tex_DisplayBibList()
@@ -1049,7 +1049,7 @@ function! Tex_HandleBibShortcuts(command)
 	elseif a:command == 'remove_filters'
 
 		exec g:Tex_PythonCmd . ' Tex_BibFile.rmfilters()'
-		exec g:Tex_PythonCmd . ' Tex_BibFile.addfilter("key ^'.s:prefix.'")'
+		exec g:Tex_PythonCmd . ' Tex_BibFile.addfilter(r"key ^'.s:prefix.'")'
 		call Tex_DisplayBibList()
 		
 	endif
