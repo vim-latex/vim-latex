@@ -3562,6 +3562,32 @@ let g:Tex_EnvLabelprefix_equation = "eq:"</programlisting>
       circumstances.
      </para>
     </section>
+    <section id="Tex_Com_name_aliasto">
+     <title>Tex_Com_name_aliasto</title>
+      <para>
+       Similar to <link linkend="Tex_Env_name_aliasto">Tex_Env_name_aliasto</link>,
+       this variable lets you set an alias to another command.
+      </para>
+      <para>
+       For example, if you use the above mentioned <literal>frac</literal>
+       a lot and want to save yourself some key strokes, you may set:
+       <programlisting>
+let g:Tex_Com_fr_aliasto = "frac" </programlisting>
+       And next time you type <literal>fr</literal> and then press
+       <literal>&lt;F7&gt;</literal>, &ls; will expand it to
+       <literal>\frac{&ph;}{&ph;}&ph;</literal>.
+      </para>
+      <para>
+       If you try to expand to an command that is neither built-in, nor defined
+       by you, &ls; would simply wrap it up with a barebone command like:
+        <programlisting>
+\expanded_name{&lt;++&gt;}&lt;++&gt;</programlisting>
+      </para>
+      <para>
+       And if an alias happen to have the same name with another command, the
+       alias precedes the command.
+      </para>
+    </section>
     <section id="Tex_PromptedCommands">
      <title>g:Tex_PromptedCommands</title>
      <informaltable frame="all">

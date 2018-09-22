@@ -1052,14 +1052,18 @@ function! Tex_PutCommand(com, isvisual)
 			return VEnclose("\\".a:com.'{', '}', "\\".a:com.'{', '}')
 		endif
 	else
-		if exists('b:Tex_Com_{"'.a:com.'"}')
-			return IMAP_PutTextWithMovement(b:Tex_Com_{a:com})
-		elseif exists('g:Tex_Com_{"'.a:com.'"}')
-			return IMAP_PutTextWithMovement(g:Tex_Com_{a:com})
-		elseif a:com == '$'
+		let com = a:com
+		if exists('g:Tex_Com_{"'.a:com.'"}_aliasto')
+			let com = g:Tex_Com_{a:com}_aliasto
+		endif
+		if exists('b:Tex_Com_{"'.com.'"}')
+			return IMAP_PutTextWithMovement(b:Tex_Com_{com})
+		elseif exists('g:Tex_Com_{"'.com.'"}')
+			return IMAP_PutTextWithMovement(g:Tex_Com_{com})
+		elseif com == '$'
 			return IMAP_PutTextWithMovement('$<++>$')
 		else
-			return IMAP_PutTextWithMovement("\\".a:com.'{<++>}<++>')
+			return IMAP_PutTextWithMovement("\\".com.'{<++>}<++>')
 		endif
 	endif
 endfunction " }}}
