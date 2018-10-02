@@ -530,9 +530,12 @@ SSP for subparagraph</programlisting>
    <para>
     Lower case
    </para>
-   <literal>`a</literal>   through <literal>`z</literal> expand to
-   <literal>\alpha</literal> through <literal>\zeta</literal>.
-   <note><para>
+   <para>
+    <literal>`a</literal> through <literal>`z</literal> expand to
+    <literal>\alpha</literal> through <literal>\zeta</literal>.
+   </para>
+   <note>
+    <para>
      In the LaTex list of lowercase letters there is no
      <literal>\omicron</literal> because it
      would be identical in appearance to Latin <literal>o</literal>.
@@ -543,19 +546,24 @@ SSP for subparagraph</programlisting>
      <literal>o</literal> and <literal>\omicron</literal>, you may enable the
      command by including package <literal>unicode-math</literal> or simply
      setting <literal>\newcommand\omicron{o}</literal> in your document.
-   </para></note>
+    </para>
+   </note>
    <para>
     Upper case:
+   </para>
+   <para>
     <literal>`A</literal> through <literal>`Z</literal> expand to
     <literal>\Alpha</literal> through <literal>\Zeta</literal>.
    </para>
-   <note><para>
-     NOTE: Same as what happens to the Lower case, LaTeX does not support upper
+   <note>
+    <para>
+     Same as what happens to the Lower case, LaTeX does not support upper
      case for all greek alphabets. And only the following expansions are valid
      in default. In order to use the rest of expansions, you may want to
      manually configure them by either including packages or defining
      corresponding commands.
-   </para></note>
+    </para>
+   </note>
     <para>Valid Upper case Greek Letters in default:</para>
     <programlisting>
 `D = \Delta
@@ -567,11 +575,12 @@ SSP for subparagraph</programlisting>
 `Y = \Psi
 `S = \Sigma
 `U = \Upsilon
-`W = \Omega
-    </programlisting>
-   <para>Just like other &ls; mappings, these mappings are not created using
-    the standard <literal>imap</literal> command. Thus you can type slowly,
-    correct using <literal>&lt;BS&gt;</literal> etc.</para>
+`W = \Omega</programlisting>
+   <para>
+     Just like other &ls; mappings, these mappings are not created using
+     the standard <literal>imap</literal> command. Thus you can type slowly,
+     correct using <literal>&lt;BS&gt;</literal> etc.
+    </para>
   </section>
   <section id="auc-tex-mappings">
    <title>Auc-Tex Key Bindings</title>

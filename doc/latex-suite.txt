@@ -503,24 +503,31 @@ Greek Letter Mappings                                         *ls_3_5* *ls_a_bu*
 Lower case
 
 `a through `z expand to \alpha through \zeta.
-NOTE: In the LaTex list of lowercase letters there is no omicron because it
-      would be identical in appearance to Latin 'o'. So inserting \omicron
-      in default LaTex would result an error. But we still expand `o to \omicron
-      to make the plugin behave consistently. And for those who really need to
-      distinguish between Latin 'o' and \omicron, you may enable the command by
+
+NOTE: In the LaTex list of lowercase letters there is no \omicron because it
+      would be identical in appearance to Latin o. So inserting \omicron in
+      default LaTex would result an error. But we still expand `o to \omicron to
+      make the plugin behave consistently. And for those who really need to
+      distinguish between Latin o and \omicron, you may enable the command by
       including package unicode-math or simply setting \newcommand\omicron{o} in
       your document.
+
 
 Upper case:
 
 `A through `Z expand to \Alpha through \Zeta.
+
 NOTE: Same as what happens to the Lower case, LaTeX does not support upper case
-for all greek alphabets. And only the following expansions are valid in
-default. In order to use the rest of expansions, you may want to manually
-configure them by either including packages or defining corresponding
-commands.
+      for all greek alphabets. And only the following expansions are valid in
+      default. In order to use the rest of expansions, you may want to manually
+      configure them by either including packages or defining corresponding
+      commands.
+
 
 Valid Upper case Greek Letters in default:
+
+  >
+
     `D = \Delta
     `F = \Phi
     `G = \Gamma
@@ -531,8 +538,6 @@ Valid Upper case Greek Letters in default:
     `S = \Sigma
     `U = \Upsilon
     `W = \Omega
-      
-      
 Just like other Latex-Suite mappings, these mappings are not created using the
 standard imap command. Thus you can type slowly, correct using <BS> etc.
 
