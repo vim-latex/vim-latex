@@ -530,9 +530,12 @@ SSP for subparagraph</programlisting>
    <para>
     Lower case
    </para>
-   <literal>`a</literal>   through <literal>`z</literal> expand to
-   <literal>\alpha</literal> through <literal>\zeta</literal>.
-   <note><para>
+   <para>
+    <literal>`a</literal> through <literal>`z</literal> expand to
+    <literal>\alpha</literal> through <literal>\zeta</literal>.
+   </para>
+   <note>
+    <para>
      In the LaTex list of lowercase letters there is no
      <literal>\omicron</literal> because it
      would be identical in appearance to Latin <literal>o</literal>.
@@ -543,19 +546,24 @@ SSP for subparagraph</programlisting>
      <literal>o</literal> and <literal>\omicron</literal>, you may enable the
      command by including package <literal>unicode-math</literal> or simply
      setting <literal>\newcommand\omicron{o}</literal> in your document.
-   </para></note>
+    </para>
+   </note>
    <para>
     Upper case:
+   </para>
+   <para>
     <literal>`A</literal> through <literal>`Z</literal> expand to
     <literal>\Alpha</literal> through <literal>\Zeta</literal>.
    </para>
-   <note><para>
-     NOTE: Same as what happens to the Lower case, LaTeX does not support upper
+   <note>
+    <para>
+     Same as what happens to the Lower case, LaTeX does not support upper
      case for all greek alphabets. And only the following expansions are valid
      in default. In order to use the rest of expansions, you may want to
      manually configure them by either including packages or defining
      corresponding commands.
-   </para></note>
+    </para>
+   </note>
     <para>Valid Upper case Greek Letters in default:</para>
     <programlisting>
 `D = \Delta
@@ -567,11 +575,12 @@ SSP for subparagraph</programlisting>
 `Y = \Psi
 `S = \Sigma
 `U = \Upsilon
-`W = \Omega
-    </programlisting>
-   <para>Just like other &ls; mappings, these mappings are not created using
-    the standard <literal>imap</literal> command. Thus you can type slowly,
-    correct using <literal>&lt;BS&gt;</literal> etc.</para>
+`W = \Omega</programlisting>
+   <para>
+     Just like other &ls; mappings, these mappings are not created using
+     the standard <literal>imap</literal> command. Thus you can type slowly,
+     correct using <literal>&lt;BS&gt;</literal> etc.
+    </para>
   </section>
   <section id="auc-tex-mappings">
    <title>Auc-Tex Key Bindings</title>
@@ -3336,6 +3345,36 @@ endif</programlisting>
  \end{align*}&ph;</programlisting>
       </para>
     </section>
+    <section id="Tex_Env_name_aliasto">
+     <title>Tex_Env_name_aliasto</title>
+      <para>
+       You may use this variable to set an alias to another environment.
+      </para>
+      <para>
+       For example, if you use the above mentioned <literal>theorem</literal>
+       environment a lot and want to save yourself from typing in the whole
+       word everytime you use the environment, you may set
+       <programlisting>
+let g:Tex_Env_tr_aliasto = "theorem"</programlisting>
+       And next time you type <literal>tr</literal> and then press
+       <literal>&lt;F5&gt;</literal>, &ls; will expand it to either the default
+       <literal>theorem</literal> environment or the <literal>theorem</literal>
+       defined by you, based on whether <literal>g:Tex_Env_theorem</literal>
+       has been set.
+      </para>
+      <para>
+       If you try to expand to an environment that is neither built-in, nor defined
+       by you, &ls; would simply wrap it up with a barebone environment like:
+        <programlisting>
+\begin{expanded_name}
+    &lt;++&gt;
+\end{expanded_name}&lt;++&gt;</programlisting>
+      </para>
+      <para>
+       And if an alias happen to have the same name with another environment, the
+       alias precedes the environment.
+      </para>
+    </section>
     <section id="Tex_EnvLabelprefix_name">
      <title>Tex_EnvLabelprefix_name</title>
       <para>
@@ -3522,6 +3561,32 @@ let g:Tex_EnvLabelprefix_equation = "eq:"</programlisting>
       details on how to create this setting in various special
       circumstances.
      </para>
+    </section>
+    <section id="Tex_Com_name_aliasto">
+     <title>Tex_Com_name_aliasto</title>
+      <para>
+       Similar to <link linkend="Tex_Env_name_aliasto">Tex_Env_name_aliasto</link>,
+       this variable lets you set an alias to another command.
+      </para>
+      <para>
+       For example, if you use the above mentioned <literal>frac</literal>
+       a lot and want to save yourself some key strokes, you may set:
+       <programlisting>
+let g:Tex_Com_fr_aliasto = "frac" </programlisting>
+       And next time you type <literal>fr</literal> and then press
+       <literal>&lt;F7&gt;</literal>, &ls; will expand it to
+       <literal>\frac{&ph;}{&ph;}&ph;</literal>.
+      </para>
+      <para>
+       If you try to expand to an command that is neither built-in, nor defined
+       by you, &ls; would simply wrap it up with a barebone command like:
+        <programlisting>
+\expanded_name{&lt;++&gt;}&lt;++&gt;</programlisting>
+      </para>
+      <para>
+       And if an alias happen to have the same name with another command, the
+       alias precedes the command.
+      </para>
     </section>
     <section id="Tex_PromptedCommands">
      <title>g:Tex_PromptedCommands</title>
