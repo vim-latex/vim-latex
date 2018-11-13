@@ -417,7 +417,7 @@ function! Tex_GetMainFileName(...)
 	" move up the directory tree until we find a .latexmain file.
 	" TODO: Should we be doing this recursion by default, or should there be a
 	"       setting?
-	while glob('*.latexmain',v:true) == ''
+	while glob('*.latexmain', 1) == ''
 		let dirmodifier = dirmodifier.':h'
 		let dirNew = fnameescape(expand(dirmodifier))
 		" break from the loop if we cannot go up any further.
@@ -428,7 +428,7 @@ function! Tex_GetMainFileName(...)
 		exe 'cd '.dirLast
 	endwhile
 
-	let lheadfile = glob('*.latexmain',v:true)
+	let lheadfile = glob('*.latexmain', 1)
 	if lheadfile != ''
 		" Remove the trailing .latexmain part of the filename... We never want
 		" that.
