@@ -7,7 +7,7 @@
 "  Description: functions to interact with Syntaxfolds.vim
 "=============================================================================
 
-nnoremap <unique> <Plug>Tex_RefreshFolds :call MakeTexFolds(1, 1)<cr>
+nnoremap <Plug>Tex_RefreshFolds :call MakeTexFolds(1, 1)<cr>
 
 augroup LatexSuite
 	au LatexSuite User LatexSuiteFileType 
