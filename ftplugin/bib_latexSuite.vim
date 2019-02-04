@@ -16,4 +16,7 @@ runtime ftplugin/latex-suite/main.vim
 " Disable smart-quotes because we need to enter real quotes in bib files.
 runtime ftplugin/latex-suite/bibtex.vim
 
+" Infect the current buffer with <buffer>-local imaps for the IMAPs
+call IMAP_infect()
+
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4:nowrap
