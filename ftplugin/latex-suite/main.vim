@@ -1068,7 +1068,8 @@ let g:Tex_completion_explorer = ','
 
 " Mappings defined in package files will overwrite all other
 exe 'source '.fnameescape(s:path.'/packages.vim')
-
+" Tex objects are defined here. These are vim like text objects
+exe 'source '.fnameescape(s:path.'/texobjects.vim')
 " ==============================================================================
 " These functions are used to immitate certain operating system type functions
 " (like reading the contents of a file), which are not available in vim. For
