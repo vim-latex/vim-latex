@@ -42,6 +42,7 @@ function! Tex_SetTeXCompilerTarget(type, target)
 
 	elseif Tex_GetVarValue('Tex_'.a:type.'RuleComplete_'.target) != ''
 		let s:target = target
+		let s:viewer = ''
 
 	elseif a:type == 'View' && (has('osx') || has('macunix'))
 				\ && Tex_GetVarValue('Tex_TreatMacViewerAsUNIX') != 1
