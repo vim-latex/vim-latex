@@ -395,7 +395,10 @@ call s:SetLatexEfm()
 
 " Set the errorfile if not already set by somebody else
 if &errorfile ==# ''  ||  &errorfile ==# 'errors.err'
-	execute 'set errorfile=' . fnameescape(Tex_GetMainFileName(':p:r') . '.log')
+	try
+		execute 'set errorfile=' . fnameescape(Tex_GetMainFileName(':p:r') . '.log')
+	catch
+	endtry
 endif
 
 
