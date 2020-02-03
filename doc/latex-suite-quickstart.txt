@@ -28,17 +28,6 @@ functionalities of Latex-Suite.
 |lq_10| Conclusions
 
 ================================================================================
-Viewing this file
-
-This file can be viewed with all the sections and subsections folded to ease
-navigation. By default, vim does not fold help documents. To create the folds,
-press za now. The folds are created via a foldexpr which can be seen in the
-last section of this file.
-
-See |usr_28.txt| for an introduction to folding and |fold-commands| for key
-sequences and commands to work with folds.
-
-================================================================================
 Using this tutorial                                             *lq_1* *lq_a_bc*
                                                             *lsq-using-tutorial*
 
@@ -399,10 +388,4 @@ cvs -d:pserver:anonymous@cvs.vim-latex.sf.net:/cvsroot/vim-latex co db2vim
 
 Or you can visit the web-interface to sourceforge CVS at:
 http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/vim-latex/db2vim/
-
-The following modelines should nicely fold up this help manual.
-
-vim:ft=help:fdm=expr:nowrap
-vim:foldexpr=getline(v\:lnum-1)=~'-\\{80}'?'>2'\:getline(v\:lnum-1)=~'=\\{80}'?'>1'\:getline(v\:lnum)=~'=\\{80}'?'0'\:getline(v\:lnum)=~'-\\{80}'?'1'\:'='
-vim:foldtext=substitute(v\:folddashes.substitute(getline(v\:foldstart),'\\s*\\*.*',"",""),'^--','\ \ \ \ \ \ ','')
 ================================================================================
