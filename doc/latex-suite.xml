@@ -1705,6 +1705,10 @@ Enter filter criterion [field&lt;space&gt;value]:
       completion list.
      </para>
      <para>
+      Afterwards, &ls; scans recursively in <literal>\include</literal>d
+      and <literal>\input</literal>ed files.
+     </para>
+     <para>
       You can set the location where &ls; will search for
       <literal>.bib</literal> files using the
       <link

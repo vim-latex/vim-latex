@@ -1400,6 +1400,8 @@ included in the completion.
    found. If so, it will scan it for bib-keys of the form @BOOK{ etc., and add
    these searches to the completion list.
    
+   Afterwards, Latex-Suite scans recursively in \included and \inputed files.
+   
    You can set the location where Latex-Suite will search for .bib files using
    the |Tex_BIBINPUTS| [|ls_a_dy|] variable.
 
