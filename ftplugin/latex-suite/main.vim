@@ -585,6 +585,9 @@ endfunction
 function! Tex_MakeMap(lhs, rhs, mode, extraargs)
 	if !hasmapto(a:rhs, a:mode)
 		exec a:mode.'map '.a:extraargs.' '.a:lhs.' '.a:rhs
+		if !has('gui_running') && stridx(a:lhs, '<M-') != -1
+			exec a:mode.'map '.a:extraargs.' '.substitute(a:lhs, '\v\<M-([^\>]+)\>', '<Esc>\1','').' '.a:rhs
+		endif
 	endif
 endfunction " }}}
 " Tex_CD: cds to given directory escaping spaces if necessary {{{

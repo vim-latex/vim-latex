@@ -966,6 +966,9 @@ function! Tex_SetItemMaps()
 	" conflicts with inserting 'é'.
 	if !hasmapto("<Plug>Tex_InsertItemOnThisLine", "i") && g:Tex_AdvancedMath == 1
 		imap <buffer> <M-i> <Plug>Tex_InsertItemOnThisLine
+		if !has('gui_running')
+		    imap <buffer> <Esc>i <Plug>Tex_InsertItemOnThisLine
+		endif
 	endif
 	if !hasmapto("<Plug>Tex_InsertItemOnNextLine", "i")
 		imap <buffer> <C-CR> <Plug>Tex_InsertItemOnNextLine
