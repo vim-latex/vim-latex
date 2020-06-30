@@ -30,7 +30,7 @@ function! Tex_SetTeXCompilerTarget(type, target)
 		" if a makefile exists and the user wants to use it, then use that
 		" irrespective of whether *.latexmain exists or not.
 		call Tex_Debug("Tex_SetTeXCompilerTarget: using the makefile in the current directory", "comp")
-		let &l:makeprg = 'make ' . a:target
+		let &l:makeprg = 'make "' . a:target . '"'
 		call Tex_Debug('Tex_SetTeXCompilerTarget: set [makeprg = "' . &l:makeprg . '"]', 'comp')
 	elseif targetRule != ''
 		if a:type == 'Compile'
@@ -142,8 +142,8 @@ function! Tex_CompileLatex()
 		if &makeprg =~ '\$\*\.\w\+'
 			let mainfname = fnamemodify(mainfname, ':r')
 		endif
-		call Tex_Debug('Tex_CompileLatex: execing [make! '.mainfname.']', 'comp')
-		exec 'make! '.mainfname
+		call Tex_Debug('Tex_CompileLatex: execing [make! "'.mainfname.'"]', 'comp')
+		exec 'make! "'.mainfname.'"'
 	endif
 	redraw!
 
@@ -610,7 +610,7 @@ function! Tex_CompileMultipleTimes()
 		if runCount == 0 && glob(idxFileName) != '' && idxlinesBefore != idxlinesAfter
 			echomsg "Running makeindex..."
 			let temp_mp = &mp | let &mp = Tex_GetVarValue('Tex_MakeIndexFlavor')
-			exec 'silent! make '.mainFileName_root
+			exec 'silent! make "'.mainFileName_root.'"'
 			let &mp = temp_mp
 
 			let needToRerun = 1
@@ -626,7 +626,7 @@ function! Tex_CompileMultipleTimes()
 
 			echomsg "Running '".Tex_GetVarValue('Tex_BibtexFlavor')."' ..."
 			let temp_mp = &mp | let &mp = Tex_GetVarValue('Tex_BibtexFlavor')
-			exec 'silent! make '.mainFileName_root
+			exec 'silent! make "'.mainFileName_root.'"'
 			let &mp = temp_mp
 
 			let biblinesAfter = Tex_CatFile(bibFileName)
