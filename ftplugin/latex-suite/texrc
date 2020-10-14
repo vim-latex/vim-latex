@@ -104,24 +104,24 @@ TexLet g:Tex_MultipleCompileFormats = 'dvi'
 " but it is known that it can sometimes give different results in the output,
 " so use it with care. The '-file-line-error' flag helps sanitize LaTeX error
 " messages for processing by Vim.
-TexLet g:Tex_CompileRule_dvi = 'latex -interaction=nonstopmode -file-line-error-style $*'
+TexLet g:Tex_CompileRule_dvi = 'latex -interaction=nonstopmode -file-line-error-style "$*"'
 TexLet g:Tex_EscapeChars = '{}\'
 
-TexLet g:Tex_CompileRule_ps = 'dvips -Ppdf -o $*.ps $*.dvi'
+TexLet g:Tex_CompileRule_ps = 'dvips -Ppdf -o "$*.ps" "$*.dvi"'
 
 " ways to generate pdf files. there are soo many...
 " NOTE: pdflatex generates the same output as latex. therefore quickfix is
 "       possible.
 " Synctex is now supported by pdflatex.
-TexLet g:Tex_CompileRule_pdf = 'pdflatex -synctex=1 -interaction=nonstopmode -file-line-error-style $*'
+TexLet g:Tex_CompileRule_pdf = 'pdflatex -synctex=1 -interaction=nonstopmode -file-line-error-style "$*"'
 
-" TexLet g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'
-" TexLet g:Tex_CompileRule_pdf = 'dvipdfm $*.dvi'
-" TexLet g:Tex_CompileRule_pdf = 'dvipdf $*.dvi'
+" TexLet g:Tex_CompileRule_pdf = 'ps2pdf "$*.ps"'
+" TexLet g:Tex_CompileRule_pdf = 'dvipdfm "$*.dvi"'
+" TexLet g:Tex_CompileRule_pdf = 'dvipdf "$*.dvi"'
 
-TexLet g:Tex_CompileRule_html = 'latex2html $*.tex'
+TexLet g:Tex_CompileRule_html = 'latex2html "$*.tex"'
 
-TexLet g:Tex_CompileRule_bib = g:Tex_BibtexFlavor . ' $*'
+TexLet g:Tex_CompileRule_bib = g:Tex_BibtexFlavor . ' "$*"'
 
 " Set Tex_UseMakefile to 0 if you want to ignore the presence of a Makefile 
 " when deciding how to compile
@@ -193,7 +193,7 @@ endif
 " Suppose you have a latex->html converter which converts a file say foo.tex
 " to a file foo/index.html. Then you would use:
 "
-" 	let g:Tex_ViewRuleComplete_html = 'MozillaFirebird $*/index.html &'
+" 	let g:Tex_ViewRuleComplete_html = 'MozillaFirebird "$*/index.html" &'
 "
 " Doing something like this would not be possible using Tex_ViewRule_html
 TexLet g:Tex_ViewRuleComplete_dvi = ''
@@ -237,7 +237,7 @@ TexLet g:Tex_BibtexFlavor = 'bibtex'
 
 " specifies the MakeIndedx flavor and if necessary options. $* will be
 " replaced by the *root* of the main file name. See above.
-TexLet g:Tex_MakeIndexFlavor = 'makeindex $*.idx'
+TexLet g:Tex_MakeIndexFlavor = 'makeindex "$*.idx"'
 
 " By default the program described by g:Tex_Flavor above is called with the
 " flags '--src-specials --interaction=nonstopmode'. If your particular version
