@@ -2465,6 +2465,10 @@ and some more text
 }</programlisting>
       will not be folded. This is a bug which is very difficult to fix.
      </para>
+     <para>
+      Similarly, a command fold will stop at the first line containing a '}',
+      even if this brace does not correspond to the opening brace of the command.
+     </para>
     </note>
     <para>
      See also <link linkend="fold-setting-advanced">advanced fold

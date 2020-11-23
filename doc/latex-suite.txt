@@ -1972,6 +1972,10 @@ NOTE: It is very difficult to fold commands reliably because it is very
           }
 <     will not be folded. This is a bug which is very difficult to fix.
       
+      Similarly, a command fold will stop at the first line containing a '}',
+      even if this brace does not correspond to the opening brace of the
+      command.
+      
       
 See also advanced fold settings [|ls_a_co|].
 
