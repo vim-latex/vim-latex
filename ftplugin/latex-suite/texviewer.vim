@@ -590,6 +590,8 @@ function! Tex_ScanFileForCite(prefix)
 		return 1
 	endif
 
+	let foundCiteFile = 0
+
 	" If we have a thebibliography environment, then again assume that this is
 	" the only file which defines the bib-keys. And convey this information
 	" upwards by returning 1.
