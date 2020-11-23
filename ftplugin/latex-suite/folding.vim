@@ -314,7 +314,7 @@ function! MakeTexFolds(force, manual)
 	if g:Tex_FoldedSections != '' 
 		call Tex_FoldSections(g:Tex_FoldedSections,
 			\ '^\s*\\\%(frontmatter\|mainmatter\|backmatter\)\|'
-			\. '^\s*\\begin{thebibliography\|>>>\|^\s*\\endinput\|'
+			\. '^\s*\\begin{thebibliography\|^\s*\\endinput\|'
 			\. '^\s*\\begin{slide\|^\s*\\\%(begin\|end\){document\|'
 			\. '^\s*\\\%(\%(begin\|end\){appendix}\|appendix\)')
 	endif
