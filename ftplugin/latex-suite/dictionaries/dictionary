@@ -152,6 +152,11 @@ enskip
 enspace
 ensuremath
 enumerate
+enumerateAlph
+enumeratealph
+enumeratearabic
+enumerateRoman
+enumerateroman
 enumi
 enumii
 enumiii
