@@ -602,18 +602,18 @@ else
 	endif
 endif
 if !hasmapto('<Plug>IMAP_JumpBack', 'i')
-    imap <C-J> <Plug>IMAP_JumpBack
+    imap <C-K> <Plug>IMAP_JumpBack
 endif
 if !hasmapto('<Plug>IMAP_JumpBack', 'n')
-    nmap <C-J> <Plug>IMAP_JumpBack
+    nmap <C-K> <Plug>IMAP_JumpBack
 endif
 if exists('g:Imap_StickyPlaceHolders') && g:Imap_StickyPlaceHolders
 	if !hasmapto('<Plug>IMAP_JumpBack', 'v')
-		vmap <C-J> <Plug>IMAP_JumpBack
+		vmap <C-K> <Plug>IMAP_JumpBack
 	endif
 else
 	if !hasmapto('<Plug>IMAP_DeleteAndJumpBack', 'v')
-		vmap <C-J> <Plug>IMAP_DeleteAndJumpBack
+		vmap <C-K> <Plug>IMAP_DeleteAndJumpBack
 	endif
 endif
 " }}}
