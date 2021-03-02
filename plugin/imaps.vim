@@ -1,7 +1,7 @@
 "        File: imaps.vim
 "     Authors: Srinath Avadhanula <srinath AT fastmail.fm>
 "              Benji Fisher <benji AT member.AMS.org>
-"              
+"
 " Description: insert mode template expander with cursor placement
 "              while preserving filetype indentation.
 "
@@ -12,7 +12,7 @@
 " this script provides a way to generate insert mode mappings which do not
 " suffer from some of the problem of mappings and abbreviations while allowing
 " cursor placement after the expansion. It can alternatively be thought of as
-" a template expander. 
+" a template expander.
 "
 " Consider an example. If you do
 "
@@ -33,7 +33,7 @@
 " however, abbreviations are only expanded after typing a non-word character.
 " which causes problems of cursor placement after the expansion and invariably
 " spurious spaces are inserted.
-" 
+"
 " Usage Example:
 " this script attempts to solve all these problems by providing an emulation
 " of imaps wchich does not suffer from its attendant problems. Because maps
@@ -41,21 +41,21 @@
 " cursor placement is possible. furthermore, file-type specific indentation is
 " preserved, because the rhs is expanded as if the rhs is typed in literally
 " by the user.
-"  
+"
 " Each "mapping" is of the form:
 "
 " call IMAP (lhs, rhs, ft)
-" 
+"
 " Some characters in the RHS have special meaning which help in cursor
 " placement.
 "
 " Example One:
 "
 " 	call IMAP ("bit`", "\\begin{itemize}\<cr>\\item <++>\<cr>\\end{itemize}<++>", "tex")
-" 
+"
 " This effectively sets up the map for "bit`" whenever you edit a latex file.
 " When you type in this sequence of letters, the following text is inserted:
-" 
+"
 " \begin{itemize}
 " \item *
 " \end{itemize}<++>
@@ -69,13 +69,13 @@
 " use of movement keys.
 "
 " NOTE: Set g:Imap_UsePlaceHolders to 0 to disable placeholders altogether.
-" Set 
+" Set
 " 	g:Imap_PlaceHolderStart and g:Imap_PlaceHolderEnd
 " to something else if you want different place holder characters.
 " Also, b:Imap_PlaceHolderStart and b:Imap_PlaceHolderEnd override the values
 " of g:Imap_PlaceHolderStart and g:Imap_PlaceHolderEnd respectively. This is
 " useful for setting buffer specific place hoders.
-" 
+"
 " Example Two:
 " You can use the <C-r> command to insert dynamic elements such as dates.
 "	call IMAP ('date`', "\<c-r>=strftime('%b %d %Y')\<cr>", '')
@@ -93,7 +93,7 @@ set cpo&vim
 
 " ==============================================================================
 " Script Options / Variables
-" ============================================================================== 
+" ==============================================================================
 " Options {{{
 if !exists('g:Imap_StickyPlaceHolders')
 	let g:Imap_StickyPlaceHolders = 1
@@ -125,7 +125,7 @@ endif
 " ==============================================================================
 " IMAP: Adds a "fake" insert mode mapping. {{{
 "       For example, doing
-"           IMAP('abc', 'def' ft) 
+"           IMAP('abc', 'def' ft)
 "       will mean that if the letters abc are pressed in insert mode, then
 "       they will be replaced by def. If ft != '', then the "mapping" will be
 "       buffer local. You have to call IMAP_infect() on new buffers of type ft.
@@ -136,7 +136,7 @@ endif
 "          long as there is a possible completion, the letters a, b, c will be
 "          displayed on on top of the other. using this function avoids that.
 "       2. with imap, if a backspace or arrow key is pressed before completing
-"          the word, then the mapping is lost. this function allows movement. 
+"          the word, then the mapping is lost. this function allows movement.
 "          (this ofcourse means that this function is only limited to
 "          left-hand-sides which do not have movement keys or unprintable
 "          characters)
@@ -386,7 +386,7 @@ function! s:LookupCharacter(char)
 		let lhs = matchstr(text, "\\C\\V\\%(" . s:LHS_{ft}_{charHash} . "\\)\\$")
 		let hash = s:Hash(lhs)
 		let rhs = s:Map_{ft}_{hash}
-		let phs = s:phs_{ft}_{hash} 
+		let phs = s:phs_{ft}_{hash}
 		let phe = s:phe_{ft}_{hash}
 	endif
 
@@ -601,11 +601,26 @@ else
 		vmap <C-J> <Plug>IMAP_DeleteAndJumpForward
 	endif
 endif
+if !hasmapto('<Plug>IMAP_JumpBack', 'i')
+    imap <C-J> <Plug>IMAP_JumpBack
+endif
+if !hasmapto('<Plug>IMAP_JumpBack', 'n')
+    nmap <C-J> <Plug>IMAP_JumpBack
+endif
+if exists('g:Imap_StickyPlaceHolders') && g:Imap_StickyPlaceHolders
+	if !hasmapto('<Plug>IMAP_JumpBack', 'v')
+		vmap <C-J> <Plug>IMAP_JumpBack
+	endif
+else
+	if !hasmapto('<Plug>IMAP_DeleteAndJumpBack', 'v')
+		vmap <C-J> <Plug>IMAP_DeleteAndJumpBack
+	endif
+endif
 " }}}
 
-" ============================================================================== 
+" ==============================================================================
 " helper functions
-" ============================================================================== 
+" ==============================================================================
 " s:Hash: Return a version of a string that can be used as part of a variable" {{{
 " name.
 " 	Converts every non alphanumeric character into _{ascii}_ where {ascii} is
@@ -675,7 +690,7 @@ function! IMAP_GetPlaceHolderEnd()
 endfun
 " }}}
 " IMAP_Debug: interface to Tex_Debug if available, otherwise emulate it {{{
-" Description: 
+" Description:
 " Do not want a memory leak! Set this to zero so that imaps always
 " starts out in a non-debugging mode.
 if !exists('g:Imap_Debug')
@@ -696,16 +711,16 @@ function! IMAP_Debug(string, pattern)
 	endif
 endfunction " }}}
 " IMAP_DebugClear: interface to Tex_DebugClear if avaialable, otherwise emulate it {{{
-" Description: 
+" Description:
 function! IMAP_DebugClear(pattern)
 	if exists('*Tex_DebugClear')
 		call Tex_DebugClear(a:pattern)
-	else	
+	else
 		let s:debug_{a:pattern} = ''
 	endif
 endfunction " }}}
 " IMAP_PrintDebug: interface to Tex_DebugPrint if avaialable, otherwise emulate it {{{
-" Description: 
+" Description:
 function! IMAP_PrintDebug(pattern)
 	if exists('*Tex_PrintDebug')
 		call Tex_PrintDebug(a:pattern)
