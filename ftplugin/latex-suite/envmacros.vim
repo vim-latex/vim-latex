@@ -55,7 +55,7 @@ let s:table =		"\\begin{table}\<cr>\\centering\<cr>\\caption{<+Caption text+>}\<
 
 let s:code =		"\\begin{code}[<+htpb+>]\<cr>\\centering\<cr>\\caption{<+caption text+>}\<cr>\\lstinputlisting[language=<++>,firstline=<++>,lastline=<++>,firstnumber=<++>]{<++>}\<cr>\\label{" . s:labelprefix_code . "<+label+>}\<cr>\\end{code}" . s:end_with_cr . "<++>"
 
-let s:tikzpicture =	"\\begin{tikzpicture}[<+options+>]\<cr><+code+>\<cr>\\end{tikzpicture}" . s:end_with_cr . "<++>"
+let s:tikzpicture =	"\\begin{tikzpicture}[<+options+>]\<cr><++>\<cr>\\end{tikzpicture}" . s:end_with_cr . "<++>"
 
 let s:list =		"\\begin{list}{<+label+>}{<+spacing+>}\<cr>\\item".s:items_with_cr."<++>\<cr>\\end{list}" . s:end_with_cr . "<++>"
 let s:description =	"\\begin{description}\<cr>\\item[<+label+>]".s:items_with_cr."<++>\<cr>\\end{description}" . s:end_with_cr . "<++>"
