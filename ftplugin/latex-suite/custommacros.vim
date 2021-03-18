@@ -96,6 +96,7 @@ function! s:ChooseMacro(ask)
 				\ Tex_CreatePrompt(filelist, 2, ',') .
 				\ "\nEnter number or filename :",
 				\ filelist, ',')
+	return filename
 endfunction 
 
 " }}}
@@ -127,7 +128,7 @@ function! <SID>EditMacro(...)
 	if a:0 > 0
 		let filename = a:1
 	else
-		let filename = s:ChooseMacro('Choose a macro file for insertion:')
+		let filename = s:ChooseMacro('Choose a macro file to edit:')
 	endif
 
 	if filereadable(s:macrodirpath.filename)
@@ -153,7 +154,7 @@ function! <SID>EditMacro(...)
 					exec 'split '.fnameescape(s:macrodirpath.filename.'-local')
 				elseif ch == 2
 					new
-					exe '0read '.Tex_FindInRtp(filename, 'macros')
+					exe '0read '.Tex_FindInRtp(filename, 'macros', ':p')
 					" This is possible macro was edited before, wipe it out.
 					if bufexists(s:macrodirpath.filename.'-local')
 						exe 'bwipe '.s:macrodirpath.filename.'-local'
@@ -166,7 +167,7 @@ function! <SID>EditMacro(...)
 			" If file doesn't exist, open new file, read in system macro and
 			" save it in local macro dir with suffix -local
 				new
-				exe '0read '.Tex_FindInRtp(filename, 'macros')
+				exe '0read '.Tex_FindInRtp(filename, 'macros', ':p')
 				exe 'write '.s:macrodirpath.filename.'-local'
 			endif
 		endif
@@ -183,12 +184,7 @@ function! <SID>ReadMacro(...)
 	if a:0 > 0
 		let filename = a:1
 	else
-		let filelist = Tex_FindInRtp('', 'macros')
-		let filename = 
-					\ Tex_ChooseFromPrompt("Choose a macro file:\n" . 
-					\ Tex_CreatePrompt(filelist, 2, ',') . 
-					\ "\nEnter number or name of file :", 
-					\ filelist, ',')
+		let filename = s:ChooseMacro('Choose a macro file for insertion:')
 	endif
 
 	let fname = Tex_FindInRtp(filename, 'macros', ':p')
