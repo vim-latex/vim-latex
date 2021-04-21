@@ -899,32 +899,36 @@ endfunction " }}}
 " 	\end{itemize}
 " 	% Tex_GetCurrentEnv will return "" when called from here 
 "
-" Author: Alan Schmitt
+" Author: Albin Ahlbäck
 function! Tex_GetCurrentEnv()
 	let pos = Tex_GetPos()
-	let i = 0
+	let ix = 0
 	while 1
-		let env_line = search('^[^%]*\\\%(begin\|end\){', 'bW')
+		let env_line = search('\\\(begin\|end\){', 'bW')
 		if env_line == 0
 			" we reached the beginning of the file, so we return the empty string
 			call Tex_SetPos(pos)
 			return ''
 		endif
-		if match(getline(env_line), '^[^%]*\\begin{') == -1
-			" we found a \\end, so we keep searching
-			let i = i + 1
-			continue
-		else
-			" we found a \\begin which has not been \\end'ed. we are done.
-			if i == 0
-				let env = matchstr(getline(env_line), '\\begin{\zs.\{-}\ze}')
+		let ia = getcurpos()[2]
+		call search('{')
+		let ib = getcurpos()[2]
+		if getline(env_line)[ia:ib-2] == 'begin'
+			if ix == 0
+				let env_line = search('\w')
+				let ia = getcurpos()[2]
+				call search('\(%\|\_s\)')
+				let ib = getcurpos()[2]
+				call search('\\begin{', 'b')
 				call Tex_SetPos(pos)
-				return env
+				return getline(env_line)[ia-1:ib-2]
 			else
-				" this \\begin closes a \\end, continue searching.
-				let i = i - 1
-				continue
+				let ix = ix - 1
+				call search('\\begin{', 'b')
 			endif
+		else
+			let ix = ix + 1
+			call search('\\end{', 'b')
 		endif
 	endwhile
 endfunction
