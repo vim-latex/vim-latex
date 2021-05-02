@@ -194,7 +194,14 @@ class BibFile:
                 self.addfile(f)
 
     def addfile(self, file):
-        fields = urlopen('file://' + pathname2url(os.path.abspath(file))).read().decode('utf-8').split('@')
+        content = urlopen('file://' + pathname2url(os.path.abspath(file))).read()
+
+        try:
+          content_str = content.decode('utf-8')
+        except UnicodeDecodeError:
+          content_str = content.decode('latin1')
+
+        fields = content_str.split('@')
         for f in fields:
             if not (f and re.match('string', f, re.I)):
                 continue
