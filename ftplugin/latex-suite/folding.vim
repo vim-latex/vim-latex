@@ -334,7 +334,7 @@ function! MakeTexFolds(force, manual)
 	" {{{ preamble
 	if g:Tex_FoldedMisc =~ '\<preamble\>'
 		call AddSyntaxFoldItem (
-			\ '^\s*\\document\(class\|style\).*{',
+			\ '^\s*\\document\(class\|style\)\>',
 			\ '^\s*\\begin{document}',
 			\ 0,
 			\ -1 
