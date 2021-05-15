@@ -902,33 +902,30 @@ endfunction " }}}
 " Author: Albin Ahlbäck
 function! Tex_GetCurrentEnv()
 	let pos = Tex_GetPos()
-	let ix = 0
+	let n = 0
 	while 1
-		let env_line = search('\\\(begin\|end\){', 'bW')
+		let env_line = search('\%(\\\@<!\%(\\\\\)*%.*\)\@<!\\\%(begin\|end\){', 'bW')
 		if env_line == 0
 			" we reached the beginning of the file, so we return the empty string
 			call Tex_SetPos(pos)
 			return ''
 		endif
-		let ia = getcurpos()[2]
-		call search('{')
-		let ib = getcurpos()[2]
-		if getline(env_line)[ia:ib-2] == 'begin'
-			if ix == 0
-				let env_line = search('\w')
-				let ia = getcurpos()[2]
-				call search('\(%\|\_s\)')
-				let ib = getcurpos()[2]
-				call search('\\begin{', 'b')
+		let ix = getcurpos()[2]
+		if getline(env_line)[ix] == 'b'
+			if n == 0
+				let env_line = search('{\%(\|\_s*\)\w', 'e')
+				let ix = getcurpos()[2]
+				call search('\a\>')
+				let iy = getcurpos()[2]
 				call Tex_SetPos(pos)
-				return getline(env_line)[ia-1:ib-2]
+				return getline(env_line)[ix-1:iy-1]
 			else
-				let ix = ix - 1
-				call search('\\begin{', 'b')
+				let n = n - 1
+				call search('\%(\\\@<!\%(\\\\\)*%.*\)\@<!\\begin{', 'b')
 			endif
 		else
-			let ix = ix + 1
-			call search('\\end{', 'b')
+			let n = n + 1
+			call search('\%(\\\@<!\%(\\\\\)*%.*\)\@<!\\end{', 'b')
 		endif
 	endwhile
 endfunction
