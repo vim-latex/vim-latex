@@ -899,32 +899,33 @@ endfunction " }}}
 " 	\end{itemize}
 " 	% Tex_GetCurrentEnv will return "" when called from here 
 "
-" Author: Alan Schmitt
+" Author: Albin Ahlbäck
 function! Tex_GetCurrentEnv()
 	let pos = Tex_GetPos()
-	let i = 0
+	let n = 0
 	while 1
-		let env_line = search('^[^%]*\\\%(begin\|end\){', 'bW')
+		let env_line = search('\%(\\\@<!\%(\\\\\)*%.*\)\@<!\\\%(begin\|end\){', 'bW')
 		if env_line == 0
 			" we reached the beginning of the file, so we return the empty string
 			call Tex_SetPos(pos)
 			return ''
 		endif
-		if match(getline(env_line), '^[^%]*\\begin{') == -1
-			" we found a \\end, so we keep searching
-			let i = i + 1
-			continue
-		else
-			" we found a \\begin which has not been \\end'ed. we are done.
-			if i == 0
-				let env = matchstr(getline(env_line), '\\begin{\zs.\{-}\ze}')
+		let ix = getcurpos()[2]
+		if getline(env_line)[ix] == 'b'
+			if n == 0
+				let env_line = search('{\%(\|\_s*\)\w', 'e')
+				let ix = getcurpos()[2]
+				call search('\a\>')
+				let iy = getcurpos()[2]
 				call Tex_SetPos(pos)
-				return env
+				return getline(env_line)[ix-1:iy-1]
 			else
-				" this \\begin closes a \\end, continue searching.
-				let i = i - 1
-				continue
+				let n = n - 1
+				call search('\%(\\\@<!\%(\\\\\)*%.*\)\@<!\\begin{', 'b')
 			endif
+		else
+			let n = n + 1
+			call search('\%(\\\@<!\%(\\\\\)*%.*\)\@<!\\end{', 'b')
 		endif
 	endwhile
 endfunction
