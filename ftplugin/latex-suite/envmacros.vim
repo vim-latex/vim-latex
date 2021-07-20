@@ -800,9 +800,9 @@ if g:Tex_PromptedEnvironments != ''
 			let second = '\end{' . a:env . '}'
 		endif
 
-		let bottom = searchpair('\\\[\|\\begin{','','\\\]\|\\end{','')
+		let bottom = searchpair('\\\[\|\\begin{','','\\\]\|\\end{.\{-}}\zs','W')
 		s/\\\]\|\\end{.\{-}}/\=second/
-		let top = searchpair('\\\[\|\\begin{','','\\\]\|\\end{','b')
+		let top = searchpair('\\\[\|\\begin{','','\\\]\|\\end{.\{-}}\zs','bW')
 		s/\\\[\|\\begin{.\{-}}/\=first/
 
 		if a:delete != ''
