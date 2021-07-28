@@ -921,11 +921,9 @@ function! Tex_GetCurrentEnv()
 				return getline(env_line)[ix-1:iy-1]
 			else
 				let n = n - 1
-				call search('\%(\\\@<!\%(\\\\\)*%.*\)\@<!\\begin{', 'b')
 			endif
 		else
 			let n = n + 1
-			call search('\%(\\\@<!\%(\\\\\)*%.*\)\@<!\\end{', 'b')
 		endif
 	endwhile
 endfunction
