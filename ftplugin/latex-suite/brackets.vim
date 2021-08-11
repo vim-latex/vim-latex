@@ -102,14 +102,14 @@ function! Tex_PutLeftRight()
 	let char = getline(line("."))[col(".") - 1]
 	if previous == '\'
 		if char == '{'
-			exe "normal ileft\\\<Esc>l%iright\\\<Esc>l%"
+			exe "normal! ileft\\\<Esc>l%iright\\\<Esc>l%"
 		elseif char == '}'
-			exe "normal iright\\\<Esc>l%ileft\\\<Esc>l%"
+			exe "normal! iright\\\<Esc>l%ileft\\\<Esc>l%"
 		endif
 	elseif char =~ '\[\|('
-		exe "normal i\\left\<Esc>l%i\\right\<Esc>l%"
+		exe "normal! i\\left\<Esc>l%i\\right\<Esc>l%"
 	elseif char =~ '\]\|)'
-		exe "normal i\\right\<Esc>l%i\\left\<Esc>l%"
+		exe "normal! i\\right\<Esc>l%i\\left\<Esc>l%"
 	endif
 endfunction " }}}
 

@@ -32,7 +32,7 @@ function! Tex_VisSecAdv(section)
 	if shorttitle != ""
 		let shorttitle = '['.shorttitle.']'
 	endif
-	exe "normal `>a}\<cr>\<esc>`<i".sstructure.toc.shorttitle."{"
+	exe "normal! `>a}\<cr>\<esc>`<i".sstructure.toc.shorttitle."{"
 endfunction 
 
 " }}}
@@ -97,7 +97,7 @@ function! Tex_section_adv(...) "{{{
 		silent call s:Tex_section_call(curr_section_name)
 		let section = Tex_InsSecAdv(curr_section_name)
 	endif
-	exe "normal i".section
+	exe "normal! i".section
 	call Tex_SetPos(pos)
 endfunction "}}}
 function! s:Tex_section_detection() "{{{
@@ -189,7 +189,7 @@ function! s:Tex_section_call(section_name) "{{{
 	exe "normal! i\\".a:section_name."{<++>}<++>\<Esc>0\<C-j>"
 "	let ret_section = "\\".a:section_name."{<++>}<++>"
 "	exe "normal! i\<C-r>=IMAP_PutTextWithMovement(ret_section)\<CR>"
-"	normal f}i
+"	normal! f}i
 endfunction "}}}
 
 " ==============================================================================
