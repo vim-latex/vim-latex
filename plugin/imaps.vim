@@ -513,7 +513,7 @@ function! IMAP_Jumpfunc(direction, inclusive)
 	endif
 
 	" Open any closed folds and make this part of the text visible.
-	silent! foldopen!
+	normal! zv
 
 	" We are at the starting placeholder. Start visual mode.
 	normal! v
