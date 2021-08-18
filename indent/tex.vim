@@ -32,7 +32,7 @@
 "       \end{itemize}                        \end{itemize}
 "
 "
-" * g:tex_items = '\\bibitem\|\\item'
+" * g:tex_items = '\\bibitem\>\|\\item\>'
 "
 "   A list of tokens to be considered as commands for the beginning of an item
 "   command. The tokens should be separated with '\|'. The initial '\' should
@@ -90,7 +90,7 @@ if !exists("g:tex_indent_items")
 	let g:tex_indent_items = 1
 endif
 if !exists('g:tex_items')
-	let g:tex_items = '\\bibitem\|\\item'
+	let g:tex_items = '\\bibitem\>\|\\item\>'
 endif
 if !exists("g:tex_itemize_env")
 	let g:tex_itemize_env = 'itemize\|description\|enumerate\|thebibliography'
@@ -301,7 +301,8 @@ function! s:AssemblePatterns()
 
 
 	" Add indentkeys depending on options
-	let items_keys = substitute(g:tex_items, '^\|\(\\|\)', ',0=', 'g')
+	let items_keys = substitute(g:tex_items, '^\|\\|', ',0=', 'g')
+	let items_keys = substitute(items_keys, '\\>', '', 'g')
 	if g:tex_indent_items
 		exec 'setlocal indentkeys+=' . items_keys
 	else
