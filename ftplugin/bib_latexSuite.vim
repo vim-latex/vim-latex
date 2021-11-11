@@ -11,6 +11,8 @@ if exists('b:suppress_latex_suite') && b:suppress_latex_suite == 1
 	finish
 endif
 
+" source imap.vim because we need a few functions from it.
+runtime plugin/imaps.vim
 " source main.vim because we need a few functions from it.
 runtime ftplugin/latex-suite/main.vim
 " Disable smart-quotes because we need to enter real quotes in bib files.
