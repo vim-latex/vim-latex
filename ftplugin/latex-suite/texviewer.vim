@@ -381,7 +381,7 @@ function! s:Tex_CompleteRefCiteCustom(type)
 		let bibkey = matchstr(getline('.'), '\\bibitem\s*\%(\[.\{-}\]\)\?\s*{\zs.\{-}\ze}')
 		if bibkey == ""
 			" Look for a '@article{bibkey,'
-			let bibkey = matchstr(getline('.'), '@\w*{\zs\w*\ze,')
+			let bibkey = matchstr(getline('.'), '@\w*{\zs.*\ze,')
 		endif
 
 		let completeword = bibkey
