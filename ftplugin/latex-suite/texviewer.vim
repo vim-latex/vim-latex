@@ -74,7 +74,7 @@ function! Tex_Complete(what, where)
 			call Tex_Debug('Tex_Complete: s:type = '.s:type.', typeoption = '.s:typeoption, 'view')
 		endif
 
-		if exists("s:type") && s:type =~ 'ref'
+		if exists("s:type") && s:type =~ 'ref\|cref'
 			if Tex_GetVarValue('Tex_UseOutlineCompletion') == 1
 				call Tex_Debug("Tex_Complete: using outline search method", "view")
 				call Tex_StartOutlineCompletion()
@@ -343,7 +343,7 @@ function! s:Tex_SetupCWindow(...)
     nnoremap <buffer> <silent> <down> <down>:call <SID>Tex_SyncPreviewWindow()<CR>
 
 	" Change behaviour of <cr> only for 'ref' and 'cite' context. 
-	if exists("s:type") && s:type =~ 'ref\|cite'
+	if exists("s:type") && s:type =~ 'ref\|cite\|cref'
 		exec 'nnoremap <buffer> <silent> <cr> '
 			\ .':set scrolloff='.s:scrollOffVal.'<CR>'
 			\ .':cd '.s:origdir.'<CR>'
@@ -386,7 +386,7 @@ function! s:Tex_CompleteRefCiteCustom(type)
 
 		let completeword = bibkey
 
-	elseif a:type =~ 'ref'
+	elseif a:type =~ 'ref\|cref'
 		let label = matchstr(getline('.'), '\\\%(nl\)\?label{\zs.\{-}\ze}')
 		let completeword = label
 
