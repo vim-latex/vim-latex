@@ -297,7 +297,7 @@ function! MakeTexFolds(force, manual)
 					" In other words, the pattern is safe, but not exact.
 					call AddSyntaxFoldItem('^\s*\\'.s.'{[^{}]*$','^[^}]*}',0,0)
 				else
-					if s =~ 'itemize\|enumerate\|description'
+					if s =~ 'itemize\|enumerate\|description\|align\|gather'
 						" These environments can nest.
 						call AddSyntaxFoldItem('^\s*\\begin{'.s,'\(^\|\s\)\s*\\end{'.s,0,0,'^\s*\\begin{'.s,'\(^\|\s\)\s*\\end{'.s)
 					else
