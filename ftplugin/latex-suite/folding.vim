@@ -257,6 +257,15 @@ function! MakeTexFolds(force, manual)
 	endif
 	" }}}
 
+	" {{{ frame (in beamer)
+	call AddSyntaxFoldItem (
+				\ '^\s*\\frame',
+				\ '^\s*\\frame\|^\s*\\end{document}',
+				\ 0,
+				\ -1,
+				\ )
+	" }}}
+
 	" {{{ title
 	if g:Tex_FoldedMisc =~ '\<title\>'
 		call AddSyntaxFoldItem (
