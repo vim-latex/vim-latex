@@ -257,14 +257,25 @@ function! MakeTexFolds(force, manual)
 	endif
 	" }}}
 
-	" {{{ frame (in beamer)
-	call AddSyntaxFoldItem (
-				\ '^\s*\\frame',
-				\ '^\s*\\frame\|^\s*\\end{document}',
-				\ 0,
-				\ -1,
-				\ )
-	" }}}
+	let g:Tex_BeamerExtra=1
+	if g:Tex_BeamerExtra
+		" {{{ frame (in beamer)
+		call AddSyntaxFoldItem (
+					\ '^\s*\\frame',
+					\ '^\s*\\frame\|^\s*\\end{document}',
+					\ 0,
+					\ -1,
+					\ )
+		" }}}
+		" {{{ column (in beamer)
+		call AddSyntaxFoldItem (
+					\ '^\s*\\column',
+					\ '^\s*\\column\|^\s*\\end{columns}',
+					\ 0,
+					\ -1,
+					\ )
+		" }}}
+	endif
 
 	" {{{ title
 	if g:Tex_FoldedMisc =~ '\<title\>'
