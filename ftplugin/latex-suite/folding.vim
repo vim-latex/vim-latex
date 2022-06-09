@@ -257,8 +257,8 @@ function! MakeTexFolds(force, manual)
 	endif
 	" }}}
 
-	let g:Tex_BeamerExtra=1
-	if g:Tex_BeamerExtra
+	let g:Tex_FoldBeamerExtra=1
+	if g:Tex_FoldBeamerExtra
 		" {{{ frame (in beamer)
 		call AddSyntaxFoldItem (
 					\ '^\s*\\frame',
