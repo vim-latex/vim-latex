@@ -191,8 +191,8 @@ set iskeyword+=:
    <para>
     If you wish to change these macros from their default values, for
     example, if you wish to change <literal>`w</literal> to expand to
-    <literal>\omega</literal> instead of its default expansion to
-    <literal>\wedge</literal>, you should use the <literal>IMAP</literal>
+    <literal>\wedge</literal> instead of its default expansion to
+    <literal>\omega</literal>, you should use the <literal>IMAP</literal>
     function as described in the <link linkend="ls-new-macros">Using 
      IMAP()</link> section.
    </para>
@@ -205,10 +205,10 @@ set iskeyword+=:
     <literal>~/.vim/after/ftplugin/</literal> directory. (Use
     <literal>~/vimfiles</literal> if you are using
     <literal>WINDOWS</literal>). For example to over-ride
-    <literal>`w</literal> to <literal>\omega</literal> instead of
-    <literal>\wedge</literal>, place the following line in (say)
+    <literal>`w</literal> to <literal>\wedge</literal> instead of
+    <literal>\omega</literal>, place the following line in (say)
     <literal>~/.vim/after/ftplugin/tex_macros.vim</literal>:
-    <programlisting>call IMAP('`w', '\omega', 'tex')</programlisting>
+    <programlisting>call IMAP('`w', '\wedge', 'tex')</programlisting>
     To delete a mapping, you can use
     <programlisting>call IUNMAP('FEM', 'tex')</programlisting>
     in <literal>~/.vim/after/ftplugin/tex_macros.vim</literal>.
@@ -530,12 +530,43 @@ SSP for subparagraph</programlisting>
    <para>
     Lower case
    </para>
-   <literal>`a</literal>   through <literal>`z</literal> expand to
-   <literal>\alpha</literal> through <literal>\zeta</literal>.
+   <para>
+    <literal>`a</literal> through <literal>`z</literal> expand to
+    <literal>\alpha</literal> through <literal>\zeta</literal>.
+   </para>
+   <note>
+    <para>
+     In the LaTex list of lowercase letters there is no
+     <literal>\omicron</literal> because it
+     would be identical in appearance to Latin <literal>o</literal>.
+     So inserting <literal>\omicron</literal> in default LaTex would result an
+     error. But we still expand <literal>`o</literal> to
+     <literal>\omicron</literal> to make the plugin behave consistently.
+     And  for those who really need to  distinguish between Latin
+     <literal>o</literal> and <literal>\omicron</literal>, you may enable the
+     command by including package <literal>unicode-math</literal> or simply
+     setting <literal>\newcommand\omicron{o}</literal> in your document.
+    </para>
+   </note>
    <para>
     Upper case:
    </para>
-   <programlisting>`D = \Delta
+   <para>
+    <literal>`A</literal> through <literal>`Z</literal> expand to
+    <literal>\Alpha</literal> through <literal>\Zeta</literal>.
+   </para>
+   <note>
+    <para>
+     Same as what happens to the Lower case, LaTeX does not support upper
+     case for all greek alphabets. And only the following expansions are valid
+     in default. In order to use the rest of expansions, you may want to
+     manually configure them by either including packages or defining
+     corresponding commands.
+    </para>
+   </note>
+    <para>Valid Upper case Greek Letters in default:</para>
+    <programlisting>
+`D = \Delta
 `F = \Phi
 `G = \Gamma
 `Q = \Theta
@@ -545,10 +576,11 @@ SSP for subparagraph</programlisting>
 `S = \Sigma
 `U = \Upsilon
 `W = \Omega</programlisting>
-   <note><para>LaTeX does not support upper case for all greek alphabets.</para></note>
-   <para>Just like other &ls; mappings, these mappings are not created using
-    the standard <literal>imap</literal> command. Thus you can type slowly,
-    correct using <literal>&lt;BS&gt;</literal> etc.</para>
+   <para>
+     Just like other &ls; mappings, these mappings are not created using
+     the standard <literal>imap</literal> command. Thus you can type slowly,
+     correct using <literal>&lt;BS&gt;</literal> etc.
+    </para>
   </section>
   <section id="auc-tex-mappings">
    <title>Auc-Tex Key Bindings</title>
@@ -1652,6 +1684,7 @@ Enter filter criterion [field&lt;space&gt;value]:
     The following logic is applied to find out which bibliographic entries
     are included in the completion.
    </para>
+   <para>
    <orderedlist>
     <listitem>
      <para>
@@ -1663,38 +1696,42 @@ Enter filter criterion [field&lt;space&gt;value]:
     </listitem>
     <listitem>
      <para>
-      First, the file is scanned for a <literal>\bibliography</literal>
+      The file is scanned for a <literal>\bibliography</literal>
       command or a <literal>\addbibresource</literal> command.
-      To explain better, assume that a command
-      <programlisting>\bibliography{file1,file2}</programlisting> is found
-      in the present file. For each bibliography file, say
-      <literal>file1</literal>, &ls; first tries to see if a
-      <literal>.bib</literal> file, <literal>file1.bib</literal> can be
+      For each bibliography file, &ls; tries to see if a
+      <literal>.bib</literal> file can be
       found. If so, it will scan it for bib-keys of the form
       <literal>@BOOK{</literal> etc., and add these searches to the
-      completion list. If a <literal>.bib</literal> file cannot be found,
-      then it will try to see if <literal>file1.bbl</literal> can be found.
-      If so, &ls; will search it for bib-keys of the form
-      <literal>\bibitem</literal> and add these to the completion list.
+      completion list.
+     </para>
+     <para>
+      Afterwards, &ls; scans recursively in <literal>\include</literal>d
+      and <literal>\input</literal>ed files.
      </para>
      <para>
       You can set the location where &ls; will search for
-      <literal>.bib</literal> and <literal>.bbl</literal> files using the
+      <literal>.bib</literal> files using the
       <link
        linkend="Tex_BIBINPUTS"><literal>|Tex_BIBINPUTS|</literal></link>
       variable.
      </para>
     </listitem>
-    <listitem>
-     <para>
-      If a <literal>\bibliography</literal> command is not found, then &ls;
-      tries to scan the present file for a
-      <literal>\begin{thebibliography}</literal> environment. If found,
-      &ls; searches the present file for bib-keys of the form
-      <literal>\bibitem</literal>.
-     </para>
-    </listitem>
    </orderedlist>
+   </para>
+   <note>
+    <para>
+     By disabling the setting 
+     <link linkend="Tex_UseCiteCompletionVer2">
+      <literal>Tex_UseCiteCompletionVer2</literal>
+     </link>,
+     &ls; will also look for <literal>.bbl</literal> files
+     (if no <literal>.bib</literal> file is found)
+     or a <literal>\begin{thebibliography}</literal>
+     environment.
+     However, a filtering of the results (as described above)
+     will not be available.
+   </para>
+   </note>
   </section>
   <section id="ls-filename-completion">
    <title>&ls; filename completion</title>
@@ -2428,33 +2465,14 @@ and some more text
 }</programlisting>
       will not be folded. This is a bug which is very difficult to fix.
      </para>
+     <para>
+      Similarly, a command fold will stop at the first line containing a '}',
+      even if this brace does not correspond to the opening brace of the command.
+     </para>
     </note>
     <para>
      See also <link linkend="fold-setting-advanced">advanced fold
       settings</link>.
-    </para>
-   </section>
-   <section id="Tex_FoldBeamerExtra">
-    <title>Tex_FoldBeamerExtra</title>
-    <para>
-     This option enables folding for syntax present in beamer code. In beamer,
-     it's possible to use the syntax
-     <programlisting>\frame{...}</programlisting>
-     to define a frame. Enabling this option will fold lines from one \frame
-     to the line before the next \frame.
-    </para>
-    <para>
-     This option will also fold \column in the same manner, for the syntax
-     <programlisting>
-      \begin{columns}[c]
-        \column{.33\textwidth}
-        Text...
-        \column{.33\textwidth}
-        Text...
-        \column{.33\textwidth}
-        Text...
-      \end{columns}
-     </programlisting>
     </para>
    </section>
    <section id="Tex_FoldedMisc">
@@ -2511,6 +2529,29 @@ and some more text
     <para>
      See also <link linkend="fold-setting-advanced">advanced fold
       settings</link>.
+    </para>
+   </section>
+   <section id="Tex_FoldBeamerExtra">
+    <title>Tex_FoldBeamerExtra</title>
+    <para>
+     This option enables folding for syntax present in beamer code. In beamer,
+     it's possible to use the syntax
+     <programlisting>\frame{...}</programlisting>
+     to define a frame. Enabling this option will fold lines from one \frame
+     to the line before the next \frame.
+    </para>
+    <para>
+     This option will also fold \column in the same manner, for the syntax
+     <programlisting>
+      \begin{columns}[c]
+        \column{.33\textwidth}
+        Text...
+        \column{.33\textwidth}
+        Text...
+        \column{.33\textwidth}
+        Text...
+      \end{columns}
+     </programlisting>
     </para>
    </section>
    <section id="fold-setting-advanced">
@@ -3335,6 +3376,36 @@ endif</programlisting>
  \end{align*}&ph;</programlisting>
       </para>
     </section>
+    <section id="Tex_Env_name_aliasto">
+     <title>Tex_Env_name_aliasto</title>
+      <para>
+       You may use this variable to set an alias to another environment.
+      </para>
+      <para>
+       For example, if you use the above mentioned <literal>theorem</literal>
+       environment a lot and want to save yourself from typing in the whole
+       word everytime you use the environment, you may set
+       <programlisting>
+let g:Tex_Env_tr_aliasto = "theorem"</programlisting>
+       And next time you type <literal>tr</literal> and then press
+       <literal>&lt;F5&gt;</literal>, &ls; will expand it to either the default
+       <literal>theorem</literal> environment or the <literal>theorem</literal>
+       defined by you, based on whether <literal>g:Tex_Env_theorem</literal>
+       has been set.
+      </para>
+      <para>
+       If you try to expand to an environment that is neither built-in, nor defined
+       by you, &ls; would simply wrap it up with a barebone environment like:
+        <programlisting>
+\begin{expanded_name}
+    &lt;++&gt;
+\end{expanded_name}&lt;++&gt;</programlisting>
+      </para>
+      <para>
+       And if an alias happen to have the same name with another environment, the
+       alias precedes the environment.
+      </para>
+    </section>
     <section id="Tex_EnvLabelprefix_name">
      <title>Tex_EnvLabelprefix_name</title>
       <para>
@@ -3521,6 +3592,32 @@ let g:Tex_EnvLabelprefix_equation = "eq:"</programlisting>
       details on how to create this setting in various special
       circumstances.
      </para>
+    </section>
+    <section id="Tex_Com_name_aliasto">
+     <title>Tex_Com_name_aliasto</title>
+      <para>
+       Similar to <link linkend="Tex_Env_name_aliasto">Tex_Env_name_aliasto</link>,
+       this variable lets you set an alias to another command.
+      </para>
+      <para>
+       For example, if you use the above mentioned <literal>frac</literal>
+       a lot and want to save yourself some key strokes, you may set:
+       <programlisting>
+let g:Tex_Com_fr_aliasto = "frac" </programlisting>
+       And next time you type <literal>fr</literal> and then press
+       <literal>&lt;F7&gt;</literal>, &ls; will expand it to
+       <literal>\frac{&ph;}{&ph;}&ph;</literal>.
+      </para>
+      <para>
+       If you try to expand to an command that is neither built-in, nor defined
+       by you, &ls; would simply wrap it up with a barebone command like:
+        <programlisting>
+\expanded_name{&lt;++&gt;}&lt;++&gt;</programlisting>
+      </para>
+      <para>
+       And if an alias happen to have the same name with another command, the
+       alias precedes the command.
+      </para>
     </section>
     <section id="Tex_PromptedCommands">
      <title>g:Tex_PromptedCommands</title>
