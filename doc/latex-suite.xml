@@ -2518,40 +2518,37 @@ and some more text
             <literal>&lt;&lt;&lt;</literal> and
             <literal>&gt;&gt;&gt;</literal> strings as fold-markers.</entry>
           </row>
-         </tbody>
-        </tgroup>
-       </informaltable>
-       Any other words in the <literal>Tex_FoldedMisc</literal> setting
-       are silently ignored.
-      </para>
-     </note>
+          <row>
+           <entry>beamer</entry>
+           <entry>This option enables folding for syntax present in beamer code. In beamer,
+            it's possible to use the syntax
+            <programlisting>\frame{...}</programlisting>
+            to define a frame. Enabling this option will fold lines from one
+            <literal>\frame</literal> to the line before the next <literal>\frame</literal>.
+            This option will also fold <literal>\column</literal> in the same manner, for the
+            syntax
+           <programlisting>
+            \begin{columns}[c]
+            \column{.33\textwidth}
+            Text...
+            \column{.33\textwidth}
+            Text...
+            \column{.33\textwidth}
+            Text...
+            \end{columns}
+          </programlisting></entry>
+         </row>
+        </tbody>
+       </tgroup>
+      </informaltable>
+      Any other words in the <literal>Tex_FoldedMisc</literal> setting
+      are silently ignored.
+    </para>
+   </note>
     </para>
     <para>
      See also <link linkend="fold-setting-advanced">advanced fold
       settings</link>.
-    </para>
-   </section>
-   <section id="Tex_FoldBeamerExtra">
-    <title>Tex_FoldBeamerExtra</title>
-    <para>
-     This option enables folding for syntax present in beamer code. In beamer,
-     it's possible to use the syntax
-     <programlisting>\frame{...}</programlisting>
-     to define a frame. Enabling this option will fold lines from one \frame
-     to the line before the next \frame.
-    </para>
-    <para>
-     This option will also fold \column in the same manner, for the syntax
-     <programlisting>
-      \begin{columns}[c]
-        \column{.33\textwidth}
-        Text...
-        \column{.33\textwidth}
-        Text...
-        \column{.33\textwidth}
-        Text...
-      \end{columns}
-     </programlisting>
     </para>
    </section>
    <section id="fold-setting-advanced">
