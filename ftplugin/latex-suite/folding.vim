@@ -262,7 +262,7 @@ function! MakeTexFolds(force, manual)
 		" {{{ frame (in beamer)
 		call AddSyntaxFoldItem (
 					\ '^\s*\\frame',
-					\ '^\s*\\frame\|^\s*\\end{document}\|^\s*\\begin{frame}',
+					\ '^\s*\\frame\|^\s*\\end{document}\|^\s*\\begin{frame}\|^\s*\\\(sub\)*section{',
 					\ 0,
 					\ -1,
 					\ )
