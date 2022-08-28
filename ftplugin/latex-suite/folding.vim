@@ -268,8 +268,8 @@ function! MakeTexFolds(force, manual)
 		" }}}
 		" {{{ column (in beamer)
 		call AddSyntaxFoldItem (
-					\ '^\s*\\column',
-					\ '^\s*\\column\|^\s*\\end{columns}',
+					\ '^\s*\\\(begin{\)*column',
+					\ '^\s*\\column\|^\s*\\\(begin\|end\){column\(s\)*}',
 					\ 0,
 					\ -1,
 					\ )
