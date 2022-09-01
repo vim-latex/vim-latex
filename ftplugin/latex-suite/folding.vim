@@ -274,6 +274,15 @@ function! MakeTexFolds(force, manual)
 					\ -1,
 					\ )
 		" }}}
+		" {{{ columns env (in beamer)
+		call AddSyntaxFoldItem (
+					\ '^\s*\\begin{columns}',
+					\ '^\s*\\end{columns}',
+					\ 0,
+					\ 0,
+					\ )
+		" }}}
+
 	endif
 
 	" {{{ title
