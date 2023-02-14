@@ -311,10 +311,10 @@ function! Tex_ViewLaTeX()
 
 	end
 
-	let execString = substitute(execString, '\V$*', mainfname, 'g')
+	let execString = substitute(execString, '\V$*', shellescape(mainfname), 'g')
 	call Tex_Debug("Tex_ViewLaTeX: execString = ".execString, "comp")
 
-	exec 'silent! !'.execString
+	call system(execString)
 
 	if !has('gui_running')
 		redraw!
