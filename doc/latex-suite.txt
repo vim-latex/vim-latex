@@ -1997,6 +1997,23 @@ NOTE: Unlike the other Tex_FoldedXXXX variables, the words in this setting are
                   \documentclass command and the \begin{document} environment)
       <<<         Folds defined manually by the user using the <<< and >>> strings
                   as fold-markers.
+      beamer      This option enables folding for syntax present in beamer code.
+                  In beamer, it's possible to use the syntax  >
+                      \frame{...}
+<                 to define a frame. Enabling this option will fold lines from one
+                  \frame to the line before the next \frame. This option will also
+                  fold \column in the same manner, for the syntax  >
+                      
+                                  \begin{columns}[c]
+                                  \column{.33\textwidth}
+                                  Text...
+                                  \column{.33\textwidth}
+                                  Text...
+                                  \column{.33\textwidth}
+                                  Text...
+                                  \end{columns}
+                                
+<                 
       
       Any other words in the Tex_FoldedMisc setting are silently ignored.
       
