@@ -31,7 +31,7 @@ else:
 
 class Bibliography(dict):
     def __init__(self, txt, macros={}):
-        """
+        r"""
         txt:
             a string which represents the entire bibtex entry. A typical
             entry is of the form:
