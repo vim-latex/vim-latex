@@ -44,7 +44,6 @@ class Bibliography(dict):
                   pages = {41-78},
                   number = {1122},
                   owner = {Srinath},
-                  pdf = {C:\srinath\research\papers\Ellington-3-Kinematics.pdf},
                   timestamp = {2006.01.02},
                 }
         """
