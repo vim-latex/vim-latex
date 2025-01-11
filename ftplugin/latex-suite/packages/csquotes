@@ -99,6 +99,6 @@ let g:TeX_package_csquotes =
 \.'brd:ifquotesemicolon,'
 \.'brs:ifstringblank{<+string+>}{<+true+>}{<+false+>}'
 
-let g:TeX_SmartQuoteOpen 	= "\\enquote\{"
-let g:TeX_SmartQuoteClose 	= "\}"
+let b:Tex_SmartQuoteOpen 	= "\\enquote\{"
+let b:Tex_SmartQuoteClose 	= "\}"
 

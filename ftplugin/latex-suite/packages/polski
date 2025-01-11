@@ -61,8 +61,8 @@ call TPackagePolskiTylda()
 " --------8<-------------
 
 " Polskie znaki cudzyslowow 
-TexLet g:Tex_SmartQuoteOpen = ",,"
-TexLet g:Tex_SmartQuoteClose = "''"
+TexLet b:Tex_SmartQuoteOpen = ",,"
+TexLet b:Tex_SmartQuoteClose = "''"
  
 " Zmodyfikowana i rozwinieta funkcja Andrzeja Ostruszki
 " Z dodatkiem od Benjiego Fishera (sprawdzanie sk³adni)
