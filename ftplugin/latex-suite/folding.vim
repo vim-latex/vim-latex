@@ -96,7 +96,7 @@ function! MakeTexFolds(force, manual)
 
 	" Folding items which are not caught in any of the standard commands,
 	" environments or sections.
-	let s = 'item,slide,preamble,<<<'
+	let s = 'item,slide,preamble,<<<,beamer'
 	if !exists('g:Tex_FoldedMisc')
 		let g:Tex_FoldedMisc = s
 	elseif g:Tex_FoldedMisc[0] == ','
@@ -256,6 +256,34 @@ function! MakeTexFolds(force, manual)
 			\ )
 	endif
 	" }}}
+
+	if g:Tex_FoldedMisc =~ '\<beamer\>'
+		" {{{ frame (in beamer)
+		call AddSyntaxFoldItem (
+					\ '^\s*\\frame',
+					\ '^\s*\\frame\|^\s*\\end{document}\|^\s*\\begin{frame}\|^\s*\\\(sub\)*section\|^\s*\\part',
+					\ 0,
+					\ -1,
+					\ )
+		" }}}
+		" {{{ column (in beamer)
+		call AddSyntaxFoldItem (
+					\ '^\s*\\\(begin{\)*column',
+					\ '^\s*\\\%(column\|begin{column}\|end{columns}\)',
+					\ 0,
+					\ -1,
+					\ )
+		" }}}
+		" {{{ columns env (in beamer)
+		call AddSyntaxFoldItem (
+					\ '^\s*\\begin{columns}',
+					\ '^\s*\\end{columns}',
+					\ 0,
+					\ 0,
+					\ )
+		" }}}
+
+	endif
 
 	" {{{ title
 	if g:Tex_FoldedMisc =~ '\<title\>'
